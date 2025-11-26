@@ -1,0 +1,54 @@
+#+title: Ingeniería Computadores II
+
+* Procesadores Segmentados
+- Segmentos
+      - *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
+      - *ID* (Instruction Decoding), Decodificación de la instrucción y lectura de sys operandos del fichero de registros.
+            - *II* (Instruction Issue), si hay panificación (Tomasulo).
+      - *EX* (Execution), Ejecución de las operaciones. También de las instrucciones de salto.
+      - *MEM* (Memory acces), lecturas y escrituras a la caché de datos.
+      - *WB* (Write-Back results), Escritura en fichero de registros.
+
+- El tiempo de ejecución de una instrucción es el tiempo de la etapa más duradera.
+      - $t_e = max\{t_{if}, t_{id}, t_{ex}, t_{mem}, t_{wb}\}$
+
+* Algoritmo Tomasulo
+- Planificación de las instrucciones para evitar detenciones. El algoritmo Tomasulo es de las primeras
+  soluciones para la planificación.
+- El segmento *ID* se desdobla en *ID* y *II*.
+      - *II* (Instruction Issue), La instrucción espera a que no hayan riesgos *RAW* y cuando estén todos los operandos
+fuente listos emite la instrucción a la unidad funcional.
+
+** Funcionamiento con FPU IBM 360/91
+1. Las instrucciones se emiten desde la *FLOS* a la *RS*.
+       - Se copian operandos disponibles y se marca el bit *ocupado* (dato anticuado) del registro destino en el *FR*.
+       - Se copia el valor etiqueta del registro destino en el *FR* que identifica a la *RS* donde se envía la instrucción.
+       - Si el operando no está disponible (ocupado=1) se sustituye por la *etiqueta* que hay en *FR*.
+       - Los registros destino del *FR* se marcan como ocupados (actualización pendiente).
+       - Esta etiqueta contiene el origen del dato cuando esté disponible.
+             - La *etiqueta* puede ser una de las instrucciones en reserva *RS* o uno de los registros del *FB*.
+2. Los datos de la unidad funcional se publican junto con su etiqueta en el *CDB*.
+       - La *RS* está constantemente comprobando las publicaciones en la *CDB*.
+3. Si la *RS* encuentra el contenido de una etiqueta en la *CDB* la copia en la instrucción reservada y la marca como
+   preparada.
+4. Instrucciones sin dependencias se encían a la unidad funcional.
+   
+[[Glosario][Glosario]]
+
+* Glosario
+- *Unidad Funcional*, módulos de cómputo en un procesador, pueden funcionar de forma independiente.
+- *Planificación Dinámica*, el hardware reorganiza la ejecución de instrucciones par reducir las detenciones.
+- *FPU*, floating point unit.
+      - *FR*, Floating Register.
+            - los registros tienen un campo *ocupado* y un campo *etiqueta* (planificación).
+      - *FB*, Floating Buffer, aquí entran los datos desde memoria.
+      - *SDB*, Store Data Buffers, de aquí los datos se escriben en memoria.
+            - Puede ser el destino de instrucciones, por tanto los registros del SDB tienen un campo *etiqueta*.
+      - *FLOS*, floating point operation stack, pila de operaciones de coma flotante.
+      - *RS*, reservation stations, *las instrucciones esperan aquí a sus operandos*
+        para ser emitidas hacia la unidad funcional (planificación).
+            - Por cada operando contiene 2 campos, *valor* y *etiqueta*.
+      - *CDB*, Common data bus, permite cargar un resultado en todas las unidades funcionales,
+        conecta salida de unidades funcionales con las *RS*, *FR* y *SDB* (adelantamiento).
+
+
