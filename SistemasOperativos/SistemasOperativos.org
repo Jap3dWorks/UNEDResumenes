@@ -1,0 +1,5 @@
+#+title: Sistemas Operativos
+
+
+* Glosario
+- *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).

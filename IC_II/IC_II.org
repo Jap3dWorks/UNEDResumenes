@@ -1,13 +1,12 @@
 #+title: Ingeniería Computadores II
 
 * Procesadores Segmentados
-- Segmentos
-      - *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
-      - *ID* (Instruction Decoding), Decodificación de la instrucción y lectura de sys operandos del fichero de registros.
-            - *II* (Instruction Issue), si hay panificación (Tomasulo).
-      - *EX* (Execution), Ejecución de las operaciones. También de las instrucciones de salto.
-      - *MEM* (Memory acces), lecturas y escrituras a la caché de datos.
-      - *WB* (Write-Back results), Escritura en fichero de registros.
+** Arquitectura
+- *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
+- *ID* (Instruction Decoding), Decodificación de la instrucción y lectura de sys operandos del fichero de registros.
+- *EX* (Execution), Ejecución de las operaciones. También de las instrucciones de salto.
+- *MEM* (Memory acces), lecturas y escrituras a la caché de datos.
+- *WB* (Write-Back results), Escritura en fichero de registros.
 
 - El tiempo de ejecución de una instrucción es el tiempo de la etapa más duradera.
       - $t_e = max\{t_{if}, t_{id}, t_{ex}, t_{mem}, t_{wb}\}$
@@ -32,8 +31,57 @@ fuente listos emite la instrucción a la unidad funcional.
 3. Si la *RS* encuentra el contenido de una etiqueta en la *CDB* la copia en la instrucción reservada y la marca como
    preparada.
 4. Instrucciones sin dependencias se encían a la unidad funcional.
-   
-[[Glosario][Glosario]]
+
+* Procesador Superescalar
+** Arquitectura
+*** Segmentos
+- *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
+- *ID* (Instruction Decoding), Decodificación de la instrucción y lectura de sys operandos del fichero de registros.
+- *II* (Instruction Issue), Etapa de distribución/emisión.
+- *EX* (Execution), Ejecución de las operaciones. También de las instrucciones de salto.
+- *MEM* (Memory acces), lecturas y escrituras a la caché de datos.
+- *WB* (Write-Back results), Escritura en fichero de registros.
+
+*** Estados de una Instrucción
+- *Distribuida* (dispatched), ha sido enviada a una estación de reserva (*RS*) asociada a una o varias
+  unidades funcionales del mismo tipo.
+- *Emitida* (issued), sale de una *RS* hacia una unidad funcional.
+- *Finalizada* (finished), abandona la unidad funcional y para al buffer de reordenamiento.
+  (registros de renombramiento).
+- *Terminada* (completed), completada la escritura desde los registros de renombramiento hasta los registros arquetectónicos (visibles al programador).
+- *Retirada* (retired), ha realizado la escritura en memoria.
+
+*** Problemas
+- *Falta de alineamiento*, 
+- *Rotura de secuencialidad*, 
+
+** Predicción de destino
+- *BTAC*, 
+
+** Renombramiento Registros
+- *RRF*, Rename register file, Buffer de renombramiento o fichero de registros de renombramiento.
+      - Aquí se guardan los registros de renombramiento.
+- *ARF*, Achitected register file, fichero de registros arquitectónicos (visibles al programador).
+- *Buffer Renombramiento*, [[Buffer de renombramiento][Buffer Renombramiento]] .
+  
+*** Buffer de renombramiento
+- Estructura que mantiene entradas con las instrucciones que hay al vuelo.
+- Decide cuando los datos en *RRF* deben escribirse en el *ARF*.
+- Entradas:
+      - *Ocupada* (O),
+      - *Emiteda* (E),
+      - *Finalizada* (F),
+      - *Dirección* (Dir),
+      - *Registro de destino* (Rd),
+      - *Registro de renombramiento* (Rr)
+      - *Especulativa* (Es),
+      - *Validez* (V),
+
+*** Organización independiente del RRF con acceso indexado
+
+*** Organización independiente RRF con acceso asociativo
+
+*** Organización del RRF como parte del buffer de renombramiento
 
 * Glosario
 - *Unidad Funcional*, módulos de cómputo en un procesador, pueden funcionar de forma independiente.
