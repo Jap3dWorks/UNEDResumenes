@@ -1,0 +1,25 @@
+#+title: RedesDeComputadores
+
+* Capas de conexión modelo OSI
+** Capas y mensajes
+
+| capa            | datos                | cabeceras                               |
+|-----------------+----------------------+-----------------------------------------|
+| Aplicación      |                      | [mensaje]                               |
+| Transporte      | datagrama de usuario | [c.trasporte][mensaje]                  |
+| Red             | datagrama de red     | [c.red][c.transporte][mensaje]          |
+| Enlace de Datos | trama                | [c.datos][c.red][c.transporte][mensaje] |
+| Físico          |                      |                                         |
+
+* Nivel físico
+
+* Nivel Enlace de Datos
+
+* Nivel de Red
+
+* Nivel de Transporte
+
+* Nivel de Aplicación
+
+* Glosario
+- *SSID*, nombre de una red inalámbrica.

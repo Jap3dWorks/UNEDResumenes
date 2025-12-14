@@ -1,0 +1,171 @@
+#+title: PREDA
+
+* Ramificación y Poda
+
+** Mochila Entera
+
+#+BEGIN_EXAMPLE
+tipo TVectorB = matriz[1..n] de booleano
+tipo TVectorR - matriz[1..n] de real
+tipo TNodo = registro        // Solución parcial o final
+    moch: TVectorB           // Elementos incluidos
+    k: entero                // etapa de búsqueda, posición del objeto a considerar
+    pesoT: real              // Peso objetos introducidos
+    valorT: real             // valor objetos introducidos
+    estOpt: real             // estimación Optimista,
+                             //   determina posición en montículo
+fregistro
+
+/**
+ * pesos: TVectorR: pesos de los objetos de mayor a menos valor.
+ * valores: TVectorR: valor de los objetos de mayor a menor.
+ * P: real: peso máximo soportable.
+ * moch: out TVectorB: vector objetod añadidos de inicio con todo en falso de salida?
+ * valor: real: valor de la solución óptima.
+ * pesos, valores y moch tienen los objetos ordenados de más e menor valor.
+ */
+fun Mochila(pesos: TVectorR, valores: TVectorR,
+            P:real, moch: out TVectorB, valor: out real)
+    var
+        monticulo: TMonticulo
+        nodo, hijo: TNodo
+        cota : real   // la cota sirve para podar ramas no óptimas
+        estPes: real  // Sirve para actualizar la cota si alguna rama
+                      //   en el peor de los casos puede dar una solución mejor
+    fvar
+    
+    monituclo <- CreatMonticuloVacio()
+    valor <-0
+    
+    // Construimos primer nodo
+    //   no es solución es solo el inicio (empieza en k=1)
+    nodo.moch <- moch
+    nodo.k <- 0
+    nodo.pesoT <- 0
+    nodo.valorT <- 0
+    nodo.estOpt <- EstimacionOpt(pesos, valores, P, nodo, pesoT, nodo.valorT)
+
+    Insertar(nodo, monticulo)
+    
+    cota <- EstimacionPes(
+        pesos, valores, P,nodo.k,
+        nodo.PesoT, nodo.valorT
+        )
+
+    mientras !MonticuloVacio(monticulo) &&
+             EstimacionOpt(Primero(monticulo)) >= cota hacer
+             
+        nodo <- OptenerCima(monticulo)  // la solución con mejor estimación
+        
+        hijo.k    <- nodo.k + 1      // el siguiente objeto
+        hijo.moch <- nodo.moch       // copy?
+        
+        // cabe el objeto en la mochila?
+        si nodo.pesoT + pesos[hijo.k] <= P entonces
+            hijo.moch[hijo.k] <- cierto   // añadimos el nuevo objeto
+            hijo.pesoT  <- nodo.pesoT + pesos[hijo.k]
+            hijo.valorT <- nodo.valorT + valores[hijo.k]
+            hijo.estOpt <- nodo.estOpt
+            si hijo.k = n entonces
+                // el último nodo es el nodo n
+                si cota <= hijo.valorT entonces
+                    // vemos si mejoramos la cota actual
+                    //  Representa una solución óptima encontrada
+                    moch  <- hijo.moch
+                    valor <- hijo.valorT
+                    cota  <- valor  // actualizamos cota
+                fsi
+            sino
+                // la solución no está completa
+                // añadimos una copia del hijo al montículo
+                // (si la estOpt es alta se posicionará cerca de la cima)
+                Insertar(hijo, monticulo) // insertamos copia
+            fsi
+        fsi
+
+        // Estimación sin el objeto hijo en la mochila
+        hijo.estOpt <- EstimacionOpt(
+            pesos, valores, P, hijo.k /* se comprueba a partir de k+1 */,
+            nodo.pesoT, nodo.valorT
+            )
+
+        si hijo.estOpt >= cota entonces
+            // solución sin el objeto k que mejora la cota
+            hijo.moch[hijo.k] <- falso
+            hijo.pesoT  <- nodo.pesoT
+            hijo.valorT <- nodo.valorT
+            
+            si hijo.k = n entonces
+                si cota <= hijo.valorT entonces
+                    // guardamos la solución final que mejora la cota
+                    //   actualizamos la cota porque la mejora
+                    moch  <- hijo.moch
+                    valor <- hijo.valorT
+                    cota  <- valor
+                fsi
+            sino
+                // solución no completa
+                //  insertamos una copia de hijo
+                Insertar(hijo, monticulo)
+                estPes <- EstimacionPes(pesos, valores, P, hijo.k,
+                                        hijo.PesoT, hijo.valorT)
+
+                // comprobamos si la estimación pesimista sin el objeto
+                //  mejora la cota, si es así actualizamos la cota
+                si cota < estPes entonces
+                    cota <- estPes
+                fsi
+            fsi
+        fsi
+    fmientras
+ffun
+
+fun EstimacionOpt(pesos, valores : TVectorT, P: real,
+                  k: entero, pesoT: real, valorT: real): real
+    var
+        capacidad, estimacion : real
+        i : entero
+    fvar
+    
+    capacidad <- P - pesoT  // Peso máximo - peso actual
+    estimacion <- valorT
+
+    i <- k + 1 // siguiente objeto
+    mientras i <= n && capacidad >= 0 hacer
+        si pesos[i] <= capacidad entonces
+            estimacion <- estimacion + valor[i]  // más valor
+            capacidad <- capacidad - pesos[i]    // pero menos capacidad
+        sino
+            // se pone una parte de este objeto
+            // que no es real es la estimación optimista
+            estimacion <- estimacion + (capacidad / pesos[i]) * valor[i]
+            capacidad <- 0
+        fsi
+        i <- i + 1
+    fmientras
+    dev estimacion
+ffun
+
+fun EstimacionPes(pesos, valores: TVectorR, P:real,
+                  k:entero, pesoT: real, valorT: real) : real
+    var
+        capacidad, cota: real
+        i: entero
+    fvar
+    
+    capacidad <- P - pesoT
+    cota <- valorT
+    i <- k + 1      // siguiente objeto
+    mientras i <= n && capacidad >= 0 hacer
+        si pesos[i] <= capacidad entonces
+            cota <- cota + valor[i]
+            capacidad <- capacidad - pesos[i]
+        fsi
+        // no se introducen objetos fraccionados
+        i <- i+1
+    fmientras
+    
+    dev cota
+ffun                  
+
+#+END_EXAMPLE
