@@ -19,7 +19,20 @@
 
 * Nivel de Transporte
 
+** TCP
+
+
+** SCTP
+
+
+
 * Nivel de Aplicación
 
 * Glosario
+- *TLS*, Saltos de enrutamiento máximos.
 - *SSID*, nombre de una red inalámbrica.
+- *RTT*, Round-Trip time, tiempo de envío de un paquete y llegada del ACK (TCP).
+      - $RTT_M$,
+      - $RTT_S$,
+      - *Desviación RTT*, Calculo de la desviación RTT
+- *RTO*, tiempo de retransmisión, se basa en el RTT suavizado y su desviación.
