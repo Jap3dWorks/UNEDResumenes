@@ -178,7 +178,19 @@ fuente listos emite la instrucción a la unidad funcional.
             - En cada bloque se conectan por barajamiento perfecto.
             - En la siguiente etapa $n_{i+1}$, los bloques se dividen a la mitad ($n_{i}/2$ entradas $\times$ $n_{i}/2$ salidas)
               [[file:images/RedBaseline.svg]]
-      - *Red Butterfly*, 
+      - *Red Butterfly*,
+            - Entre conmutadores existe la conexión directa o cruzada.
+            - Cada conmutador se identifica como $[i,j]$ donde $i$ es la etapa y $j$ la fila de conmutadores.
+            - El conmutador $[i,j]$ conecta con $[i+1,j]$ y $[i+1, j \oplus 2^i]$.
+              [[file:images/ButteflyConn.png]]
+      - Desde el conmutador origen $A$ hasta el conmutador destino $B$ la ruta $R$ se calcula.
+            - Notese que $j$ son los dígitos en común de las dos conexiones de entrada originales.
+                  - Pocesador 000 y 001 conectan con conmutador 00.
+            - $R=A \oplus B$, desde el bit menos significativo $R_0$.
+                  - Si $R_i=1$ camino cruzado, Si $R_i=0$ camino directo.
+      - En notación de permutación ($i$ es el índice de los conmutadores destino).
+         $\beta_i(x_{n-1}\ \ldots \ x_{i+1} \ x_i \ x_{i-1}\ \ldots \ x_1\ x_0) = x_{n-1} \ \ldots \ x_{i+1} \ x_0 \ x_{i-1} \ \ldots \ x_1\ x_i$
+         [[file:images/ButterflyPerm.png]]
 
 *** Protocolos Coherencia de Caché
 - *Snoopy*, vigilancia del bus.
@@ -209,4 +221,6 @@ fuente listos emite la instrucción a la unidad funcional.
       - *CDB*, Common data bus, permite cargar un resultado en todas las unidades funcionales,
         conecta salida de unidades funcionales con las *RS*, *FR* y *SDB* (adelantamiento).
 - *Acciones Atómicas*, Acciones indivisibles es subacciones.
-- *Barajamiento Perfecto*, perfect suffle, $\sigma^k(x_{m-1}\ x_{m-2}\ \ldots \ x_1\ x_0) = x_{m - 2}\ \ldots\ x_1\ x_0\ x_{m-1}$
+- *Barajamiento Perfecto*, perfect suffle.
+      - $\sigma^k(x_{m-1}\ x_{m-2}\ \ldots \ x_1\ x_0) = x_{m - 2}\ \ldots\ x_1\ x_0\ x_{m-1}$ en $log_2 k$ posiciones (hacia la izquierda). 
+      - $\sigma^{k^{-1}}(x_{m-1}\ x_{m-2}\ \ldots \ x_1\ x_0) = x_0\ x_{m-1}\ x_{m - 2}\ \ldots\ x_1$ en $log_2k$ posiciones (hacia la derecha).
