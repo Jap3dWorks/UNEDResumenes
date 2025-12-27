@@ -1,5 +1,7 @@
 #+title: Ingeniería Computadores II
 
+#+startup: content
+
 * Procesadores Segmentados
 ** Arquitectura
 - *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
@@ -83,6 +85,114 @@ fuente listos emite la instrucción a la unidad funcional.
 
 *** Organización del RRF como parte del buffer de renombramiento
 
+
+* Procesamiento Paralelo
+
+** Organización basda en el modelo de comunicación
+*** Espacio Direcciones Compartido
+- Memoria compartida a través de la red de interconexión (pueden ser varios módulos).
+      - *UMA*, Uniform memory access, tiempo de acceso a memoria es el mismo para cualquier palabrad desde cualquier procesador.
+      - *Latencia de red*, Tiempo que tarda en enviar un mensaje a través de la red de interconexión.
+      - *Ancho de bamda*, número de bits por unidad de tiempo (e.g bps).
+      - *Bus* como arquitectura más común (sistemas pequeños).
+      - Tiene problemas de escalabilidad, accesos que se chocan.
+- *NUMA*, Non Uniform Memory Access, como UMA con pequeñas memorias por procesador donde se incluye el código que está ejecutando.
+- *ccNUMA*, cache-coherent NUMA, Sistema para mantener la coherencia de las caches de cada procesador.
+      - Cada nodo contiene una porción de la memoria total del sistema (no hay una memoria global).
+            - Cada nodo consta de uno o varios procesadores (y sus cachés) y una memoria principal.
+            - Para mantener la coherencia de las caches se usan los /protocolos snoopy/ o manteniendo un registro de las variables de cada procesador (directorios).
+      - Memorias conectadas por la red de interconexión.
+- *COMA*, Cache-Only Memory Access, para mantener la coherencia de las caches de cada procesador.
+      - Nodos sin memoria local, tan solo cache.
+            - Memorias locales a actuan como cache.
+            - Los nodos hacen copias de los datos a sus memorias cache locales.
+            - Ventaja, tratar los fallos de acceso al distribuir los datos por el sistema.
+            - Desventaja, muy dificil mantener la coherencia.
+
+*** Paso de mensajes
+
+
+** Sistemas de memoria compartida
+*** Redes de Interconexión
+**** Redes Estáticas
+- Topología definida durante la construcción de la máquina.
+- *Topología Red Unidimensional*
+      - *Red Lineal*, Conectar cada procesador a dos procesadores vecinos, extremos abiertos.
+      - *Red Anillo*, Colo la Red Lineal pero cerrada.
+- *Topología Red bidimensional*
+      - *Red Anillo Cordal*, Red Anillo con conexión cada X nodos.
+      - *Red Malla*, Malla de cuadrados.
+            - *Mesh Cuadrada*, mismo número nodos en X e Y.
+            - Si se conectan los extremos tenemos una *Mesh cerrada* o Toro.
+      - *Red Sistólica*, Red Malla con la diagonal conectada
+      - *Red Completamente conectada*, anillo donde todos los nodos tienen una conexión con cualquier otro nodo.
+      - *Red Estrella*, Un procesador central conectado a los demás procesadores.
+      - *Redes de árbol*, A veces solo las hojas son procesadores y los demás nodos son elementos de conmutación.
+        Solo un camino une dos nodos en una red de árbol.
+            - Desventaja cuando muchos nodos de un lado quieren comunicarse con los nodos del lado contrario.
+              Las raices pueden verse saturadas.
+            - Árbol Fat Tree, para aliviar la saturación puede aumentarse el número de conexiones en los conmutadores
+              más cercanos a la raiz (es un camino de mayor tránsido).
+- *Topología Red Tridimensional*
+      - *Mesh tridimensional*, 
+- *Topología Red Hipercubos*
+      - hipercubo dimensión $d$ esta compuesto por $p=2^d$ procesadores.
+      - Cada procesador se etiqueta con un número en binario de $d$ dígitos.
+      - Dos procesadores se conectan entre sí si las etiquetas difieren de un único dígito en binario.
+      - Un procesador de un hypercubo de dimensión d se conecta directamente a otros d procesadores.
+      - Un hypercubo de dimensión $d$ puede dividirse en 2 hipercubos de dimensión $d-1$.
+            - Cada partición son todos los procesadores con el mismo valor en un mismo dígito de su etiqueta.
+      - *Distancia de Hamming*, número total de posiciones de bits de dos procesadores para los que sus etiquetas son diferentes.
+            - Es la suma de todos los unos de el resultado de la operación xor entre las etiquetas.
+            - $\sum \{ n\ |\ \forall n \in e_a \oplus e_b \}$
+            - El camino de encuentra aplicando las diferencias entre las equiquetas desde el bit menos significativo.
+        
+**** Redes Dinámicas
+- Sistemas paralelos de propósito general.
+- *Redes basadas en Bus*, los nodos comparten un único medio de comunicación, el Bus.
+      - En un instante solo un nodo puede transmitir por el Bus.
+      - Lógica de arbitraje para prevenir colisiones
+            - Prioridad fija, FIFO, Round Robin, LRU (last recently used).
+      - Puede mejorarse el rendimiento con memorias cache locales.
+- *Redes Crossbar*, conecta $p$ procesadores con $q$ elementos de memoria con una red de conmutadores.
+      - Conmutadores necesarios $p \times q$.
+      - Cantidad de conmutadores dificil de escalar.
+      - tipo no-bloquetante, procesador A accediendo a memoria A no interfiere con procesador B accediendo a memoria B.
+- *Redes Multietapa*, Se componen de etapas (elementos lógicos) conectadas con otras etapas mediante conmutadores.
+      - Compromiso entre el Bus y el Crossbar.
+      - Redes bloqueantes.
+      - *Conmutador* $a \times b$, dispositivo con $a$ entradas y $b$ salidas.
+            - Sus configuraciones permiten alternan las conexiones de las entradas con las salidas.
+            - Una entrada puede estar conectada a varias salidas pero no al contrario.
+            - Conmutación dinámica.
+      - *Red Omega*, permutación por /barajamiento perfecto/ (perfect suffle) bien hacia la derecha o hacia la izquierda.
+            - Se conectan $p$ procesadores con $p$ memorias.
+            - Hay $log_2p$ etapas.
+            - Conmutadores de $2 \times 2$.
+            - Se necesitan $\frac{p}{2}log_2p$ conmutadores.
+            - Con la dirección de memoria en binario, desde un procesador.
+                  - El bit más significativo aún no enrutado.
+                  - bit 0 salida superior. bit 1 salida inferior.
+                  - La interconexión de conmutadores (etapas) sigue el barajamiento perfecto.
+      - *Red Baseline*, Se construye por bloques conectando las salidas del los conmutadores $n$ con las entradas de los conmutadores $n+1$.
+            - En cada bloque se conectan por barajamiento perfecto.
+            - En la siguiente etapa $n_{i+1}$, los bloques se dividen a la mitad ($n_{i}/2$ entradas $\times$ $n_{i}/2$ salidas)
+              [[file:images/RedBaseline.svg]]
+      - *Red Butterfly*, 
+
+*** Protocolos Coherencia de Caché
+- *Snoopy*, vigilancia del bus.
+      - Común en bus o en anillos.
+      - Cada procesador monitoriza el tráfico de la red en busca de transacciones.
+      - Los bloques de cache tienen etiquetas, para marcar si un dato está desactualizado o sucio (el procesador lo ha manipulado).
+            - Caches locales y memoria principal compartida.
+            - Si otro procesador (B) escribe en un bloque donde se mantiene una copia en cache en el procesador A, esta se marca como inválida en A.
+            - Si el procesador A escribe en un bloque en su mem caché lo marca como sucio.
+                  - Cuando otro procesador (B) necesite este bloque, el procesador A toma el control del bus y lo actualiza en memoria.
+            - Al escuchar el tráfico puede o bien invalidar su copia o notificar a otro procesador que solicita un dato el nuevo valor.
+      - Consume mucho ancho de banda.
+- *Systema basado en directorios*, 
+
 * Glosario
 - *Unidad Funcional*, módulos de cómputo en un procesador, pueden funcionar de forma independiente.
 - *Planificación Dinámica*, el hardware reorganiza la ejecución de instrucciones par reducir las detenciones.
@@ -98,5 +208,5 @@ fuente listos emite la instrucción a la unidad funcional.
             - Por cada operando contiene 2 campos, *valor* y *etiqueta*.
       - *CDB*, Common data bus, permite cargar un resultado en todas las unidades funcionales,
         conecta salida de unidades funcionales con las *RS*, *FR* y *SDB* (adelantamiento).
-
-
+- *Acciones Atómicas*, Acciones indivisibles es subacciones.
+- *Barajamiento Perfecto*, perfect suffle, $\sigma^k(x_{m-1}\ x_{m-2}\ \ldots \ x_1\ x_0) = x_{m - 2}\ \ldots\ x_1\ x_0\ x_{m-1}$
