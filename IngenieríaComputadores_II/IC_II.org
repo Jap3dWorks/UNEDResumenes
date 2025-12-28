@@ -189,6 +189,7 @@ fuente listos emite la instrucción a la unidad funcional.
             - $R=A \oplus B$, desde el bit menos significativo $R_0$.
                   - Si $R_i=1$ camino cruzado, Si $R_i=0$ camino directo.
       - En notación de permutación ($i$ es el índice de los conmutadores destino).
+        
          $\beta_i(x_{n-1}\ \ldots \ x_{i+1} \ x_i \ x_{i-1}\ \ldots \ x_1\ x_0) = x_{n-1} \ \ldots \ x_{i+1} \ x_0 \ x_{i-1} \ \ldots \ x_1\ x_i$
          [[file:images/ButterflyPerm.png]]
 
