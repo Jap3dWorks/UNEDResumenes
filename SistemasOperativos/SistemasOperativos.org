@@ -116,8 +116,19 @@
   Para resolver el conflicto A puede ceder su prioridad a B hasta que B acabe de usar el recurso C.
  
 *** Planificación basada en múltiples colas de prioridad
-*** Planificación basada en múltiples colas de prioridad y realimentación
+- Varias colas donde cada cola solo puede contener procesos de una determinada prioridad.
+- Se ejecutan los procesos de las prioridades más altas.
+- Un proceso solo puede pertenecer a una cola a lo largo de su vida.
+- Cada cola puede usar algoritmos diferentes para organizarse.
+- Para evitar inanición se puede establecer porcentajes de uso de los recursos a cada cola.
 
+*** Planificación basada en múltiples colas de prioridad y realimentación
+- En esta versión los procesos pueden cambiar de cola de prioridad a lo largo de su vida (realimentación).
+- Implementación
+      - Un nuevo proceso llega a $CP_0$ (cola prioridad 0, la mayor).
+      - Después de un cuanto de uso de procesador, cada proceso desciendo a una cola de prioridad inferior.
+      - Un proceso en la cola de menor prioridad vuelve a ella después de un cuanto (parecido a RoundRobin).
+  
 
 * Glosario
 - *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).
