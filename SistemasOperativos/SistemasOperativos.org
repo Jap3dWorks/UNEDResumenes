@@ -1,4 +1,122 @@
 #+title: Sistemas Operativos
+#+author: Jordi Amposta Pérez
+
+* Descripción y control de procesos
+** Creación de procesos
+*** Acciones para crear un proceso más comunes.
+1. *Comprobar si el proceso puede ser creado*, comprueba espacio en memoria o
+    número máximo de procesos permitido entre otras.
+2. *Asignar una entrada de la tabla de procesos para el nuevo proceso*, un identficador numérico.
+3. *Reservar espacio en memoria para el proceso*, espacio para el espacio de direcciones lógicas
+    y para la información del bloque de control del proceso.
+4. *Inicializar el bloque de control del proceso*.
+5. *Establecer los enlaces apropiados*, 
+
+*** Causas más comunes.
+- *Arranque del sistema operativo*, demonios, interpretes de commandos, etc.
+- *Interacción con el usuario*.
+      - Desde interprete de commandos.
+      - Desde un entorno de ventanas.
+- *Inicio de un trabajo por lotes*, Cada vez que se inicia un trabajo por lotes se crea un proceso.
+   asociado a la ejecución de dicho trabajo.
+- *Un proceso invoca a una llamada al sistema para crear un nuevo proceso*.
+      - Proceso padre y proceso hijos.
+      - Proceso padre puede terminar, ejecutarse concurrentemente o esperar a que acabe algún proceso hijo.
+
+*** Cambio de proceso
+
+
+** Terminación de procesos
+
+* Planificación de procesos
+
+** Niveles de Planificación
+
+** Algoritmos de planificación
+- $T_{LL}$, tiempo global en el que un proceso llega a la cola de planificación.
+- $T_F$, Tiempo de finalización, tiempo global en el que el proceso finaliza.
+- $T_S$, Tiempo de servicio, tiempo de ejecución de un proceso.
+- $T_R$, Tiempo de retorno.
+      - $T_R = T_F - T_{LL}$
+- $T_E$, Tiempo de espera.
+      - $T_E = T_R - T_S$
+
+*** Algoritmo de planificación del primero en llegar - primero en ser servido (FCFS)
+:PROPERTIES:
+:ID:       b7ad7f03-7276-428e-9f9d-2bd78b74bb25
+:END:
+- *FCFS*, First-Come First-Served
+- Tipo *no expropiativo*.
+- Requiere de una cola tipo FIFO.
+- Desventajas.
+      - Tiempos de espera variables y largos.
+      - Funciona mejor en procesos largos.
+      - Favorece a los procesos limitados por el procesador.
+- Preferible su uso en un sistema por lotes o en combinación con otros algoritmos.
+
+*** Planificación de primero el proceso más corto (SJF)
+:PROPERTIES:
+:ID:       29503444-e8b2-461d-90b1-b187c128f484
+:END:
+- *SJF* (shortest Job First) o *SPN* (shortest process next).
+- Tipo *no expropiativo*.
+- Primero el proceso con tiempor de procesamiento más corto.
+      - Si varios tienen el mismo tiempo de procesamiento se aplica [[id:b7ad7f03-7276-428e-9f9d-2bd78b74bb25][FCFS]].
+- Se suele usar en sistemas por lotes.
+- En un sistema por lotes el tiempo de procesamiento es la ejecución total del proceso.
+- En un sistema de tiempo compartido el tiempo es la duración de la próxima ráfaga de un poceso.
+- Favorece a procesos cortos pero pueden quedarse procesos en espera indefinida.
+- Es dificil estimar la duración de un proceso.
+      - Mejores estimaciones producen mayor sobrecarga en el sistema.
+      - *Predictor promedio exponencial*.
+            - $M_{n+1} = \alpha \cdot t_n + (1 - \alpha) \cdot M_n$
+                  - $n \in \mathbb{N}$
+                  - $M_n$ es el tiempo estimado.
+                  - $t_n$ es la duración real.
+                  - $\alpha$ es el peso.
+            - $M_{n+1} = (\sum_{i=1}^n \alpha \cdot t_i(1-\alpha)^{n-i}) + (1 - \alpha)M_0$
+
+*** Planificación del proceso con menor tiempo restante (SRT)
+- *SRT* (Shortest remaining time first).
+- Versión *expropiativa* de [[id:29503444-e8b2-461d-90b1-b187c128f484][SJF]].
+- Si llega a la cola de preparados un proceso con menor tiempo de ejecición, se expropia al proceso actual.
+- Se suele usar en sistemas por lotes.
+
+*** Planificación de turno rotatorio (Round Robin)
+- *Round Robin* o cícliclo.
+- Tipo *expropiativo*, basado en [[id:b7ad7f03-7276-428e-9f9d-2bd78b74bb25][FCFS]].
+- Asigna uso ininterrumpido del procesador durante una cantidad fija de tiempo
+   denominada *cuanto (quantum)* o *rodaja de tiempo (time slice)*.
+      - Pasado el cuanto, se genera una interrupción de reloj que interrumpe el proceso actual.
+      - Se pasa a ejecutar el primer proceso de la cola FCFS.
+      - El proceso interrumpido pasa al final de la cola de planificación.
+- El tamaño del cuanto es clave para su eficacia.
+      - El cambio de proceso introduce sobrecargas.
+      - Porcentaje de sobrecarga $p_s = \frac{s}{s+q} \cdot 100$.
+            - $s$ tiempo promedio de cambio de proceso.
+            - $q$ tiempo de 1 cuanto.
+      - Se recomienda un tiempo $q$ ligeramente superior al promedio de una ráfaga de procesador.
+- Diseñado para sistemas de uso compartido. Es justo pero $t_R$, $t_E$ pueden ser largos.
+
+*** Planificación basada en prioridades
+- Asigna a cada proceso en el momento de su creación una *prioridad de ejecución* (entero positivo).
+- Prioridades iguales se resuelven con *FCFS* o *SJF*.
+- *Prioridad estática*, no cambia el valor de prioridad.
+- *Prioridad dinámica*, cambia el valor de prioridad durante la vida del proceso.
+- puede ser *expropiativo* o *no expropiativo*
+      - *expropiativo*, se le llama guiado por eventos (event driven).
+      - Expropia cuando llega un proceso con una prioridad mayor.
+- Procesos con prioridad baja pueden sufrir inanición.
+      - *Envejecimiento* (aging) consiste en aumentar la prioridad de procesos conforme más tiempo
+        están en espera.
+      - Otra forma es reducir la prioridad del proceso que se está ejecutando in poco.
+      - Otra forma es introducir cuantos y un proceso no puede estar más de dos cuantos seguidos en ejecución.
+- *Inversión de prioridades*, Un recurso A de mayor prioridad tiene que esperar a un proceso B de menor prioridad
+  que está usando un recurso C que necesita A.
+  Para resolver el conflicto A puede ceder su prioridad a B hasta que B acabe de usar el recurso C.
+ 
+*** Planificación basada en múltiples colas de prioridad
+*** Planificación basada en múltiples colas de prioridad y realimentación
 
 
 * Glosario
