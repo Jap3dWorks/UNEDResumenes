@@ -1,5 +1,6 @@
 #+title: Sistemas Operativos
 #+author: Jordi Amposta Pérez
+#+startup: latexpreview overview
 
 * Descripción y control de procesos
 ** Creación de procesos
@@ -10,7 +11,7 @@
 3. *Reservar espacio en memoria para el proceso*, espacio para el espacio de direcciones lógicas
     y para la información del bloque de control del proceso.
 4. *Inicializar el bloque de control del proceso*.
-5. *Establecer los enlaces apropiados*, 
+5. *Establecer los enlaces apropiados*.
 
 *** Causas más comunes.
 - *Arranque del sistema operativo*, demonios, interpretes de commandos, etc.
@@ -24,7 +25,6 @@
       - Proceso padre puede terminar, ejecutarse concurrentemente o esperar a que acabe algún proceso hijo.
 
 *** Cambio de proceso
-
 
 ** Terminación de procesos
 
@@ -79,7 +79,7 @@
 *** Planificación del proceso con menor tiempo restante (SRT)
 - *SRT* (Shortest remaining time first).
 - Versión *expropiativa* de [[id:29503444-e8b2-461d-90b1-b187c128f484][SJF]].
-- Si llega a la cola de preparados un proceso con menor tiempo de ejecición, se expropia al proceso actual.
+- Si llega a la cola de preparados un proceso con menor tiempo de ejecución, se expropia al proceso actual.
 - Se suele usar en sistemas por lotes.
 
 *** Planificación de turno rotatorio (Round Robin)
@@ -126,9 +126,109 @@
 - En esta versión los procesos pueden cambiar de cola de prioridad a lo largo de su vida (realimentación).
 - Implementación
       - Un nuevo proceso llega a $CP_0$ (cola prioridad 0, la mayor).
-      - Después de un cuanto de uso de procesador, cada proceso desciendo a una cola de prioridad inferior.
-      - Un proceso en la cola de menor prioridad vuelve a ella después de un cuanto (parecido a RoundRobin).
+      - Después de un cuanto de uso de procesador, cada proceso desciende a una cola de prioridad inferior.
+            - Un proceso en la cola de menor prioridad vuelve a ella después de un cuanto (parecido a RoundRobin).
+            - También pueden aplicarse algoritmos diseñados para calcular una nueva prioridad a cada proceso,
+              así un proceso puede tanto subir como bajar de prioridad.
+      - Se favorecen a los procesos nuevos y cortos.
+      - El tamaño de el cuanto puede variar entre las colas para intentar evitar la inanición de los procesos de prioridad baja.
+      - Algoritmo muy flexible pero más complejo de implementar.
+
+*** Planificación por tiempo límite
+- Propio de sistemas de tiempo real estricto (deadline)
+- Importante completar los procesos en un tiempo preestablecido.
+- Solo se añaden a la cola los procesos que garanticen que su ejecución queda dentro de su tiempo límite (cada proceso tiene un deadline).
+  Teniendo en cuenta los procesos ya existentes en la cola y los plazos de servicio.
+- el *algoritmo de planificación de primero el proceso de tiempo límite más cercano* minimiza el número de procesos que no se ejecutan.
+
+
+* Administración de Memoria
+** Paginación Simple
+*** Descripción
+- Memoria principal se divide en bloques del mismo tamaño $S_p$ denominados *marcos de página*.
+- El espacio de direcciones de un proceso se divide en bloques del mismo tamaño $S_p$ denominados *páginas*.
+- $N_{MP} = floor \left( \frac{C_{MP}}{S_P} \right)$
+      - $N_{MP}$ número de marcos en memoria principal.
+      - $C_{MP}$ capacidad de la memoria principal.
+      - $S_P$ tamaño de una página o marco.
+- A cada marco se le asigna un id único $j,\ j \in \mathbb{N}$ (empezando en 0).
+      - $j \in [0, N_{MP}-1]$
+      - Se habla de /marco de página j/.
+- Diagrama de marcos de memoria principal.
+  [[file:images/MarcosMemPrincpl.png]]
+- $N_P = ceil \left( \frac{C_X}{S_P} \right)$
+      - $N_P$ número de páginas de un proceso.
+      - $C_X$ tamaño de espacio de direcciones lógicas de un proceso.
+      - $S_P$ tamaño de una página.
+- A cada página del proceso se le asigna un id único $i,\ i \in \mathbbn{N}$ (empezando en 0).
+      - $i \in [0, N_P -1]$
+      - Se habla de /número de página i del proceso X/.
+- Diagrama páginas de un proceso
+  [[file:images/PaginsProcss.png]]
+- En un instante un marco $j$ puede estar ocupado por una página $i$.
+      - Si no está ocupado se dice que está /libre/.
+- hay $N_{MP} - V$ márcos disponibles para procesos de usuario.
+      - $V$ máscos usados por el núcleo del sistema operativo.
+- Dir física $Dir_F$ de $n$ bits consta de dos campos.
+      - | j (f bits) | desplazamiento (d bits) | -> $n$ bits
+      - $f = ceil( log_2 (N_{MP}))$
+      - $d = ceil( log_2 (S_P))$
+      - $n = f + d$  ,   $n=ceil(log_2(C_{MP}))$
+- Dir lógica $Dir_L$ de $m$ bits consta de dos campos.
+      - | i (p bits) | desplazamiento (d bits) | -> $m$ bits
+      - $p = ceil(log_2(N_P))$
+      - $d = ceil(log_2(S_P))$
+      - $m = p + d$   ,   $m = ceil(log_2(C_X))$
+- $m \leq n$
+- Diagrama direcciones físicas direcciones lógicas
+  [[file:images/DirFiDirLo.png]]
+
+- Estructuras generales para implementar paginación.
+      - *Tabla de páginas*, A cada proceso se le asigna una tabla de páginas.
+            - Cada entrada contiene.
+                  - Marco $j$ que almacena la página $i$.
+                  - Permisos de acceso a la página $i$.
+                  - Puede contener la ubicación en memoria secundaria de la copia de la página $i$.
+            - El *bloque de control  de un proceso* almacena un puntero al inicio
+              de la dirección física de la *tabla de páginas*.
+      - *Tabla de marcos de página*, contiene tantas entradas como marcos de página.
+            - Cada entrada $j$ contiene.
+                  - Estado del marco, libre o ocupado.
+                  - Punteros para crear lista de marcos libres.
+                  - Ubicación en memoria secundaria de la página $i$ almacenada en el marco $j$
+      - *Lista de marcos libres*, consultada cuando hay que asignar marcos a procesos.
+            - Se coge el primer marco de la lista.
+            - Cuando un marco se libera se pone al final de la lista.
+
+- En paginación simple todas las páginas de un proceso deben estar cargadas en memoria.
+      - Pueden ser marcos No contiguos.
+      - Si un proceso es intercambiado a memoria secundaria, sus marcos pueden ser diferentes cuando
+        vuelva a ser cargado en memoria principal.
+
+*** Traducción De Direcciones
+- Información que se carga en diferentes partes del hardware.
+      - *Registro Base*, Almacena la dirección física del comienzo de la /tabla de págnas/.
+      - *Banco de registros*, Almacena una copia completa de la /tabla de páginas/.
+      - *Buffer de traducción de vista lateral (TLB)*, Almacena algunas entradas de la tabla de páginas (caché).
+
+- *Traducción de direcciones con un registro base*
+      - Se carga en el *registro base* el inicio de la dirección física de la *tabla de páginas* $Dir_{F\ t.pag(0)}$.
+      - Cuando una instrucción referencia a una dirección lógica $Dir_L$ se suma $Dir_{F\ t.pag (i)} = Dir_{F\ t.pag (0)} + i$.
+      - Se lee de memoria principal $Dir_{F\ t.pag(i)}$ para obtener $Dir_{F\ marco(j)}$.
+      - $Dir_F = [\ Dir_{F marco(i)}\ |\ desp\ ]$
+            - $desp$ son los bits de desplazamiento de $Dir_L$.
+      - Es un método poco eficiente por los accesos a memoria principal.
+
+- *Traducción de direcciones con un banco de registros*
+      - Se copia la tabla de páginas en el banco de registros.
+      - La traducción de $Dir_L$ a $Dir_F$ es igual que la traducción con un registro base.
+      - Se evitan accesos a memoria principal pero la tabla de páginas está limitada por el tamaño del banco de registros.
+      - Cuando se produce un cambio de proceso hay que copiar la tabla de páginas,
+        lo que incluye una sobrecarga.
+
+- *Traducción de direcciones con un TLB*
   
+
 
 * Glosario
 - *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).
