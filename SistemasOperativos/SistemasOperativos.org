@@ -141,7 +141,6 @@
   Teniendo en cuenta los procesos ya existentes en la cola y los plazos de servicio.
 - el *algoritmo de planificación de primero el proceso de tiempo límite más cercano* minimiza el número de procesos que no se ejecutan.
 
-
 * Administración de Memoria
 ** Paginación Simple
 *** Descripción
@@ -227,8 +226,76 @@
         lo que incluye una sobrecarga.
 
 - *Traducción de direcciones con un TLB*
-  
+      - Memoria cache de alta velocidad.
+      - Cada entrada contiene una entrada de la tabla de páginas del proceso actual (colo los campos relacionados con la traducción de direcciones).
+      - Se consulta en paralelo el campo $i$ de una $Dir_L$.
+            - Si la entrada $i$ está presente en la TLB se produce un acierto y se construye $Dir_F$..
+            - Si se produce un fallo se consulta la tabla de páginas en memoria principal.
+                  - Se actualiza la TLB. Hace falta un algoritmo de reemplazamiento.
+                  - Se construye $Dir_F$.
+      - Si se implementa por hardware o hardware en colaboración con el OS es necesario usar el registro base.
+            - El valor del registro base es $Dir_{F\ t.pag(0)}$.
+      - Cuando se intercambia un proceso, se borran las entradas de la TLB y se actualiza el registro base.
 
+- *Tablas de páginas paginadas*
+      - Un proceso con un espacio lógico muy grande tendrá una tabla de páginas muy grande.
+            - El espacio de memoria de la tabla de páginas debe ser contiguo.
+      - *La tabla de páginas paginadas* permite la fragmentación de la tabla de páginas en memoria no continua.
+      - Se distinguen dos tipos de páginas.
+            - *Páginas ordinarias*, contiene instrucciones y datos del espacio lógico de un proceso.
+            - *Páginas de tablas de páginas*, contienen entradas de una tabla de páginas.
+      - *tabla de páginas de primer nivel*, Se usa para localizar una de las tablas de páginas en memoria principal.
+            - Solo hay 1 por proceso
+            - las entradas son el índice de las *páginas de tablas de página*.
+            - Accedemos al marco que contiene una *tabla de páginas de segundo nivel* o *página de tablas de página*.
+      - *tabla de páginas de segundo nivel*, tabla con las direcciones físicas de los marcos de las páginas que incluye.
+            - Pueden haber varias tablas.
+            - Pagina *páginas ordinarias* del proceso.
+      - Dirección lógica usando tablas de páginas paginadas.
+            - | índice tabla primaria (*ITP*) (*r bits*) | índice tabla secundaria (*ITS*) (*s bits*) | desplazamiento (*d bits*) |
+            - *Índice tabla primaria (ITP)*, entrada de la tabla de páginas de primer nivel (empieza en 0).
+                  - $N_{TP1}$, número de entradas de la tabla de primer nivel.
+                  - $r=ceil(log_2(N_{TP1}))$, bits del ITP.
+            - *Índice tabla secundaria (ITS)*, entrada de la tabla de segundo nivel (empieza en 0).
+                  - $N_{TP2}$, número de entradas de las tablas de segundo nivel.
+                  - $s = ceil(log_2(N_{TP2}))$, bits del ITS.
+      - Pueden implementarse los niveles de paginación que se deseen pero supone más accesos a memoria.
+      - Puede mejorarse la eficiencia con una TLB.
+
+- *Tablas de páginas invertidas*
+      - Se compone de una entrada por cada marco $j$ (tamaño fijo).
+            - En cada entrada se almacena el /pid/ del proceso y el número de página $i$.
+      - El marco $j$ correspondiente a la página $i$ del proceso $x$ se identifica buscando las coincidencias en la tabla.
+            - La entrada $j$ cuyo valor es $i$ y $x$.
+            - Puede ser un proceso largo y de tiempo no constante.
+            - Pueden implementarse funciones hash y/o una TLB para mejorar el rendimiento.
+
+*** Protección
+- Cada entrada $i$ de las tablas de páginas contienen un campo *protección*.
+      - Se indica con uno o varios bits el tipo de acceso a la página (lectura, ejecución, escritura).
+      - Cada vez que el procesador intenta acceder a una dirección lógica se comprueba que el tipo de operación no viola la protección.
+            - Si el acceso no está permitido el hardware genera la excepción *fallo de protección*.
+      - Otro mecanismo es almacenar un *registro límite* con el número de páginas del proceso $x$.
+            - Si el campo $i$ de una $Dir_L$ sobrepasa el *registro límite* se provoca una excepción.
+
+*** Compartición de páginas
+- Un programa puede ejecutarse varias veces al mismo tiempo, produciendo varios procesos del mismo programa.
+- *código reentrante*, código que no se puede modificar.
+- Puede ahorrarse espacio si varias instancias de un programa comparten páginas *reentrantes*.
+      - El sistema operatico detecta si alguna página es de código reentrante.
+- En cada entrada $j$ de la *tabla de marcos* hay un campo *contador de referencias*.
+      - Indica el número de *tabla de páginas* que esta referenciando al marco $j$.
+      - La página $i$ en el marco $j$ podrá eliminarse cuando el *contador de referencias* sea 0.
+
+*** Ventajas e inconvenientes
+- No produce fragmentación externa.
+- Produce una sobrecarga pequeña.
+- No necesita intervención humana.
+- Permite compartir entre varios procesos código común.
+- Produce fragmentación interna.
+- Paginación invisible (transparente) al programador (buemalo).
+
+** Segmentación Simple
 
 * Glosario
 - *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).
