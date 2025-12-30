@@ -296,6 +296,49 @@
 - Paginación invisible (transparente) al programador (buemalo).
 
 ** Segmentación Simple
+*** Descripción
+- Un programa se divide en segmentos.
+      - Código principal
+      - Subrutinas
+      - Pila
+      - Datos
+- Cada segmento es una entidad lógica conocida por el programador.
+- Cada segmento empieza por la $Dir_{L}=0$ y tiene un tamaño diferente.
+- El sistema operativo asigna a cada segmento un identificador $h$ único.
+      - segmento $h$ del proceso $x$.
+- | N Segmento (s bits) | Desplazamiento (d bits) |
+- $s = ceil(log_2(N_S))$
+      - $N_S$, número de segmentos del proceso $x$.
+      - $s$, número de bits del campo N Segmento.
+- $d = ceil(log_2(S_S))$
+      - $S_S$, tamaño del segmento expresado en número de palabras direccionables.
+            - Entre segmentos puede variar.
+      - $d$, número de bits del campo Desplazamiento.
+- Todos los segmentos deben estar en memoria principal.
+- Al cargar un programa el SO debe buscar un hueco para cada segmento.
+      - A cada segmento se le asigna el espacio justo.
+- A cada proceso se le asigna una *tabla de segmentos*.
+      - Una entrada por cada segmento $h$ del proceso,
+        con almenos un campo con la dirección física del segmento $h$.
+            - También contiene información de permisos.
+            - Puede contener información sobre la copia del segmento en memoria secundaria.
+      - El funcionamiento es similar a la *tabla de paginación*.
+
+*** Compartición de segmentos
+- Permite la compartición de segmentos de código entre varios procesos.
+- El SO mantiene una tabla con los segmentos cargados en memoria principal.
+      - Funcionamiento similar a la paginación simple.
+
+*** Ventajas e inconvenientes
+- Fragmentación interna despreciable.
+- Visión modular del programador.
+- Permite manejar estructuras de datos que crecen (se busca un hueco más grande o se anexiona un hueco).
+- Facilita compartición y protección de diferentes partes del programa.
+- Produce fragmentación externa.
+- Aumenta la sobrecarga del sistema.
+
+*** Segmentación con paginación simple
+- Dividir segmentos en páginas.
 
 * Glosario
 - *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).
