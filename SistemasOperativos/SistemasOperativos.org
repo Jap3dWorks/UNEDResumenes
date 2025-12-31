@@ -339,21 +339,25 @@
 
 *** Segmentación con paginación simple
 - Dividir segmentos en páginas.
-
-
+  
 ** Segmentación con paginación simple
 - Segmentos se dividen en páginas
 - A Cada proceso se le asigna una tabla de segmentos
+      - entrada h | base | longitud |
       - El campo base almacena $Dir_{F\ t.pag\ h (0)}$.
-      - Tabla de segmentos almacena la longitud total del segmento
+      - *Longitud*  almacena el tamaño total del segmento
 - Por cada segmento se le asigna una tabla de páginas
-- | N de segmento h | N página i | Desplazamiento |
-- | N página | Desplazamiento | < longitud segmento
-- Registro base contiene la $Dir_F$ de la tabla de segmentos
-- traducción de direcciones
+- Dirección lógica
+      - | N de segmento h | N página i | Desplazamiento |
+      - | N página | Desplazamiento | < *longitud* segmento
+- *Registro base* contiene el inicio de la $Dir_F$ de la tabla de segmentos.
+- Traducción de direcciones.
       1. $Dir_{F1} = h + reg.\ base$
+         Encuentra la dirección del segmento $h$ en la *tabla de segmentos*.
       2. $Dir_{F2} = Dir_{F1}[base] + i$
+         Encuentra la dirección física de la *tabla de páginas* del segmento $h$ y encuentra la entrada de la página $i$.
       3. $Dir_F = |\ Dir_{F2}[marco\ j]\ |\ despl\ |$
+         Encuentra la dirección física del dato.
   
 
 * Glosario

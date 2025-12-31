@@ -1,4 +1,37 @@
 #+title: RedesDeComputadores
+#+author: Jordi Amposta Pérez
+#+startup: latexpreview overview
+
+* Introducción
+** Redes
+*** Criterios a satisfacer 
+      - *Rendimiento*, tiempo de tránsito y de respuesta.
+            - Se suelen usar dos métricas
+                  - Tasa de transferencia efectiva
+                  - Latencia
+      - *Fiabilidad*, exactitud de la entrega.
+      - *Seguridad*, protección frente accesos no autorizados.
+
+        
+*** Estructuras físicas
+- *Tipo de conexión*
+      - *Punto a punto*, enlace dedicado entre dos puntos.
+            - La mayoría usan cables.
+      - *Multipunto*, varios dispositivos comparten el mismo enlace (y la capacidad del canal).
+            - *compartida especialmente*, varios dispositivos pueden usar el enlace de forma simultánea.
+            - *tiempo compartido*, Los usuarios comparten la línea por turnos.
+
+- *Topología Física*
+      - Forma física en la que está diseñada la red.
+      - *Topología en malla*, Cada dispositivo tiene un enlace punto a punto con cualquier otro dispositivo.
+            - $N_{con} = \frac{n(n-1)}{2}$
+
+** LAN
+
+** Flujo de datos
+- *Simplex*, comunicación unidireccional.
+- *Semidúplex*, Bidireccional pero no al mismo tiempo.
+- *Full-dúplex*, Bidireccional simultáneamente.
 
 * Capas de conexión modelo OSI
 ** Capas y mensajes
@@ -18,13 +51,9 @@
 * Nivel de Red
 
 * Nivel de Transporte
-
 ** TCP
 
-
 ** SCTP
-
-
 
 * Nivel de Aplicación
 
@@ -36,3 +65,9 @@
       - $RTT_S$,
       - *Desviación RTT*, Calculo de la desviación RTT
 - *RTO*, tiempo de retransmisión, se basa en el RTT suavizado y su desviación.
+
+* Recursos
+- Link a los recursos del texto base.
+   [[https://highered.mheducation.com/sites/0073376221/student_view0/chapter1/]]
+
+   
