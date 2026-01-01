@@ -249,6 +249,10 @@
       - Podemos añadir armónicos para mejorar la forma de la señal, en este caso.
       - $B = \frac{aN}{2}$.
             - $a$ es el mayor armónico que vamos a usar.
+
+- *Transmisión en banda ancha*
+      - Usando modulación
+        
         
 ** Deterioro de la transmisión  
 
