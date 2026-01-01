@@ -3,35 +3,129 @@
 #+startup: latexpreview overview
 
 * Introducción
+** Transmisión de datos
+*** Componentes
+- Mensaje
+- Emisor
+- Receptor
+- Medio
+- Protocolo
+
+*** Flujo de datos
+- *Simplex*, comunicación unidireccional.
+- *Semidúplex*, Bidireccional pero no al mismo tiempo.
+- *Full-dúplex*, Bidireccional simultáneamente.
+
 ** Redes
 *** Criterios a satisfacer 
-      - *Rendimiento*, tiempo de tránsito y de respuesta.
-            - Se suelen usar dos métricas
-                  - Tasa de transferencia efectiva
-                  - Latencia
-      - *Fiabilidad*, exactitud de la entrega.
-      - *Seguridad*, protección frente accesos no autorizados.
-
+- *Rendimiento*, tiempo de tránsito y de respuesta.
+      - Se suelen usar dos métricas
+            - Tasa de transferencia efectiva
+            - Latencia
+- *Fiabilidad*, exactitud de la entrega.
+- *Seguridad*, protección frente accesos no autorizados.
         
 *** Estructuras físicas
-- *Tipo de conexión*
+- *Tipo de conexión*.
       - *Punto a punto*, enlace dedicado entre dos puntos.
             - La mayoría usan cables.
       - *Multipunto*, varios dispositivos comparten el mismo enlace (y la capacidad del canal).
             - *compartida especialmente*, varios dispositivos pueden usar el enlace de forma simultánea.
             - *tiempo compartido*, Los usuarios comparten la línea por turnos.
 
-- *Topología Física*
+- *Topología Física*.
       - Forma física en la que está diseñada la red.
       - *Topología en malla*, Cada dispositivo tiene un enlace punto a punto con cualquier otro dispositivo.
             - $N_{con} = \frac{n(n-1)}{2}$
 
-** LAN
+      - *Topología en estrella*.
+            - Cada dispositivo tiene un enlace punto a punto con el concentrador cental (hub).
+                  - concentrador o conmutador (conmutador es mejor).
+            - Más barata que la tolopología en malla.
+            - Es una topología robusta.
+                  - Ante cualquier error puede usarse el concentrador como monitor.
+            - Muy usada en redes LAN.
 
-** Flujo de datos
-- *Simplex*, comunicación unidireccional.
-- *Semidúplex*, Bidireccional pero no al mismo tiempo.
-- *Full-dúplex*, Bidireccional simultáneamente.
+      - *Topolgía de bus*.
+            - Conexión multipunto.
+            - Todos los dispositivos se conectan a un cable troncal(bus).
+            - Los dispositivos se conectan usando sondas o latiguillos.
+            - En el bus parte de la energía se disipa en forma de calor.
+                  - Hay un límite en la longitud del cable troncal.
+                  - Hay límite en la candidad de conexiones al bus.
+            - Todos los dispositivos pueden leer el bus, no asegura la privacidad.
+            - Es de instalación sencilla.
+            - Es dificil aislar los fallos.
+            - Es difici añadir nuevos dispositivos a la red una vez el bus se ha diseñado e instalado.
+            - Un fallo o rotura en el bus puede desconectar toda la red.
+
+      - *Topología en anillo*.
+            - Cada dispositivo tiene una conexión punto a punto
+              con los otros dos dispositivos que están a sus lados.
+            - Cada dispositivo del anillo implementa un repetidor.
+            - Es fácil detectar y aislar fallos.
+            - Puede ser frágil si falla un nodo de la red.
+
+*** Tipos Redes
+**** LAN
+- Local Area Network
+- Conecta hosts de una única oficina, edifiio o campus.
+- Cada host de la lan tiene un identificador (ipv4).
+- Actualmente los hosts se conectan usando un conmutador (switch) (topología de estrella).
+      - Antiguamente se usaba un bus.
+
+**** WAN
+- Wide Area Network
+- Alcance geográfico más extenso, una ciudad, un estado, un país o incluso el mundo.
+- Conecta dispositivos de conexión como conmutadores, enrutadores o modems.
+- Dos tipos de WAN
+      - *WAN punto a punto*, Conecta dos dispositivos de comunicación a través de un medio.
+      - *WAN conmutada*.
+            - Red con más de dos extremos.
+            - Varias Wan punto a punto conectadas por conmutadores.
+            - Vertebra la conmunicación actual.
+- *interred* o *internet*, dos o más redes conectadas (WAN o LAN).
+      - Internet son muchas redes conmutadas.
+
+*** Internet
+- Es la red de redes más notable, Internet con I.
+- Es una colaboración de cientos de miles de redes interconectadas.
+- Acceso a Internet
+      - *Usando redes telefónicas*
+            - Servicio marcación
+            - Servicio DSL
+      - *Usando cables de Red*
+      - *Usando redes inalámbricas*
+      - *Conexión directa a internet*
+
+*** Historia de Internet
+- *ARPANET*, 
+
+*** Normas y Administración de Internet
+- *Borrador* draft, documento de trabajo sin estatus.
+- *RFC*, request for comments, bajo recomendación de las autoridades un borrador se puede publicar como rfc.
+- Niveles de madurez de un RFC
+      - *Norma Propuesta*
+      - *Proyecto estandar*
+      - *Estándar de Internet*
+      - *Histórico*
+      - *Experimental*
+      - *Informativo*
+- Niveles de requerimientos
+      - *Requerido*
+      - *Recomendado*
+      - *Optativo*
+      - *De uso limitado*
+      - *No recomendado*
+
+*** Administraión de Internet
+- *ISOC*, Internet society, presta apoyo al proceso de creación de normas de internet.
+- *IAB*, Junta de arquitectura de internet, Asesor técnico de la ISOC.
+      - Supervisa el desarrollo de los protocolos ISP/IP.
+- *IETF*, Grupo de trabajo de ingeniería de Internet, Internet Engineering Task Force.
+      - Responsable de encontrar problemas operacionales y recomendar soluciones.
+- *IRTF*, Internet Research Task Force.
+      - Se centra en encontrar soluciones a largo plazo.
 
 * Capas de conexión modelo OSI
 ** Capas y mensajes
@@ -58,6 +152,9 @@
 * Nivel de Aplicación
 
 * Glosario
+- *Paquete*, En una red informática es el bloque de datos en la comunicación entre dos extremos.
+- *ISP*, proveedores de servicios de internet.
+- *Puntos de peering*, puntos de intercambio directo entre dos o más redes independientes.
 - *TLS*, Saltos de enrutamiento máximos.
 - *SSID*, nombre de una red inalámbrica.
 - *RTT*, Round-Trip time, tiempo de envío de un paquete y llegada del ACK (TCP).
