@@ -127,34 +127,171 @@
 - *IRTF*, Internet Research Task Force.
       - Se centra en encontrar soluciones a largo plazo.
 
-* Capas de conexión modelo OSI
-** Capas y mensajes
 
-| capa            | datos                | cabeceras                               |
-|-----------------+----------------------+-----------------------------------------|
-| Aplicación      |                      | [mensaje]                               |
-| Transporte      | datagrama de usuario | [c.trasporte][mensaje]                  |
-| Red             | datagrama de red     | [c.red][c.transporte][mensaje]          |
-| Enlace de Datos | trama                | [c.datos][c.red][c.transporte][mensaje] |
-| Físico          |                      |                                         |
+* Modelos de Red
+** Principios de la arquitectura por niveles
+- *Primer Principio*, Cada nivel debe realizar dos tareas opuestas.
+  Por ejemplo escuchar en una direccióny hablar en la otra.
+- *Segundo Principio*, Los dos objetos en cada nivel en ambos sitios deben ser idénticos.
+
+** Niveles protocolos TCP/IP
+*** Capas y mensajes
+
+| capa            | paquete                         | cabeceras                               | Direccionamiento                     |
+|-----------------+---------------------------------+-----------------------------------------+--------------------------------------|
+| Aplicación      | Mensaje                         | [mensaje]                               | Nombres                              |
+| Transporte      | segmento / datagrama de usuario | [c.trasporte][mensaje]                  | Número de puerto                     |
+| Red             | datagrama de red                | [c.red][c.transporte][mensaje]          | Direcciones lógicas (IP)             |
+| Enlace de Datos | trama                           | [c.datos][c.red][c.transporte][mensaje] | Direcciones de nivel de enlace (MAC) |
+| Físico          | bits                            | --                                      | --                                   |
+
+*** Multiplexación y demultiplexación
+- *Multiplexación*, Un protocolo de un nivel puede encapsular varios protocolos del nivel superior.
+      - ftp y http se encapsulan en tcp.
+- *Demultiplexación*, Un protocolo puede desencapsular y entregar paquetes a varios protocolos de nivel superior.
+      - IP puede entregar a TCP y UDP
+
+** Modelo OSI
+- OSI es un modelo para entender y diseñar una arquitectura de red que sea flexible, robusta e interoperable.
+- ISO es la organización, OSI es el modelo.
+- Careció de éxito.
+- Niveles
+  | capa            | relativo tcp/ip |
+  |-----------------+-----------------|
+  | Aplicación      | Aplicación      |
+  | Presentación    | Aplicación      |
+  | Sesión          | Aplicación      |
+  | Transporte      | Transporte      |
+  | Red             | Red             |
+  | Enlace de datos | Enlace de datos |
+  | Físico          | Físico          |
+
 
 * Nivel físico
+- Paquete: bits
+- Transporta los bits individuales del nivel de enlace.
+      - Señales electromagnéticas.
+
+** Datos y señales
+- *Datos analógicos*, la información es continua.
+- *Datos digitales*, la información es discreta.
+- *Señal periódica*, completa una pauta dentro de un marco temporal mesurable.
+- *Señal no periódica*, cambia sin exhibir un patrón o ciclo.
+
+** Señales periódicas analógicas
+*** Señal simple
+- *señal simple*, una onda seno.
+- *Amplitud pico*, valor absoluto de su mayor intensidad.
+- *Periodo*, cantidad de segundos en completar un ciclo.
+      - $T = \frac{1}{f}$
+      - Unidad segundos $s$
+- *Frecuencia*, número de periodos en 1 segundo.
+      - $f = \frac{1}{T}$
+      - Unidad Herzios $Hz$.
+      - Si una señal no cambia nunca su frecuencia es $0 Hz$.
+      - Si una señal cambia instantáneamente su frecuecnia es $\infty Hz$
+
+- *Fase* o desplazamiento de fase, describe la posición de la forma de la onda en el tiempo 0.
+      - Unidad: grados o radianes.
+
+- *Longitud de onda*, vincula el periodo o frecuencia con *velocidad de propagación*.
+      - La longitud de onda depende del medio (medios con mayor o menos velocidad de propagación).
+      - $\lambda = c \cdot T = \frac{c}{f}$
+            - $\lambda$, longitud de onda.
+            - $c$, velocidad de propagación.
+            - $T$, Periodo.
+            - $f$, frecuencia.
+
+*** Señal compuesta
+- *Señal compuesta*, compuesta por múltiples onda seno.
+- Según el analisis de Fourier, cualquier señal compuesta esuna combinación de ondas senoidales simples
+  con diferentes frecuencias, amplitudes y fases.
+- Una señal compuesta periódica puede descomponerse en un número finito de ondas seno
+  con frecuencia discreta, números naturales.
+- Una señal compuesta no periódica está compuesta de infinitas ondas seno simple,
+  con frecuencias de valor real.
+- *Frecuencia fundamental o Primer armónico*, onda seno simple con la misma frecuencia $f$ que la señal compuesta.
+      - *segundo, tercer, ... armónico*: $a \cdot f\ | \ a \in \mathbb{N},\ a > 1$.
+        
+*** Ancho de banda
+- *Ancho de banda*, Rango de frecuencias que contiene una señal compuesta.
+      - $[f_{min}, f_{max}] \to B = f_{max} - f_{min} \ Hz$
+            - $B$, el ancho de banda.
+            - $f_{min}$, frecuencia mínima.
+            - $f_{max}$, frecuencia máxima.
+
+** Señales digitales
+- Codificamos bits en niveles de una señal.
+- Puede tener más de un nivel.
+- *número bits por nivel* = $log_2{n}$
+      - $n$, número de niveles.
+
+*** Tasa de bits
+- La mayoría de señales digitales no son periódicas.
+- número de bits enviados en un segundo (bps).
+- *Intévalo de bit*, velocidad propagación x duración del bit
+
+*** Transmisión de señales digitales
+- Una señal digital es una señal analógica compuesta por un ancho de banda infinito.
+      - No es posible en la vida real.
+- *Transmisión en banda base*
+      - consiste en enviar una señal digital sin cambiar a una señal analógica.
+      - Requiere de un *canal paso-baja*.
+            - Canal con un ancho de banda que comienza en 0.
+            - Transmitir en *banda base* una señal digital que preserva su forma solo es posible con un
+              ancho de banda infinito y muy grande.
+      - $B=\frac{N}{2}$
+            - $B$, ancho de banda analógico.
+            - $N$, número de bits a enviar.
+            - Se divide entre 3 porque en el peor caso sería 10101010...,
+              como la señal seno en un periodo tiene un pico positivo y uno negativo,
+              en un periodo puede transmitir dos bits como máximo.
+      - Podemos añadir armónicos para mejorar la forma de la señal, en este caso.
+      - $B = \frac{aN}{2}$.
+            - $a$ es el mayor armónico que vamos a usar.
+        
+** Deterioro de la transmisión  
+
 
 * Nivel Enlace de Datos
+- Paquete: trama.
+- Los enrutadores son los responsables de elegir los mejores enlaces entre redes.
+      - Cuando un enrutador elige el siguiente enlace, el nivel de enlace es responsable de tomar el datagrama y moverlo a través del enlace.
+      - 
 
 * Nivel de Red
+- Paquete: datagrama de red.
+- Responsable de la conexión lógica entre el dispositivo origen y destino.
+- Incluye el protocolo principal IP.
+      - IP es un protocolo sin conexión.
+      - Sin control de flujo.
+      - Sin control de errores.
+
+(ICMP, ARP, DHCP, IGMP, )
 
 * Nivel de Transporte
+- Paquete: datagrama de usuario.
+- Responsable de la comunicación lógica entre aplicaciones.
+- Da servicio al nivel de aplicación.
+- Gestiona el tráfico
+  
+** UDP
+
 ** TCP
 
 ** SCTP
 
 * Nivel de Aplicación
+- Comunicación entre dos programas.
+- Programadores pueden crear nuevos protocolos.
 
 * Glosario
 - *Paquete*, En una red informática es el bloque de datos en la comunicación entre dos extremos.
 - *ISP*, proveedores de servicios de internet.
 - *Puntos de peering*, puntos de intercambio directo entre dos o más redes independientes.
+- *conmutador*, conmuta conexiones entre dispositivos de una misma red.
+- *enrutador*, conecta redes diferentes y decide por donde van los datos.
+- *modem*, Convierte señales.
 - *TLS*, Saltos de enrutamiento máximos.
 - *SSID*, nombre de una red inalámbrica.
 - *RTT*, Round-Trip time, tiempo de envío de un paquete y llegada del ACK (TCP).
@@ -162,6 +299,18 @@
       - $RTT_S$,
       - *Desviación RTT*, Calculo de la desviación RTT
 - *RTO*, tiempo de retransmisión, se basa en el RTT suavizado y su desviación.
+
+** Unidades
+- Periodo y frecuencia
+  | Periodo               |             | Frecuencia       |             |
+  | Unidad                | Equivalente | Unidad           | Equivalente |
+  |-----------------------+-------------+------------------+-------------|
+  | Segundos (s)          | 1 s         | Herzio (Hz)      | 1 Hz        |
+  | Milisegundos (ms)     | 10^{-3} s   | Kiloherzio (kHz) | 10^{3} Hz   |
+  | Microsegundos (\mu s) | 10^{-6} s   | Megaherzio (MHz) | 10^{6} Hz   |
+  | Nanosegundos (ns)     | 10^{-9} s   | Gigaherzio (GHz) | 10^{9} Hz   |
+  | Picosegundos (ps)     | 10^{-12} s  | Teraherzio (THz) | 10^{12} Hz  |
+
 
 * Recursos
 - Link a los recursos del texto base.
