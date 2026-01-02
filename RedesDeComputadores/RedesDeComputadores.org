@@ -342,6 +342,83 @@
 - Los paquetes llegan con distintos retardos.
 - Puede ser un problema para aplicaciones sensibles al tiempo.
 
+** Codificación de línea
+- Convertir datos digitales en señales digitales.
+  
+*** Características
+- *Elemento señal frente a elemento de datos*
+      - *Elemento dato*, la unidad más pequeña de información (bit).
+      - *Elemento señal*, unidad más corta en el tiempo de una señal digital.
+      - Elementos dato son transportados elementos señal son portadores.
+            - Tasa $r$, elementos dato transportados por una señal.
+- *Tasa de datos frente a tasa de señales*
+      - Tasa de datos son los bps
+      - *Tasa de señales*, número de elementos señal enviados en 1 segundo (*baudios*).
+            - También se conoce como tasa de pulsos, tasa de modulación o tasa de baudios.
+      - Se busca incrementar tasa de datos y reducir tasa de señales.
+      - $S = N/r$
+            - $S$, Tasas de señales.
+            - $N$, Tasa de datos (bps).
+            - $r$. elementos dato por cada señal.
+      - $S_{ave}=c \times N \times \frac{1}{r}\ baudios$
+            - $S_{ave}$, señales promedio.
+            - $c$, factor de caso, varia en cada caso.
+      - $B_{min} = c \times N \times \frac{1}{r}$
+            - $B_{min}$, ancho de banda de frecuencias mínimo
+      - $N_{max} = \frac{Br}{c}$
+            - Si se conoce el ancho de banda de frecuencias se puede determinar la tasa de bits máxima.
+- *Variaciones de la línea base*.
+      - Media de la potencia recibida.
+      - Se identifican 1 o 0 comparando la señal con la línea base.
+- *Componendes DC* (corriente continua)
+      - Frecuencias bajas que aparecen con señales de voltaje constante.
+      - Pueden ser problemáticos con algunos dispositivos.
+- *Autosincronización*
+      - Los intérvalos del emisor deben coincidir con los intérvalos del receptor.
+- *Detección de errores incorporada*
+      - capacidad de detección de errores en el codigo generado.
+- *Inmunidad al ruido y las interferencias*
+      - que el esquema de codificación es inmune al ruido y las interferencias.
+- *Complejidad*
+      - Un esquema complejo es más costoso de implementar.
+
+*** Esquemas de codificación de línea
+**** Unipolar
+- Todos los niveles de señal se encuentran a un lado del eje del tiempo.
+- *NRZ* (sin retorno a cero)
+      - bit como 1 voltaje positivo
+      - bit como 0 voltaje 0
+      - 
+         [[file:images/NRZUnipolar.png]]
+**** Esquemas Polares
+- Voltajes a ambos lados del eje del tiempo.
+- *NRZ* (sin retorno a cero)
+      - *NRZ-L*, voltaje determinal el valor del bit
+      - *NRZ_I*, La inversión del voltaje determina el valor del bit
+            - Si el voltaje cambia bit=1, 0 si no cambia.
+      - 
+        [[file:images/NRZBipolar.png]]
+      - Tasa de señal media N/2 baudios
+      - Tienen problemas de componentes DC.
+- *RZ* (con retorno a cero)
+      - La señal cambia durante el bit
+      - Evita problemas de componentes DC
+      - Mejora la sincronización entre emisor y receptor
+      - 
+        [[file:images/RZPolar.png]]
+- *Bifásica*
+      - Manchester
+      - Manchester Diferencial
+**** Esquemas Bipolares
+- AMI
+- pseudoternaria
+**** Esquemas Multinivel
+- 2B/1Q
+- 8B/6T
+- 4D-PAM5
+**** Multitransmisión
+- MLT-3
+
 * Nivel Enlace de Datos
 - Paquete: trama.
 - Los enrutadores son los responsables de elegir los mejores enlaces entre redes.
