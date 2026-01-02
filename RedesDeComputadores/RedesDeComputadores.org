@@ -236,6 +236,7 @@
       - No es posible en la vida real.
 - *Transmisión en banda base*
       - consiste en enviar una señal digital sin cambiar a una señal analógica.
+            - Las ondas preservan la forma digital.
       - Requiere de un *canal paso-baja*.
             - Canal con un ancho de banda que comienza en 0.
             - Transmitir en *banda base* una señal digital que preserva su forma solo es posible con un
@@ -243,19 +244,103 @@
       - $B=\frac{N}{2}$
             - $B$, ancho de banda analógico.
             - $N$, número de bits a enviar.
-            - Se divide entre 3 porque en el peor caso sería 10101010...,
+            - Se divide entre 2 porque en el peor caso sería 10101010...,
               como la señal seno en un periodo tiene un pico positivo y uno negativo,
               en un periodo puede transmitir dos bits como máximo.
       - Podemos añadir armónicos para mejorar la forma de la señal, en este caso.
       - $B = \frac{aN}{2}$.
-            - $a$ es el mayor armónico que vamos a usar.
+            - $a$ es el armónico mayor que vamos a usar.
 
 - *Transmisión en banda ancha*
-      - Usando modulación
-        
+      - Usando modulación (por ejemplo modificar la amplitud de la onda).
+      - Implica cambiar la señal digital a analógica.
+            - Permite el uso de un *canal paso-banda*.
+                  - Canal con un ancho de banda que NO empieza en 0.
         
 ** Deterioro de la transmisión  
+*** Atenuación
+- Pérdida de energía (normalmente pérdida de poténcia).
+      - Poténcia: $P=V \cdot I = \frac{E}{t} = I^2 \cdot R$
+- Se usan *amplificadores* para compensar la pérdida de energía de las señales.
+- *Decibelio*: mide las potencias relativas de dos señales.
+      - $dB = 10\ log_{10}\frac{P_2}{P_1}$
+            - positivo aumenta, negativo disminuye
+      - $dB_f = \sum dB_i \quad : \quad i \in \mathbb{N}$
+            - decibelio resultante es la suma de decibelios intermedios.
 
+*** Distorsion
+- Una señal cambia la forma de su onda.
+- Ocurre en una señal compuesta cada señal componente tiene su propia propagación.
+
+*** Ruido
+- *Ruido térmico*, movimiento aleatorio de electrones en un cable.
+- *Ruido inducido*, fuentes externas (motores, electrodomésticos).
+- *Cruces de comunicaciones*, se debe al efecto de un cable roto.
+- *Ruido de impulso*, un pico de potencia que viene de líneas de potencia, iluminación, etc.
+- *Relación señal/ruido (SNR)*
+      - Relación entre la señal y el ruido.
+      - $SNR = \frac{\bar{P_s}}{\bar{P_r}}$
+            - $\bar{P_s}$ potencia media de la señal.
+            - $\bar{P_r}$ potencia media del ruido.
+      - $SNR_{dB} = 10\ log_{10}SNR$
+            - Se describe a menudo en decibelios.
+
+** Límites de la velocidad de transmisión
+- bps, la velocidad depende de:
+      - Ancho de banda
+      - Niveles de las señales que usamios
+      - Calidad del canal (nivel de ruido)
+
+*** Canal sin ruido, tasa de bits de Nyquist
+- $Tasa\ bits = 2 \times B \times log_2L$
+      - $Tasa\ bits$, bps.
+      - $B$, ancho de banda.
+      - $L$, niveles.
+      - 2 porque un periodo puede aportar hasta dos bits.
+- Incrementar demasiado los niveles de la señal disminuye la fiabilidad.
+
+*** Canal con ruido: capacidad de Shannon
+- $C = B \times log_2(1 + SNR)$
+      - $C$, capacidad del canal en bps.
+      - $B$, ancho de banda
+- No importa los niveles $L$ que tengamos, No se puede conseguir una velocidad mayor que la capacidad del canal.
+
+*** Usando ambos límites
+- Con la capacidad de Shannon encontramos el límite superior.
+- Con Nyquist definimos los niveles para la tasa deseada inferior al nivel superior.
+
+** Rendimiento
+- Términos para hablar de rendimiento
+
+*** Ancho de Banda
+- *Ancho banda en hercios*, Rango de frecuencias.
+- *Ancho banda en bps*, número de bits por segundo de un canal.
+- Mayor ancho de banda en hercios mayor ancho de banda en bps.
+
+*** Tasa de transferencia relativa (throughput)
+- bps reales de un canal, siempre es inferior al ancho de banda del canal.
+- Se de a congestiones y otras causas.
+
+*** Latencia
+- Cuanto tarda un mensaje completo en llegar a su destinatario desde la salida del primer bit en la fuente.
+- *Latencia = tiempo propagación + tiempo de transmisión + tiempo de cola + retardo de proceso*
+- *Tiempo Propagación*
+      - tiempo de viaje de un bit desde el origen al destino
+      - *Tiempo propagación = distancia/velocidad de propagación*
+- *Tiempo de transmisión*
+      - *Tiempo de transmisión = tamaño del mensaje / ancho de banda (bps)*
+- *Tiempo de cola*
+      - Tiempo necesario para que cada dispositivo intermedio mantenga el mensaje en espera
+        antes de que pueda ser procesado.
+
+*** Producto ancho de banda - retardo
+- número de bits que llenaría el canal.
+- *2 x ancho de banda (Hz) x retardo*
+      - Tamaño de cada ráfaga para aprovechar la capacidad del enlace.
+
+*** Fluctuación del retardo (jitter)
+- Los paquetes llegan con distintos retardos.
+- Puede ser un problema para aplicaciones sensibles al tiempo.
 
 * Nivel Enlace de Datos
 - Paquete: trama.
