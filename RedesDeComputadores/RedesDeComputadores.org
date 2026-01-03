@@ -134,7 +134,7 @@
   Por ejemplo escuchar en una direccióny hablar en la otra.
 - *Segundo Principio*, Los dos objetos en cada nivel en ambos sitios deben ser idénticos.
 
-** Niveles protocolos TCP/IP
+** Protocolos TCP/IP
 *** Capas y mensajes
 
 | capa            | paquete                         | cabeceras                               | Direccionamiento                     |
@@ -165,7 +165,6 @@
   | Red             | Red             |
   | Enlace de datos | Enlace de datos |
   | Físico          | Físico          |
-
 
 * Nivel físico
 - Paquete: bits
@@ -412,27 +411,196 @@
             - El bit se divide en 2 el voltaje cambia en la segunda mitad.
             - 
               [[file:images/ManchesterPolar.png]]
-      - Manchester Diferencial
+      - *Manchester Diferencial*
             - RZ + NRZ-I
-            - El bit se divide en 2, al inicio del bit se invierte si el bit es 0.
+            - El bit se divide en 2, al inicio del bit el voltaje se invierte si el bit es 0.
               no se invierte si el bit es 1.
             - 
-              # TODO manchester differencial diagram
+              [[file:images/ManchesterDiferencialPolar.png]]
       - La transición a mitad del bit ofrece sincronización.
       - El ancho de banda mínimo es dos veces NRZ.
 
 **** Esquemas Bipolares
 - Voltajes de tres niveles positivo, negativo y cero.
-- AMI
-- pseudoternaria
+- Sin componente DC
+      - Alterna voltajes o lo mantiene a 0.
+- Misma tasa de señales que NRZ
+- *AMI* (bipolar con inversión de marca alternada)
+      - Voltaje neutro es 0, voltajes alternados (+, -) es 1
+      - Se suele usar en comunicaciones de larga distancia
+      - 
+        [[file:images/AmiBipolar.png]]
+- *pseudoternaria*,
+      - Voltaje neutro es 1, alternados (+,-) es 0
+      - 
+        [[file:images/PseudoternariaBipolar.png]]
+
 **** Esquemas Multinivel
-- 2B/1Q
-- 8B/6T
-- 4D-PAM5
+- Incrementar el número de bit por baudio
+      - Se codifica un patrón de $m$ elementos de datos en un patrón de $n$ elementos señal.
+      - $m$ elementos dato -> $2^m$ patrones.
+- los esquemas *mBnL* indican *m* elementos binario (*B*) codificados en un patrón *n* elementos señal.
+  *L* significa los niveles de la señal
+- *2B1Q*, dos binario 1 cuaternario.
+      - Codifica dos bits en una señal de dos cuatro niveles.
+      - Tasa señal: $S = \frac{N}{4}$
+      - No hay patrones de señal redundantes.
+      - Se utiliza en la tecnología DSL.
+- *8B6T*
+      - Codifica 8 bits en 6 elementos señal de tres niveles.
+      - $2^8 = 256, \quad 3^6=729$
+            - $729 - 256 = 473$ elementos señal redundantes (sincronización, control de errores, equilibrio DC)
+      - Los patrones de señal tienen peso 1 o 0 (suma de voltajes positivos y negativos).
+            - Si dos patrones seguidos tienen peso 1, el segundo se invierte para que de peso -1.
+            - Así se asegura el equilibrio DC.
+      - Tasa media: $S_{ave} = 1/2 \times N \times 6/8$
+      - $B_{ave} = 3N/4$
+- *4D-PAM5*
+      - Tetradimensional con modulación por amplitud de pulso de cinco niveles.
+            - 4D porque los datos se envían en 4 cables.
+      - 5 niveles de voltaje (-2,-1,0,1,2).
+            - Nivel 0 para detección de errores.
+            - Los otro cuatro nieveles crean algo similar a *8B4Q*.
+      - Peor tasa de señal es $S_{bad} = N \times 4/8 \times N/2$.
+      - $B_{ave} = N/8$.
+      - LAN Gigabit usa esta técnica, datos a 1Gbps.
+            - 125 MBaudios
+      - Esquema con mucha redundancia
+            - $2^8=256, \quad 4^5=1024$
+
 **** Multitransmisión
-- MLT-3
+- *MLT-3*
+      - Transmisión multilínea, codificación de tres niveles.
+      - codificiación diferencial
+            - Si el siguiente bit es 0, no hay transición.
+            - Si el siguiente bit es 1 y el nivel actual *no* es 0, el siguiente nivel es 0.
+            - Si el siguiente bit es 1 y el nivel actual es 0, el siguiente nivel es opuesto al último nivel distinto de 0.
+      - Reduce el ancho de banda (Hz)
+      - $B_{ave} = N/3$
+
+** Codificación por bloques
+- Ofrece redundancia, mB/nB m bits en un bloque de n bits n>m.
+- *4B/5B*, 4 binario 5 binario
+      - Diseñado para usar en combinación con *NRZ-I* para evitar problemas de sincronización.
+      - Se combina para que nunca aparezcan más de tres 0s consecutivos.
+      - Los grupos que no codifican uno de los $2^4$ patrones se usan para control o no se usan.
+      - los bits redundantes añaden un 20% más de baudios.
+      - No soluciona el problema de componente DC.
+- *8B/10B*, 8 binario 10 binario
+      - Mayor capacidad de detección de errores que 4B/5B.
+      - Combinación de 5B/6B y 3B/4B.
+      - Para evitar largas secuencias de 0 o 1 se usa un controlador de disparidad.
+            - sigue la pista del exceso de 0 sobre 1 (o viceversa).
+            - Si los bits aumentan la disparidad en un bloque, estos se complementan.
+      - $2^{10} - 2^8 = 768$ grupos redundantes para comprobar disparidad y detección de errores.
+
+** Aleatorización  
+- Se modifica *AMI* (no tiene DC) para evitar largas secuencias de 0s y ofrecer sincronización.
+- Para comunicaciones de largas distancias.
+- *B8ZS*
+      - Bipolar con sustitución de 8 ceros.
+      - Usado en Norteamerica.
+      - 8 voltajes nivel 0 es sustituido por *000VB0VB*.
+            - *V* significa violación,  que rompe la regla del voltaje opuesto.
+            - *B* significa bipolar, sigue la regla del voltaje opuesto.
+- *HDB3*
+      - Bipolar de alta densidad con 3 ceros.
+      - Usado fuera de Norteamerica.
+      - 4 voltajes de nivel 0 se sustituye por *000V* o *B00V*.
+            - Pulsos distintos de 0 antes de la sustitución es par -> *B00V*.
+            - Pulsos distintos de 0 antes de la sustitución es inpar -> *000V*.
+            - Se tienen en cuenta las sustituciones anteriores en el recuento de pulsos.
 
 ** Conversión analógica a digital  
+- Técnicas para la codificación digital de señales analógicas (audio, fotos).
+
+*** Modulación por codificación de pulsos (PCM)
+**** Etapas
+ 1. Se *muestrea* la señal analógica.
+        - Muestreo cada $T_s$ (intérvalo de muestreo o periodo)
+        - $f_s = 1/T_s$ frecuencia de muestreo.
+        - *Tasa de muestreo*
+              - Nyquist dijo que la tasa de muestreo *almenos el doble* de frecuencia que la frecuencia más alta de la señal.
+ 2. Se *cuantifica* la señal muestreada.
+        - El muestreo puede tener infinitos valores intermedios, no es viable. Pasos
+              1. Se asume que la señal analógica original tiene amplitudes instantáneas entre $V{min}$ y $V_{max}$.
+              2. Se divide el rango en L zonas de ancho $\Delta$.
+                 $\Delta = \frac{V_{max} - V_{min}}{L}$
+              3. Se asignan valores cuantificados de 0 a L-1 en el punto medio de cada zona.
+              4. Se aproxima el valor de la amplitud de la muestra a los valores cuantificados.
+        - Según el tipo de señal harán falta más niveles de cuantificación (En audio normalmente $L=256$).
+        - Error de cuantificación proviene de encajar valores reales a valores aproximados.
+              - El valor aproximado es el centro de cada zona de cuantificación, por tanto.
+              - $-\Delta/2 \leq error \leq \Delta/2$
+        - Para muchas aplicaciones es preferible cuantificación no uniformem, la altura $\Delta$ no es fija.
+              - Detalle donde interesa
+              - Reduce el $SRN_{dB}$
+ 3. Los valores cuantificados son *codificados* como flujos de bits.
+        - Cada muestra se cambia a una palabra de un código de $n_b$ bits.
+        - Número de bits a partir del número de niveles de la cuantificación.
+        - $Tasa\ de\ bit =f_s \times n_b$
+**** Recuperación de la señal
+- Requiere un decodificador PCM.
+      - Convierte palabras en pulsos.
+      - Se filtra la señal para suavizarla (filtro paso-baja)
+
+**** Ancho de banda PCM
+- Ancho de banda mínimo para una señal digitalizada.
+- $B_{min} = n_b \times B_{analog}$
+
+**** Tasa de datos máxima de un canal
+- L niveles fijos, canal de paso-baja con ancho de banda B Hz, muestreo $2 \times B$
+- $N_{max} = 2 \times B \times log_2L\ bps$
+
+**** Ancho de banda mínimo requerido
+- ancho de banda mínimo para la tasa de datos anterior.
+- $B_{min} = \frac{N}{2 \times log_2 L} Hz$
+
+*** Modulación Delta
+- Mas simple que PCM
+- Cambio respecto a la muestra anterior.
+
+**** Modulador
+- flujo de bits que registra cambios. 1 si delta es positivo, 0 si delta es negativo (señal escalera).
+- Un comparador compara la amplitud de la muestra actual con la señal escalera anterior.
+      - Del resultado un modulador decide si el siguiente valor es 1 o 0.
+
+**** Demodulador
+- Toma la señal escalera y crea la señal analógica. Requiere un filtro para su suavizado.
+
+****  DM Adaptativa
+- Se pueden conseguir mejores resultados si $\Delta$ no es fija (según la amplitud de la señal).
+
+**** Error cuantificación
+- Menor que en PCM.
+
+
+** Modos de transmisión
+- Transmisión entre dispositivos
+  
+*** Transmisión paralela
+- Grupos de $n$ bits al mismo tiempo.
+- $n$ hilos para $n$ bits, en cada pulso de reloj se pueden mandar $n$ bits.
+- Más rápido pero más caro
+
+*** Transmisión en serie
+- Un bit sigue a otro, un solo canal.
+- Dentro del dispositivo se traduce a palabras.
+  
+**** Asíncrona
+- La temporización no es importante.
+- se añade un bit extra al principio de cada byte para avisar que empieza una transmisión.
+- bits adicionales al final de quda byte para avisar de la parada.
+- es barata y efectiva pero lenta.
+  
+**** Síncrona
+- Tramas más largas que contienen múltiples bytes.
+- Sin bits de inicio/parada.
+- Se usa una trama especial de 1 y 0 para indicar vacío.
+- Es rápido
+
+**** Isócrona
+- Garantiza que los datos llegan a una tasa fija.
 
 * Nivel Enlace de Datos
 - Paquete: trama.
