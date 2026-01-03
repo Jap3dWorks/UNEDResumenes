@@ -407,9 +407,22 @@
       - 
         [[file:images/RZPolar.png]]
 - *Bifásica*
-      - Manchester
+      - *Manchester*
+            - RZ + NRZ-L
+            - El bit se divide en 2 el voltaje cambia en la segunda mitad.
+            - 
+              [[file:images/ManchesterPolar.png]]
       - Manchester Diferencial
+            - RZ + NRZ-I
+            - El bit se divide en 2, al inicio del bit se invierte si el bit es 0.
+              no se invierte si el bit es 1.
+            - 
+              # TODO manchester differencial diagram
+      - La transición a mitad del bit ofrece sincronización.
+      - El ancho de banda mínimo es dos veces NRZ.
+
 **** Esquemas Bipolares
+- Voltajes de tres niveles positivo, negativo y cero.
 - AMI
 - pseudoternaria
 **** Esquemas Multinivel
@@ -418,6 +431,8 @@
 - 4D-PAM5
 **** Multitransmisión
 - MLT-3
+
+** Conversión analógica a digital  
 
 * Nivel Enlace de Datos
 - Paquete: trama.
