@@ -141,6 +141,66 @@
   Teniendo en cuenta los procesos ya existentes en la cola y los plazos de servicio.
 - el *algoritmo de planificación de primero el proceso de tiempo límite más cercano* minimiza el número de procesos que no se ejecutan.
 
+
+* Sincronización y cominicación de procesos
+
+** Semáforos
+- Es una variable $S$ sobre la que se pueden aplicar 3 operaciones
+      - $S=N$, *init_sem*, Asignación valor Inicial N.
+      - $P(S)$, *wait_sem*, disminuye en 1 el valor del semáforo. Si el número es negativo el proceso invocador
+        es añadido a la cola de bloqueados.
+      - $V(S)$, *signal_sem*, incrementa en 1 el valor del semáforo, si $S \leq 0$ (hay procesos en cola) se despierta un proceso de la cola de bloqueados y lo elimina de la cola.
+- *Semáforo binario o mutex*
+      - Versión simplificado, tan solo puede tomar los valores 0 o 1 (inicializado en 1 o 0).
+            - *wait_sem*, si $S=0$ entonces el proceso es colocado a la cola de bloqueados.
+              Si $S=1$ pone el semaforo a 0 y continua.
+            - *signal_sem*, Comprueba si la cola está vacía.
+                  - Vacía, pone el semaforo a 1 y continua.
+                  - No vacía, despierta un proceso y lo elimina de la cola.
+
+- Lo implementa el Sistema Operativo.
+      - El proceso hace llamadas al sistema
+
+- Se usan tantos semáforos como recursos distintos compartan los procesos en una sección crítica.
+- Pueden usarse para la sincronización de procesos.
+- La colocación inadecuada puede provocar race conditions, inanición o interbloqueo.
+
+** Monitores
+*** Definición
+- Como una clase que solo permite ejecutar a un único proceso alguno de sus procedimientos.
+      - Dos procesos no pueden ejecutar dos procedimientos diferentes.
+      - Solo un proceso puede estar ejecutando algun procedimiento del monitor en un instante dado.
+- Las variables son solo accesibles por el propio monitor.
+- *Variables de condición*, útil para la sincronización de procesos. Pueden realizarse dos operaciones (dentro del monitor).
+      - *wait_mon*, El proceso queda bloqueado hasta el complimiento de la variable de condición
+            - En consecuencia otro proceso puede acceder al método.
+      - *signal_mon*, Comprueba si la cola de procesos bloqueados está vacía.
+            - No está vacía, despierta un proceso (y lo quita de la cola).
+            - Está vacía, no tienen ningún efecto.
+            - El proceso invocador.
+                  - Hansen, el proceso invocador sale del procedimiento inmediatamente (como un return).
+
+* Interbloqueos
+
+** Algoritmos de detección de interbloqueos (alg. Coffman)
+- $R_E$, vector recursos existentes
+- $R_D$, vector de recursos disponibles
+- $A$, Matriz de recursos asignados
+      - Cada fila asociada a un proceso
+      - Cada columna asociada a un recurso
+- $M$, Matriz de recursos necesitados (sin contar los asignados)
+      - Cada fila asociada a un proceso
+      - Cada columna asociada a un recurso
+- Se van marcando los procesos que pueden ser completados.
+- Si todos los procesos se marcan no existe interbloqueo. Pasos.
+      1. Se marcan los procesos con todo 0s en su fila en la matriz $A$.
+             - Sin recursos no puede producir interbloqueo.
+      2. $X=R_D$, X es un vector auxiliar.
+      3. Se comprueba $M_i \leq X$, siempre que la fila $i$ no esté marcada.
+      4. Dos opciones
+             - si $\lnot \exists i | M_i \leq X$ entonces finaliza el algoritmo.
+             - si $\exists i | M_i \leq X$ entonces se marca el proceso $i$ y $X = A_i + X$ y se vuelve al paso 2.
+
 * Administración de Memoria
 ** Paginación Simple
 *** Descripción
@@ -359,6 +419,72 @@
       3. $Dir_F = |\ Dir_{F2}[marco\ j]\ |\ despl\ |$
          Encuentra la dirección física del dato.
   
+
+* Memoria virtual
+
+
+* Gestión de la Entrada/Salida
+
+** Discos Duros
+*** Estructura Física
+- Principal soporte de la memoria secundaria.
+- Alta capacidad de almacenamiento.
+- Formado de varios platos circulares de aleación o plástico, giran a velocidad constante (5400, 7200 o 10800 rpm)
+- Las dos superficies del disco están recubiertas de material magnetizable.
+- *Pistas*: Anillos concéntricos en los que se divide una superficie del disco.
+      - Hay una pequeña separación entre pistas.
+- *Sectores*: Las pistas se dividen en cientos de sectores.
+      - Hay un pequeño hueco entre sectores.
+      - Es la unidad de transferencia de un disco duro.
+- *Cabeza de lectura/escritura*: sobre cada superficie se monta un brazo en cuyo extremo está la Cabeza.
+      - El brazo puede buscar la pista donde se encuentra el sector destino.
+      - Lee y/o escribe sectores del disco.
+- *Cilindro*: Conjunto de todas las pistas de todos los discos situados a la misma distancia del eje.
+      - Todas las cabezas se mueven al unísono de cilindo en cilindro.
+- Las pistas de las *Zonas* externas de un disco contienen mayor densidad de sectores.
+      - Circuitería compleja.
+
+*** Formateo a bajo Nivel
+- Consiste en dividir cada superficie en pistas y cada pista en sectores.
+      - Necesario para ser utilizado.
+      - Realizado por el fabricante.
+- Elementos de un sector
+      - *Cabecera o preámbulo*, Contiene un patrón que permite al controlador de disco reconocer el comienzo del sector, número del sector y número de cilindro.
+      - *Área de datos*, Información accesible para el sistema operativo y el usuario.
+            - unos 512 bytes de tamaño.
+      - *Código de corrección de errores* (ECC), Contiene información que permite al controlador
+        de disco detectar y corregir errores de lectura.
+            - Suele ocupar 16 bytes.
+      - Cabecera y ECC consumen espacio del espacio total del disco.
+      - La separacón de pistas y sectores ocupa espacio del disco.
+- Un disco tiene sectores de reserva por si falla algún otro sector.
+- Tras el formatio a bajo nivel el disco se reduce entorno a un 20%.
+- La numeración de sectores se realiza con *intercalado* o *entrelazado*.
+- La numeración de sectores está desplazada entre pistas adyacentes (Cylinder skew).
+      - Mejora el rendimiento.
+- Dirección física de un sector: [ n. cilindro | n.cabeza | n. sector ]
+      - sistema cilindro-cabeza-sector (Cylender-Head-Sector, CHS)
+- Discos más modernos soportan LBA (Logical block addressing, direccionamiento de bloques lógicos).
+      - Correspondencia sector con bloque lógico.
+      - El controlador de disco hace la traducción a CHS.
+
+*** Particionamiento y formateo a alto nivel del disco
+- Particionamiento y formateo de alto nivel (o formateo lógico).
+- *Partición*: conjunto de cilindros contiguos.
+      - Desde el punto de vista lógico cada partición se considera un disco.
+- *Tabla de particiones*, estructura que contiene el propio disco acerca de las particiones y tamaño de estas.
+      - También se indica donde se encuentra el OS.
+      - Se localiza dentro del *registro de arranque*, dentro del sector 0.
+- Una vez particionado, cada partición tiene un formateo lógico de alto nivel.
+      - bloque o sector de arranque si es una partición activa.
+      - estructura de datos de los sistemas de archivos.
+- Algunas particiones no tienen porque tener ningún sistema de estructuras de archivos
+      - E/S por bloques, es más rápido
+      - por ejemplo el Swap de linux.
+
+*** Planificación del disco
+
+*** Tratamiento de los errores del disco
 
 * Glosario
 - *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).
