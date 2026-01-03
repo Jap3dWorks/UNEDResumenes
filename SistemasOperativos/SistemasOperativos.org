@@ -460,9 +460,9 @@
       - *Bloque de disco de un archivo ejecutable*, código y datos propios del programa.
         Posee el código y datos para la creación de la páginas.
       - *Bloque de disco del área de intercambio*, se almazenan las páginas de procesos ya presentes en memoria principal.
-        
 
-  
+** Reemplazo de páginas  
+# TODO
 
 * Gestión de la Entrada/Salida
 
