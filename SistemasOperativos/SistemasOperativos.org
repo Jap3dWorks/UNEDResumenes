@@ -421,7 +421,48 @@
   
 
 * Memoria virtual
+- Consiste en tener cargadas en memoria solo aquellas partes del programa (páginas o segmentos) del espacio de direcciones lógicas (ahora también se denominan direcciones virtuales) que se están usando.
+      - El OS atiende las excepiones provocadas por la demanda de una página que no está cargada en memoria principal.
+- Permite aumentar el grado de multiprogramación.
+- Permite direcciones lógicas mayores que la capacidad física de la memoria principal.
+- Reduce las operaciones de E/S para intercambiar procesos bloqueados en memoria principal.
+      - No se cargan todas las páginas.
+- Requiere que el hardware soporte el reinicio de instrucciones después de una excepción.
+      - *MMU*, componente de hardware dedicado a la traducción de direcciones virtuales.
+      - Se pueden usar TLB's para mejorar la eficiencia.
 
+** Paginación por demanda
+*** Descripción
+- Divide memoria principal en marcos de página.
+- Divide el espaio del proceso en páginas.
+- *fallo de página*: excepción producida por el hardware cuando se referencia una página no referenciada.
+      - El OS debe tratar la excepción y luego reanudar el programa.
+- Otras tareas del Sistema Operativo.
+      - *Reemplazamiento de página*: Si no existen marcos libres hay que aplicar un algoritmo para seleccionar un marco usado y realizar el reemplazo.
+            - Se debe guardar si fue modificada la página reemplazada en memoria.
+      - *Asignación de marcos de memoria principal*: Cuantos marcos asigna inicialmente a cada proceso.
+      - *Control de carga*, Debe controlar el grado de multiprogramación.
+      - *Copia en memoria secundaria las páginas modificadas*, En qué momento y de que forma las copiará.
+- Estructuras de datos para implementar la paginación por demanda.
+      - Almacenan más información que n la paginación simple.
+      - *Tabla de marcos de página*
+      - *Lista de marcos libre*
+      - *Tablas de páginas*, algunos campos son.
+            - *Número de marco de página*
+            - *Validez o presencia*, un bit, indica si la página $i$ está cargada en el marco $j$. Si la entrada es válida.
+      - *Protección*, un bit, indica si la página es de solo lectura o de lectura y escritura.
+            - pueden ser 3 bits, lectura escritura y ejecución.
+      - *Referenciada*, 1 bit, se activa cuando $i$ es referenciada por una dirección virtual.
+      - *Modificada*, 1 bit, si se indica modificada el OS debe copiarla a memoria secundaria.
+
+*** Localización de páginas en memoria secundaria
+- El OS puede buscar las páginas en memoria secundaria en dos zonas.
+      - *Bloque de disco de un archivo ejecutable*, código y datos propios del programa.
+        Posee el código y datos para la creación de la páginas.
+      - *Bloque de disco del área de intercambio*, se almazenan las páginas de procesos ya presentes en memoria principal.
+        
+
+  
 
 * Gestión de la Entrada/Salida
 
