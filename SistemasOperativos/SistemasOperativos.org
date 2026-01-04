@@ -421,6 +421,7 @@
   
 
 * Memoria virtual
+** Descripción
 - Consiste en tener cargadas en memoria solo aquellas partes del programa (páginas o segmentos) del espacio de direcciones lógicas (ahora también se denominan direcciones virtuales) que se están usando.
       - El OS atiende las excepiones provocadas por la demanda de una página que no está cargada en memoria principal.
 - Permite aumentar el grado de multiprogramación.
@@ -462,7 +463,95 @@
       - *Bloque de disco del área de intercambio*, se almazenan las páginas de procesos ya presentes en memoria principal.
 
 ** Reemplazo de páginas  
-# TODO
+- Tarea de seleccionar una página $k$ cargada en un marco $j$ para ser reemplazada por la página $i$ a la que hacía referencia la dirección virtual que produjo el fallo.
+- *Página víctima*, página seleccionada para ser reemplazada.
+- *Conjunto de marcos candidatos*, marcos donde se encuantran las páginas candidatas.
+- *Estrategia de reemplazo de páginas local*, El conjunto de páginas candidatas a ser reemplazadas pertenecen al proceso que provocó el fallo de página.
+      - Sólo páginas no bloqueadas.
+      - Produce mayor sobrecarga.
+- *Estrategia de reemplazo de página global*, El conjunto de páginas candidatas a ser reemplazadas se forma con todas la páginas cargadas en memoria.
+      - Sólo páginas no bloqueadas.
+
+*** Algoritmo de reemplazamiento óptimo
+- Selecciona aquella página que tardará más en ser referenciada por una dirección virtual.
+- Es un algoritmo teórico, sirve como modelo para comparar a otros algoritmos.
+
+*** Algoritmo de reemplazamiento LRU
+- Last recently used (LRU).
+- Selecciona aquella página que lleva más tiempo sin ser usada.
+- Bastante bueno, pero es complejo de implementar y produce bastante sobrecarga.
+      - Una lista enlazada, cada vez que una página es referenciada se coloca al inicio de la lista.
+            - Al final de la lista está la página candidata a ser reemplazada.
+      - El hardware puede incluir una implementación basada en contadores.
+            - la tabla de páginas incluye un contador para cada página.
+            - La página con menor valor es la candidata a ser reemplazada.
+            - Introduce bastante sobrecarga.
+
+*** Algoritmo de reemplazamiento mediante envejecimiento
+- también conocido como *aging*.
+- A cada página se le asigna un registro de desplazamiento software te tamaño $n$ y un bit de referencia.
+      - El registro de desplazamiento se inicializa a 0.
+      - Si la página ha sido referenciada se pone el bit de referencia a 1.
+      - Cada cierto tiempo $T$ se desplaza el registro de desplazamiento hacia la derecha.
+            - Se introduce el valor del bit de referencia y se vuelve este a 0.
+      - La página candidata es aquella con el número en binario menor.
+            - Si hay varias se selecciona una de ellas de forma aleatoria.
+
+*** Algoritmo de reemplazamiento FIFO
+- Sufre de *anomalía de Belady*, aumentan los fallos si aumentan los marcos en memoria principal.
+- Selecciona aquella página del conjunto de candidatas que lleva más tiempo cargada.
+- Se puede implementar con una lista enlazada.
+- Solo es necesario actualizar la estructura de datos cuando se carga una página en un marco de página.
+- No tiene muy buenos resultados pero es sencillo de implementar, produce poca sobrecarga.
+
+*** Algoritmo de reemplazamiento de la segunda oportunidad (algoritmo del reloj)
+- Busca la página más tiempo cargada en memoria que no ha sido cargada recientementem
+      - variante de *FIFO*.
+- Lás páginas referenciadas tienen un bit de referencia que empieza en 0 ($r=0$).
+- El algoritmo consulta el bit de referencia de la página que está al principio de la cola FIFO.
+      - Si es $r=0$, la página es seleccionada y el algoritmo finaliza.
+      - Si $r=1$, pone $r=0$ y coloca la página al final de la cola.
+            - A continuación consulta el bit de referencia de la nueva página en el inicio de la cola.
+- Mejores resultados que *FIFO*, pero mayor sobrecarga.
+- *Algoritmo del reloj*, Para reducir la sobrecarga puede usarse una lista circular.
+      - Un puntero va seleccionando el inicio de la cola.
+            - Si el puntero se desplaza rota los elementos de la cola
+            - El inicio de la cola es donde apunta el puntero,
+              el final de la cola es la posición anterior donde apunta el puntero.
+- *Algoritmo del reloj mejorado*, se añade el bit $m$ (modificada).
+      - Tipos de página.
+            - Páginas con $r=0$ y $m=0$, ni referenciada ni modificada. Ideal para ser reemplazada.
+            - Páginas con $r=0$ y $m=1$, fueron modificadas, no han sido referenciadas recientemente.
+                  - Requieren una operación de escritura al ser reemplazada (por estar modificada).
+            - Páginas con $r=1$ y $m=0$, Referenciada recientemente pero no modificada.
+            - Páginas con $r=1$ y $m=1$, Referenciada recientemente y modificada. La peor candidata posible.
+      - En primer lugar busca una página con $r=0$ y $m=0$ (una ronda completa).
+            - No actualiza los valores de $r$.
+      - Si no encuentra ninguna busca una página con $r=0$ y $m=1$ (segunda ronda).
+            - En esta segunda ronda actualiza los valores de r $r=0$.
+      - Si no encuentra ninguna busca una página con $r=0$ y $m=0$ (tercera ronda).
+            - La segunda ronda actualizó los valores de $r$, por eso es posible encontrar alguna esta vez.
+      - Si no encuentra ninguna busca una página con $r=0$ y $m=1$.
+
+*** Algoritmo de reemplazamiento del reloj considerando el conjunto de trabajo (WSClock)
+- *Algoritmo WSClock*,  Mejora del algoritmo del reloj.
+- Busca páginas con $r=0$ y $m=0$ que no pertenezcan al conjunto de tabajo del proceso.
+- Requiere del campo en la tabla de páginas  *tiempo de último uso* $T_{ult.uso}$.
+      - $E_{i} = T_{virt.proc} - T_{ult.uso\ i}$, edad de la página $i$.
+      - Si $E_i < \Delta$ la página pertenece al conjunto de trabajo del proceso.
+- Si $r=1$ entonces se pone $r=0$ y pasa a la siguiente página.
+      - Además $T_{ult.uso\ i}=T_{virt.proc}$
+- Si $r=0$
+      - Si $m=0$ se calcula la edad y se compara con $\Delta$.
+            - Si $E_{i} > \Delta$ entonces se selecciona la página (no pertenece al conjunto de trabajo).
+            - Si $E_{i} < \Delta$ entonces pertenece al grupo de trabajo y pasa a la siguiente.
+      - Si $m=1$, se planifica para ser escrita en el área de intercambio, y pasa a la siguiente página.
+            - No tiene porque ocurrir inmediatamente (depende del disco y los controladores).
+            - Cuando se escrita se pasa $m=0$.
+- Si durante una vuelta todas las páginas pertenecen al conjunto de trabajo.
+      - se selecciona la primera página con $r=0$ y $m=0$ que pertenezca al conjunto de trabajo.
+
+** Asignación de memoria principal
 
 * Gestión de la Entrada/Salida
 
