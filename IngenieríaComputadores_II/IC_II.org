@@ -204,6 +204,58 @@ fuente listos emite la instrucción a la unidad funcional.
       - Cuando el bus esté libre.
 - A una misma dirección se escribirá aquella instrucción posterior en el código del programa.
   
+
+* Procesadores VLIW y Vectoriales
+** VLIW
+- Puede emitir y terminar varias operaciones en paralelo (similar a superescalar).
+      - La responsabilidad no es del Hardware, sino del compilador.
+      - El hardware se limita a emitir una instrucción por ciclo.
+      - Planificación estática.
+            - *Latencia*, ciclos que tarda un resultado en estar listo.
+                  - Notese que pueden seguir mandándose instrucciones a la unidad fucional aunque el resultado anterior aún no esté resuelto.
+      - VLIW es código de baja densidad.
+            - No siempre se puede hacer una planificación óptima y hay relleno (nop) entre instrucciones.
+      - El código compilado no es compatible con otras generaciones de procesadores VLIW.
+- Repertorio de instrucciones VLIW
+      - 1 instrucción es una concatenación de varias instrucciones tipo RISC que se pueden ejecutar en paralelo.
+            - Operaciones recogidas dentro de una instrucción no representan dependencia de datos.
+            - Le permite procesamiento en paralelo en cada emisión.
+            - Las macroinstrucciones creo que las define el compilador, no están preescritas.
+      - Tamaño de instrucción más habitual son 256 bits.
+            - | Salto |Carga/almac | Carga/almac | Entera | Entera | float | float | Util |
+
+** Planificación VLIW
+- Tareas que requiere el compilador
+      - *Código Intermedio*,  Sencillas instrucciones RISC.
+            - Solo dependencias verdaderas (RAW).
+                  - sin WAW ni WAR ya que el compilador dispone de infinitos registros simbólicos.
+            - Principal dificultad para el compilador es agrupar instrucciones RISC en una instrucción VLIW.
+      - *Grafo control de flujo*, detección de bloques básicos.
+            - Bloque básico, secuencia de instrucciones que forma una ejecución secuencial.
+                  - Se detectan observando las etiquetas y las directrices de salto.
+      - *Grafo del flujo de datos*.
+            - *Planificación local*, En Cada bloque se pueden buscar instrucciones VLIW.
+                  - El paralelismo queda un poco limitado.
+                  - *Desenrollamiento de bucles*, Expandir el bucle a una secuencia de instrucciones sin salto.
+                        - Proporciona una mejor capacidad de planificaciń al compilador.
+                  - *Segmentación software*,
+                        - Producir un uevo bucle intercalando instrucciones de diferentes iteraciones.
+            - *Planificación global*, Se combinan instrucciones de varios bloques.
+                  - *Planificación de trazas*, #TODO
+            - Muestra las instrucciones sin dependencia entre ellas.
+
+** Instrucciones con Predicado
+- El predicado determina si se ejecuta o no la instrucción.
+- Los predicados tienen registros especiales p<dígito>.
+- Hay instrucciones para escribir en los registros de predicado.
+- (p) <instrucción>
+
+** Procesamiento especulativo
+- Técnica basada en ejecutar instrucciones antes de saber si el programa irá por ese cauce.
+  Si la especulación es erronea se descartan los resultados.
+- Se usa cuando sabemos la posibilidad de cada bifurcación.
+- El compilador es el responsable de colocar las instrucciones y registros de forma que se anulen o sobreescriban entre las bifurcaciones.
+
 * Procesamiento Paralelo
 
 ** Organización basda en el modelo de comunicación
@@ -324,6 +376,8 @@ fuente listos emite la instrucción a la unidad funcional.
 - *Systema basado en directorios*, 
 
 * Glosario
+- *D-Caché*, Caché de datos del procesador.
+- *I-Caché*, Caché de instrucciones del procesador.
 - *Unidad Funcional*, módulos de cómputo en un procesador, pueden funcionar de forma independiente.
 - *Planificación Dinámica*, el hardware reorganiza la ejecución de instrucciones par reducir las detenciones.
 - *FPU*, floating point unit.
