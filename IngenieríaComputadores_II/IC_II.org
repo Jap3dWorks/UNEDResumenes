@@ -1,22 +1,7 @@
 #+title: Ingeniería Computadores II
-
 #+startup: latexpreview content
 
-* Procesadores Segmentados
-- *CISC*, Complex Instruction Set Computer, procesadores con un conjunto de instrucciones complejas
-  con el fin de reducir el tamaño de los programas (al ser necesario menos instrucciones).
-      - Una instrucción se compone de microinstrucciones.
-      - En los 70s el tamaño de la memoria principal era un problema.
-      - Dificulta el paralelismo entre instrucciones.
-- *RISC*, Reduced Instruction Set Computer.
-      - Fue posible cuando el tamaño de la memoria dejó de ser un problema.
-      - Set reducido de instrucciones sencillas (similares a las microinstrucciones CISC).
-      - Hardware de control simplificado.
-      - Reduce el tamaño de la cpu.
-      - Permite mejor paralelismo entre instrucciones (segmentación).
-      - Como los operandos se cargan en registros reduce accesos a memoria.
-
-** Clasificación arquitecturas paralelas
+* Clasificación arquitecturas paralelas
 - Taxonomía Flynn
       - Computadores *SISD*, Un flujo de instrucciones y un flujo de datos.
       - Computadores *SIMD*, Un flujo de instrucciones procesa varios flujos de datos.
@@ -63,7 +48,20 @@
             - $N_{op.coma.flot}$, Número de operaciones en coma flotante.
       - $S_p = \frac{rendimiento(p)}{rendimiento\_original}$
             - Speedup o ganancia
-        
+
+* Procesadores Segmentados
+- *CISC*, Complex Instruction Set Computer, procesadores con un conjunto de instrucciones complejas
+  con el fin de reducir el tamaño de los programas (al ser necesario menos instrucciones).
+      - Una instrucción se compone de microinstrucciones.
+      - En los 70s el tamaño de la memoria principal era un problema.
+      - Dificulta el paralelismo entre instrucciones.
+- *RISC*, Reduced Instruction Set Computer.
+      - Fue posible cuando el tamaño de la memoria dejó de ser un problema.
+      - Set reducido de instrucciones sencillas (similares a las microinstrucciones CISC).
+      - Hardware de control simplificado.
+      - Reduce el tamaño de la cpu.
+      - Permite mejor paralelismo entre instrucciones (segmentación).
+      - Como los operandos se cargan en registros reduce accesos a memoria.
 
 ** Arquitectura ASG
 - Arquitectura Segmentada genérica (tipo RISC).
@@ -89,14 +87,14 @@
 
 - *Forwargind* o *adelantamiento*. Conexión entre etapas *EX*, haciendo posible realizar un cálculo con el resultado de la instrucción anterior sin esperar a la etapa *WB*.
 
-* Algoritmo Tomasulo
+** Algoritmo Tomasulo
 - Planificación de las instrucciones para evitar detenciones. El algoritmo Tomasulo es de las primeras
   soluciones para la planificación.
 - El segmento *ID* se desdobla en *ID* y *II*.
       - *II* (Instruction Issue), La instrucción espera a que no hayan riesgos *RAW* y cuando estén todos los operandos
 fuente listos emite la instrucción a la unidad funcional.
 
-** Funcionamiento con FPU IBM 360/91
+*** Funcionamiento con FPU IBM 360/91
 1. Las instrucciones se emiten desde la *FLOS* a la *RS*.
        - Se copian operandos disponibles y se marca el bit *ocupado* (dato anticuado) del registro destino en el *FR*.
        - Se copia el valor etiqueta del registro destino en el *FR* que identifica a la *RS* donde se envía la instrucción.
@@ -170,15 +168,42 @@ fuente listos emite la instrucción a la unidad funcional.
 *** Organización del RRF como parte del buffer de renombramiento
 
 ** Instrucciones Terminadas
-*** TODO Buffer de reordenamiento o terminación
-- Instrucciones *Terminadas*
-- asegura la terminación en orden de las instrucciones.
+*** Buffer de reordenamiento o terminación
+- Asegura la *consistencia de procesador*, Las instrucciones concluyen el procesamiento en el mismo
+  orden secuencial que el programa.
+      - Garantiza el resultado final del programa.
+            - Actualización correcta desde el *RRF* al *ARF*.
+      - Permite un tratamiento correcto de las interrupciones.
+            - Puede expulsar del cauce todas las instrucciones posteriores a la interrupción.
+- *Campos*
+      - *Ocupada (O)*, 1 bit, indica que la instrucción se ha distribuido. Permanece en 1 hasta que es terminada.
+      - *Emitida (E)*, 1 bit, vale 1 cuando la instrucción inicia su ejecución en la unidad funcional.
+      - *Finalizada (F)*, 1 bit, ha salido de la unidad funcional, espera ser terminada arquitectónicamente.
+      - *Dirección (Dir)*, dir en memoria de la instrucción para identificarla.
+      - *Registro destino (Rd)*, Identificador del registro destino, se actualiza una vez esté *Terminada* la instrucción.
+      - *Registro de renombramiento (Rr)*, Identificador del registro de renombramiento asociado a la instrucción.
+        Así se sabe que registro del *RRF* hay que liberar.
+      - *Especulativa (Es)*, 1 bit, identifica la instrucción como parte de una ruta especulativa.
+        Mientras sea especulativa no puede terminar.
+      - *Validez (V)*, 1 bit, indica si puede terminarse o por el contrario se ignora al terminarse.
+            - e.g especulativa con predicción errónea.
 
-** Instrucciones Retiradas  
-*** TODO Terminación ordenada en buffer de almacenamiento
-- Instrucciones *Retiradas*
+- Tiene estructura circular de anillo con un puntero en la cabeza y un puntero en la cola.
+      - Las instrucciones de registran en el orden del programa.
+            - Se avanza la cabeza cuando se escribe una nueva instrucción.
+            - Se avanza la cola cuando se termina una instrucción.
+            - La cabeza no puede sobrepasar la cola ni viceversa.
+
+** Instrucciones Retiradas
+- Solo instrucciones de almacenamiento en memoria.
+*** Terminación ordenada en buffer de almacenamiento
+- Instrucciones *Retiradas*.
 - Escritura en memoria coherente.
-
+      - Evitar riesgos WAW y WAR en memoria.
+- Cuando la instrucción es terminada se marca para proceder a la escritura en memoria.
+      - Cuando el bus esté libre.
+- A una misma dirección se escribirá aquella instrucción posterior en el código del programa.
+  
 * Procesamiento Paralelo
 
 ** Organización basda en el modelo de comunicación
@@ -203,7 +228,6 @@ fuente listos emite la instrucción a la unidad funcional.
             - Desventaja, muy dificil mantener la coherencia.
 
 *** Paso de mensajes
-
 
 ** Sistemas de memoria compartida
 *** Redes de Interconexión
