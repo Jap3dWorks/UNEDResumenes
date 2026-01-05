@@ -1,17 +1,93 @@
 #+title: Ingeniería Computadores II
 
-#+startup: content
+#+startup: latexpreview content
 
 * Procesadores Segmentados
-** Arquitectura
-- *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
-- *ID* (Instruction Decoding), Decodificación de la instrucción y lectura de sys operandos del fichero de registros.
-- *EX* (Execution), Ejecución de las operaciones. También de las instrucciones de salto.
-- *MEM* (Memory acces), lecturas y escrituras a la caché de datos.
-- *WB* (Write-Back results), Escritura en fichero de registros.
+- *CISC*, Complex Instruction Set Computer, procesadores con un conjunto de instrucciones complejas
+  con el fin de reducir el tamaño de los programas (al ser necesario menos instrucciones).
+      - Una instrucción se compone de microinstrucciones.
+      - En los 70s el tamaño de la memoria principal era un problema.
+      - Dificulta el paralelismo entre instrucciones.
+- *RISC*, Reduced Instruction Set Computer.
+      - Fue posible cuando el tamaño de la memoria dejó de ser un problema.
+      - Set reducido de instrucciones sencillas (similares a las microinstrucciones CISC).
+      - Hardware de control simplificado.
+      - Reduce el tamaño de la cpu.
+      - Permite mejor paralelismo entre instrucciones (segmentación).
+      - Como los operandos se cargan en registros reduce accesos a memoria.
+
+** Clasificación arquitecturas paralelas
+- Taxonomía Flynn
+      - Computadores *SISD*, Un flujo de instrucciones y un flujo de datos.
+      - Computadores *SIMD*, Un flujo de instrucciones procesa varios flujos de datos.
+      - Computadores *MIMD*, Varios flujos de instrucciones y cada uno sobre un flujo de datos diferente.
+            - Implementación *SPMD*, Simple program multiple data. sistemas con varias cpu,
+              pueden ejecutar un mismo código sobre varios flujos de datos.
+      - Computadores *MISD*, Varios flujos de instrucciones sobre un flujo de datos.
+
+- Niveles de paralelismo funcional
+      - *ILP*, instruction level paralelism, Las instrucciones de un programa se ejecutan en paralelo.
+            - hardware o compilador, transparente al programador.
+            - granularidad más fina
+      - *Nivel de Bucle*, Se ejecutan en paralelo distintas iteraciones de un bucle.
+      - *Nivel de funciones*, Procedimientos que constituyen un programa se ejecutan simultáneamente.
+      - *Nivel de programas*, Programas que se ejecutan en paralelo.
+      - Solo MIMD y MISD pueden implementar el paralelismo funcional.
+
+- Que miden las medidas para evaluar el rendimiento
+      - *Tiempo de respuesta*, tiempo en procesar una entrada.
+      - *Productividad*, Entradas procesadas por unidad de tiempo.
+      - *Funcionalidad*, Tipos de entrada diferentes que es capaz de procesar.
+      - *Expansibilidad*, Capacidad de ampliar el procesamiento añadiendo bloques (modular).
+      - *Escalabilidad*, Ampliar el sistema sin que suponga una devaluación.
+      - *Eficiencia*, rendimiento / coste.
+
+- Medidas de rendimiento
+      - *CPI*, ciclos por instrucción.
+            - $T_{CPU} = NI \cdot CPI \cdot T_{ciclo} = NI \cdot \left( \frac{CPI}{f} \right)$
+                  - $T_{CPU}$, tiempo de cpu en una tarea.
+                  - $NI$ número de instrucciones.
+                  - $T_{ciclo}$, periodo de reloj del procesador.
+            - $CPI = \frac{C_p}{NI}$
+                  - $C_p$, ciclos de reloj de un programa o tarea.
+            - $T_{CPU} = NI \cdot \left( \frac{CPE}{IPE} \right) \cdot T_{ciclo}$
+                  - $CPE$, número medio de ciclos entre instrucciones.
+                  - $IPE$, número medio de instrucciones que se emiten.
+            - $T_{CPU} = \left( \frac{N_{operaciones}}{Op_{instruccion}} \right) \cdot CPI \cdot T_{ciclo}$
+                  - $N_{operaciones}$, operaciones que realiza un programa.
+                  - $Op_{instruccion}$, media de operaciones que puede codificar una instrucción.
+      - *MIPS*, millones de instrucciones por segundo.
+            - $MIPS = \frac{NI}{T_{CPU} \cdot 10^6}$
+      - *MFLOPS*, millones de operaciones de coma flotante por segundo.
+            - $MFLOPS = \frac{N_{op.coma.flot}}{T_{CPU} \cdot 10^6}$
+            - $N_{op.coma.flot}$, Número de operaciones en coma flotante.
+      - $S_p = \frac{rendimiento(p)}{rendimiento\_original}$
+            - Speedup o ganancia
+        
+
+** Arquitectura ASG
+- Arquitectura Segmentada genérica (tipo RISC).
+- | CO | OPd (destino) | OP1 (fuente 1) | OP2 (fuente 2) |
+      - Instrucción genérica de 3 operandos
+- *Etapas*
+      - *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
+      - *ID* (Instruction Decoding), Decodificación de la instrucción y lectura de sus operandos del fichero de registros.
+      - *EX* (Execution), Ejecución de las operaciones. También de las instrucciones de salto.
+      - *MEM* (Memory acces), lecturas y escrituras a la caché de datos.
+      - *WB* (Write-Back results), Escritura en fichero de registros.
 
 - El tiempo de ejecución de una instrucción es el tiempo de la etapa más duradera.
       - $t_e = max\{t_{if}, t_{id}, t_{ex}, t_{mem}, t_{wb}\}$
+
+- *Riesgos*
+      - *Riesgos estructurales*, conflictos por los recursos. una instrucción no puede avanzar.
+      - *Riesgos por dependencias de datos*
+            - *RAW*, Read after write (dependencia verdadera), Se produce al leer un dato antes de que sea actualizado.
+            - *WAR*, Write after read (antidependencia), se escribe un dato antes de que este sea leído.
+            - *WAW*, Write after write (dependencia de salida), la instrucción última que debe escribir un dato no es la última (orden incorrecto).
+      - *Riesgos de control*, instrucciones de control de flujo.
+
+- *Forwargind* o *adelantamiento*. Conexión entre etapas *EX*, haciendo posible realizar un cálculo con el resultado de la instrucción anterior sin esperar a la etapa *WB*.
 
 * Algoritmo Tomasulo
 - Planificación de las instrucciones para evitar detenciones. El algoritmo Tomasulo es de las primeras
@@ -35,6 +111,12 @@ fuente listos emite la instrucción a la unidad funcional.
 4. Instrucciones sin dependencias se encían a la unidad funcional.
 
 * Procesador Superescalar
+- Varias instrucciones avanzar simultáneamente por el cauce.
+      - varias unidades funcionales.
+- Ejecución de instrucciones en un orden diferente a lo especificado en el programa (fuera de orden).
+- Hay renombramiento de registros.
+      - Para eliminar dependencias falsas.
+  
 ** Arquitectura
 *** Segmentos
 - *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
@@ -57,10 +139,12 @@ fuente listos emite la instrucción a la unidad funcional.
 - *Falta de alineamiento*, 
 - *Rotura de secuencialidad*, 
 
-** Predicción de destino
+** Instrucciones Distribuidas
+*** Predicción de destino
 - *BTAC*, 
 
-** Renombramiento Registros
+*** Renombramiento Registros
+- los registros de renombramiento se suelen anotar como *Rr<número>*.
 - *RRF*, Rename register file, Buffer de renombramiento o fichero de registros de renombramiento.
       - Aquí se guardan los registros de renombramiento.
 - *ARF*, Achitected register file, fichero de registros arquitectónicos (visibles al programador).
@@ -85,6 +169,15 @@ fuente listos emite la instrucción a la unidad funcional.
 
 *** Organización del RRF como parte del buffer de renombramiento
 
+** Instrucciones Terminadas
+*** TODO Buffer de reordenamiento o terminación
+- Instrucciones *Terminadas*
+- asegura la terminación en orden de las instrucciones.
+
+** Instrucciones Retiradas  
+*** TODO Terminación ordenada en buffer de almacenamiento
+- Instrucciones *Retiradas*
+- Escritura en memoria coherente.
 
 * Procesamiento Paralelo
 
@@ -221,7 +314,7 @@ fuente listos emite la instrucción a la unidad funcional.
             - Por cada operando contiene 2 campos, *valor* y *etiqueta*.
       - *CDB*, Common data bus, permite cargar un resultado en todas las unidades funcionales,
         conecta salida de unidades funcionales con las *RS*, *FR* y *SDB* (adelantamiento).
-- *Acciones Atómicas*, Acciones indivisibles es subacciones.
+- *Acciones Atómicas*, Acciones indivisibles en subacciones.
 - *Barajamiento Perfecto*, perfect suffle.
       - $\sigma^k(x_{m-1}\ x_{m-2}\ \ldots \ x_1\ x_0) = x_{m - 2}\ \ldots\ x_1\ x_0\ x_{m-1}$ en $log_2 k$ posiciones (hacia la izquierda). 
       - $\sigma^{k^{-1}}(x_{m-1}\ x_{m-2}\ \ldots \ x_1\ x_0) = x_0\ x_{m-1}\ x_{m - 2}\ \ldots\ x_1$ en $log_2k$ posiciones (hacia la derecha).
