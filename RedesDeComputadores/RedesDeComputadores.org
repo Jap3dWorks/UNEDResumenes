@@ -356,7 +356,7 @@
             - También se conoce como tasa de pulsos, tasa de modulación o tasa de baudios.
       - Se busca incrementar tasa de datos y reducir tasa de señales.
       - $S = N/r$
-            - $S$, Tasas de señales.
+            - $S$, Tasas de señales (baudios).
             - $N$, Tasa de datos (bps).
             - $r$. elementos dato por cada señal.
       - $S_{ave}=c \times N \times \frac{1}{r}\ baudios$
@@ -574,7 +574,6 @@
 **** Error cuantificación
 - Menor que en PCM.
 
-
 ** Modos de transmisión
 - Transmisión entre dispositivos
   
@@ -601,6 +600,101 @@
 
 **** Isócrona
 - Garantiza que los datos llegan a una tasa fija.
+
+** Digital a analógico
+- $S = N/r$
+  - $S$, Tasas de señales (baudios).
+  - $N$, Tasa de datos (bps).
+  - $r$. elementos dato por cada señal.
+
+*** ASK (Amplitude Shift keying)
+- Modulación por desplazamiento de amplitud.
+- *BASK*, dos niveles de amplitud, 0 en amplitud 0, 1 con alguna amplitud.
+- $B = (1+d) \times S$
+      - $B$, ancho de banda Hz
+      - $S$, tasa de señal (baudios)
+      - $d$, [0,1] factor que depende del proceso de modulado y de filtrado.
+
+*** FSK (Frecuency shift keying)
+- Modulación por desplazamiento de frecuencia.
+- *BFSK*, Se piensa como en dos frecuencias portadoras, una para 1 y la otra para 0.
+- *MFSK*, fsk multinivel, hay más de dos intérvalos de frecuencias para mandar más de un bit por elemento señal.
+      - 8 intérvalos pueden enviar 3 bits.
+- $B = (1+d) \times S + 2\Delta_f$
+      - $B$, Ancho de banda Hz
+      - $S$, Tasa de señal (baudios)
+      - $d$ [0,1] factor que depende del proceso de modulación.
+      - $2\Delta_f$, Diferencia entre las dos frecuencias portadoras
+
+*** PSK (Phase shift keying)
+- Modulación por desplazamiento de fase.
+- *BPSK*, en fase 1 en desfase 0 (0 y $\pi$).
+- *QPSK*, versión en cuadratura de PSK.
+  
+*** QAM (Quadrature amplitude modulation)
+- Se altera la fase y la amplitud.
+- Combinación de ASK y PSK.
+
+** Analógico a analógico
+*** AM (Amplitude modulation)
+- Se altera la amplitud.
+- $B_{AM} = 2B_{Orig}$
+- Rango de frecuencias portadoras de radio AM [530, 1700]KHz.
+- La frecuencia portadora de cada estación de radio AM está separada almenos 10KHz de las otras frecuencias AM.
+
+*** FM (Frequency modulation)
+- Se altera la modulación.
+- $B_{FM}=2(1+ \beta)B_{Orig}$
+      - $\beta$ depende de la técnica de modulación.
+- Cada estación de radio tiene 200KHz.
+      - Con separación entre estaciones de 200KHz.
+
+*** PM (Phase modulation)
+- Se altera la fase.
+- $B_{PM}=2(1+\beta)B_{Orig}$
+
+** Multiplexación
+*** Multiplexación por división de frecuencia (FDM)
+- Multiplexación de Señales analógicas que combina señales analógicas.
+- Se modulan sobre distintas señales portadores, que se combinan en una sola señal compuesta.
+- Multiplexación por grupos o jerarquía, hay etapas de multiplexación, como un grafo.
+      - 12 canales $\to$ grupo
+      - 5 grupos $\to$ supergrupo
+      - 10 supergrupo $\to$ master grupo
+      - 6 master grupo $\to$ grupo Jumbo
+
+*** Multiplexación por división de longitud de onda (WDM)
+- Multiplexación de Señales analógicas que combina señales ópticas.
+- Combina diferentes haces de luz en una sola luz (prismas y fibra óptica).
+
+*** Multiplexación por división de tiempo (TDM)
+- Multiplexción digital, combina canales de tasa baja en uno de tasa alta.
+
+- *TDM síncrona*
+      - *Ranura*, bloque de datos en espacio de tiempo.
+      - $T_{M} = T_{E}/n$
+            - En la multiplexación de $n$ señales La *ranura* de salida es $n$ veces más corta que la ranura de entrada.
+      - De las conexiones de entrada se coge una ranura de cada en rondas.
+            - *Tramas*, ranuras de una ronda completa, una para cada emisor.
+      - Si un emisor no emite puede darse ranuras vacías.
+      - Multiplexación multinivel
+            - Si hay diferentes tasas de datos. pueden multiplexarse los más bajos para que coincidan con los más altos.
+      - Multiplexación multiples ranuras.
+            - pues demultiplexarse un emisor para rellenar las ranuras de un multiplexor posterior.
+      - Inserción de pulsos, relleno para las tasas más bajas y así asemejarlas a las tasas más altas.
+
+- *TDM estadística pot división de tiempo*
+      - Solo cuando una entrada tiene datos que enviar se le asigna una ranura.
+      - Requiere direccionamiento para identificar el receptor (unos bits).
+
+** Espectro ensanchado
+- Se intenta evitar las interferencias o escuchadores intrusos.
+- Ancho de banda bastante mayor del necesario (redundancia).
+- El proceso de ensanchado $B \to B_{ss}$ debe ser un proceso independiente de la creación de la señal.
+
+*** Espectro ensanchado por salto de frecuencia  (FHSS)
+
+*** Espectro ensanchado por secuencia directa (DSSS)
 
 * Nivel Enlace de Datos
 - Paquete: trama.
@@ -648,6 +742,12 @@
       - $RTT_S$,
       - *Desviación RTT*, Calculo de la desviación RTT
 - *RTO*, tiempo de retransmisión, se basa en el RTT suavizado y su desviación.
+- *Señal Portadora*, Señal base entre el emisor y el receptor.
+  La iformación digital se modula sobre esta señal.
+- *Señal en Quadratura*, se tienen dos señales una en fase y la otra desfasada $\pi / 2$ aproximadamente.
+      - Las dos señales actuan como señales portadoras independientes a la hora de modularlas.
+      - Al combinar (sumar) las dos señales se crean 4 señales diferentes ($2^2$).
+      - Se utiliza para mandar más bits en menos tiempo usando dos señales.
 
 ** Unidades
 - Periodo y frecuencia
