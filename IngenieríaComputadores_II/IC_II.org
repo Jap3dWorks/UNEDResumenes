@@ -328,7 +328,20 @@ fuente listos emite la instrucción a la unidad funcional.
         si por ejemplo el convoy tiene dos instrucciones aritméticas $Op_{f}=2$
 - *Chainning*, Es como el adelantamiento (forwarding) entre unidades funcionales vectoriales.
       - Permite la existencia de dependencias dentro de un *Convoy*.
-  
+
+** Carga/almacenamiento
+- *bancos de memoria*, unidades de memoria en paralelo.
+      - Permiten el almacenamiento o carga a 1 ciclo por elemento
+      - Lo ideal $T_{a} = m$
+      - $m$ bancos de memoria como $T_a$ ciclos que cuesta el acceso a memoria.
+- Mientras se hace una petición de acceso, cada banco de memoria realiza su operación.
+      - Se puede ver como una especie de segmentación.
+- $T_{op} = T_a + n$
+      - Tiempo de una operación es igual al tiempo de acceso más 1 ciclo por elemento en el vector.
+- El alineamiento suele ser a 8 bytes (vectores trabajan con doubles).
+      - elemento en dirección ###000###, irá al banco 0.
+      - elemento en dirección ###101###, irá al banco 5.
+
 * Procesamiento Paralelo
 
 ** Organización basda en el modelo de comunicación
