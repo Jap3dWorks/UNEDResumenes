@@ -293,9 +293,42 @@ fuente listos emite la instrucción a la unidad funcional.
 - Se puede implementar con un buffer de terminación.
       - Instrucciones especulativas se retiran cuando se ejecute el *centinela* asociado.
 
-* Procesacores Vectoriales        
-# TODO Convoys
+* Procesacores Vectoriales
+** Arquitectura básica
+- SIMD
+- *Unidad procesamiento Vectorial*.
+      - *Fichero de registros vectoriales*.
+            - Conjunto de registros vectoriales, entre 64-256.
+            - número de elementos por registro está entre 8-64
+                  - *MVL*, máximmum Vector Length. tamaño de las operaciones vectoriales.
+            - Cada Elemento de un registro suele ser de 8bytes.
+      - *Unidades funcionales vectoriales*.
+            - Segmentadas, pueden iniciar una operación cada ciclo de reloj.
+            - *lanes* o carriles, $n$ unidades funcionales en paralelo (carriles), acceleran en un factor $n$ el cálculo.
+      - *Unidad carga/almacenamiento vectorial*.
+            - Segmentada, tras la latencia realiza 1 operación por ciclo de reloj.
+- Unidad procesamiento escalar, un procesador escalar segmentado común.
+- *Procesadores Matriciales* son muy parecidos a los vectoriales.
+      - Constan de $n$ *EPs* (elementos de procesamiento) fuertemente interconectados.
+            - Cada EPs consta de una ALU, conjunto de registros,
+              una unidad de carga/almacenamiento, memoria local (*MEPs*), etc.
+      - En un ciclo puede computar $n$ elementos.
 
+** Medida del rendimiento procesadores Vectoriales
+- $T_n = T_{arranque} + n * T_{elemento}$
+      - Tiempo en procesar $n$ elementos.
+      - Tiempo de arranque de cada módulo es similar al número de segmentos del que consta.
+- *Convoy*, Varias instrucciones sin dependencias ni riesgo estructurales planificadas.
+      - Puede resolverse en paralelo porque no existe riesgo estructural.
+      - Usan diferentes módulos del procesador vectorial.
+- FLOPs, $R_n = (Op_{f} \times n) / T_n$
+      - operaciones de coma flotante por segundo.
+      - $n$, número de elementos del vector.
+      - $Op_{f}$, operaciones de coma flotante por elemento,
+        si por ejemplo el convoy tiene dos instrucciones aritméticas $Op_{f}=2$
+- *Chainning*, Es como el adelantamiento (forwarding) entre unidades funcionales vectoriales.
+      - Permite la existencia de dependencias dentro de un *Convoy*.
+  
 * Procesamiento Paralelo
 
 ** Organización basda en el modelo de comunicación
