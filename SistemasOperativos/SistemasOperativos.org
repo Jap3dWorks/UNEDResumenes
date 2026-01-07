@@ -141,7 +141,6 @@
   Teniendo en cuenta los procesos ya existentes en la cola y los plazos de servicio.
 - el *algoritmo de planificación de primero el proceso de tiempo límite más cercano* minimiza el número de procesos que no se ejecutan.
 
-
 * Sincronización y cominicación de procesos
 
 ** Semáforos
@@ -181,6 +180,10 @@
                   - Hansen, el proceso invocador sale del procedimiento inmediatamente (como un return).
 
 * Interbloqueos
+** Introducción
+- Recursos hardwre y recursos software (archivos, semaforos)
+
+- *Recurso reutilizable*, no se destruye después d su uso
 
 ** Algoritmos de detección de interbloqueos (alg. Coffman)
 - $R_E$, vector recursos existentes
@@ -419,7 +422,6 @@
       3. $Dir_F = |\ Dir_{F2}[marco\ j]\ |\ despl\ |$
          Encuentra la dirección física del dato.
   
-
 * Memoria virtual
 ** Descripción
 - Consiste en tener cargadas en memoria solo aquellas partes del programa (páginas o segmentos) del espacio de direcciones lógicas (ahora también se denominan direcciones virtuales) que se están usando.
