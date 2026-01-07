@@ -127,7 +127,6 @@
 - *IRTF*, Internet Research Task Force.
       - Se centra en encontrar soluciones a largo plazo.
 
-
 * Modelos de Red
 ** Principios de la arquitectura por niveles
 - *Primer Principio*, Cada nivel debe realizar dos tareas opuestas.
@@ -697,10 +696,93 @@
 *** Espectro ensanchado por secuencia directa (DSSS)
 
 * Nivel Enlace de Datos
+** Descripción
 - Paquete: trama.
 - Los enrutadores son los responsables de elegir los mejores enlaces entre redes.
       - Cuando un enrutador elige el siguiente enlace, el nivel de enlace es responsable de tomar el datagrama y moverlo a través del enlace.
-      - 
+      - La comunicación es de nodo a nodo.
+- Hay control de errores.
+- No hay control de la congestión normalmente.
+- *Categoría de enlaces*
+      - *Punto a punto*, Enlace dedicado (cable entre 2 dispositivos)
+      - *broadcast (difusión amplia)*, Enlace compartido (aire)
+- *Dos subniveles*
+      - *DLC*, Control de enlace de datos
+      - *MAC*, Control de enlace de medios (enlace de difusión)
+- Dirección de enlace = dirección física = dirección MAC
+      - ##:##:##:##:##:## (hexadecimal) 6 bytes.
+      - Direcciones de enlace en la trama van cambiando a lo largo del recorrido del paquete.
+      - Cada interfaz de cada host tiene una dirección de enlace única.
+      - *Dirección unidifusión (unicast)*, destinado a una sola interfaz.
+      - *Dirección multidifusión (multicast)*, uno a muchos con jurisdicción local.
+      - *Dirección de broadcast*, se envía a todas las entidades de la red.
+            - FF:FF:FF:FF:FF:FF
+- *protocolo ARP*, Es de nivel de red, pero sirve para conocer las direcciones de enlace de otros dispositivos en la red.
+      - Actualización de la tabla arp en el sistema.
+      - Consulta *broadcast* respuestas *unicast*.
+
+** DLC Control de enlace de datos
+- Se ocupa del procedimiento para la comunicación entre dos nodos adyacentes.
+      - Entramado, control de flujo y errores.
+- *Protocolos orientados al caracter*
+      - Datos como texto
+      - Se colocan unas flags de 8 bits al inicio y final de la trama.
+      - Transparencia a nivel byte, se escapan (\) los carácteres problematicos o confusos.
+- *Protocolos orientados al bit*
+      - Datos como bits
+      - Se usan flags como delimitadores. 01111110
+      - Transparencia bit, para evitar confusión con las flags.
+            - 011111... -> 0111110... , se añade un 0
+- *Buffer*, ayudan a regular el control de flujo.
+      - presentes en emisor y receptor.
+
+- Para control de errores
+      - Método 1, Lan cableadas si la trama está corrompida se descarta silenciosamente.
+      - Método 2, Si no está corrompida se devuelve un *ACK*, sino se descarta silenciosamente.
+            - *ACK*, acuse de recibo, control de errores y de flujo.
+                  - En enlace de datos solo existe en conexiones locales no cableadas.
+                  - ACK MAC para comprobar que llegó el paquete sin cables.
+                  - El ACK suele indicar la secuencia del paquete que espera recibir.
+            - *Piggybacking*, En comunicación bidireccional se incluyen los acuse de recibo
+              en los mensajes que circulan en ambas direcciones.
+*** Protocolos
+- *HDLC (High-level data link control)*, Control de enlace de datos de alto nivel
+      - orientado a bit.
+      - dos modos
+            - *NRM* respuesta normal
+                  - Estación primaria envía comandos, estación secundaria solo responde.
+            - *ABM* asíncrono balanceado
+                  - Las estaciones pueden fucionar como primarias o como secundarias.
+      - Typos de tramas
+            - *Tramas I*, de información
+                  - | flag | Dirección | Control | Inf de usuario | FCS | FLAG |
+            - *Tramas S*, de supervisión
+                  - | flag | Dirección | Control |FCS | |
+                  - Cuando piggybacking no es posible.
+            - *Tramas U*, sin numeración
+                  - | flag | Dirección | Control | Inf de Control | FCS | FLAG
+            - FCS, campo de detección de errores de HDLC
+- *PPP* (protocolo punto a punto)
+      - El más frecuente
+      - NO proporciona control de flujo
+      - orientado al carácter
+      - | flag | dirección | Control | Protocolo | Carga util (bytes) | FCS | FLAG |
+            - campo dirección constante broadcast
+      - En la carga útil puede llevar paquetes de otros protocolos PPP diseñados para el control.
+            - *LCP*, protocolo de control de enlace.
+                  - establecer mantener y configurar enlaces.
+            - *AP*, protocolo de autentificación
+                  - *PAP*, autentificación por contraseña
+                  - *CHAP*, autentificación por reto.
+                        - Ambos extremos tienen la contraseña pero no se comparte.
+                        - aplican una función con la contraseña junto con unos pocos bits que se comparten y comparan resultados.
+            - *NCP*
+                  - *IPCP*, configura el enlace para transportar paquetes IP.
+                        - Después ya pueden compartir paquetes.
+                          
+
+** MAC Control de Acceso múltiple
+
 
 * Nivel de Red
 - Paquete: datagrama de red.
@@ -717,7 +799,8 @@
 - Responsable de la comunicación lógica entre aplicaciones.
 - Da servicio al nivel de aplicación.
 - Gestiona el tráfico
-  
+- Dirección Socket. ipv4:puerto
+
 ** UDP
 
 ** TCP
@@ -748,6 +831,13 @@
       - Las dos señales actuan como señales portadoras independientes a la hora de modularlas.
       - Al combinar (sumar) las dos señales se crean 4 señales diferentes ($2^2$).
       - Se utiliza para mandar más bits en menos tiempo usando dos señales.
+- *Protocolo sin conexión*, los paquetes se mandan de un nodo a otro sin relación entre ellas.
+- *Protocolo orientado a conexión*, Se establece una conexión lógica entre los nodos,
+  después se transmiten las tramas, que tienen alguna relación entre ellas.
+- *FSM*, máquina de estados finita.
+- *CRC*, cyclic redundancy check, se suele poner al final. Se calcula a partir del mensaje.
+- *ACK*, acuse de recibo.
+- *NAK*, mensaje de negación.
 
 ** Unidades
 - Periodo y frecuencia
@@ -760,9 +850,8 @@
   | Nanosegundos (ns)     | 10^{-9} s   | Gigaherzio (GHz) | 10^{9} Hz   |
   | Picosegundos (ps)     | 10^{-12} s  | Teraherzio (THz) | 10^{12} Hz  |
 
-
 * Recursos
 - Link a los recursos del texto base.
    [[https://highered.mheducation.com/sites/0073376221/student_view0/chapter1/]]
-
-   
+      - 7 libro -> 9 web
+      - 8 libro -> 11 web   

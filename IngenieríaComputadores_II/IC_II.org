@@ -321,7 +321,7 @@ fuente listos emite la instrucción a la unidad funcional.
 - *Convoy*, Varias instrucciones sin dependencias ni riesgo estructurales planificadas.
       - Puede resolverse en paralelo porque no existe riesgo estructural.
       - Usan diferentes módulos del procesador vectorial.
-- FLOPs, $R_n = (Op_{f} \times n) / T_n$
+- *FLOPs*, $R_n = (Op_{f} \times n) / T_n$
       - operaciones de coma flotante por segundo.
       - $n$, número de elementos del vector.
       - $Op_{f}$, operaciones de coma flotante por elemento,
