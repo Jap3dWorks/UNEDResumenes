@@ -692,8 +692,10 @@
 - El proceso de ensanchado $B \to B_{ss}$ debe ser un proceso independiente de la creación de la señal.
 
 *** Espectro ensanchado por salto de frecuencia  (FHSS)
+- Se va saltando de frecuencia cada periodo de tiempo.
 
 *** Espectro ensanchado por secuencia directa (DSSS)
+- Es como que se añade mucho relleno de bits y patrones.
 
 * Nivel Enlace de Datos
 ** Descripción
