@@ -236,16 +236,45 @@
 ** Introducción
 - Recursos hardwre y recursos software (archivos, semaforos)
 
-- *Recurso reutilizable*, no se destruye después d su uso
-
+- *Recurso Reutilizable*, no se destruye después de su uso.
+- *Recurso Consumible*, puede producirse y consumirse.
+- *Interbloqueo*, conjunto de procesos está bloqueado esperando la liberación de uno a varios recursos a su vez asignados
+  a otros procesos del mismo conjunto.
+      - Como todos están bloqueados ninguno liberará los recursos.
+- condiciones para que se produzca interbloqueo.
+      - *Exclusión mutua*
+      - *Retención y espera*, los procesos retienen los recursos asignados mientras esperan
+        la adquisición de los otros recursos.
+      - *No existencia de expropiación*
+      - *Espera circular*, en un mismo conjunto procesos retienen recursos A y requieren recursos B
+        mientras otros procesos retienen recursos B y requieren recursos A.
+- Principales estratégias para tratar interbloqueos
+      - *Prevención de interbloqueos*, impedir que se produzca alguna de las 4 condiciones necesarias.
+      - *Evitación de interbloqueos*, no asignar lo recursos en situaciones potencialmente peligrosas.
+      - *Detección y recuperación de interbloqueos*, cada cierto tiempo se comprueba si existe un interbloqueo en el sistema.
+        Si existe se toman las medidas oportunas.
 
 ** Grafos de asignación de recursos
-- se prsupone exclusión mutua y no existencia de expropiación
+- Se presupone exclusión mutua y no existencia de expropiación
 - Si no hay ciclo no hay interbloqueo
 - Si hay ciclo y un solo recurso del tipo hay interbloqueo
 - Si hay ciclo y más de un recurso del tipo, hay interbloqueo si todos los recursos forman parte de un ciclo.
 
 [[file:images/GrafoInterbloqueo.png]]  
+
+** Prevención de interbloqueos
+- *Eliminación de la exclusión mutua*, No se puede eliminar si se quiere garantizar
+  la integridad y la no corrupción de los mismos.
+- *Eliminación de la retención y espera*.
+      - Puede exigirse que un proceso solicita de una sola vez todos los recursos.
+      - Conocer de antemano qué recursos va a necesitar un programa es dificil.
+      - Puede provocar inanición a algunos procesos.
+- *Elminación de lo no existencia de la expropiación*.
+      - Es posible en recursos donde el sistema pueda salvar el estado en el que se encontraba.
+        así restaurarlo de vuelta al proceso expropiado. Puede suponer una sobrecarga importante.
+- *Eliminación de la condición de espera circular*
+      - Forzando que un proceso solo pueda solicitar recursos en orden ascendente.
+      - Cada recurso tiene asignado un número único.
 
 ** Algoritmos de detección de interbloqueos (alg. Coffman)
 - $R_E$, vector recursos existentes
