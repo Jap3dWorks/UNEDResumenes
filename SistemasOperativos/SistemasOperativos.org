@@ -2,6 +2,48 @@
 #+author: Jordi Amposta Pérez
 #+startup: latexpreview overview
 
+* Tipos de sistema operativo
+- *Multiusiario*, soporta multiples usuarios.
+- *Monousuario*, soporta un solo usuario.
+
+- *Monoprogramado*, en memoria principal se almacena el OS y un único programa.
+- *Multiprogramados*, en memoria principal se almacena el OS y varios programas.
+- *Multiacceso*, permite el acceso a traces de dos o más terminales.
+- *Con multiprocesamiento*, puede coordinar la actividad de varios procesadores.
+
+- *Sistemas operativos por lotes*, procesa agrupaciones en lotes de trabajos similares.
+      - cada trabajo consta de un programa, datos e instrucciones para el OS.
+- *Sistemas operativos de tiempo compartido*
+- *Sistemas operativos de tiempo real*
+      - Tiempo real suave
+      - Tiempo real estricto
+- *Sistemas operativos híbridos*
+
+- *Sistemas operativos para macrocomputadores*
+- *Sistemas operativos para servidores de red*
+- *Sistemas operativos para computadores personales*
+- *Sistemas operativos para computadores de mano*
+- *Sistemas operaticos integrados*, un reproductor mp3
+
+- *Sistemas operativos paralelos*
+- *Sistemas operativos distribuidos*
+- *Sistemas operativos de red*  
+
+*  Estructura del nucleo
+** Componentes principales
+- *Subsistema de control de procesos*
+- *Subsistema de administración de la memoria principal*
+- *Subsistema de gestión de archivos*, permisos, estructura de carpetas, localización en memoria secundadia, etc
+- *Subsistema de E/S*, interfaz común para los dispositivos de E/S.
+
+** Tipos de estructura del núcleo
+- *Estructura monolítica*
+- *Estructura en módulos*
+- *Estructura en capas o niveles*
+- *Estructura extensible*  
+
+  
+
 * Descripción y control de procesos
 ** Creación de procesos
 *** Acciones para crear un proceso más comunes.
@@ -24,7 +66,18 @@
       - Proceso padre y proceso hijos.
       - Proceso padre puede terminar, ejecutarse concurrentemente o esperar a que acabe algún proceso hijo.
 
-*** Cambio de proceso
+** Estructuras de control del SO
+- *Tabla de procesos*, información relevante sobre cada proceso.
+      - *PCB*, process control block, cada entrada de la tabla de procesos.
+- *Tablas de memoria*, Espacio asignado y espacio libre de la memoria principa y del área de intercambio.
+- *Tablas de E/S*, información sobre si un dispositivo está disponible y que proceso lo está utilizando.
+- *Tablas de archivos*, Archivos abiertos por los procesos, ubicación en memoria secundaria, estado y otros atributos
+- *Pilas de control de sistema* o pilas del sistema operativo,
+  almacena parámetros y datos asociados a funciones del sistema operativo.
+- *Pila de interrupciones*, utilizada por todos los manejadores de interrupciones.
+- Colas de procesos o eventos. cola de procesos preparados, colas de procesos bloqueados, etc.
+
+** Cambio de proceso
 
 ** Terminación de procesos
 
@@ -181,6 +234,13 @@
                   - Hansen, el proceso invocador sale del procedimiento inmediatamente (como un return).
 
 * Interbloqueos
+** Grafos de asignación de recursos
+- se prsupone exclusión mutua y no existencia de expropiación
+- Si no hay ciclo no hay interbloqueo
+- Si hay ciclo y un solo recurso del tipo hay interbloqueo
+- Si hay ciclo y más de un recurso del tipo, hay interbloqueo si todos los recursos forman parte de un ciclo.
+
+[[file:images/GrafoInterbloqueo.png]]  
 
 ** Algoritmos de detección de interbloqueos (alg. Coffman)
 - $R_E$, vector recursos existentes
@@ -616,5 +676,23 @@
 
 *** Tratamiento de los errores del disco
 
+
+* Gestión de archivos
+** Estructura de directorios de gráfica acíclica
+- *link*, conectar un archivo o directorio con otro ya existente.
+      - Se dice que está compartido.
+      - Enlace duro (Hard). Entrada especial en un directorio.
+            - Apunta a archivos almacenados en otros directorios.
+            - Problemas de sincronización (atributos de archivo), estructuras de control.
+            - Requiere del recuento de las referencias a un archivo.
+            - Puede estar consumiendo espacio de otro usuario.
+      - Enlace simbólico (soft), es un archivo especial que contiene la ruta absoluta o relativa del destino.
+            - Consume espacio y aumenta el número de operaciones E/S.
+            - Su control es mucho más sencillo.
+                  - Pueden quedarse simplemente rotos.
+      - Hay que tener en cuenta que pueden dar ciclos si se están recorriendo la estructura de directorios.
+      - En copias de seguridad puede llegar a copiarse el mismo archivo varias veces (sobretodo el Hard).
+
 * Glosario
 - *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).
+- *Trampa*, interrupción insertada por el programador, para solicitar los servicios del núcleo. 
