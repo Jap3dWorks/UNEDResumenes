@@ -802,6 +802,39 @@
 *** Tratamiento de los errores del disco
 
 * Gestión de archivos
+** Archivos
+- *Registos* o *bloques lógicos*, los archivos se forman con un conjunto de bloques de igual o
+  distinto tamaño.
+- *Bloque Físico*, se divide la memoria secundaria en bloques de igual tamaño.
+- Los archivos ocupan un conjunto de bloques físicos que no tiene porque ser consecutivo.
+- El bloque físico puede contener varios bloques lógicos.
+
+** Asignación de espacio
+*** *Asignación continua*
+- El archivo contiguo en memoria.
+  
+*** *Asignación enlazada*
+      - los bloques físicos tienen la dirección del siguiente bloque físico que pertenece al archivo.
+            - Así implementada da problemas al quitar unos pocos bytes de espacio al archivo y dificultar las operaciones con potencias de 2.
+      - FAT, una tabla situada al principio de la partición.
+            - Contiene una entrada por cada bloque físico. y como valor la dirección del siguiente bloque físico.
+            - Si es el final del archivo puede contener el valor -1.
+            - Si el bloque está vacío puede tener otro valor para indicarlo (0).
+            - El problema es tener la fat en memoria.
+
+*** Asignación Indexada
+- *Nodo-I*, almacena los atributos de un archivo.
+      - las direcciones físicas de los primeros bloques de un archivo (sin indirección).
+      - Los nodos-i son ligeros.
+      - Contine punteros a *bloques de indirección*.
+- *Bloque de indirección simple*, almacena direcciones físicas de bloques de archivos.
+- *Bloque de indirección doble*, Almacena direcciones de bloques de indirección simple.
+- *Bloque de indirección triple*, almacena direcciones de bloques de indirección doble.
+- Cada archivo tiene asociado un número único asociado a un nodo-i.
+- En la partición de archivos hay una tabla con todos los nodo-i.
+- El nodo-i asociado a un archivo se almacena en la entrada de directorio.
+- Añade un poco de sobrecarga para acceder a los datos de los archivos.
+
 ** Estructura de directorios de gráfica acíclica
 - *link*, conectar un archivo o directorio con otro ya existente.
       - Se dice que está compartido.
@@ -816,19 +849,6 @@
                   - Pueden quedarse simplemente rotos.
       - Hay que tener en cuenta que pueden dar ciclos si se están recorriendo la estructura de directorios.
       - En copias de seguridad puede llegar a copiarse el mismo archivo varias veces (sobretodo el Hard).
-
-** Asignación Indexada
-- *Nodo-I*, almacena los atributos de un archivo.
-      - las direcciones físicas de los primeros bloques de un archivo (sin indirección).
-      - Los nodos-i son ligeros
-      - Contine punteros a *bloques de indirección*.
-- *Bloque de indirección simple*, almacena direcciones físicas de bloques de archivos.
-- *Bloque de indirección doble*, Almacena direcciones de bloques de indirección simple.
-- *Bloque de indirección triple*, almacena direcciones de bloques de indirección doble.
-- Cada archivo tiene asociado un número único asociado a un nodo-i.
-- En la partición de archivos hay una tabla con todos los nodo-i.
-- El nodo-i asociado a un archivo se almacena en la entrada de directorio.
-- Añade un poco de sobrecarga para acceder a los datos de los archivos.
 
 ** Gestión del espacio libre
 - *Lista de bloques libres*
