@@ -157,7 +157,7 @@
       - Pero los hilos pueden estar en diferentes estados.
 - Un proceso no puede entrar en estado terminado hasta que no terminan todos sus hilos.
 
-- tipos de hilo
+- *tipos de hilo*
       - hilo a nivel usuario, librería que emula un planificador de tareas (pthreads).
         Creo que suele estar escrita a bajo nivel. Realmente es un solo hilo.
             - Portable
@@ -165,7 +165,7 @@
             - Planificación independiente.
       - hilo a nivel núcleo (real), implementados en el OS.
 
-- Principales configuraciones
+- *Principales configuraciones*
       - *Múltiples hilos de usuario sin soporte de hilos de núcleo*, 
       - *Un hilo de núcleo por cada hilo de usuario*
       - *Menor número de hilos de núcleo que hilos de usuario*
@@ -386,6 +386,8 @@
              - si $\exists i | M_i \leq X$ entonces se marca el proceso $i$ y $X = A_i + X$ y se vuelve al paso 2.
 
 * Administración de Memoria
+** Particionamiento dinámico
+** Particionamiento estático
 ** Paginación Simple
 *** Descripción
 - Memoria principal se divide en bloques del mismo tamaño $S_p$ denominados *marcos de página*.
@@ -814,6 +816,83 @@
                   - Pueden quedarse simplemente rotos.
       - Hay que tener en cuenta que pueden dar ciclos si se están recorriendo la estructura de directorios.
       - En copias de seguridad puede llegar a copiarse el mismo archivo varias veces (sobretodo el Hard).
+
+** Asignación Indexada
+- *Nodo-I*, almacena los atributos de un archivo.
+      - las direcciones físicas de los primeros bloques de un archivo (sin indirección).
+      - Los nodos-i son ligeros
+      - Contine punteros a *bloques de indirección*.
+- *Bloque de indirección simple*, almacena direcciones físicas de bloques de archivos.
+- *Bloque de indirección doble*, Almacena direcciones de bloques de indirección simple.
+- *Bloque de indirección triple*, almacena direcciones de bloques de indirección doble.
+- Cada archivo tiene asociado un número único asociado a un nodo-i.
+- En la partición de archivos hay una tabla con todos los nodo-i.
+- El nodo-i asociado a un archivo se almacena en la entrada de directorio.
+- Añade un poco de sobrecarga para acceder a los datos de los archivos.
+
+** Gestión del espacio libre
+- *Lista de bloques libres*
+      - Se almacena al comienzo del sistema de archivos.
+      - se suele copiar una parte en memoria principal.
+      - implementaciones
+            - *Mapa de bits*
+                  - Un bit por bloque de disco, 0 ocupado 1 libre
+                  - Sencillo pero hay que mantener el mapa entero en memoria principal.
+            - *Lista enlazada*
+                  - Un bloque de disco puede almacenar $N_D$ direcciones de bloque.
+                  - Un bloque almacena $N_D - 1$ direcciones y la dirección al siguiente bloque de direcciones.
+                  - Solo es necesario mantener un bloque en memoria principal.
+
+** Implementación de directorios
+- Un *directorio* es un archivo que almacena una lista de los archivos y subdirectorios que contiene.
+  
+- *Directorios con entradas de igual tamaño*
+      - Cada entrada de un directorio se almacena la información asociada al archivo.
+      - Puede malgastar espacio de memoria para dar soporte a nombres largos.
+- *Directorios con entradas de tamaño variable*
+      - cada entrada tiene un tamaño diferente
+      - El primer byte de una entrada es el tamaño que ocupa.
+            - A continuación datos del archivo y finalmente el nombre (acabado con caracter de terminación)
+            - Si hace falta se pone relleno para que el tamaño total sea un numero entero de palabras.
+      - Cuando se eliminan archivos se puede crear huecos de de tamaño variable.
+            - Se arregla con conpactación
+- *Directorios con entradas de igual tamaño y uso de un montículo para los nombres de archivos*
+      - las entradas almacenan un puntero al inicio del nombre del archivo dentro del montículo.
+      - Al final del directorio se almacena la estructura tipo montículo.
+            - Dentro del montículo los nombres se almacenan de forma contigua.
+            - Las operaciones sobre el montículo son complicadas
+
+- Para accelerar búsquedas en directorios
+      - Puede implementarse una cache a nivel software con las entradas de los últimos archivos accedidos.
+      - Puede implementarse en cada directorio una tabla hash para encontrar los archivos.
+
+** Copias de seguridad
+- *Copia de seguridad lógica*, solamente directorios y archivos que el administrador desea guardar.
+      - *Copia completa*, Todos los archivos seleccionados por el administrador.
+      - *Copia Diferencial*, Solamente archivos creados o modificados desde la última copia.
+      - *Copia incremental*, Solamente archivos creados o modificados desde la última copia.
+            - Para reconstruir los archivos hace falta todo el historial de copias de seguridad.
+- *Copia de seguridad física* o imagen de disco. Copia completa de todos lo bloques físicos de la partición de disco.
+      - Requiere ser montada para recuperar achivos.
+
+** Instantáneas
+- modelo *Copiar al escribir*,
+      - Cuando el SO necesita modificar el contenido de un bloque localiza un bloque libre.
+      - Copia en el bloque libre los datos modificados.
+      - Actualiza los punteros del hacia el viejo bloque hacia el nuevo bloque.
+            - Toma un tiempo, el SO revisa cada 30 seg si hay que actualizar punteros.
+- Cada vez que la versión actual se modifica, se crea una *nueva versión del sistema de archivos* denominada *instantánea*.
+- Pueden montarse para recuperar archivos.
+- Las instantáneas se toman de forma prácticamente inmediata. no ocupan espacio en el momento de su creación.
+      - No se copian bloques de disco hasta que hay modificaciones.
+- Las instantáneas pueden ser restauradas con gran rapidez.
+- Residen en el mismo disco físico que respaldan.
+
+** Eficiencia
+- La memoria secundaria es lenta.
+- Se puede cachear los bloques de disco en memoria principal.
+      - *lectura por adelantado*, se cachea el bloque requerido y algunos cercanos.
+- En discod magnéticos es mejor situar los nodos-i en la zona central.
 
 * Glosario
 - *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).
