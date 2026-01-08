@@ -2,58 +2,116 @@
 #+author: Jordi Amposta Pérez
 #+startup: latexpreview overview
 
-* Tipos de sistema operativo
-- *Multiusiario*, soporta multiples usuarios.
-- *Monousuario*, soporta un solo usuario.
+* General
+** Definición de Sistema Operativo
+- Arquitectura general de un sistema informático.
+  ( ( ( ( hardware ) *Núcleo del SO* ) *Utilidades del SO* ) Programas de aplicación )
+- Objetivos de un SO.
+      - Gestionar o administrar eficientemente los dispositivos hardware de un computador.
+            - Uso de la cpu, gestión de memoria, gestión de los componentes E/S,
+              memoria secundária y área de intercambio, etc
+      - Ofrecer a los usuarios una interfaz cómoda que les facilite el uso del computador.
+            - Interfaces, terminales, sistemas de archivos, etc
 
-- *Monoprogramado*, en memoria principal se almacena el OS y un único programa.
-- *Multiprogramados*, en memoria principal se almacena el OS y varios programas.
-- *Multiacceso*, permite el acceso a traces de dos o más terminales.
-- *Con multiprocesamiento*, puede coordinar la actividad de varios procesadores.
+** Servicios de un sistema operativo
+- *Ejecución de programas*
+- *Acceso a los dispositivos de E/S*
+- *Manipulación del sistema de archivos*
+- *Comunicación y sincronización* entre programas.
+- *Detección y respuesta a errores*, de hardware como de software (e.g interbloqueos)
+- *Protección y seguridad*, acceso a usuarios. Evitar interferencias no deseadas entre programas.
+- *Contabilidad*, registros y estadísticas del uso de la computadora y el rendimiento.
 
-- *Sistemas operativos por lotes*, procesa agrupaciones en lotes de trabajos similares.
-      - cada trabajo consta de un programa, datos e instrucciones para el OS.
-- *Sistemas operativos de tiempo compartido*
-- *Sistemas operativos de tiempo real*
-      - Tiempo real suave
-      - Tiempo real estricto
-- *Sistemas operativos híbridos*
+** Tipos de sistema operativo
+- Según el número de usuarios
+      - *Multiusiario*, soporta multiples usuarios.
+      - *Monousuario*, soporta un solo usuario.
+- Según el número de programas en memoria
+      - *Monoprogramado*, en memoria principal se almacena el OS y un único programa.
+      - *Multiprogramados*, en memoria principal se almacena el OS y varios programas.
+      - *Multiacceso*, permite el acceso a traces de dos o más terminales.
+      - *Con multiprocesamiento*, puede coordinar la actividad de varios procesadores.
+- Según los requisitos temporales de los programas a ejecutar
+      - *Sistemas operativos por lotes*, procesa agrupaciones en lotes de trabajos similares.
+            - cada trabajo consta de un programa, datos e instrucciones para el OS.
+      - *Sistemas operativos de tiempo compartido*
+      - *Sistemas operativos de tiempo real*
+            - Tiempo real suave
+            - Tiempo real estricto
+      - *Sistemas operativos híbridos*, soportan trabajos por lotes, aplicaciones interactivas y tiempo real suave.
+- Según la finalidad del computador
+      - *Sistemas operativos para macrocomputadores*
+      - *Sistemas operativos para servidores de red*
+      - *Sistemas operativos para computadores personales*
+      - *Sistemas operativos para computadores de mano*, un móbil
+      - *Sistemas operaticos integrados*, un reproductor mp3
+- Otros
+      - *Sistemas operativos paralelos*
+      - *Sistemas operativos distribuidos*
+      - *Sistemas operativos de red*  
 
-- *Sistemas operativos para macrocomputadores*
-- *Sistemas operativos para servidores de red*
-- *Sistemas operativos para computadores personales*
-- *Sistemas operativos para computadores de mano*
-- *Sistemas operaticos integrados*, un reproductor mp3
+** Llamadas al sistema
+- Procesadores tienen dos modos, modo núcleo y modo usuario.
+      - Modo núcleo puede ejecutar cualquier instrucción (SO)
+      - Modo usuario solo algunas (programas de usuario)
+- *Llamadas al sistema*, interfaz que pone el SO a disposición de los programas, para usar funcionalidades del núcleo.
+      - Se pueden invocar mediante librerías que se enlazan en la compilación.
+      - Se pueden invocar directamente en ensamblador.
+      - Se produce una *trampa* que cambia el hardware a modo núcleo, se efectua la rutina y se vuelve al modo usuario.
+            - Todo guiado por el SO.
+      - El paso de parámetros puede hacerse con registros, memoria localizada o almacenarlos en una pila dedicada.
+- *Tipos de llamadas al sistema*
+      - *Control de programas en ejecución (procesos)*.
+      - *Administración de archivos o directorios*.
+      - *Comunicaciones*, enviar recibir mensajes.
+      - *Gestión de dispositivos* (E/S).
+      - *Gestión de información del sistema*, obtener y configurar datos del sistema.
 
-- *Sistemas operativos paralelos*
-- *Sistemas operativos distribuidos*
-- *Sistemas operativos de red*  
-
-*  Estructura del nucleo
-** Componentes principales
+**  Estructura del núcleo
+*** Componentes principales
 - *Subsistema de control de procesos*
 - *Subsistema de administración de la memoria principal*
 - *Subsistema de gestión de archivos*, permisos, estructura de carpetas, localización en memoria secundadia, etc
 - *Subsistema de E/S*, interfaz común para los dispositivos de E/S.
 
-** Tipos de estructura del núcleo
-- *Estructura monolítica*
-- *Estructura en módulos*
+*** Tipos de estructura del núcleo
+- *Estructura monolítica*, un único módulo lógico.
+      - Muy eficiente pero puede ser dificil de mantener.
+- *Estructura en módulos*, módulos con uno o varios subsistemas.
+      - más fácil de mantener, permite el uso de objetos abstractos. Menos eficiente.
 - *Estructura en capas o niveles*
-- *Estructura extensible*  
-
+      - los servicios está distribuidos en capas, y cada capa solo puede llamar a servicios de capas inferiores.
+      - No es muy eficiente, pero es fácil de depurar.
+      - Dificil de diseñar que servicios van en cada capa.
+- *Estructura extensible*
+      - micro núcleo (cotrol del hardware) + extensiones del núcleo (estructuras de control).
+      - Extensions y el núcleo usan un esquema cliente/servidor
+      - Las aplicaciones de usuario y la extensiones del núcleo usan un esquema cliente/servidor
+      - Manejabilidad, Extensibilidad, Fiabilidad, Soporte de múltiples SO, Portabilidad.
+      - Menor rendimieno por el paso de mensajes
   
-
 * Descripción y control de procesos
+** Tipos de procesos
+- *Procesos de usuario*
+- *Procesos demoio*, no asociados a ningún usuario.
+- *Procesos del sistema operativo*, por ejemplo el intercambio a memoria secundaria de procesos.
+
+** Estados de un proceso
+- *Nuevo*
+- *Preparado*
+- *Ejecutándose*
+- *Bloqueado*
+- *Terminado*
+  
 ** Creación de procesos
 *** Acciones para crear un proceso más comunes.
 1. *Comprobar si el proceso puede ser creado*, comprueba espacio en memoria o
     número máximo de procesos permitido entre otras.
-2. *Asignar una entrada de la tabla de procesos para el nuevo proceso*, un identficador numérico.
+2. *Asignar una entrada de la tabla de procesos para el nuevo proceso* (PCB), un identficador numérico (PID).
 3. *Reservar espacio en memoria para el proceso*, espacio para el espacio de direcciones lógicas
     y para la información del bloque de control del proceso.
-4. *Inicializar el bloque de control del proceso*.
-5. *Establecer los enlaces apropiados*.
+4. *Inicializar el bloque de control del proceso*, ponerle los datos.
+5. *Establecer los enlaces apropiados*, punteros adecuados a las estructuras de control.
 
 *** Causas más comunes.
 - *Arranque del sistema operativo*, demonios, interpretes de commandos, etc.
@@ -78,13 +136,43 @@
 - Colas de procesos o eventos. cola de procesos preparados, colas de procesos bloqueados, etc.
 
 ** Cambio de proceso
+- Causas
+      - *Proceso en ejecución pasa al estado bloqueado*
+      - *Terminación voluntaria o forzada*
+      - *SO termina de atender una interrupción y existe otro proceso de mayor prioridad*
+      - *El proceso ha excedido el máximo tiempo de ejecución ininterrumpida*
+- *Tiempo de conmutación* tiempo requerido par el cambio de proceso.
 
-** Terminación de procesos
+** Procesos Multihilo
+- *Hilo o traza de ejecución (thread)*, flujo de desarrollo de un proceso, el program counter y todo eso.
+- *multihilo*, un proceso puede contener más de 1 hilo.
+      - Los hilos comparten el mismo espacio de direcciones virtuales.
+- Aumenta el tamaño de las estructuras de control
+- *Aumenta el rendimiento del sistema*, La creación de un hilo es más eficinte que la creación de un proceso.
+- *Ahorro de recursos*, La creación de un hilo nuevo dentro de uno ya existente requiere menos recursos.
+- *Aprovechamiento de las arquitecturas multiprocesador*
+- *Simplificación de la estructura de aplicaciones*, simplifica el diseño de aplicaciones con muchas tareas diferentes.
+
+- El proceso limita los estados de los hilos.
+      - Pero los hilos pueden estar en diferentes estados.
+- Un proceso no puede entrar en estado terminado hasta que no terminan todos sus hilos.
+
+- tipos de hilo
+      - hilo a nivel usuario, librería que emula un planificador de tareas (pthreads).
+        Creo que suele estar escrita a bajo nivel. Realmente es un solo hilo.
+            - Portable
+            - No requiere el uso del núcleo
+            - Planificación independiente.
+      - hilo a nivel núcleo (real), implementados en el OS.
+
+- Principales configuraciones
+      - *Múltiples hilos de usuario sin soporte de hilos de núcleo*, 
+      - *Un hilo de núcleo por cada hilo de usuario*
+      - *Menor número de hilos de núcleo que hilos de usuario*
+            - El programador gestiona que hilos de núcleo gestionan los hilos de usuario de la aplicación.
 
 * Planificación de procesos
-
 ** Niveles de Planificación
-
 ** Algoritmos de planificación
 - $T_{LL}$, tiempo global en el que un proceso llega a la cola de planificación.
 - $T_F$, Tiempo de finalización, tiempo global en el que el proceso finaliza.
@@ -195,7 +283,6 @@
 - el *algoritmo de planificación de primero el proceso de tiempo límite más cercano* minimiza el número de procesos que no se ejecutan.
 
 * Sincronización y cominicación de procesos
-
 ** Semáforos
 - Es una variable $S$ sobre la que se pueden aplicar 3 operaciones
       - $S=N$, *init_sem*, Asignación valor Inicial N.
@@ -216,6 +303,9 @@
 - Se usan tantos semáforos como recursos distintos compartan los procesos en una sección crítica.
 - Pueden usarse para la sincronización de procesos.
 - La colocación inadecuada puede provocar race conditions, inanición o interbloqueo.
+
+** Mensajes
+- sockets y buzones
 
 ** Monitores
 *** Definición
@@ -709,7 +799,6 @@
 
 *** Tratamiento de los errores del disco
 
-
 * Gestión de archivos
 ** Estructura de directorios de gráfica acíclica
 - *link*, conectar un archivo o directorio con otro ya existente.
@@ -729,3 +818,5 @@
 * Glosario
 - *LBA*, logical block addressing, direccionamiento de bloques lógicos. Numeración consicutiva de los sectores de un disco (disco duro).
 - *Trampa*, interrupción insertada por el programador, para solicitar los servicios del núcleo. 
+- *Contexto de un proceso* toda información necesaria para iniciar o continuar un proceso, se guarda en el PCB.
+- *Overhead o sobrecarga*, tiempo de uso del computador para tareas de administración del SO.
