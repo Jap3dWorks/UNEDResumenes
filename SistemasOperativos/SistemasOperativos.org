@@ -814,13 +814,13 @@
 - El archivo contiguo en memoria.
   
 *** *Asignación enlazada*
-      - los bloques físicos tienen la dirección del siguiente bloque físico que pertenece al archivo.
-            - Así implementada da problemas al quitar unos pocos bytes de espacio al archivo y dificultar las operaciones con potencias de 2.
-      - FAT, una tabla situada al principio de la partición.
-            - Contiene una entrada por cada bloque físico. y como valor la dirección del siguiente bloque físico.
-            - Si es el final del archivo puede contener el valor -1.
-            - Si el bloque está vacío puede tener otro valor para indicarlo (0).
-            - El problema es tener la fat en memoria.
+- los bloques físicos tienen la dirección del siguiente bloque físico que pertenece al archivo.
+      - Así implementada da problemas al quitar unos pocos bytes de espacio al archivo y dificultar las operaciones con potencias de 2.
+- FAT, una tabla situada al principio de la partición.
+      - Contiene una entrada por cada bloque físico. y como valor la dirección del siguiente bloque físico.
+      - Si es el final del archivo puede contener el valor -1.
+      - Si el bloque está vacío puede tener otro valor para indicarlo (0).
+      - El problema es tener la fat en memoria.
 
 *** Asignación Indexada
 - *Nodo-I*, almacena los atributos de un archivo.
