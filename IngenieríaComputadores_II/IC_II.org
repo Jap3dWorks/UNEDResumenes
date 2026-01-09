@@ -92,8 +92,7 @@
 - Planificación de las instrucciones para evitar detenciones. El algoritmo Tomasulo es de las primeras
   soluciones para la planificación.
 - El segmento *ID* se desdobla en *ID* y *II*.
-      - *II* (Instruction Issue), La instrucción espera a que no hayan riesgos *RAW* y cuando estén todos los operandos
-fuente listos emite la instrucción a la unidad funcional.
+      - *II* (Instruction Issue), La instrucción espera a que no hayan riesgos *RAW* y cuando estén todos los operandos fuente listos emite la instrucción a la unidad funcional.
 
 *** Funcionamiento con FPU IBM 360/91
 1. Las instrucciones se emiten desde la *FLOS* a la *RS*.
@@ -107,7 +106,7 @@ fuente listos emite la instrucción a la unidad funcional.
        - La *RS* está constantemente comprobando las publicaciones en la *CDB*.
 3. Si la *RS* encuentra el contenido de una etiqueta en la *CDB* la copia en la instrucción reservada y la marca como
    preparada.
-4. Instrucciones sin dependencias se encían a la unidad funcional.
+4. Instrucciones sin dependencias se envían a la unidad funcional.
 
 * Procesador Superescalar
 - Varias instrucciones avanzar simultáneamente por el cauce.
@@ -525,6 +524,10 @@ fuente listos emite la instrucción a la unidad funcional.
 - *I-Caché*, Caché de instrucciones del procesador.
 - *Unidad Funcional*, módulos de cómputo en un procesador, pueden funcionar de forma independiente.
 - *Planificación Dinámica*, el hardware reorganiza la ejecución de instrucciones par reducir las detenciones.
+- *RS*, reservation stations, *las instrucciones esperan aquí a sus operandos* para ser emitidas hacia la unidad funcional.
+      - Por cada operando contiene 2 campos, *valor* y *etiqueta*.
+      - Se forma una pequeña cola de instrucciones.
+      - Cada unidad funcional suele tener una *RS*.
 - *FPU*, floating point unit.
       - *FR*, Floating Register.
             - los registros tienen un campo *ocupado* y un campo *etiqueta* (planificación).
@@ -532,9 +535,6 @@ fuente listos emite la instrucción a la unidad funcional.
       - *SDB*, Store Data Buffers, de aquí los datos se escriben en memoria.
             - Puede ser el destino de instrucciones, por tanto los registros del SDB tienen un campo *etiqueta*.
       - *FLOS*, floating point operation stack, pila de operaciones de coma flotante.
-      - *RS*, reservation stations, *las instrucciones esperan aquí a sus operandos*
-        para ser emitidas hacia la unidad funcional (planificación).
-            - Por cada operando contiene 2 campos, *valor* y *etiqueta*.
       - *CDB*, Common data bus, permite cargar un resultado en todas las unidades funcionales,
         conecta salida de unidades funcionales con las *RS*, *FR* y *SDB* (adelantamiento).
 - *Acciones Atómicas*, Acciones indivisibles en subacciones.
