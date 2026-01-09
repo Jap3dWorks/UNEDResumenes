@@ -117,31 +117,30 @@ fuente listos emite la instrucción a la unidad funcional.
       - Para eliminar dependencias falsas.
   
 ** Arquitectura
-*** Segmentos
+*** Segmentos Etapas
 - *IF* (instruction fetch), Lectura de la instrucción de la caché de instrucciones.
-- *ID* (Instruction Decoding), Decodificación de la instrucción y lectura de sys operandos del fichero de registros.
-- *II* (Instruction Issue), Etapa de distribución/emisión.
+- *ID* (Instruction Decoding), Decodificación de la instrucción y lectura de sus operandos del fichero de registros.
+- *II* (Instruction Issue), Estados de *distribución/emisión*.
 - *EX* (Execution), Ejecución de las operaciones. También de las instrucciones de salto.
-- *MEM* (Memory acces), lecturas y escrituras a la caché de datos.
-- *WB* (Write-Back results), Escritura en fichero de registros.
+- *WR* (write back results), escritura en fichero de registros.
+- *RI* (Retirement instruction), etapa de retirada.
 
 *** Estados de una Instrucción
 - *Distribuida* (dispatched), ha sido enviada a una estación de reserva (*RS*) asociada a una o varias
   unidades funcionales del mismo tipo.
 - *Emitida* (issued), sale de una *RS* hacia una unidad funcional.
-- *Finalizada* (finished), abandona la unidad funcional y para al buffer de reordenamiento.
-  (registros de renombramiento).
+- *Finalizada* (finished), abandona la unidad funcional y va al buffer de reordenamiento, los resultados no son accesibles al programador (registros de renombramiento).
 - *Terminada* (completed), completada la escritura desde los registros de renombramiento hasta los registros arquetectónicos (visibles al programador).
 - *Retirada* (retired), ha realizado la escritura en memoria.
+
+*** Diagrama Segmentación Superescalar genérica
+[[file:images/SuperescalarGenérica.png]]
 
 *** Problemas
 - *Falta de alineamiento*, 
 - *Rotura de secuencialidad*, 
 
 ** Instrucciones Distribuidas
-*** Predicción de destino
-- *BTAC*, 
-
 *** Renombramiento Registros
 - los registros de renombramiento se suelen anotar como *Rr<número>*.
 - *RRF*, Rename register file, Buffer de renombramiento o fichero de registros de renombramiento.
@@ -205,6 +204,66 @@ fuente listos emite la instrucción a la unidad funcional.
       - Cuando el bus esté libre.
 - A una misma dirección se escribirá aquella instrucción posterior en el código del programa.
   
+** Predicción dinámica
+*** Tratamiento
+- Cómputo de los saltos suele ser una unidad funcinal dedicada.
+- *Especular*, intentar predecir el resultado de un salto
+      - Se intenta no detener el cauce hasta saber el resultado del salto.
+- *Predicción estática*, el compilador deduce el resultado de una condición.
+  Por tanto no es necesaria una instrucción de salto condicional.
+
+*** Predicción de la dirección de destino de salto mediante BTAC
+- *Branch Target Adress Cache* (BTAC), Memoria cache asiciativa que almacena las direcciones de los saltos efectivos ya ejecutados.
+      - Columnas de la BTAC
+            - *BIA*, branch instruction address, no almacena la instrucción completa, por rendimiento.
+            - *BTA*, branch target address.
+- *Falso positivo*, Distintas direcciones pueden dar el mismo valor de BTAC.
+- Se usa el PC para saber si la instrucción en la posición PC está en la BTAC.
+- Si está, en ese PC ha habido salto anteriormente.
+- Si el PC no está y es un salto se considera el salto no efectivo.
+- Si finalmente el salto es efectivo (etapa EX) se actualiza la BTAC.
+- Si el salto no es efectivo se elimina la entrada de la BTAC si la hay.
+- Si no hay entradas libres y tenemos que añadir una nueva entrada se puede usar un algoritmo tipo *LRU*.
+
+*** Predicción de la dirección de destino de salto mediante BTB con historial de salto
+- *Branch target Buffer*, Similar a BTAC pero además se almacena un conjunto de bits con el historial de aciertos (campo BH).
+      - El historial sirve para realizar un reemplazo si es preciso.
+
+*** Predicción de Smith o predictor bimodal
+- Es un tipo de *BTB*.
+- Campo *BH* como contador de saturación, una máquina de estados.
+      - 00, Strongly not taken.
+      - 01, Weakly not taken.
+      - 10, Weakly taken.
+      - 11, Strongly taken
+
+*** Predictor de dos niveles basado en historial global
+- *BHR*, Branch History Register, historial global de saltos.
+      - Registro de desplazamiento de tamaño $h$, se introducen los nuevos valores por la derecha.
+      - 1 en caso de salto 0 no hay salto.
+- *PHT*, Pattern history table.
+      - Entradas de tamaño $h+m$, los $m$ bits se extran con una función hash sobre la dirección de la instrucción.
+      - Cada entrada tiene un contados de saturación de 2 bits.
+            - Actua como el predictor bimodal.
+        
+*** Predictor de dos niveles basado en el historial local
+- Muy similar al *predictor de dos niveles basado en historial gobal*
+- *BHT*, Branch History Table
+      - Ahora el historial de saltos es local.
+      - Se usa una función hash sobre la dirección de la instrucción de salto (se reduce hasta $k$ bits) para acceder a la entrada de la *BHT*.
+      - $2^k$ entradas en la *BHT*.
+- Acceso a la *PTH.*
+      - hash sobre la dirección de la instrucción
+      - Valor obtenido de la *BHT*
+      - Se combinan y se accede al contador de saturación.
+
+*** Predictos de dos niveles con indice compartido gshare
+- Variante del predictor de dos niveles con historial global
+- 
+  [[file:images/PredictorGShare.png]]
+
+*** Predictores híbridos
+- Procesadores superescalares actuales combinan dos predictores y un selector.
 
 * Procesadores VLIW
 ** VLIW
