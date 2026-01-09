@@ -401,7 +401,6 @@
       - elemento en dirección ###101###, irá al banco 5.
 
 * Procesamiento Paralelo
-
 ** Organización basda en el modelo de comunicación
 *** Espacio Direcciones Compartido
 - Memoria compartida a través de la red de interconexión (pueden ser varios módulos).
@@ -429,37 +428,43 @@
 *** Redes de Interconexión
 **** Redes Estáticas
 - Topología definida durante la construcción de la máquina.
-- *Topología Red Unidimensional*
-      - *Red Lineal*, Conectar cada procesador a dos procesadores vecinos, extremos abiertos.
-      - *Red Anillo*, Colo la Red Lineal pero cerrada.
-- *Topología Red bidimensional*
-      - *Red Anillo Cordal*, Red Anillo con conexión cada X nodos.
-      - *Red Malla*, Malla de cuadrados.
-            - *Mesh Cuadrada*, mismo número nodos en X e Y.
-            - Si se conectan los extremos tenemos una *Mesh cerrada* o Toro.
-      - *Red Sistólica*, Red Malla con la diagonal conectada
-      - *Red Completamente conectada*, anillo donde todos los nodos tienen una conexión con cualquier otro nodo.
-      - *Red Estrella*, Un procesador central conectado a los demás procesadores.
-      - *Redes de árbol*, A veces solo las hojas son procesadores y los demás nodos son elementos de conmutación.
-        Solo un camino une dos nodos en una red de árbol.
-            - Desventaja cuando muchos nodos de un lado quieren comunicarse con los nodos del lado contrario.
-              Las raices pueden verse saturadas.
-            - Árbol Fat Tree, para aliviar la saturación puede aumentarse el número de conexiones en los conmutadores
-              más cercanos a la raiz (es un camino de mayor tránsido).
-- *Topología Red Tridimensional*
-      - *Mesh tridimensional*, 
-- *Topología Red Hipercubos*
-      - hipercubo dimensión $d$ esta compuesto por $p=2^d$ procesadores.
-      - Cada procesador se etiqueta con un número en binario de $d$ dígitos.
-      - Dos procesadores se conectan entre sí si las etiquetas difieren de un único dígito en binario.
-      - Un procesador de un hypercubo de dimensión d se conecta directamente a otros d procesadores.
-      - Un hypercubo de dimensión $d$ puede dividirse en 2 hipercubos de dimensión $d-1$.
-            - Cada partición son todos los procesadores con el mismo valor en un mismo dígito de su etiqueta.
-      - *Distancia de Hamming*, número total de posiciones de bits de dos procesadores para los que sus etiquetas son diferentes.
-            - Es la suma de todos los unos de el resultado de la operación xor entre las etiquetas.
-            - $\sum \{ n\ |\ \forall n \in e_a \oplus e_b \}$
-            - El camino de encuentra aplicando las diferencias entre las equiquetas desde el bit menos significativo.
+
+***** *Topología Red Unidimensional*
+- *Red Lineal*, Conectar cada procesador a dos procesadores vecinos, extremos abiertos.
+- *Red Anillo*, Colo la Red Lineal pero cerrada.
+
+***** *Topología Red bidimensional*
+- *Red Anillo Cordal*, Red Anillo con conexión cada X nodos.
+- *Red Malla*, Malla de cuadrados.
+      - *Mesh Cuadrada*, mismo número nodos en X e Y.
+      - Si se conectan los extremos tenemos una *Mesh cerrada* o Toro.
+- *Red Sistólica*, Red Malla con la diagonal conectada
+- *Red Completamente conectada*, anillo donde todos los nodos tienen una conexión con cualquier otro nodo.
+- *Red Estrella*, Un procesador central conectado a los demás procesadores.
+- *Redes de árbol*, A veces solo las hojas son procesadores y los demás nodos son elementos de conmutación.
+  Solo un camino une dos nodos en una red de árbol.
+      - Desventaja cuando muchos nodos de un lado quieren comunicarse con los nodos del lado contrario.
+        Las raices pueden verse saturadas.
+      - Árbol Fat Tree, para aliviar la saturación puede aumentarse el número de conexiones en los conmutadores
+        más cercanos a la raiz (es un camino de mayor tránsido).
+
+***** *Topología Red Tridimensional*
+- *Mesh tridimensional*,
         
+***** *Topología Red Hipercubos*
+- hipercubo dimensión $d$ esta compuesto por $p=2^d$ procesadores.
+- Cada procesador se etiqueta con un número en binario de $d$ dígitos.
+- Dos procesadores se conectan entre sí si las etiquetas difieren de un único dígito en binario.
+- Un procesador de un hypercubo de dimensión d se conecta directamente a otros d procesadores.
+- Un hypercubo de dimensión $d$ puede dividirse en 2 hipercubos de dimensión $d-1$.
+      - Cada partición son todos los procesadores con el mismo valor en un mismo dígito de su etiqueta.
+- *Distancia de Hamming*, número total de posiciones de bits de dos procesadores para los que sus etiquetas son diferentes.
+      - Es la suma de todos los unos de el resultado de la operación xor entre las etiquetas.
+      - $\sum \{ n\ |\ \forall n \in e_a \oplus e_b \}$
+      - El camino de encuentra aplicando las diferencias entre las equiquetas desde el bit menos significativo.
+
+[[file:images/RedHipercubo.png]]        
+
 **** Redes Dinámicas
 - Sistemas paralelos de propósito general.
 - *Redes basadas en Bus*, los nodos comparten un único medio de comunicación, el Bus.
