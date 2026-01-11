@@ -1,2 +1,14 @@
 #+title: Empresas Informáticas
 
+* El proceso de producción y el factor humano
+- *Función productiva*, Empleo de factores humanos y materiales para la elaboración de bienes y servicios.
+- *Dirección de producción*, proceso de toma de decisiones en este ámbito.
+- *Empresa*, unidad económica de producción.
+- *Familia*, unidad económica de consumo.
+
+- *Comprar o producir*, componentes etc
+      - $c_f + c_v \cdot p < p \cdot P$
+            - $c_f$, coste fijo
+            - $c_v$, coste variable, por unidad.
+            - $p$, unidades
+            - $P$, precio unidad comprada.
