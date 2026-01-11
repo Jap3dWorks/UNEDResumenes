@@ -1,1 +1,28 @@
 #+title: Álgebra Lineal
+
+* Aplicaciones Lineales
+- $f: U \to V$
+  $\dim(U) = \dim(Ker(f)) + \dim(Im(f))$
+
+** Endomorfismo
+- Es una palicación lineal de un espacio vectorial en si mismo.
+      - $f: V \to V$
+
+
+** Espacio Dual
+- *Forma lineal*, aplicación lineal de $V$ en $\mathbb{K}$.
+      - $f: V \to \mathbb{K}$
+- *Espacio Dual*, conjunto de formas lineales de $V$.
+      - $V^* = \mathcal{L}(V,\mathbb{K}) \simeq \mathfrak{M}_{1 \times n}$
+
+** Ejercicios
+[[file:images/C4E1.png]]
+
+[[file:images/C4E2.png]]
+
+[[file:images/C4E3.png]]
+
+[[file:images/C4E4.png]]
+
+[[file:images/C4E5.png]]
+
