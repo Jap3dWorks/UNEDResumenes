@@ -59,7 +59,7 @@
       - Se pueden invocar directamente en ensamblador.
       - Se produce una *trampa* que cambia el hardware a modo núcleo, se efectua la rutina y se vuelve al modo usuario.
             - Todo guiado por el SO.
-      - El paso de parámetros puede hacerse con registros, memoria localizada o almacenarlos en una pila dedicada.
+      - El paso de parámetros y/o obtención de resultados puede hacerse con registros, memoria localizada o almacenarlos en una pila dedicada.
 - *Tipos de llamadas al sistema*
       - *Control de programas en ejecución (procesos)*.
       - *Administración de archivos o directorios*.
@@ -91,17 +91,35 @@
       - Menor rendimieno por el paso de mensajes
   
 * Descripción y control de procesos
+- *Proceso*, programa en ejecución.
+  
 ** Tipos de procesos
 - *Procesos de usuario*
 - *Procesos demoio*, no asociados a ningún usuario.
 - *Procesos del sistema operativo*, por ejemplo el intercambio a memoria secundaria de procesos.
 
+** Espacio de direcciones de memoria lógica o virtual de un proceso
+- También se conoce como *imagen del proceso o espacio de direcciones de usuario*.
+- Regiones
+      - *Región de código*, corresponde a la región de código del archivo ejecutable.
+      - *Región de datos*, corresponde a la región de datos del archivo ejecutable.
+            - *datos inicializados*, tamaño fijo.
+            - *datos no inicializados*, puede variar el tamaño.
+      - *Región de pila*, Se crea automáticamente y el tamaño es ajustado dinámicamente en tiempo de ejecución.
+            - Compuesta por marcos de pila lógicos.
+            - Un marco se añade al proceso cuando se llama a una función y se quita cuando se sale.
+                  - Cada marco alamcena el contador de programa y el puntero de pila anteriores
+                        - Volver a la ejecución llamante de la función al salir.
+- Se reserva algo de espacio adyacente a la región de pila ya la región de datos no inicializados porque pueden crecer.
+
 ** Estados de un proceso
-- *Nuevo*
-- *Preparado*
-- *Ejecutándose*
-- *Bloqueado*
-- *Terminado*
+- *Nuevo*, Tiene asignadas algunas estructuras de datos pero aún no está cargado en memoria principal.
+- *Preparado*, Listo para ser ejecutado cuando el planificador lo considere.
+- *Ejecutándose*, haciendo uso del procesador
+- *Bloqueado*, Esperar a un determinado evento, por ejemplo la finalización de operaciones de E/S.
+- *Terminado*, Ha finalizado su ejecución.
+- 
+  [[file:images/TransicionProcesoEstados.png]]
   
 ** Creación de procesos
 *** Acciones para crear un proceso más comunes.
@@ -174,7 +192,7 @@
 * Planificación de procesos
 ** Niveles de Planificación
 ** Algoritmos de planificación
-- $T_{LL}$, tiempo global en el que un proceso llega a la cola de planificación.
+- $T_{LL}$, Tiempo global en el que un proceso llega a la cola de planificación.
 - $T_F$, Tiempo de finalización, tiempo global en el que el proceso finaliza.
 - $T_S$, Tiempo de servicio, tiempo de ejecución de un proceso.
 - $T_R$, Tiempo de retorno.
@@ -388,6 +406,10 @@
 * Administración de Memoria
 ** Particionamiento dinámico
 ** Particionamiento estático
+** Particionamiento Fijo
+
+** Particionamiento dinámico
+
 ** Paginación Simple
 *** Descripción
 - Memoria principal se divide en bloques del mismo tamaño $S_p$ denominados *marcos de página*.
@@ -544,10 +566,10 @@
 ** Segmentación Simple
 *** Descripción
 - Un programa se divide en segmentos.
-      - Código principal
-      - Subrutinas
-      - Pila
-      - Datos
+      - *Código principal*
+      - *Subrutinas*
+      - *Pila*
+      - *Datos*
 - Cada segmento es una entidad lógica conocida por el programador.
 - Cada segmento empieza por la $Dir_{L}=0$ y tiene un tamaño diferente.
 - El sistema operativo asigna a cada segmento un identificador $h$ único.
@@ -619,7 +641,7 @@
 
 ** Paginación por demanda
 *** Descripción
-- Divide memoria principal en marcos de página.
+- Divide memoria principal en *marcos* de página.
 - Divide el espaio del proceso en páginas.
 - *fallo de página*: excepción producida por el hardware cuando se referencia una página no referenciada.
       - El OS debe tratar la excepción y luego reanudar el programa.
