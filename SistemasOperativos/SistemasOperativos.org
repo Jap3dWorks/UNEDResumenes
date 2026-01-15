@@ -29,12 +29,13 @@
 - Según el número de programas en memoria
       - *Monoprogramado*, en memoria principal se almacena el OS y un único programa.
       - *Multiprogramados*, en memoria principal se almacena el OS y varios programas.
-      - *Multiacceso*, permite el acceso a traces de dos o más terminales.
+      - *Multiacceso*, permite el acceso a través de dos o más terminales.
       - *Con multiprocesamiento*, puede coordinar la actividad de varios procesadores.
 - Según los requisitos temporales de los programas a ejecutar
       - *Sistemas operativos por lotes*, procesa agrupaciones en lotes de trabajos similares.
             - cada trabajo consta de un programa, datos e instrucciones para el OS.
-      - *Sistemas operativos de tiempo compartido*
+      - *Sistemas operativos de tiempo compartido o sistemas interactivos*, multiusuario con multiprogramación.
+            - El usuario cree ser el único usando el computador.
       - *Sistemas operativos de tiempo real*
             - Tiempo real suave
             - Tiempo real estricto
@@ -44,7 +45,7 @@
       - *Sistemas operativos para servidores de red*
       - *Sistemas operativos para computadores personales*
       - *Sistemas operativos para computadores de mano*, un móbil
-      - *Sistemas operaticos integrados*, un reproductor mp3
+      - *Sistemas operativos integrados*, un reproductor mp3
 - Otros
       - *Sistemas operativos paralelos*
       - *Sistemas operativos distribuidos*
@@ -761,6 +762,71 @@
 ** Asignación de memoria principal
 
 * Gestión de la Entrada/Salida
+** Peticiones de E/S
+- Pueden ser peticiones de un proceso o del propio SO.
+- Procesos o demonios solicitan la petición al SO.
+
+** Capas del núcleo de un SO encargadas de la E/S
+*** Subsistema de E/S
+- Los procesos y demonios se comunican con esta capa.
+- Tareas comunes e independientes de los dispositivos de E/S.
+      - *Asignación y liberación de dispositivos dedicados*
+            - Como una impresora, que solo puede ser usada por un proceso a la vez (dispositivo dedicado).
+      - *Bloqueo de procesos que solicitan una operación de E/S*
+            - Depende de si la llamada es en modo bloqueante.
+      - *Planificación de la E/S*
+            - Algoritmos de planificación.
+      - *Invocación del driver de dispositivo apropiado*
+            - Pieza que permite la comunicació entre el subsitema de E/S y el controlador del dispositivo.
+            - Así cada dispositivo tiene su controlador propio pero el SO no es consciente de ello.
+      - *Almacenamiento temporal de datos de E/S o buffering*
+            - Creación y manejo de buffers
+      - *Proporcionar un tamaño de bloque uniforme a los niveles superiores de software*
+            - Así las capas superiores puede trabajar con un tamaño de bloque lógico único.
+      - *Gestión de lo errores producidos en una operación de E/S*
+            - Decidir las acciones ante *errores de programación* y/o *errores en el dispositivo*.
+- Proporciona la interfaz que los drivers deben implementar.
+      - interfaz uniforme, uniforme a todos los dispositivos sea cual sea su naturaleza.
+      - Interfaz no uniforme, según la naturaleza del dispositivo.
+
+*** Drivers de dispositivos
+- Permite a un SO controlar un determinado tipo de dispositivo de E/S
+      - Sin conocer los detalles del dispositivo en concreto.
+      - Facilitados por los fabricantes de dispositivos para cada SO.
+            - Si el subsistema de E/S lo permite puede invocar procedimientos del núcleo.
+                  - Si la llamada del subsistema que implementa el driver es en modo núcleo.
+      - Acciones comunes
+            - *Comprobar que los parámetros de la llamada son correctos*
+            - *Traducir los parámetros de una función a parámetros específicos del dispositivo*
+            - *Comprobar si el dispositivo de E/S está ocupado*
+            - *Generar un conjunto de órdenes a partir de la llamada del subsistema de E/S*
+                  - A veces se traduce en diferentes pasos en el controlador.
+            - *Esperar a que el controlador ejecute las órdenes*
+            - *Comprobar que no hay errores*
+            - *Examinar la cola de peticiones de E/S pendientes*
+                  - Si no hay el driver se bloquea en espera de nuevas peticiones.
+
+*** Manejadores de las interrupciones
+- Cuando un dispositivo de E/S finaliza una operación el controlador que lo supervisa genera una interrupción.
+- Parte del SO muy dependientes del Hardware.
+- Alta prioridad de ejecución
+- Interrupciones vectorizadas
+      - Solo si el hardware lo implementa.
+      - Cada interrupción suministra un número de interrupción (*número del vector de interrupción*).
+            - El número anterior sirve como entrada en *la tabla de vectores de interrupción*.
+      - En cada entrada de *La tabla de vectores de interrupción* se encuentra un puntero al inicio del manejador de ese tipo de interrupción.
+
+** Buffering
+
+** Spooling        
+- Técnica de control para dispositivos dedicados en entornos multiprogramados.
+- Un proceso demonio y un directorio especial (*directorio de spooling*)
+      - Un proceso usuario envía los archivos que quiere escribir en el dispositivo E/S al directorio de spooling.
+      - El demonio comprueba periodicamente el contenido del directorio
+            - Va mandando los archivos al dispositivo de salida.
+      - Solo el demonio puede escribir en el dispositivo.
+- Se evita un bloqueo excesivo por parte de un proceso del dispositivo de E/S.
+- Algunas usos son para impresoras o envío de paquetes por la red.
 
 ** Discos Duros
 *** Estructura Física
