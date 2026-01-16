@@ -350,9 +350,6 @@
       - Cuando el bus esté libre.
 - A una misma dirección se escribirá aquella instrucción posterior en el código del programa.
   
-** Lectura de operandos
-- *Planificación sin lectura de operandos*, Lectura de operandos en la emisión de instrucciones desde las estaciones de reserva individuales a las unidades funcionales.
-- *Planificación con lectura de operandos*, 
 
 * Procesadores VLIW
 ** VLIW
