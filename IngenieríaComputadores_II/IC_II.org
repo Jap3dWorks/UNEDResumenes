@@ -93,6 +93,11 @@
   soluciones para la planificación.
 - El segmento *ID* se desdobla en *ID* y *II*.
       - *II* (Instruction Issue), La instrucción espera a que no hayan riesgos *RAW* y cuando estén todos los operandos fuente listos emite la instrucción a la unidad funcional.
+- *RS*, estaciones de reserva, reservation stations, las instrucciones esperan aquí para ser emitidas hacia la unidad funcional.
+      - Instrucciones ya decodificadas
+      - Por cada operando contiene 2 campos, *valor* y *etiqueta*.
+      - Se forma una pequeña cola de instrucciones.
+      - Cada unidad funcional suele tener una *RS*.
 
 *** Funcionamiento con FPU IBM 360/91
 1. Las instrucciones se emiten desde la *FLOS* a la *RS*.
@@ -107,6 +112,8 @@
 3. Si la *RS* encuentra el contenido de una etiqueta en la *CDB* la copia en la instrucción reservada y la marca como
    preparada.
 4. Instrucciones sin dependencias se envían a la unidad funcional.
+
+[[file:images/UCFlotanteConTomasulo.png]]
 
 * Procesador Superescalar
 - Varias instrucciones avanzar simultáneamente por el cauce.
@@ -139,7 +146,147 @@
 - *Falta de alineamiento*, 
 - *Rotura de secuencialidad*, 
 
-** Instrucciones Distribuidas
+
+** Lectura de instrucciones
+- *Grupos de lectura*, Instrucciones que se extraen de la i-caché en un ciclo.
+
+*** Falta de alineamiento
+- Alineamiento incorrecto, las instrucciones de un grupo de lectura exceden el tamaño con el bloque de lectura del procesador.
+
+*** Rotura de secuencialidad
+- Una de las instrucciones del grupo lectura es un salto o una rotura de secuencialidad.
+- *Coste de oportunidad* coste derivado de no aprovechar bien el cauce de instrucciones, debido a saltos y saltos condicionales.
+- Es importante la detección temprana de las instrucciones de salto.
+      - Lo habitual es en el *ID*. Cuanto antes mejor para poder analizarlas.
+
+*** Predicción dinámica
+**** Tratamiento
+- Cómputo de los saltos suele ser una unidad funcinal dedicada.
+- *Especular*, intentar predecir el resultado de un salto
+      - Se intenta no detener el cauce hasta saber el resultado del salto.
+- *Predicción estática*, el compilador deduce el resultado de una condición.
+  Por tanto no es necesaria una instrucción de salto condicional.
+
+**** Predicción de la dirección de destino de salto mediante BTAC
+- *Branch Target Adress Cache* (BTAC), Memoria cache asiciativa que almacena las direcciones de los saltos efectivos ya ejecutados.
+      - Columnas de la BTAC
+            - *BIA*, branch instruction address, no almacena la instrucción completa, por rendimiento.
+            - *BTA*, branch target address.
+- *Falso positivo*, Distintas direcciones pueden dar el mismo valor de BTAC.
+- Se usa el PC para saber si la instrucción en la posición PC está en la BTAC.
+- Si está, en ese PC ha habido salto anteriormente.
+- Si el PC no está y es un salto se considera el salto no efectivo.
+- Si finalmente el salto es efectivo (etapa EX) se actualiza la BTAC.
+- Si el salto no es efectivo se elimina la entrada de la BTAC si la hay.
+- Si no hay entradas libres y tenemos que añadir una nueva entrada se puede usar un algoritmo tipo *LRU*.
+
+**** Predicción de la dirección de destino de salto mediante BTB con historial de salto
+- *Branch target Buffer*, Similar a BTAC pero además se almacena un conjunto de bits con el historial de aciertos (campo BH).
+      - El historial sirve para realizar un reemplazo si es preciso.
+
+**** Predicción de Smith o predictor bimodal
+- Es un tipo de *BTB*.
+- Campo *BH* como contador de saturación, una máquina de estados.
+      - 00, Strongly not taken.
+      - 01, Weakly not taken.
+      - 10, Weakly taken.
+      - 11, Strongly taken
+
+**** Predictor de dos niveles basado en historial global
+- *BHR*, Branch History Register, historial global de saltos.
+      - Registro de desplazamiento de tamaño $h$, se introducen los nuevos valores por la derecha.
+      - 1 en caso de salto 0 no hay salto.
+- *PHT*, Pattern history table.
+      - Entradas de tamaño $h+m$, los $m$ bits se extran con una función hash sobre la dirección de la instrucción.
+      - Cada entrada tiene un contados de saturación de 2 bits.
+            - Actua como el predictor bimodal.
+        
+**** Predictor de dos niveles basado en el historial local
+- Muy similar al *predictor de dos niveles basado en historial gobal*
+- *BHT*, Branch History Table
+      - Ahora el historial de saltos es local.
+      - Se usa una función hash sobre la dirección de la instrucción de salto (se reduce hasta $k$ bits) para acceder a la entrada de la *BHT*.
+      - $2^k$ entradas en la *BHT*.
+- Acceso a la *PTH.*
+      - hash sobre la dirección de la instrucción
+      - Valor obtenido de la *BHT*
+      - Se combinan y se accede al contador de saturación.
+
+**** Predictos de dos niveles con indice compartido gshare
+- Variante del predictor de dos niveles con historial global
+- 
+  [[file:images/PredictorGShare.png]]
+
+**** Predictores híbridos
+- Procesadores superescalares actuales combinan dos predictores y un selector.
+
+** Distribución
+*** Buffer de distribución
+- También se conoce como *ventana de instrucciones*.
+- Las instrucciones se incluyen tras la decodificación.
+- Se busca desacoplar la etapa de decodificación de la etapa de ejecución.
+- La instrucción se deposita junto a los identificadores de los operandos fuentes.
+      - 1 bit por operando indica si este está disponible.
+#      - Las instrucciones esperan a tener los operandos disponibles.
+- Las *estaciones de reserva* (RS) almacenan las instrucciones decodificadas.
+- *distribución*, instrucción a la estación de reserva (vinculada a una unidad funcional).
+- *emisión*, instrucción a la unidad funcional.
+
+*** Organización del Buffer de distribución
+- *Estación de reserva centralizada*, equivale a un buffer de distribución que actua como estación de reserva global.
+- *Estación de reserva distribuidas o individuales*
+      - Cada unidad funcional dispone de una estación de reserva propia.
+      - Un *buffer de distribución* reparte las instrucciones entre las estaciones de reserva.
+- *Estaciones de reserva en clústers o compartidas*
+      - Las estaciones de reserva reciben las instrucciones del *buffer de distribución*.
+      - Una estación de reserva puede servir a varias unidades funcionales.
+
+*** Operativa de una estación de reserva individual
+- Campos Generales
+      - *Ocupado (O)*, Entrada ocupada por una instrucción pendiente de emisión.
+      - *Código de operación (CO)*, El código de la operación.
+      - *Operando 1 (OP1)*
+            - Si el registro está disponible almacena el valor o el identificador (depende del diseño).
+            - Si no está disponible contiene el identificador del registro.
+      - *Válido (V1)*, Indica si el operando fuente está disponible.
+      - *Operando 2 (OP2)*
+      - *Válido (V2)*
+      - *Destino (D)*, Identificador del registro destino que almacenará el valor de forma temporal (renombramiento de registros).
+      - *Listo (L)*, Todos los operandos están disponibles y puede emitirse.
+        
+*** Fase de distribución
+- Envío de una instrucción desde el buffer de distribución a la estación de reserva.
+- Se distribuyen en orden al *buffer de distribución*.
+- Si la *lectura de operandos* se realiza en esta fase, Los identificadores de los operandos disponibles se sustituyen por su valor en la *estación de reserva*.
+
+*** Fase de supervisión
+- La instrucción ya está en la estación de reserva, se espera a que los dos *operandos fuente* estén disponibles.
+- Las instrucciones con operandos fuente pendientes se encuentran es espera activa.
+      - Revisan el contenido del *CDB* en espera de sus operandos.
+      - *Lógica de activación*, hardware que realiza la supervisión de los buses.
+
+*** Fase de emisión  
+- Instrucciones con todos sus operandos fuente disponibles.
+- Espera activa de *lógica de selección*.
+      - Determina que instrucción se puede emitir.
+- Da paso a la *ejecución*, bit ocupado=0 en estación de reserva.
+- *Planificacior dinámico*, selecciona y emite una instrucción de las listas para emitir.
+      - Es habitual seleccionar la instrucción más antigua.
+- *Emisión alineada*, El *buffer de distribución* no puede enviar nuevas instrucciones hasta que la *estación de reserva* esté vacía.
+- *Emisión no alineada*, Sí que puede distribuir instrucciones mientras haya huecos.
+
+*** Lectura  de operandos
+- *Planificación sin lectura de operandos*, La lectura de los operandos fuente se realiza al emitir desde la *estación de reserva* a la *unidad funcional*.
+      - Cuando las instrucciones de distribuyen desde *el bufer de distribución* a la *estación de reserva* se analizan las dependencias verdaderas.
+      - Si hay dependencias se marca el registro como inválido en el *fichero de registros*.
+      - Registros que son el destino de una operación.
+      - Al acabar la operación la unidad funcional coloca el identificador del registro destino y el valor en los buses de distribución.
+- *Planificación con lectura de operandos*, La lectura de operandos se efectua en la *distribución* (buffer distribución -> estación de reserva).
+      - Código operación e identificador de registro destino se copian directamente a la estación de reserva.
+      - Si los operandos fuente están disponibles se copia el valor y se pone el bit de validez a 1.
+      - Si no se copia el identificador del registro y el bit de validez a 0.
+      - La espera activa revisa el CDB a la espera de los operandos pendientes.
+
 *** Renombramiento Registros
 - los registros de renombramiento se suelen anotar como *Rr<número>*.
 - *RRF*, Rename register file, Buffer de renombramiento o fichero de registros de renombramiento.
@@ -152,7 +299,7 @@
 - Decide cuando los datos en *RRF* deben escribirse en el *ARF*.
 - Entradas:
       - *Ocupada* (O),
-      - *Emiteda* (E),
+      - *Emitida* (E),
       - *Finalizada* (F),
       - *Dirección* (Dir),
       - *Registro de destino* (Rd),
@@ -168,8 +315,8 @@
 
 ** Instrucciones Terminadas
 *** Buffer de reordenamiento o terminación
-- Asegura la *consistencia de procesador*, Las instrucciones concluyen el procesamiento en el mismo
-  orden secuencial que el programa.
+- Las instrucciones se incluyen tras la *decodificación* en orden.
+- Asegura la *consistencia de procesador*, Las instrucciones concluyen el procesamiento en el mismo orden secuencial que el programa.
       - Garantiza el resultado final del programa.
             - Actualización correcta desde el *RRF* al *ARF*.
       - Permite un tratamiento correcto de las interrupciones.
@@ -203,66 +350,9 @@
       - Cuando el bus esté libre.
 - A una misma dirección se escribirá aquella instrucción posterior en el código del programa.
   
-** Predicción dinámica
-*** Tratamiento
-- Cómputo de los saltos suele ser una unidad funcinal dedicada.
-- *Especular*, intentar predecir el resultado de un salto
-      - Se intenta no detener el cauce hasta saber el resultado del salto.
-- *Predicción estática*, el compilador deduce el resultado de una condición.
-  Por tanto no es necesaria una instrucción de salto condicional.
-
-*** Predicción de la dirección de destino de salto mediante BTAC
-- *Branch Target Adress Cache* (BTAC), Memoria cache asiciativa que almacena las direcciones de los saltos efectivos ya ejecutados.
-      - Columnas de la BTAC
-            - *BIA*, branch instruction address, no almacena la instrucción completa, por rendimiento.
-            - *BTA*, branch target address.
-- *Falso positivo*, Distintas direcciones pueden dar el mismo valor de BTAC.
-- Se usa el PC para saber si la instrucción en la posición PC está en la BTAC.
-- Si está, en ese PC ha habido salto anteriormente.
-- Si el PC no está y es un salto se considera el salto no efectivo.
-- Si finalmente el salto es efectivo (etapa EX) se actualiza la BTAC.
-- Si el salto no es efectivo se elimina la entrada de la BTAC si la hay.
-- Si no hay entradas libres y tenemos que añadir una nueva entrada se puede usar un algoritmo tipo *LRU*.
-
-*** Predicción de la dirección de destino de salto mediante BTB con historial de salto
-- *Branch target Buffer*, Similar a BTAC pero además se almacena un conjunto de bits con el historial de aciertos (campo BH).
-      - El historial sirve para realizar un reemplazo si es preciso.
-
-*** Predicción de Smith o predictor bimodal
-- Es un tipo de *BTB*.
-- Campo *BH* como contador de saturación, una máquina de estados.
-      - 00, Strongly not taken.
-      - 01, Weakly not taken.
-      - 10, Weakly taken.
-      - 11, Strongly taken
-
-*** Predictor de dos niveles basado en historial global
-- *BHR*, Branch History Register, historial global de saltos.
-      - Registro de desplazamiento de tamaño $h$, se introducen los nuevos valores por la derecha.
-      - 1 en caso de salto 0 no hay salto.
-- *PHT*, Pattern history table.
-      - Entradas de tamaño $h+m$, los $m$ bits se extran con una función hash sobre la dirección de la instrucción.
-      - Cada entrada tiene un contados de saturación de 2 bits.
-            - Actua como el predictor bimodal.
-        
-*** Predictor de dos niveles basado en el historial local
-- Muy similar al *predictor de dos niveles basado en historial gobal*
-- *BHT*, Branch History Table
-      - Ahora el historial de saltos es local.
-      - Se usa una función hash sobre la dirección de la instrucción de salto (se reduce hasta $k$ bits) para acceder a la entrada de la *BHT*.
-      - $2^k$ entradas en la *BHT*.
-- Acceso a la *PTH.*
-      - hash sobre la dirección de la instrucción
-      - Valor obtenido de la *BHT*
-      - Se combinan y se accede al contador de saturación.
-
-*** Predictos de dos niveles con indice compartido gshare
-- Variante del predictor de dos niveles con historial global
-- 
-  [[file:images/PredictorGShare.png]]
-
-*** Predictores híbridos
-- Procesadores superescalares actuales combinan dos predictores y un selector.
+** Lectura de operandos
+- *Planificación sin lectura de operandos*, Lectura de operandos en la emisión de instrucciones desde las estaciones de reserva individuales a las unidades funcionales.
+- *Planificación con lectura de operandos*, 
 
 * Procesadores VLIW
 ** VLIW
@@ -529,10 +619,6 @@
 - *I-Caché*, Caché de instrucciones del procesador.
 - *Unidad Funcional*, módulos de cómputo en un procesador, pueden funcionar de forma independiente.
 - *Planificación Dinámica*, el hardware reorganiza la ejecución de instrucciones par reducir las detenciones.
-- *RS*, reservation stations, *las instrucciones esperan aquí a sus operandos* para ser emitidas hacia la unidad funcional.
-      - Por cada operando contiene 2 campos, *valor* y *etiqueta*.
-      - Se forma una pequeña cola de instrucciones.
-      - Cada unidad funcional suele tener una *RS*.
 - *FPU*, floating point unit.
       - *FR*, Floating Register.
             - los registros tienen un campo *ocupado* y un campo *etiqueta* (planificación).
@@ -540,10 +626,11 @@
       - *SDB*, Store Data Buffers, de aquí los datos se escriben en memoria.
             - Puede ser el destino de instrucciones, por tanto los registros del SDB tienen un campo *etiqueta*.
       - *FLOS*, floating point operation stack, pila de operaciones de coma flotante.
-      - *CDB*, Common data bus, permite cargar un resultado en todas las unidades funcionales,
-        conecta salida de unidades funcionales con las *RS*, *FR* y *SDB* (adelantamiento).
+- *CDB*, Common data bus, permite cargar un resultado en todas las unidades funcionales, conecta salida de unidades funcionales con las *RS*, *FR* y *SDB* (adelantamiento).
+      - Las unidades funcionales publican aquí sus resultados.
 - *Acciones Atómicas*, Acciones indivisibles en subacciones.
 - *Barajamiento Perfecto*, perfect suffle.
       - $\sigma^k(x_{m-1}\ x_{m-2}\ \ldots \ x_1\ x_0) = x_{m - 2}\ \ldots\ x_1\ x_0\ x_{m-1}$ en $log_2 k$ posiciones (hacia la izquierda). 
       - $\sigma^{k^{-1}}(x_{m-1}\ x_{m-2}\ \ldots \ x_1\ x_0) = x_0\ x_{m-1}\ x_{m - 2}\ \ldots\ x_1$ en $log_2k$ posiciones (hacia la derecha).
 - *Código de compensación*, código para compensar una predicción que ha fallado.
+ 
