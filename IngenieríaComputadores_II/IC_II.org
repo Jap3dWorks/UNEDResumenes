@@ -65,7 +65,7 @@
       - Como los operandos se cargan en registros reduce accesos a memoria.
 
 ** Arquitectura ASG
-- Arquitectura Segmentada genérica (tipo RISC).
+- Arquitectura Segmentada Genérica (tipo RISC).
 - | CO | OPd (destino) | OP1 (fuente 1) | OP2 (fuente 2) |
       - Instrucción genérica de 3 operandos
 - *Etapas*
@@ -86,7 +86,7 @@
             - *WAW*, Write after write (dependencia de salida), la instrucción última que debe escribir un dato no es la última (orden incorrecto).
       - *Riesgos de control*, instrucciones de control de flujo.
 
-- *Forwargind* o *adelantamiento*. Conexión entre etapas *EX*, haciendo posible realizar un cálculo con el resultado de la instrucción anterior sin esperar a la etapa *WB*.
+- *Forwarding* o *adelantamiento*. Conexión entre etapas *EX*, haciendo posible realizar un cálculo con el resultado de la instrucción anterior sin esperar a la etapa *WB*.
 
 ** Algoritmo Tomasulo
 - Planificación de las instrucciones para evitar detenciones. El algoritmo Tomasulo es de las primeras
@@ -349,7 +349,6 @@
 - Cuando la instrucción es terminada se marca para proceder a la escritura en memoria.
       - Cuando el bus esté libre.
 - A una misma dirección se escribirá aquella instrucción posterior en el código del programa.
-  
 
 * Procesadores VLIW
 ** VLIW
@@ -411,6 +410,7 @@
 
 ** Instrucciones con Predicado
 - También se conocen como operaciones condicionadas o operaciones con guardia.
+- *if-conversion*, técnica de cambiar instrucciones if por predicados.
 - El predicado determina si almacena o se descarta el resultado de una instrucción.
       - Se quiere reducir el número de saltos condicionales.
 - <instrucción> (P)
@@ -466,13 +466,16 @@
 - *Convoy*, Varias instrucciones sin dependencias ni riesgo estructurales planificadas.
       - Puede resolverse en paralelo porque no existe riesgo estructural.
       - Usan diferentes módulos del procesador vectorial.
-- *FLOPs*, $R_n = (Op_{f} \times n) / T_n$
+- *FLOPS*, $R_n = (Op_{f} \times n) / T_n$
       - operaciones de coma flotante por segundo.
       - $n$, número de elementos del vector.
       - $Op_{f}$, operaciones de coma flotante por elemento,
         si por ejemplo el convoy tiene dos instrucciones aritméticas $Op_{f}=2$
 - *Chainning*, Es como el adelantamiento (forwarding) entre unidades funcionales vectoriales.
       - Permite la existencia de dependencias dentro de un *Convoy*.
+- *Solapamiento*, Entre convoys pueden usar las unidades funcionales uno justo detrás del otro.
+      - Si no hay solapamiento un convoy debe esperar a que el convoy anterior acabe
+        completamente el uso del módulo.
 
 ** Carga/almacenamiento
 - *bancos de memoria*, unidades de memoria en paralelo.
@@ -486,6 +489,23 @@
 - El alineamiento suele ser a 8 bytes (vectores trabajan con doubles).
       - elemento en dirección ###000###, irá al banco 0.
       - elemento en dirección ###101###, irá al banco 5.
+
+** Rendimiento de un bucle vectorizado
+- Un bucle muy largo se puede resolver con operaciones vectoriales (compilador strip mining).
+- Se divide en secciones de MVL (max vector length) elementos.
+      - Esto conlleva la existencia de un bucle exterior y uno interior.
+- $T_{base}$, tiempo que consumen las instrucciones escalares de preparación antes de abordar el bucle exterior.
+- $T_{bucle}$, Costes derivados de las operaciones de seccionamiento del bucle exterior.
+- $T_{arranque}$, La suma de los tiempos de arranque visibles.
+- $T_{elemento}$, número de convoys
+- $T_{n} = T_{base} + \lceil n/MVL \rceil \times (T_{bucle} + T_{arranque}) + n \times T_{elemento}$
+
+- $R_{\infty} = \lim_{n \to \infty} \left( \frac{Operaciones\ Vectoriales\ \times\ n}{T_n} \right)$
+      - FLOP por ciclo de reloj.
+      - FLOPS multiplicar por la frecuencia del reloj.
+
+- Si hay solapamiento entre convoys
+      - $T_{elemento} = (T_n - T_{arranque})/n$
 
 * Procesamiento Paralelo
 ** Organización basda en el modelo de comunicación
