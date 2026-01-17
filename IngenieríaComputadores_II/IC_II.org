@@ -291,27 +291,44 @@
 - los registros de renombramiento se suelen anotar como *Rr<número>*.
 - *RRF*, Rename register file, Buffer de renombramiento o fichero de registros de renombramiento.
       - Aquí se guardan los registros de renombramiento.
+      - 
 - *ARF*, Achitected register file, fichero de registros arquitectónicos (visibles al programador).
-- *Buffer Renombramiento*, [[Buffer de renombramiento][Buffer Renombramiento]] .
   
-*** Buffer de renombramiento
-- Estructura que mantiene entradas con las instrucciones que hay al vuelo.
-- Decide cuando los datos en *RRF* deben escribirse en el *ARF*.
-- Entradas:
-      - *Ocupada* (O),
-      - *Emitida* (E),
-      - *Finalizada* (F),
-      - *Dirección* (Dir),
-      - *Registro de destino* (Rd),
-      - *Registro de renombramiento* (Rr)
-      - *Especulativa* (Es),
-      - *Validez* (V),
+**** Organización independiente del RRF con acceso indexado
+- *ARF* entradas
+      - *Datos*, contiene el valor del registro.
+      - *Ocupado*, indica si ha sido renombrado.
+      - *Índice*, apunta a la entrada del RRF.
+- *RRF* entradas
+      - *Datos*, contiene el valor.
+      - *Válido*, El valor del RRF se puede usar.
+      - *Ocupado*, inica si esta siendo usado por instrucciones.
 
-*** Organización independiente del RRF con acceso indexado
+**** Organización independiente del RRF con acceso asociativo
+- *ARF* entradas
+      - *Datos*, contiene el valor del registro.
+      - *Ocupado*, indica si ha sido renombrado.
+- *RRF* entradas
+      - *Destino*, identificador del registro del *ARF*
+      - *Datos*, contiene el valor.
+      - *Válido*, El valor del RRF se puede usar.
+      - *Ocupado*, inica si esta siendo usado por instrucciones.
+      - *último*, indica que es el último registro de renombramiento asignado al registro destino.
+            - Puede haberse renombrado varias veces.
+            - Una instrucción posterior puede saber que registro de renombramiento es la que debe usar para realizar un reemplazo.
 
-*** Organización independiente RRF con acceso asociativo
-
-*** Organización del RRF como parte del buffer de renombramiento
+**** Organización del RRF como parte del buffer de reordenamiento
+- el *RRF* forma parte del buffer de reordenamiento.
+- *ARF* entradas
+      - *Datos*, contiene el valor del registro.
+      - *Ocupado*, ha sido renombrado.
+      - *Índice*, puntero a una de las entradas del buffer de reordenamiento.
+- *Buffer de reordenamiento RRF*
+      - *Datos*, contiene el valor del registro.
+      - *Válido*, El valor del registro se puede usar.
+      - *Ocupado*, Indica si la entrada del buffer es válida.
+      - otros campos propios del buffer de reordenamiento.
+- Obliga a añadir el campo datos aunque se usen instrucciones que no provocan un dato de salida.
 
 ** Instrucciones Terminadas
 *** Buffer de reordenamiento o terminación
