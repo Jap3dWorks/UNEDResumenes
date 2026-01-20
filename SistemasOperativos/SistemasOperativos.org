@@ -68,7 +68,7 @@
       - *Gestión de dispositivos* (E/S).
       - *Gestión de información del sistema*, obtener y configurar datos del sistema.
 
-**  Estructura del núcleo
+** Estructura del núcleo
 *** Componentes principales
 - *Subsistema de control de procesos*
 - *Subsistema de administración de la memoria principal*
@@ -148,8 +148,8 @@
       - *PCB*, process control block, cada entrada de la tabla de procesos.
 - *Tablas de memoria*, Espacio asignado y espacio libre de la memoria principa y del área de intercambio.
 - *Tablas de E/S*, información sobre si un dispositivo está disponible y que proceso lo está utilizando.
-- *Tablas de archivos*, Archivos abiertos por los procesos, ubicación en memoria secundaria, estado y otros atributos
-- *Pilas de control de sistema* o pilas del sistema operativo,
+- *Tablas de archivos*, Archivos abiertos por los procesos, ubicación en memoria secundaria, estado y otros atributos.
+- *Pilas de control de sistema,* o pilas del sistema operativo,
   almacena parámetros y datos asociados a funciones del sistema operativo.
 - *Pila de interrupciones*, utilizada por todos los manejadores de interrupciones.
 - Colas de procesos o eventos. cola de procesos preparados, colas de procesos bloqueados, etc.
@@ -339,7 +339,7 @@
   Teniendo en cuenta los procesos ya existentes en la cola y los plazos de servicio.
 - el *algoritmo de planificación de primero el proceso de tiempo límite más cercano* minimiza el número de procesos que no se ejecutan.
 
-* Sincronización y cominicación de procesos
+* Sincronización y comunicación de procesos
 ** Semáforos
 - Es una variable $S$ sobre la que se pueden aplicar 3 operaciones
       - $S=N$, *init_sem*, Asignación valor Inicial N.
@@ -362,7 +362,60 @@
 - La colocación inadecuada puede provocar race conditions, inanición o interbloqueo.
 
 ** Mensajes
-- sockets y buzones
+- sockets y buzones.
+- Soportado por sistemas centralizados y distribuidos.
+- operaciones básicas
+      - *send(destino, mensaje)*, proceso emisor.
+            - *mensaje*,dirección de memoria con los datos a enviar.
+      - *receive(fuente, mensaje)*, proceso receptor.
+            - *mensaje*, dirección en memoria donde colocar los datos.
+
+*** Comunicación directa
+- El proceso emisor especifica explícitamente el proceso receptor (por ejemplo con el pid).
+- Por su parte el receptor especifica explícitamente el proceso emisor (pid).
+- Otra posibilidad es *receive(ident, mensaje*).
+      - Siendo *ident* un parámetro de salida con el cual se conocerá el proceso emisor.
+- Enlaces seguros entre procesos, peroa a veces no se puede saber el identificador de el proceso receptor o emisor.
+
+*** Comunicación indirecta
+- *send(buzon, mensaje)*, 
+- *receive(buzon, mensaje)*
+- Esquemas de difusión de mensajes
+      - un emisor - un receptor
+      - un emisor - varios receptores
+      - varios emisores - un receptor
+      - varios emisores - varios receptores
+- Buzón propiedad de un proceso.
+      - Solo el proceso creador tiene acceso.
+      - Se implementa en el espacio de direcciones del proceso.
+      - Desaparece con el proceso
+- Buzón propiedad del SO
+      - Se implementa en el espacio del núcleo
+      - Un proceso lo crea con llamadas al sistema, se considera el propietario, inicialmente solo el propietario tiene acceso para recibir mensajes.
+      - El propietario puede compartir el privilegio de leer del buzón.
+      - El SO implementa llamadas para crear y eliminar buzones.
+
+*** Esquemas de sincronización
+- *Send con bloqueo*, bloqueado hasta que el mensaje sea recibido por el receptor.
+- *Send sin bloqueo*, envía el mensaje y continua.
+- *Receive con bloqueo*, el receptor se bloquea a la espera de recibir un mensaje.
+- *Receive sin bloqueo*, obtiene un mensaje válido o nulo y continua su ejecución.
+- Combinaciones que se posibilitan
+      - Envío y recepción sin bloqueo.
+      - *Envío sin bloqueo y recepción con bloqueo*, de los más usados.
+      - Envío con bloqueo y recepción sin bloqueo.
+      - Envío y recepción con bloqueo, se conoce como cita entre emisor y receptor.
+
+*** Formato y almacenamiento de los mensajes
+- Formato de un mensaje
+      - *Cabecera del mensaje*, Información de control.
+      - *Cuerpo del mensaje*, El contenido del mensaje propiamente.
+- Capacidad de los buzones
+      - *Mecanismo de mensajes con buffer*, Se permite almacenar temporalmente un número finito de mensajes.
+            - Cada vez que se lee un mensaje se borra.
+            - Si la cola está llena el proceso emisor se bloquea.
+      - *Mecanismo de mensajes sin buffer*, Las colas de los mensajes son de capacidad nula.
+            - El emisor se bloquea hasta que el receptor recibe el mensaje.
 
 ** Monitores
 *** Definición
