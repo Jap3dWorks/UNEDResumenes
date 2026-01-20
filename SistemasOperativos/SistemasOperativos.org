@@ -343,7 +343,7 @@
 
 * Interbloqueos
 ** Introducción
-- Recursos hardwre y recursos software (archivos, semaforos)
+- Recursos hardware y recursos software (archivos, semaforos)
 
 - *Recurso Reutilizable*, no se destruye después de su uso.
 - *Recurso Consumible*, puede producirse y consumirse.
@@ -401,8 +401,8 @@
       2. $X=R_D$, X es un vector auxiliar.
       3. Se comprueba $M_i \leq X$, siempre que la fila $i$ no esté marcada.
       4. Dos opciones
-             - si $\lnot \exists i | M_i \leq X$ entonces finaliza el algoritmo.
-             - si $\exists i | M_i \leq X$ entonces se marca el proceso $i$ y $X = A_i + X$ y se vuelve al paso 2.
+             - si $\lnot \exists i\ |\ M_i \leq X$ entonces finaliza el algoritmo.
+             - si $\exists i\ |\ M_i \leq X$ entonces se marca el proceso $i$ y $X = A_i + X$ y se vuelve al paso 2.
 
 * Administración de Memoria
 ** Particionamiento dinámico
