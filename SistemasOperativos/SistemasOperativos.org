@@ -192,6 +192,44 @@
 
 * Planificación de procesos
 ** Niveles de Planificación
+- Colas generales a las que pertenece un proceso
+      - *Cola de procesos en el estado preparado*, procesos que desean acceder al procesador.
+      - *Cola de procesos en el estado preparado en memoria secundária*, Procesos en esperar de voler a la memoria principal y en estado preparado.
+      - *Cola de procesos en el estado bloqueado*, A la espera de poder volver a la cola de preparados tan pronto ocurra el evento por el que están bloqueados.
+      - *Cola de procesos en el estado bloqueado en memoria secundaria*, Esperan para volver al estado preparado en memoria secundaria cuando ocurra el evento que esperan.
+      - *Cola de trabajos por lotes o cola de entrada*, En memoria secundaria, almacena los nuevos trabajos que llegan al SO por lotes.
+
+*** Planificador a corto plazo
+- Que proceso en la cola de preparados será el siguiente en acceder al procesador.
+- Componentes lógios
+      - *Encolador*, Se encarga de incluir a los procesos en la cola de preparados y actualizar las estructuras de datos necesarias.
+      - *Conmutador de contexto*, Guarda el contexto de un proceso para poder reanudarlo más tarde.
+      - *Distribuidor*, Se encarga de seleccionar que proceso de la cola de procesos de acuerdo con un algoritmo de planificación.
+            - Para que pueda tomar el control de la cpu.
+
+*** Planificador a medio plazo
+- Decide que procesos pasan de memoria principal a memoria secundaria.
+
+*** Planificación a largo plazo
+- Qué trabajo de la cola de *trabajo por lotes* pasa a ser ejecutado.
+- *Procesos limitados por CPU*, mayor parte del tiempo están haciendo uso de la cpu.
+- *Procesos limitados por E/S*, mayor parte del tiempo están esperando por operaciones de E/S.
+- Se encarga de hacer una mezcla adecuada de trabajos limitados por cpu y limitados por E/S.
+
+** Criterios generales considerador en la planificación de procesos
+- *Equidad*, Procesos con requisitos similares uso de los recursos similares.
+- *Previsibilidad*, Trabajos con características similares deben ejecutarse en tiempos similares.
+- *Uso equilibrado de los recursos*, Intentar mantener ocupados todos los recursos del ordenador.
+- *Proporcionalidad*, Peticiones percibida como sencillas deben emplear menor tiempo de respuesta.
+
+** Criterios considerados en la planificación del procesador
+- *Utilización del procesador o eficacia*, porcentaje de tiempo con el procesador en activo.
+- *Productividad o rendimiento*, Trabajos completados por unidad de tiempo.
+- *Tiempo de entrega*, tiempo de retorno, tiempo medio desde que se lanza un proceso hasta que finaliza.
+- *Tiempo de espera*, Suma del tiempo de un proceso en colas de espera.
+- *Tiempo de respuesta*, Tiempo desde que un usuario manda una orden en el terminal hasta que recibe una respuesta.
+- *Plazo de finalización*, Tiempo máximo que tiene un proceso para ser completado (sistemas de tiempo real).
+
 ** Algoritmos de planificación
 - $T_{LL}$, Tiempo global en el que un proceso llega a la cola de planificación.
 - $T_F$, Tiempo de finalización, tiempo global en el que el proceso finaliza.
@@ -384,6 +422,16 @@
 - *Eliminación de la condición de espera circular*
       - Forzando que un proceso solo pueda solicitar recursos en orden ascendente.
       - Cada recurso tiene asignado un número único.
+
+** Evitación de interbloqueos
+*** Denegación de asignación de recursos: Algoritmo del banquero
+- Se hace una simulación de la asignación de los recursos.
+      - Estado inicial: $S_k = \{N,A,R_E, R_D\}$
+      - Estado ficticio: $S' = \{N',A',R_E,R'_E\}$
+      - Si $S'$ es seguro $S_{k+1}=S'$
+- Ante una petición de recursos se comprueba si la asignación lleva a un interbloqueo.
+      - Si es así se denega la petición y el estado se bloquea hasta que se pueda aceptar la petición.
+- Si el estado es correcto si procede con la petición.
 
 ** Algoritmos de detección de interbloqueos (alg. Coffman)
 - $R_E$, vector recursos existentes
@@ -713,9 +761,10 @@
 - No tiene muy buenos resultados pero es sencillo de implementar, produce poca sobrecarga.
 
 *** Algoritmo de reemplazamiento de la segunda oportunidad (algoritmo del reloj)
-- Busca la página más tiempo cargada en memoria que no ha sido cargada recientementem
+- Busca la página más tiempo cargada en memoria que no ha sido cargada recientemente.
       - variante de *FIFO*.
 - Lás páginas referenciadas tienen un bit de referencia que empieza en 0 ($r=0$).
+      - Si la página es referenciada posteriormente $r=1$.
 - El algoritmo consulta el bit de referencia de la página que está al principio de la cola FIFO.
       - Si es $r=0$, la página es seleccionada y el algoritmo finaliza.
       - Si $r=1$, pone $r=0$ y coloca la página al final de la cola.
@@ -912,7 +961,7 @@
 
 *** Asignación Indexada
 - *Nodo-I*, almacena los atributos de un archivo.
-      - las direcciones físicas de los primeros bloques de un archivo (sin indirección).
+      - Almacena las direcciones físicas de los primeros bloques de un archivo (sin indirección).
       - Los nodos-i son ligeros.
       - Contine punteros a *bloques de indirección*.
 - *Bloque de indirección simple*, almacena direcciones físicas de bloques de archivos.
@@ -920,7 +969,7 @@
 - *Bloque de indirección triple*, almacena direcciones de bloques de indirección doble.
 - Cada archivo tiene asociado un número único asociado a un nodo-i.
 - En la partición de archivos hay una tabla con todos los nodo-i.
-- El nodo-i asociado a un archivo se almacena en la entrada de directorio.
+- El índice del nodo-i asociado a un archivo se almacena en la entrada de directorio.
 - Añade un poco de sobrecarga para acceder a los datos de los archivos.
 
 ** Estructura de directorios de gráfica acíclica
