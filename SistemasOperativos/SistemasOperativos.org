@@ -864,6 +864,8 @@
 ** Asignación de memoria principal
 
 * Gestión de la Entrada/Salida
+- *Subsistema de E/S*, Componente del sistema operativo que se encarga de la gestión de E/S.
+  
 ** Peticiones de E/S
 - Pueden ser peticiones de un proceso o del propio SO.
 - Procesos o demonios solicitan la petición al SO.
@@ -919,6 +921,22 @@
       - En cada entrada de *La tabla de vectores de interrupción* se encuentra un puntero al inicio del manejador de ese tipo de interrupción.
 
 ** Buffering
+*** Estratégias
+- *Buffering con buffer único*, Datos se transfieren al buffer posteriormente al buffer del espacio del proceso.
+      - Permite al proceso consumidor procesar datos mientras se rellena el buffer.
+- *Buffering con dos bufers*.
+      - Se asignan dos buffers en una operación de E/S.
+      - Si el primer buffer se llena se pasa a rellenar el segundo.
+            - Mientras el segundo se llena se va vaciando el primer buffer.
+- *Buffer circular*, más de dos bufers.
+      - Adecuado para procesos con ráfagas rápidas de E/S.
+
+*** Caché de buffers de bloques de disco
+- Se reserva en espacio de nucleo un espacio de caché de buffers implementado via software.
+- Estos caches son copias de bloques de disco recientemente accedidos.
+- Se busca evitar el tiempo de acceso E/S a los dispositivos.
+- Si no hay espacio en la cache de buffers para el bloque solicitado hay que usar algoritmos de reemplazo.
+      - El espacio es limitado.
 
 ** Spooling        
 - Técnica de control para dispositivos dedicados en entornos multiprogramados.
@@ -930,6 +948,22 @@
 - Se evita un bloqueo excesivo por parte de un proceso del dispositivo de E/S.
 - Algunas usos son para impresoras o envío de paquetes por la red.
 
+** Relojes
+- En sincronía con el reloj del sistema (cristal de cuarzo)
+- Disponen de un contador y algunos registros.
+- Cada ciclo decrementan su contador.
+      - Cuando el contador de un reloj llega a 0 genera una interrupción.
+- Modos de operación
+      - *Disparo único*, cuando el contador llega a 0 genera una interrupción.
+      - *Disparo de onda cuadrada*, cuando el contador llega a 0 genera una interrupción y se rearma.
+            - Se rearma con el valor de alguno de sus registros.
+            - *Tic*, tiempo transcurrido entre dos interrupciones.
+- Tareas de los relojes en el SO
+      - *Planificación de procesos*
+      - *Mantenimiento del tiempo real*, un reloc que incrementa.
+      - *Disparo de alarmas*, 
+      - *Invocación de tareas peródicas del sistema*
+        
 ** Discos Duros
 *** Estructura Física
 - Principal soporte de la memoria secundaria.
@@ -993,39 +1027,59 @@
 
 * Gestión de archivos
 ** Archivos
+- Conjunto de información que se almacena en memoria secundaria, se identifica con un nombre.
+      - Directorios
+      - Archivo regular
+            - Datos, ascii o binarios
+            - Programas, binarios
+- *Nombre de archivo*, conjunto de carácteres que identifica un archivo.
 - *Registos* o *bloques lógicos*, los archivos se forman con un conjunto de bloques de igual o
   distinto tamaño.
+
+*** Atributos  de un archivo
+- Información relatica a los archivos que mantiene el SO.
+- *Tipo de archivo*
+- *Tamaño*
+- *Localización*
+- *Creador y propietario*
+- *Permisos de acceso*
+- *Información asociada al tiempo*, cuando fue modificado.
+
+*** Estructura interna de un archivo
+- Esrtucturas comunes.
+      - *Secuencia de bytes*, bytes contiguos en memoria.
+      - *Secuencia de registros*, registros contiguos del mismo tamaño.
+            - Cada registro posee una estructura interna.
+      - *Registros indexados*, registros de tamaño variable.
+            - estructura interna y un identificador del registro.
 - *Bloque Físico*, se divide la memoria secundaria en bloques de igual tamaño.
 - Los archivos ocupan un conjunto de bloques físicos que no tiene porque ser consecutivo.
 - El bloque físico puede contener varios bloques lógicos.
 
-** Asignación de espacio
-*** *Asignación continua*
-- El archivo contiguo en memoria.
-  
-*** *Asignación enlazada*
-- los bloques físicos tienen la dirección del siguiente bloque físico que pertenece al archivo.
-      - Así implementada da problemas al quitar unos pocos bytes de espacio al archivo y dificultar las operaciones con potencias de 2.
-- FAT, una tabla situada al principio de la partición.
-      - Contiene una entrada por cada bloque físico. y como valor la dirección del siguiente bloque físico.
-      - Si es el final del archivo puede contener el valor -1.
-      - Si el bloque está vacío puede tener otro valor para indicarlo (0).
-      - El problema es tener la fat en memoria.
+*** Acceso a un archivo
+- *Acceso secuencial*, puntero de lectura/escritura.
+- *Acceso aleatorio*, Escritura/lectura en cualquier orden.
 
-*** Asignación Indexada
-- *Nodo-I*, almacena los atributos de un archivo.
-      - Almacena las direcciones físicas de los primeros bloques de un archivo (sin indirección).
-      - Los nodos-i son ligeros.
-      - Contine punteros a *bloques de indirección*.
-- *Bloque de indirección simple*, almacena direcciones físicas de bloques de archivos.
-- *Bloque de indirección doble*, Almacena direcciones de bloques de indirección simple.
-- *Bloque de indirección triple*, almacena direcciones de bloques de indirección doble.
-- Cada archivo tiene asociado un número único asociado a un nodo-i.
-- En la partición de archivos hay una tabla con todos los nodo-i.
-- El índice del nodo-i asociado a un archivo se almacena en la entrada de directorio.
-- Añade un poco de sobrecarga para acceder a los datos de los archivos.
+*** Operaciones sobre archivos
+- *Crear archivo*
+- *Abrir archivo*
+- *Posicionamiento* o búsqueda (seek)
+- *Leer archivo*
+- *Escribir archivo*
+- *Renombrar archivo*
+- *Cerrar archivo*
+- *Borrar archivo*  
 
-** Estructura de directorios de gráfica acíclica
+** Directorios
+*** Estructura de los directorios
+- *Estructura de directorios de un único nivel*
+- *Estructura de directorios de dos niveles*
+      - por usuario
+- *Estructura de árbol de directorios*
+- *Estructura de directorios de gráfica acíclica*
+      - links
+
+*** Estructura de directorios de gráfica acíclica
 - *link*, conectar un archivo o directorio con otro ya existente.
       - Se dice que está compartido.
       - Enlace duro (Hard). Entrada especial en un directorio.
@@ -1040,7 +1094,52 @@
       - Hay que tener en cuenta que pueden dar ciclos si se están recorriendo la estructura de directorios.
       - En copias de seguridad puede llegar a copiarse el mismo archivo varias veces (sobretodo el Hard).
 
-** Gestión del espacio libre
+*** Operaciones sobre directorios
+- *Crear directorio*
+- *Borrar directorio*
+- *Abrir directorio*
+- *Cerrar directorio*
+- *Leer directorio*
+- *Renombrar directorio*
+- *Enlazar*
+      - los links son entradas en directorios.
+- *Desenlazar*
+
+** Sistemas de archivos
+*** Estructura de un sistema de archivos
+- *Bloque de arranque*
+- *Estructura de datos con metadatos del sistema de archivos*
+- *Estructura de datos con información de bloques libres*
+- *Estructura de datos para localizar los bloques asignados a archivos*
+- *Área de datos*
+
+*** Asignación de espacio
+**** *Asignación continua*
+- El archivo contiguo en memoria.
+  
+**** *Asignación enlazada*
+- los bloques físicos tienen la dirección del siguiente bloque físico que pertenece al archivo.
+      - Así implementada da problemas al quitar unos pocos bytes de espacio al archivo y dificultar las operaciones con potencias de 2.
+- FAT, una tabla situada al principio de la partición.
+      - Contiene una entrada por cada bloque físico. y como valor la dirección del siguiente bloque físico.
+      - Si es el final del archivo puede contener el valor -1.
+      - Si el bloque está vacío puede tener otro valor para indicarlo (0).
+      - El problema es tener la fat en memoria.
+
+**** Asignación Indexada
+- *Nodo-I*, almacena los atributos de un archivo.
+      - Almacena las direcciones físicas de los primeros bloques de un archivo (sin indirección).
+      - Los nodos-i son ligeros.
+      - Contine punteros a *bloques de indirección*.
+- *Bloque de indirección simple*, almacena direcciones físicas de bloques de archivos.
+- *Bloque de indirección doble*, Almacena direcciones de bloques de indirección simple.
+- *Bloque de indirección triple*, almacena direcciones de bloques de indirección doble.
+- Cada archivo tiene asociado un número único asociado a un nodo-i.
+- En la partición de archivos hay una tabla con todos los nodo-i.
+- El índice del nodo-i asociado a un archivo se almacena en la entrada de directorio.
+- Añade un poco de sobrecarga para acceder a los datos de los archivos.
+
+*** Gestión del espacio libre
 - *Lista de bloques libres*
       - Se almacena al comienzo del sistema de archivos.
       - se suele copiar una parte en memoria principal.
