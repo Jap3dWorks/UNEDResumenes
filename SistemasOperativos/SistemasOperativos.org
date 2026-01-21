@@ -887,7 +887,7 @@
             - Creación y manejo de buffers
       - *Proporcionar un tamaño de bloque uniforme a los niveles superiores de software*
             - Así las capas superiores puede trabajar con un tamaño de bloque lógico único.
-      - *Gestión de lo errores producidos en una operación de E/S*
+      - *Gestión de los errores producidos en una operación de E/S*
             - Decidir las acciones ante *errores de programación* y/o *errores en el dispositivo*.
 - Proporciona la interfaz que los drivers deben implementar.
       - interfaz uniforme, uniforme a todos los dispositivos sea cual sea su naturaleza.
@@ -1037,7 +1037,7 @@
   distinto tamaño.
 
 *** Atributos  de un archivo
-- Información relatica a los archivos que mantiene el SO.
+- Información relativa a los archivos que mantiene el SO.
 - *Tipo de archivo*
 - *Tamaño*
 - *Localización*
@@ -1077,7 +1077,7 @@
       - por usuario
 - *Estructura de árbol de directorios*
 - *Estructura de directorios de gráfica acíclica*
-      - links
+      - links, no se permiten ciclos.
 
 *** Estructura de directorios de gráfica acíclica
 - *link*, conectar un archivo o directorio con otro ya existente.
@@ -1178,8 +1178,8 @@
 ** Copias de seguridad
 - *Copia de seguridad lógica*, solamente directorios y archivos que el administrador desea guardar.
       - *Copia completa*, Todos los archivos seleccionados por el administrador.
-      - *Copia Diferencial*, Solamente archivos creados o modificados desde la última copia.
-      - *Copia incremental*, Solamente archivos creados o modificados desde la última copia.
+      - *Copia Diferencial*, Solamente archivos creados o modificados desde la última copia completa.
+      - *Copia incremental*, Solamente archivos creados o modificados desde la última copia incremental.
             - Para reconstruir los archivos hace falta todo el historial de copias de seguridad.
 - *Copia de seguridad física* o imagen de disco. Copia completa de todos lo bloques físicos de la partición de disco.
       - Requiere ser montada para recuperar achivos.
