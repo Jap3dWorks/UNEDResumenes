@@ -87,6 +87,7 @@
       - *Riesgos de control*, instrucciones de control de flujo.
 
 - *Forwarding* o *adelantamiento*. Conexión entre etapas *EX*, haciendo posible realizar un cálculo con el resultado de la instrucción anterior sin esperar a la etapa *WB*.
+- *Interbloqueo*, La instrucción se detiene a la espera del resultado que necesita, se implementa con elementos hardware.
 
 ** Algoritmo Tomasulo
 - Planificación de las instrucciones para evitar detenciones. El algoritmo Tomasulo es de las primeras
@@ -182,7 +183,7 @@
 
 **** Predicción de la dirección de destino de salto mediante BTB con historial de salto
 - *Branch target Buffer*, Similar a BTAC pero además se almacena un conjunto de bits con el historial de aciertos (campo BH).
-      - El historial sirve para realizar un reemplazo si es preciso.
+      - El historial sirve para realizar un reemplazo si es preciso (posibilidad de no efectiva).
 
 **** Predicción de Smith o predictor bimodal
 - Es un tipo de *BTB*.
@@ -199,7 +200,7 @@
 - *PHT*, Pattern history table.
       - Entradas de tamaño $h+m$, los $m$ bits se extran con una función hash sobre la dirección de la instrucción.
       - Cada entrada tiene un contados de saturación de 2 bits.
-            - Actua como el predictor bimodal.
+            - Ac-tua como el predictor bimodal.
         
 **** Predictor de dos niveles basado en el historial local
 - Muy similar al *predictor de dos niveles basado en historial gobal*
@@ -619,21 +620,21 @@
       - *Red Baseline*, Se construye por bloques conectando las salidas del los conmutadores $n$ con las entradas de los conmutadores $n+1$.
             - En cada bloque se conectan por barajamiento perfecto.
             - En la siguiente etapa $n_{i+1}$, los bloques se dividen a la mitad ($n_{i}/2$ entradas $\times$ $n_{i}/2$ salidas)
-              [[file:images/RedBaseline.svg]]
+            - La permutación se hace según los dígitos del destino, de izq a derecha.
+                  - dígito 1 se coge la conexión inferior al permutador.
+                  - dígito 0 se coge la conexión superior al permutador.
+                    [[file:images/RedBaseline.png]]
       - *Red Butterfly*,
             - Entre conmutadores existe la conexión directa o cruzada.
             - Cada conmutador se identifica como $[i,j]$ donde $i$ es la etapa y $j$ la fila de conmutadores.
             - El conmutador $[i,j]$ conecta con $[i+1,j]$ y $[i+1, j \oplus 2^i]$.
-              [[file:images/ButteflyConn.png]]
-      - Desde el conmutador origen $A$ hasta el conmutador destino $B$ la ruta $R$ se calcula.
-            - Notese que $j$ son los dígitos en común de las dos conexiones de entrada originales.
-                  - Pocesador 000 y 001 conectan con conmutador 00.
-            - $R=A \oplus B$, desde el bit menos significativo $R_0$.
-                  - Si $R_i=1$ camino cruzado, Si $R_i=0$ camino directo.
-      - En notación de permutación ($i$ es el índice de los conmutadores destino).
-        
-         $\beta_i(x_{n-1}\ \ldots \ x_{i+1} \ x_i \ x_{i-1}\ \ldots \ x_1\ x_0) = x_{n-1} \ \ldots \ x_{i+1} \ x_0 \ x_{i-1} \ \ldots \ x_1\ x_i$
-         [[file:images/ButterflyPerm.png]]
+            - Desde el conmutador origen $A$ hasta el conmutador destino $B$ la ruta $R$ se calcula.
+                  - Notese que $j$ son los dígitos en común de las dos conexiones de entrada originales.
+                        - Pocesador 000 y 001 conectan con conmutador 00.
+                  - $R=A \oplus B$, desde el bit menos significativo $R_0$.
+                        - Si $R_i=1$ camino cruzado, Si $R_i=0$ camino directo.
+            - En notación de permutación ($i$ es el índice de los conmutadores destino).
+               $\beta_i(x_{n-1}\ \ldots \ x_{i+1} \ x_i \ x_{i-1}\ \ldots \ x_1\ x_0) = x_{n-1} \ \ldots \ x_{i+1} \ x_0 \ x_{i-1} \ \ldots \ x_1\ x_i$
 
 *** Protocolos Coherencia de Caché
 - *Snoopy*, vigilancia del bus.
