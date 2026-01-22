@@ -529,7 +529,7 @@
 ** Organización basda en el modelo de comunicación
 *** Espacio Direcciones Compartido
 - Memoria compartida a través de la red de interconexión (pueden ser varios módulos).
-      - *UMA*, Uniform memory access, tiempo de acceso a memoria es el mismo para cualquier palabrad desde cualquier procesador.
+      - *UMA*, Uniform memory access, tiempo de acceso a memoria es el mismo para cualquier palabra desde cualquier procesador.
       - *Latencia de red*, Tiempo que tarda en enviar un mensaje a través de la red de interconexión.
       - *Ancho de bamda*, número de bits por unidad de tiempo (e.g bps).
       - *Bus* como arquitectura más común (sistemas pequeños).

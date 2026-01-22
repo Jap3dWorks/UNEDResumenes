@@ -1,0 +1,18 @@
+#+title: Cálculo Diferencial en una variable
+
+
+* Funciones Derivables
+
+** Concepto Derivada                                                 :ATTACH:
+:PROPERTIES:
+:ID: fea6d7e0-26cd-4809-afb1-46ee5f678113
+:END:
+
+[[attachment:clipboard-20260122T171143.png]]
+
+[[attachment:clipboard-20260122T171224.png]]
+
+
+** Derivada Lateral
+
+
