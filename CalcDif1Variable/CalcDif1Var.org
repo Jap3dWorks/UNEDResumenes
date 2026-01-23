@@ -1,5 +1,5 @@
 #+title: Cálculo Diferencial en una variable
-
+#+startup: overview
 
 * Funciones Derivables
 
@@ -13,6 +13,61 @@
 [[attachment:clipboard-20260122T171224.png]]
 
 
-** Derivada Lateral
+** Derivada Lateral                                                  :ATTACH:
+:PROPERTIES:
+:ID:       6584cac7-a674-4277-b09e-9cfe38ee0cd0
+:END:
 
+[[attachment:clipboard-20260123T101531.png]]
 
+** Variación de una función
+
+*** Función localmente creciente o decreciente en un punto
+- $f$ es localmente creciente en $a$ sí y solo sí existe un entorno centrado en $a$, $U_a$ tal que.
+\begin{equation*}
+f(x) \leq f(a)\ \  \forall x \in U_a, x<a \quad \text{y} \quad f(a) \leq f(x)\ \ \forall x \in U_a, a<x
+\end{equation*}
+
+- Estrictamente creciente.
+\begin{equation*}
+f(x) < f(a)\ \  \forall x \in U_a, x<a \quad \text{y} \quad f(a) < f(x)\ \ \forall x \in U_a, a<x
+\end{equation*}
+
+- $f$ es localmente dcreciente en $a$ sí y solo sí existe un entorno dentrado en $a$, $U_a$ tal que.
+\begin{equation*}
+f(x) \geq f(a)\ \  \forall x \in U_a, x<a \quad \text{y} \quad f(a) \geq f(x)\ \ \forall x \in U_a, a<x
+\end{equation*}
+
+- Estrictamente decreciente
+\begin{equation*}
+f(x) > f(a)\ \  \forall x \in U_a, x<a \quad \text{y} \quad f(a) > f(x)\ \ \forall x \in U_a, a<x
+\end{equation*}
+
+*** Mínimo o máximo local de una función
+- $f:\ D \subset \mathbb{R} \to \mathbb{R}$ alcanza un valor mínimo relativo o local en $a$ si y sólo si existe un entorno $U_a \subset D$ tal que.
+\begin{equation*}
+f(x) \geq f(a)\ \ \forall x \in U_a \cap D
+\end{equation*}
+
+- $f:\ D \subset \mathbb{R} \to \mathbb{R}$ alcanza un valor máximo relativo o local en $a$ si y sólo si existe un entorno $U_a \subset D$ tal que.
+\begin{equation*}
+f(x) \leq f(a)\ \ \forall x \in U_a \cap D
+\end{equation*}
+
+- $f: D \subset R \to R$ y $a \in int(D)$ siendo $f$ derivable en $a$. Si $f'(a)=0$ posee un máximo o mínimo local en a.
+
+** Teoremas del valor medio
+
+*** Teorema de Rolle
+- Sea $f: [a,b] \to \mathbb{R}$ continua en $[a,b]$, derivable en $(a,b)$ y que cumple $f(a)=f(b)$. Entonces existe $c\in [a,b]$ tal que $f'(c)=0$
+
+*** Teorema de los incrementos Finitos de lagrange                   :ATTACH:
+:PROPERTIES:
+:ID:       618a08cf-6db0-4e1a-a471-aa4a20ad7363
+:END:
+- Sea $f:[a,b] \to \mathbb{R}$ continua en $[a,b]$ y derivable en $(a,b)$. Entonces existe $c \in (a,b)$ tal que $f(b)-f(a) = f'(c)(b-a)$.
+      - o también $\frac{f(b) - f(a)}{b-a} = f'(c)$
+
+[[attachment:clipboard-20260123T114512.png]]        
+
+** Aplicación al cálculo del límite
