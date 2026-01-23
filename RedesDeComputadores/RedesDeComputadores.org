@@ -894,10 +894,108 @@
 - Topologías con una estación primaria.
 - Dispositivo primario controla el enlace.
 - *Selección*
+      - El nodo primario debe alertar a el nodo secundario de su deseo de transmitir (trama de selección SEL).
+      - El nodo secundario debe confirmar que está listo.
+  
 - *Muestreo*
+      - El nodo primario pregunta (muestrea) a los secundario si tienen algo para enviar.
+      - El nodo secundario responde con una trama *NAK* si no tiene nada que enviar.
+      - Si la respuesta es positiva, una trama de datos, el primario devuelve una trama *ACK* al noso secundario.
 
 **** Paso de testigo
+- Organización de anillo lógico.
+- El derecho a usar el canal (testigo) es concedido por el nodo predecesor.
+      - El *Testigo* es un paquete especial que cricula a través del anillo.
+- Es necesaria una gestión del testigo para evitar que se destruya o un nodo lo acapare demasiado tiempo.
+- Algunas topologías en anillo
+      - Anillo físico
+            - conexiones físicas en anillo.
+            - si falla un nodo cae el sistema.
+      - Anillo dual
+            - Segundo anillo en dirección inversa por si fallan conexiones.
+            - Cada nodo necesita dos puertos.
+      - Anillo en bus.
+            - La conexión física es un bus, pero el comportamiento lógico es en anillo.
+      - Anillo en estrella.
+            - Topología física es en estrella.
+            - Un concentrador central (o conmutador).
+            - Los nodos se conectan al concentrador con dos cables (entrada/salida).
 
+*** Canalización
+- Método de acceso múltiple.
+- El ancho disponible del enlace se comparte.
+
+**** FDMA, Acceso múltiple por división de la frecuencia
+- Ancho de banda disponible se divide en bandas de frecuencia separadas por bandas de guarda.
+- Cada estación tiene asignada una banda.
+      - Aplican un filtro paso-banda para confinar la frecuencia.
+- El nivel de enlace determina a su nivel físico el ancho de banda, no hace falta un multiplexor físico de señales.
+      - Las señales se combinan en el canal.
+
+**** TDMA, Acceso múltiple por división de tiempo
+- Cada estación tiene asignada una ranura de tiempo.
+- Es dificil conseguir la sincronización entre diferentes estaciones.
+- *Tiempo de guarda*, tiempo que se inserta para compensar los retardos de la propagación.
+- El nivel de enlace determina la ranura de tiempo al nivel físico, no hay un multiplexor físico.
+
+**** CDMA, Acceso múltiple por división de código
+- Un solo canal transporta todas las transmisiones y todas las estaciones pueden enviar al mismo tiempo.
+- Idea
+      - Cada estación tiene un código $c_i$.
+      - si $a \neq b\ \to c_a \times c_b = 0$
+      - $c_a \times c_a = n$
+      - $d_i$ son los datos de la estación $i$
+      - Cada estación $i$ emite $d_i \times c_i$
+      - El canal común $C_m = \sum_{i=1}^n d_i \times c_i$
+      - Si el equipo $a$ quiere los datos de $b$ hace $C_m \times c_b = nd_b$
+- Chips
+      - secuencia de números que forman $c_i$.
+      - Ejemplo
+            - [+1 +1 +1 +1]
+            - [+1 -1 +1 -1]
+            - [+1 +1 -1 -1]
+            - [+1 -1 -1 +1]
+
+      - Secuencias *Ortogonales*
+            - $N$ elementos donde $N$ es el número de estaciones.
+            - $a \cdot [x_1 \dots x_n] = [ax_1 \dots ax_n]$
+            - $c_a \cdot c_b = c_a_1 \cdot c_b_1 + \dots + c_a_n \cdot c_b_n$
+            - $c_a + c_b = [c_a_1 + c_b_1\ \cdots\ c_a_n + c_b_n]$
+- Datos a transmitir
+      - $0 \to -1$
+      - $1 \to 1$
+      - inactividad $\to 0$
+      - Dato enviado $d_i \times c_i$
+
+- Generación de secuencias
+      - *Tabla Walsh*,
+        # TODO grafico
+      - $N=2^m$ número de secuencias es potencia de 2.
+
+** Lan Cableadas: Ethernet
+*** Protocolo ETHERNET
+- Evolución Ethernet
+      - *Standard Ethernet* 10 Mbps
+      - *Fast Ethernet* 100 Mbps
+      - *Gigabit Ethernet* 1Gbps
+      - *10 Gigabit Ethernet* 10 Gbps
+
+*** Ethernet Stándar, 10 Mbps
+- Servicio sin conexión e inestable
+- Formato de trama
+      - *Preámbulo*
+      - *Delimitador de comienzo de trama (SDF)*
+      - *Dirección destino*
+            - Dirección de nivel de enlace (MAC)
+      - *Dirección origen*
+            - (MAC)
+      - *Tipo*
+            - IP, ARP o OSPF
+      - *Datos*
+      - *CRC*, campo para detectar erroes.
+
+
+** Lan inalámbrica
 
 * Nivel de Red
 - Paquete: datagrama de red.
