@@ -782,8 +782,121 @@
                   - *IPCP*, configura el enlace para transportar paquetes IP.
                         - Después ya pueden compartir paquetes.
                           
+** MAC control de acceso al medio
+- Protocolos de acceso multiple
+      - Protocolos de acceso aleatorio
+            - ALOHA
+            - CSMA
+            - CSMA/CD
+            - CSMA/CA
+      - Protocolos de acceso controlado
+            - De reserva
+            - Muestreo
+            - Paso testigo
+      - Protocolos de canalización
+            - FDMA
+            - TDMA
+            - CDMA
 
-** MAC Control de Acceso múltiple
+*** Acceso aleatorio
+**** Aloha
+***** *Aloha puro*,
+- Canal compartido
+- Una estación emite en el canal cuando tiene una trama preparada.
+- Cuando una estación envía una trama espera una respuesta del receptor.
+- Si en un cierto tiempo no hay respuesta asume que la trama se ha perdido.
+      - En este caso cada estación espera un tiempo determinado más un tiempo aleatorio aleatorio $T_B$ (Backoff time).
+- Después de $K_{max}$ intentos fallidos la estación debe parar e intentarlo más tarde.
+            - Periodo de espera es $2 \times T_p$.
+            - $T_p$ tiempo de propagación máximo. Tiempo de enviar una trama entre las dos estaciones más separadas.
+- *Periodo vulnerable* (existe posibilidad de colisión)
+      - periodo vulnerable = $2 \times T_{fr}$
+            - $T_{Fr}$, Tiempo de transmisión medio de una trama.
+- *Tasa de transferencia efectiva o productividad*
+      - $S = G \times e^{-2G}$
+            - $G$, número medio de tramas generadas por el *sistema* (todas las estaciones) durante el tiempo de transmisión de una trama.
+      - $S_{max} = 1/(2e) = 0.184$ cuando $G=1/2$
+
+***** *Aloha con ranuras*
+- Se divide el tiempo en ranuras de $T_{fr}$
+- Las estaciones solo envían al comienzo de una ranura.
+- Periodo vulnerable = $T_{fr}$
+- *Productividad*
+      - $S = G \times e^{-G}$
+      - $S_{max} = 0.368$ cuando $G=1$
+
+**** CSMA        
+- Acceso múltiple por detección de portadora (CSMA).
+- Se comprueba el medio antes de usarlo.
+- El retardo de propagación puede generar colisión igualmente.
+- *Periodo vulnerable*
+      - $T_p$, el tiempo de propagación.
+- *Métodos de persistencia*
+      - persistencia 1, si el medio está libre envía la trama inmediatamente.
+            - Mayores colisiones.
+      - No persistencia, Si el medio está libre envía inmediatamente.
+            - Si no lo está espera un tiempo aleatorio y vuelve a probar.
+      - Persistencia P, Se usa si el tiempo de una ranura es mayor al tiempo de propagación.
+            1. Si la línea está libre con probabilidad $p$ envía la trama.
+            2. Con probabilidad $1-p$ se espera a la siguiente ranura de tiempo.
+                   - Si está libre se pasa a 1.
+                   - Si está ocupada se espera un tiempo aleatorio.
+**** CSMA/CD
+- Acceso múltiple por detección de portadora y detección de colisiones (CSMA/CD).
+- Se monitoriza el medio después de enviar una trama.
+      - Si no se detecta otra trama la transmisión se realiza con éxito.
+            - No se guarda la trama.
+      - Si hay colisión (otra trama detectada) se envía luego de nuevo.
+- Tamaño de la tarma mínima.
+      - $T_{Fr} = 2 \times T_{p}$
+- *Procedimiento*
+      - Transmisión detección continuo.
+      - *Señal de interferencia*, de envía una señal corta en caso que otras estaciones no hayan detectado la colisión.
+- *Nivel de energía*
+      - Cero, canal libre.
+      - normal, la estación está usando el canal.
+      - anormal, hay una colisión y el nivel de energía es dos veces el normal.
+- *Productividad*
+      - Mayor que Aloha.
+
+**** CSMA/CA
+- Acceso múltiple por detección de portadora y evitación de colisiones.
+- Se evitan las colisiones con
+      - Espacio entre tramas (IFS), No se emite inmediatamente, se espera un periodo llamado IFS.
+            - Así se comprueba que no se detecta el inicio de la transmisión de otra estación.
+      - Ventana de contención, Cantidad de tiempo dividido en ranuras.
+            - La estación elige un número de ranuras aleatorio como su tiempo de espera.
+            - El número de ranuras se duplica cada vez que no se puede emitir.
+            - 
+      - Confirmaciones
+            - Confirmación por parte del receptor y temporizadores.
+- Linea de tiempo de intercambio de trama
+      1. Se detecta el medio
+             - Persistencia con retroceso hasta que el canal está inactivo.
+             - Espera *DIFS* (espacio interframe), evía una trama de control *RTS* (solicitud de envío).
+                   - Se incluye el NAV, que indica el tiempo que se necesitará ocupar el medio.
+      2. La estación destino tras recibir el *RTS* espera *SIFS* (short interframe space) y envía *CTS* (clear to send, permiso para enviar).
+      3. La estación origen tras recibir el CTS espera SIFS y retrasmite.
+      4. El destino después de esperar SIFS envía un ACK.
+
+- Si no se recibe un CTS se asume que ha habido colisión y se vuelve a intentar.         
+
+*** Acceso Controlado
+- Las estaciones consultan unas a otras quien puede enviar.
+
+**** Reserva
+- Tiempo dividido en intérvalos
+- Trama de reserva, contiene $n$ ranuras en un sistema de $n$ estaciones.
+      - Si una estación necesita enviar datos hay un 1 en su miniranura.
+      - Las estaciones que han hecho reserva pueden enviar sus tramas depués de la trama de reserva.
+
+**** Muestreo
+- Topologías con una estación primaria.
+- Dispositivo primario controla el enlace.
+- *Selección*
+- *Muestreo*
+
+**** Paso de testigo
 
 
 * Nivel de Red
@@ -857,3 +970,4 @@
    [[https://highered.mheducation.com/sites/0073376221/student_view0/chapter1/]]
       - 7 libro -> 9 web
       - 8 libro -> 11 web   
+      - 9 libro -> 12 web
