@@ -745,8 +745,7 @@
                   - En enlace de datos solo existe en conexiones locales no cableadas.
                   - ACK MAC para comprobar que llegó el paquete sin cables.
                   - El ACK suele indicar la secuencia del paquete que espera recibir.
-            - *Piggybacking*, En comunicación bidireccional se incluyen los acuse de recibo
-              en los mensajes que circulan en ambas direcciones.
+            - *Piggybacking*, En comunicación bidireccional se incluyen los acuse de recibo en los mensajes que circulan en ambas direcciones.
 *** Protocolos
 - *HDLC (High-level data link control)*, Control de enlace de datos de alto nivel
       - orientado a bit.
@@ -881,6 +880,8 @@
 
 - Si no se recibe un CTS se asume que ha habido colisión y se vuelve a intentar.         
 
+# TODO gráfico pag 308  
+
 *** Acceso Controlado
 - Las estaciones consultan unas a otras quien puede enviar.
 
@@ -969,7 +970,7 @@
 
 - Generación de secuencias
       - *Tabla Walsh*,
-        # TODO grafico
+        # TODO grafico pag 265
       - $N=2^m$ número de secuencias es potencia de 2.
 
 ** Lan Cableadas: Ethernet
@@ -981,21 +982,249 @@
       - *10 Gigabit Ethernet* 10 Gbps
 
 *** Ethernet Stándar, 10 Mbps
+**** Características
 - Servicio sin conexión e inestable
 - Formato de trama
-      - *Preámbulo*
-      - *Delimitador de comienzo de trama (SDF)*
-      - *Dirección destino*
+      - *Preámbulo* (7Bytes)
+      - *Delimitador de comienzo de trama (SDF)* (1Byte)
+      - *Dirección destino* (6Bytes)
             - Dirección de nivel de enlace (MAC)
-      - *Dirección origen*
+      - *Dirección origen* (6Bytes)
             - (MAC)
-      - *Tipo*
+      - *Tipo* (2Bytes)
             - IP, ARP o OSPF
-      - *Datos*
-      - *CRC*, campo para detectar erroes.
+      - *Datos* (46Bytes - 1500Bytes)
+            - Si es necesario se añade relleno.
+      - *CRC* (4Bytes), campo para detectar erroes.
+- Longitud de trama
+      - Requerimiento para CSMA/CD con persistencia 1.
+      - Evita que una estación monopolize el medio.
+      - Antes la memoria era cara.
 
+**** *Direccionamiento*
+      - *NIC*, network interface card, tarjeta de red.
+            - Cada nodo tiene almenos una.
+            - Proporcionala MAC.
+      - MAC -> ##:##:##:##:##:##
+            - 6 bytes en hexadecimal
+            - Se transmiten byte a byte de izquierda a derecha.
+            - El bit menos significativo de cada byte se envía antes.
+      - Unicast
+            - #######0:########:...:########
+      - Multicast
+            - #######1:########:...:########
+            - Mantienen la trama los miembros del grupo.
+      - Broadcast
+            - FF:FF:FF:FF:FF:FF
+            - Todos los miembros reciben y mantienen la trama.
+**** Acceso y eficacia              
+- Acceso CSMA/CD con Persistencia 1.
+- Eficacia = $1 / (1 + 6.4 \times a)$
+      - $a$, Tramas que caben en el medio.
+      - $a=$ (retardo propagación)/(retardo de tranmisión)
+        
+**** *Implementaciones*
+      - 10Base5
+            - Coaxial grueso
+            - 500m longitud
+            - Codificación Manchester
+            - Topología BUS
+            - Semiduplex
+      - 10Base2
+            - Coaxial fino
+            - 185m longitud
+            - Codificación Manchester
+            - Topología BUS
+            - Semiduplex
+      - 10Base-T
+            - 2 UTP, cable de par trenzado
+                  - Un trenzado para enviar y otro para recibir.
+            - 100m longitud
+            - Codificación Manchester
+            - Topología en estrella con un concentrador.
+            - Fullduplex
+      - 10Base-F
+            - 2 Fibra
+                  - Uno enviar el otro recibir.
+            - 2000m longitud
+            - Manchester
+            - Topología en estrella con un concentrador.
+            - Fullduplex
+
+*** Ethernet rápida (100 MBPS)
+- Compatible con ethernet estandar
+      - Mismo formato de trama
+      - Direcciones MAC 48 bit.
+
+**** Método de acceso        
+- *Método acceso*
+      - CSMA/CD
+      - 1a Solucion para colisiones
+            - Usa HUB y topología estrella
+            - Tamaño máximo de la red 250m
+      - 2a solución para colisiones
+            - Conmutador con un buffer
+            - Topología estrella
+            - Conexión fullduplex a cada host
+            - No es necesario CSMA/CD (conexiones punto a punto).
+      - Autonegociación
+            - Cierto margen para establecer las condiciones de una conexión.
+            - Permite a dispositivos incompatibles conectarse.
+            - Permite a un dispositivo tener múltiples capacidades.
+            - Permite a una estación comprobar las capacidades del concentrador.
+**** Nivel físico
+- Topología estrella con concentrasor/conmutador.
+- Implementaciones
+      - 100Base-TX
+            - 2 UTP categoría 5 (par trenzado)
+            - 100m longitud
+            - Codificación 4B/5B + MLT-3
+      - 100Base-FX
+            - 2 Fibra
+            - 2000m longitud
+            - Codificación 4B/5B + NRZ-I
+      - 100Base-T4
+            - 4 UTP (par trenzado)
+            - 100m longitud
+            - Codificación 3 8B6T
+            - Para edificios que ya tenían cable de par para voz.
+
+*** Ethernet Gigabit
+- IEEE Estándar 802.3z
+- Compatible con Ethernet estándar y Fast Ethernet
+- MAC de 48 bit.
+- Mismo formato de trama.
+- Autonegociación como en Fast Ethernet.
+
+**** Subnivel MAC
+- Modo Duplex
+- Semiduplex es raro
+      - CSMA/CD
+      - Métodos para detectar colisiones
+            - Tradicional, Se reduce la longitud de la red.
+            - Extensión de portadora.
+                  - Trama mínima más grande
+            - Ráfaga de tramas
+                  - Se envían multiple tramas
+
+**** Nivel físico                    
+- Topología estrella con concentrador/conmutador.
+- Varias topologías estrella conectables.
+- Implementaciones
+      - 1000Base-SX
+            - 2 Fibra S-W
+            - 500m longitud
+            - Codificación 8B/10B + NRZ
+      - 1000Base-LX
+            - 2 Fibra L-W
+            - 5000m longitud
+            - Codificación 8B/10B + NRZ
+      - 1000Base-CX
+            - 2 STP
+            - 25m longitud
+            - Codificación 8B/10B + NRZ
+      - 1000Base-T
+            - 4 UTP
+            - 100m longitud
+            - Codificación 4D-PAM5
+
+*** Ethernet 10 Gigabit
+- IEEE estándar 802.3ae
+- Válido para LAN y MAN (área metropolitana).
+
+**** Implementación
+- Sólo modo Duplex
+- Implementaciones
+      - 10GBase-SR
+            - 2 Fibra 850 nm
+            - 300m longitud
+            - Codificación 64B66B
+      - 10GBase-LR
+            - 2 Fibra 1310nm
+            - 10km longitud
+            - Codificación 54B66B
+      - 10GBase-EW
+            - 2 Fibra 1350nm
+            - 40Km longitud
+            - SONET
+      - 10Base-X4
+            - 2 Fibra 1310nm
+            - 300m to 10Km
+            - 8B10B
 
 ** Lan inalámbrica
+- El medio es el aire y se transmite en modo difusión.
+
+*** Características
+- *Atenuación*, la señal electromagnética se dispersa en todas las direcciones.
+- *Interferencia*, se pueden recibir señales más allá del remitente previsto.
+- *Propagación multitrayecto*, recibir más de una señal del mismo emisor por rebotes de las señales.
+- *ERROR*, menor SNR,  mayor ruido que en redes cableadas.
+
+*** Control de acceso
+- CSMA/CA
+
+*** Proyecto IEEE 802.11
+**** Arquitectura
+- BSS, Conjunto de servicios básicos
+      - Red ad hoc, sin access point, solo nodos.
+      - Red con infraestructura, con access point.
+- ESS, Conjunto de servicios extendido.
+      - Dos o más BSS con AP (access point).
+      - Se conectan a un sistema de distribución que suele ser una LAN con cable.
+- Tipos de estaciones
+      - Estación con *movilidad sin transición*
+            - Siempre dentro de una BSS
+      - Estación con *movilidad con transición BSS*
+            - Puede moverse entre BSS's pero dentro de un ESS
+      - Estadión con *movilidad con transición ESS*
+            - Se puede mover de un ESS a otro ESS.
+      - IEEE 802.11 no garantiza la conexión continua durante el movimiento.
+
+**** Subnivel MAC
+- Dos subniveles MAC
+      - DCF, función de coordinación distribuida.
+            - Control de acceso CSMA/CA
+      - PFC, función de coordinación puntual.
+            - Método opcional para redes con infraestructura.
+            - El AP hace un muestreo de la red.
+                  - Las estaciones envian cualquier dato que tengan durante el muestreo.
+            - *PIFS* (PCF IFS), es más corto que el DIFS, por ello el muestreo del PFC tiene mayor prioridad que el DCF de las estaciones.
+- Fragmentación, el protocolo recomienda dividir tramas grandes en otras más pequeñas.
+- Formato de trama
+      - *FC* (2Bytes), tipo de trama junto con información de control, subcampos:
+            - *versión* (2bit)
+            - *tipo* (2bit)
+                  - Gestión (00)
+                  - Control (01)
+                  - Datos   (10)
+            - *subtipo* (4bit)
+                  - Subtipo Control
+                        - 1011, petición RTS
+                        - 1100, permiso para enviar CTS
+                        - 1101, ACK
+            - *A DS* (1 bit)
+            - *De DS* (1 bit)
+            - *más frag*. (1 bit), más fragmentos
+            - *reintenta* (1 bit), trama retransmitida
+            - *gestión de potencia* (1 bit), significa que la estación está en modo gestión de potencia.
+            - *más datos* (1 bit), la estación tiene más datos para enviar.
+            - *WEB* (1 bit), cifrado implementado
+            - *Rsvd* (1 bit), reservado
+      - *D* (2Bytes), Duración de la transmisión para fijar el *NAV*.
+      - *Dirección 1* (6Bytes)
+      - *Dirección 2* (6Bytes)
+      - *Dirección 3* (6Bytes)
+      - *SC* (2Bytes)
+      - *Dirección 4* (6Bytes)
+      - *Cuerpo de la trama* (0-2312Bytes), depende del tipo
+      - *FCS* (4Bytes) CRC-32
+
+**** Mecanismo de direccionamiento
+
+**** Nivel físico
+
+*** Bluetooth
 
 * Nivel de Red
 - Paquete: datagrama de red.
@@ -1051,6 +1280,7 @@
 - *CRC*, cyclic redundancy check, se suele poner al final. Se calcula a partir del mensaje.
 - *ACK*, acuse de recibo.
 - *NAK*, mensaje de negación.
+- *SONET*, Red óptica sincronizada.
 
 ** Unidades
 - Periodo y frecuencia
