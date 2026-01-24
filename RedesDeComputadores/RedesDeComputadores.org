@@ -1203,8 +1203,10 @@
                         - 1011, petición RTS
                         - 1100, permiso para enviar CTS
                         - 1101, ACK
-            - *A DS* (1 bit)
-            - *De DS* (1 bit)
+            - *A DS* (1 bit), configura el [[id:10cf8465-2adf-4984-94b6-5ca2841c1efb][direccionamiento]].
+                  - La trama va hacia un AP (access point).
+            - *De DS* (1 bit), configura el [[id:10cf8465-2adf-4984-94b6-5ca2841c1efb][direccionamiento]].
+                  - La trama viene de un AP (access point).
             - *más frag*. (1 bit), más fragmentos
             - *reintenta* (1 bit), trama retransmitida
             - *gestión de potencia* (1 bit), significa que la estación está en modo gestión de potencia.
@@ -1221,10 +1223,151 @@
       - *FCS* (4Bytes) CRC-32
 
 **** Mecanismo de direccionamiento
+:PROPERTIES:
+:ID:       10cf8465-2adf-4984-94b6-5ca2841c1efb
+:END:
+| A DS | De DS | Dirección 1 | Dirección 2 | Dirección 3 | Dirección 4 |
+|------+-------+-------------+-------------+-------------+-------------|
+|    0 |     0 | Destino     | Origen      | ID de BSSS  | N/A         |
+|    0 |     1 | Destino     | AP emisor   | Origen      | N/A         |
+|    1 |     0 | AP receptor | Origen      | Destino     | N/A         |
+|    1 |     1 | AP receptor | AP emisor   | Destino     | Origen      |
+
+- *A DS=0. De DS=0*, No viene y no va a ningún sistema de distribución.
+- *A DS=0. De DS=1*, La trama viene de un sistema de distribución y va hacia una estación.
+- *A DS=1. De DS=0*, La trama va un AP (sistema de distribución) desde una estación.
+- *A DS=1. De DS=1*, La trama va de AP a un AP.
+
+- Problemas de la estación expuesta
+      - Una estación es demasiado conservadora y no usa el canal por pensar que puede generar colisiones.
+      - B -emite-> A, A -responde-> B.
+      - C no ve a B pero ve la respuesta de A.
+      - C quiere comunicarse con D pero piensa que puede interferir con A y no usa el canal.
 
 **** Nivel físico
+- *IEEE 802.11 FHSS*
+      - Banda 2.4 - 2.4835 GHz
+      - Modulación FSK
+      - Tasa 1 y 2 Mbps
+- *IEEE 802.11 DSSS*
+      - Banda 2.4 - 2.4835 GHz
+      - Modulación PSK
+      - Tasa 1 y 2 Mbps
+- *IEEE 802.11 por infrarojos*
+      - Banda infrarojo
+      - Modulación PPM (modulación por posición de pulsos)
+      - Tasa 1 y 2 Mbps
+- *IEEE 802.11a OFDM* (multiplexación por división de frecuencias ortogonal)
+      - 5.725 - 5.850 GHz
+      - Modulación PSK o QAM
+      - Tasa 6 a 54 Mbps
+- *IEEE 802.11b DSSS*
+      - 2.4 - 2.4835 GHz
+      - Modulación PSK
+      - Tasa 5.5 y 11 Mbps
+- *IEEE 802.11g OFDM*
+      - 2.4 - 2.4835 GHz
+      - Tasa 22 y 54 Mbps
+- *IEEE 802.11n OFDM*
+      - 5.725 - 5.850 GHz
+      - Tasa 600 Mbps
 
 *** Bluetooth
+- red ad hoc
+- Un dispositivo puede compartir la conexión a internet con el resto de la red.
+
+**** Arquitectura
+- *Picorredes*, red bluetooth.
+      - Hasta 8 estaciones, una de ellas es la primaria.
+      - Estaciones secundarias tienen dos estados
+            - Estado estacionado, no contabiliza en el máximo de dispositivos y no participa en la red.
+            - Estado activo. Perticipa en la red.
+- *Red dispersa*
+      - Una estación secundaria en una picored puede ser primaria en otra picored.
+- Los dipositivo tiene una radio de corto alzance
+      - Tasa actual 1Mbps
+      - 2.4GHz ancho de banda.
+            - Puede interferir con IEEE 802.11b
+
+**** Niveles de Bluethoot
+# TODO pag 318
+
+** Dispositivos de conexión y LAN virtuales
+*** Dispositivos de conexión
+**** Concentradores
+- Funciona a nivel físico
+- Repite las señales que se atenuan con la distancia
+- No tiene capacidad de filtrado
+
+**** Conmutador del nivel de enlace
+- Opera a nivel físico y de enlace.
+- Puede comprobar las direcciones MAC contenidas en las tramas y filtrar el mensaje.
+- *Conmutadores transparentes*
+      - Las estaciones desconocen la existencia del conmutador
+      - Según la IEEE 802.1d debe cumplir
+            - Tramas deben ser enviadas de una estación a otra.
+            - Tabla de encapsulamiento se construye automaticamente mediante aprendizaje de los movimientos de tramas en la red.
+            - Evitarse los bucles.
+- *Aprendizaje*
+      - El conmutador construye una tabla que relaciona dirección MAC con el puerto conectado de entrada.
+      - Usa la dirección de origen de una trama para rellenar la entrada del puerto conectado con la dirección conectada.
+- *Problema de los bucles*
+      - Si hay más de un comutador conectado a la red puede repetirse las tramas en la red.
+      - Se suele usar más de un conmutador para asegurar redundancia por si uno falla.
+- *Algoritmo del árbol de expansión*
+      - Así los conmutadores crean topología sin ciclos.
+            - Pueden evitar el problema de los bucles.
+      - El conmutador con el id mínimo actua como raiz
+            - Los conmutadores tienen un id.
+- Eliminación de colisiones
+- Conexión de dispositivos heterogéneos.
+      - Dispositivos con diferentes niveles físicos.
+
+**** Routers (enrutadores)
+- Nivel físico, de enlace de datos y de red.
+      - repite la señal, compruena la dirección física y la dirección de red.
+- Tiene dirección física y lógica (IP) para cada una de sus interfaces.
+- Actua sobre los paquetes con dirección física de destino igual a la dirección de la interfaz que lo recibe.
+- Cambia las direcciones de nivel de enlace (física) cuando reenvia el paquete.
+
+*** Lan virtuales
+- Red LAN configurada por software
+      - No tienen porque pertenecer físicamente a la misma red LAN.
+- Permite la agrupación de estaciones conectadas a conmutadores distintos en una VLAN.
+
+**** Pertenencia
+- Características que pueden usarse para agrupar estaciones en VLAN.
+- *Números de puertos*
+      - Números de puertos de un conmutador.
+- *Direcciones MAC*
+      - La dirección MAC de 48 bit como caractrística de pertenencia.
+- *Direccións IP*
+      - direcciones IP de 32 bit.
+- *Direcciones multicast IP*
+- *Combinación*
+      - El administrador puede elegir una o más características para definir la pertenencia.
+
+**** Configuración
+- *Configuración manual*, El administrador de redes usa el software VLAN para asignar estaciones.
+- *Configuración automática*, Según los criterios definidos por el administrador.
+- *Configuración semiautomática*, combinación de ambas.
+
+**** Comunicación entre conmutadores
+- El conmutador debe conocer que estación pertenece a cada VLAN.
+- También debe conocer la pertenencia de estaciones conectadas a otros conmutadores.
+- métodos
+      - *Mantenimiento de la tabla*, los conmutadores se envían las tablas entre si para actualizarlas.
+      - *Marcado de trama*, Cabecera extra a la trama MAC para definir su VLAN destino.
+      - *TDM, multiplexación por división en el tiempo*
+            - Destino VLAN1 en la celda1, VLAN2 en la celda2, etc
+
+- *IEEE 802.1Q*
+  - Indica el formato del marcado de trama.
+
+**** Ventajas
+- Reduce costes de migración de estaciones.
+- Creación de grupos de trabajo virtuales.
+- Seguridad, los miembros de una VLAN gozan de cierta privacidad.
 
 * Nivel de Red
 - Paquete: datagrama de red.
@@ -1281,6 +1424,7 @@
 - *ACK*, acuse de recibo.
 - *NAK*, mensaje de negación.
 - *SONET*, Red óptica sincronizada.
+- *OFDM*, Multiplexación por división de frecuencias ortogonal.
 
 ** Unidades
 - Periodo y frecuencia
