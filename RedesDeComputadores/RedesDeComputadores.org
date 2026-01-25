@@ -1370,14 +1370,168 @@
 - Seguridad, los miembros de una VLAN gozan de cierta privacidad.
 
 * Nivel de Red
-- Paquete: datagrama de red.
+- *Paquete: datagrama de red.*
 - Responsable de la conexión lógica entre el dispositivo origen y destino.
 - Incluye el protocolo principal IP.
       - IP es un protocolo sin conexión.
       - Sin control de flujo.
       - Sin control de errores.
 
+- Se involucra en el host origen, host destino y todos los enrutadores del camino.
+
 (ICMP, ARP, DHCP, IGMP, )
+
+** Introducción
+*** Servicios
+- *Paquetizado*, encapsular la carga útil de los niveles superiores.
+      - Añade encabezado con las direcciones (ip) de origen y destino.
+- *Enrutamiento y reenvio*
+      - Enrutar desde el origen al destino, hay más de un camino.
+            - Encontrar el mejor camino
+      - Reenvio, el enrutador usa su tabla de enrutamiento para redirigir el paquete hacia el siguiente paso.
+            - Cambia direcciones físicas (siguiente paso), puede cambiar la ip origen (recibir las respuestas), etc.
+- *Control de erroes*, poco más que un CRC
+- *Control de flujo*, no implementa directamente ningún control.
+- *Control de la congestión*, Algunos enrutadores pueden dejar caer datagramas.
+- *Calidad del servicio*
+- *Seguridad*, Es una preocupación actualmente.
+
+*** Conmutación de paquetes
+- Conexión puerto entrada y puerto de salida.
+- Mensaje de nivel superior se divide en paquetes manejables.
+      - El destino espera que lleguen todos los paquetes pertenencientes al mensaje antes de pasarlo al nivel superior.
+
+**** Acercamiento de datagrama: servicio sin conexión
+- Al iniccio cada paquete es independiente.
+      - Pueden viajar por caminos distintos cada paquete.
+
+**** Acercamiento del circuito virtual: servicio orientado a la conexión
+- Existe una relación entre todos los paquetes de un mensaje.
+- Se establece el camino antes del primer envío.
+      - *Identificador del circuito virtual*, El paquete contiene una etiqueta de sentido de flujo (que camino debe seguir).
+- tres fases
+      - Configuración.
+      - Transferencia de datos.
+      - Desmontaje.
+
+***** Fase de configuración
+- El enrutador crea una entrada para un circuito virtual. Tabla de reenvio.
+  | entrante |          | saliente |          |
+  | puerto   | eitqueta | puerto   | etiqueta |
+  | ..       | ..       | ..       | ..       |
+
+- *paquete de petición*
+      1. La fuente envía un paquete de solicitud al enrutador.
+             - Lleva las direcciones de origen y destino.
+      2. El enrutador conoce el puerto de salida
+             - asigna una etiqueta y rellena su tabla de circuito virtual.
+      3. Se repite el proceso en los enrutadores del camino
+      4. El destino recibe el paquete y asigna una etiqueta de enrtada a la conexión.
+
+- *Paquete de reconocimiento*
+      1. El destino responde con la etiqueta que ha asignado.
+             - El enrutador conectado a el destino usará esta etiqueta para rellenar su tabla de conexión y saber que puerto de salida corresponde a esta conexión.
+      2. Los enrutadores comparten su etiqueta de entrada de la conexión (eligida anteriormente) con el enrutador que le precede.
+             - Así los enrutadores podrán identificar cada uno su entrada en la tabla y ayudar a los enrutadores del camino a que encuentren la entrada correcta.
+      3. El origen también recibe la etiqueta de su enrutador.
+      4. Las fuentes usan la etiqueta de salida para los paquetes que se envían al destino y la etiqueta entrada para los que vuelven al origen.
+
+***** Fase de transferencia de datos
+- Desde el origen al destino con su etiqueta.
+      - cada enrutador usa la etiqueta de entrada y la cambia por la de salida.
+            - La etiqueta salida de un enrutador es la etiqueta de entrada del siguiente en el circuito virtual.
+      - Este paso se repite hasta llegar al destino.
+
+***** Fase de desmontaje
+- Cuando acaba el proceso desde el origen se envía un paquete especial para borrar las entradas de la tabla de reenvio.
+
+*** Rendimiento en el nivel de red
+**** Retardo
+- *Retardo de transmisión*
+      - $Retardo_{tr} = L_{paquete}/ V_{tr}$
+            - $L_{paquete}$, longitud del paquete.
+            - $V_{tr}$, velocidad de transmisión.
+- *Retardo de propagación*
+      - $Retardo_{pg} = D/V_{pg}$
+            - $D$, distancia
+            - $V_{pg}$, velocidad de propagación
+- *Retardo de procesamiento*
+      - Tiempo que necesita un enrutador o host para manjejar el datagrama.
+            - Eliminar cabecera, reenviar, detección de errores.
+      - $Retardo_{pr}$ = Tiempo necesario para procesar un paquete
+- *Retardo de cola*
+      - Tiempo que un paquete espera en uno de los buffers del enrutador.
+            - Una cola por puerto.
+      - $Retardo_{qu}$ = Tiempo que un paquete espera en las colas de entrada y salida.
+- *Retardo total*
+      - $Retardo_{tt} = (n + 1)(Retardo_{tr} + Retardo_{pg} + Retardo_{pr}) + n(Retardo_{qu})$
+            - $n$, el número de enrutadores.
+            - $(n+1)$, número de enlaces.
+
+**** Tasa de transferencia efectiva
+- número de bits que pasan por un punto de la red en un segundo.
+- Cada tramo entre enlaces puede tener diferentes velocidades.
+      - La tasa de transferencia es la menor de todos los tramos de la red.
+- $T_{tr} = min(T_{tr(1)}, ..., T_{tr(n)})$
+- Hay que tener en cuenta que pueden haber varios flujos entre dos enrutadores y la velocidad se reparte.
+
+**** Pérdida de paquetes
+- El enrutador puede tener sus buffers de entrada completos.
+
+**** Control de la congestión
+- *Control de la congestión en bucle abierto (prevención)*
+      - *Política de retransmisión*, Esperar si es necesario.
+      - *Política de ventanas*, ventana de repetición selectiva.
+      - *Política de reconocimiento*, por ejemplo el acude de recibo de N paquetes a la vez.
+      - *Política de descartes*, descartar paquetes menos sensibles (en streaming).
+      - *Política de admisión*, negarse a establecer la conexión de circuito virtual si hay riesgo de congestión.
+
+- *Control de la congestión en bucle cerrado (eliminicación)*
+      - *Contrapresión*, El nodo congestionado corta el flujo con el nodo o los nodos inmediatamente anteriores.
+            - Provoca que los nodos inmediatamente anteriores empiecen a congestionarse y reducen el tráfico.
+            - Solo impementable en circuitos virtuales.
+      - *Paquete de estrangulamiento*, Paquete enviado desde un nodo al origen para avisar (ICMP).
+      - *Señalización implícita*, La fuente supone que hay congestión por algunos síntomas.
+            - La fuente reduce la velocidad de transmisión.
+      - *Señalización explícita*, Una señal que se incluye en los paquetes notifica a la fuente.
+            - No es un paquete especial como en el *estrangulamiento*.
+
+
+*** Direcciones IPV4
+- IPV4 32bits $\to 2^32$ direcciones.
+- *Notaciones*
+      - binario: 10000000 00001011 00000011 00011111
+      - punto decinal: 128.11.3.11
+      - hexadecimal: 80 0B 03 1F
+
+**** Jerarquía en el direccionamiento
+| 32 bits |        |
+|---------+--------|
+| Prefijo | sufijo |
+
+- *Prefijo*, define la red.
+- *Sufijo*, define una conexión en la red. 
+
+**** Direccionamiento con clase
+- Obsoleto.
+- Los primeros bits definen la clase
+
+| Clase | Prefijos     | bits de clase | Primer byte |
+|-------+--------------+---------------+-------------|
+| A     | n = 8 bits   |             0 | 0 a 127     |
+| B     | n = 16 bits  |            10 | 128 a 191   |
+| C     | n = 24 bits  |           110 | 102 a 223   |
+| D     | No se aplica |          1111 | 224 a 239   |
+| E     | No se aplica |          1111 | 240 a 255   |
+
+- *Agotamiento de direcciones*
+      - Pocas direcciones para dar servicio a todo el mundo.
+      - La clase C soporta pocas estaciones conectadas.
+
+**** Direccionamiento sin clase
+- *Prefijo longitud: notación barra* (CIDR)
+      - 
+# TODO: seguir aquí
 
 * Nivel de Transporte
 - Paquete: datagrama de usuario.
