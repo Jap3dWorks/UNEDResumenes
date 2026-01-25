@@ -1678,7 +1678,71 @@
             - *TTL* (8 Bit), Saltos máximos (-1 en cada salta hasta 0).
 
 ** Protocolos de nivel de Red
-# TODO
+*** Protocolo de internet (IP)
+- IPV4, protocolo sin conexión
+
+**** Formato de datagrama
+- *Versión* (4 Bit), valor 4
+- *HLEN* (4 bits), longitud de la cabecera en palabras de 4 bytes.
+- *Tipo de servicio* (8 Bit), TOS.
+- *Longitud total* (16 Bit), cabezera + datos en bytes.
+- *Identificación* (16 Bit), Relacionado con la fragmentación.
+      - Junto a la ip de origen identifica el datagrama de forma única
+- *Flags* (3 Bit), Relacionado con la fragmentación.
+- *Desplazamiento de la fragmentación* (13 Bit), Relacionado con la fragmentación.
+      - Desplazamiento respecto al datagrama original medido en unidades de 8 bytes.
+- *TTL (Tiempo de vida)* (8 Bit), Contador de saltos para evitar bucles.
+- *Protocolo* (8 Bit), protocolo del nivel de transporte (TCP, UDP SCTP).
+      - Así se identifica a quien se le debe entregar.
+- *Suma de control de encabezado* (16 Bit), comprueba la integridad del paquete.
+      - Como algunos campos pueden cambiar en el trayecto (TTL) la suma de control se recalcula en cada salto.
+- *Dirección IP fuente* (32 Bit)
+- *Dirección IP destino* (32 Bit)
+- *Opciones + relleno* (0 to 40 Bit), las implementaciones deben ser capaces de manejar este campo. Sobretodo para depuración.
+- *Carga útil*, El contenido.
+
+*** Fragmentación
+**** MTU, Unidad de transferencia máxima
+- Cada protocolo de trama (nivel de enlace) tiene un tamaño máximo.
+- *MTU*, longitud máxima de la carga útil de la trama.
+- *Fragmentación*, dividir el datagrama para que entre en tramas de tamaño menores.
+- Enrutadores pueden fragmentar.
+- El ensamblado de los fragmentos se hace en el host destino.
+- *Campos relacionados*
+      - *Identificación*, Junto a la ip de origen identifica de forma única el datagrama.
+            - El host origen lleva un contador que se va incrementado en cada datagrama.
+      - *Flags*
+            - #1#, no debe fragmentarse el datagrama
+                  - Si no puede pasar se descarta y se envía un mensaje de error ICMP al origen.
+            - ##1, el datagrama no es el último fragmento.
+            - ##0, es el último fragmento del datagrama
+      - *Desplazamiento de la fragmentación*, Desplazamiento respecto a los datos del datagrama original medido en unidades de 8 bytes.
+            - Si se fragmenta un fragmento sigue siendo relativo al datagrama original.
+            - Notese que es sobre los datos, sobre la carga útil.
+            - El primer fragmento se identifica por tener desplazamiento 0.
+
+*** Opciones
+- Parte variable de la cabecera del datagrama.
+ # TODO
+
+*** Seguridad de los datagramas IPv4
+- *Rastreo de paquetes*, Interceptar un paquete IP y hacer una copia del mismo.
+      - Se intenta evitar el *packet sniffing* con la encriptación.
+- *Modificación de paquetes*, Interceptar un paquete cambiar el contenido y reenviarlo a su destino.
+      - Existen mecanismos de integridad de datos para su detección.
+- *Falsificación de IP*, *Spoofing*, enviar un paquete modificando la IP de origen.
+      - Parece que venga de otra persona.
+      - Mecanismos de autentificación del origen.
+- *IPSec*, protocolo
+      - Se acuerdan algoritmos y claves entre los participantes de la IPSec.
+      - *Cifrado de paquetes*, usando las claves y algoritmos acordados.
+      - *Integridad de los datos*, Si el paquete no supera la prueba de integridad se descarta.
+      - *Autenticación de origen*, Para asegurarse que no ha sido creado por un impostor.
+
+*** ICMPv4
+- Mensajes de control para notificar de errores y consultas sobre el estado de un servidor (enrutador o lo que sea).
+
+  # TODO
 
 ** IP de nueva generación
 # TODO
