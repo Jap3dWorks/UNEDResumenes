@@ -1381,8 +1381,7 @@
 
 (ICMP, ARP, DHCP, IGMP, )
 
-** Introducción
-*** Servicios
+** Servicios
 - *Paquetizado*, encapsular la carga útil de los niveles superiores.
       - Añade encabezado con las direcciones (ip) de origen y destino.
 - *Enrutamiento y reenvio*
@@ -1396,16 +1395,16 @@
 - *Calidad del servicio*
 - *Seguridad*, Es una preocupación actualmente.
 
-*** Conmutación de paquetes
+** Conmutación de paquetes
 - Conexión puerto entrada y puerto de salida.
 - Mensaje de nivel superior se divide en paquetes manejables.
       - El destino espera que lleguen todos los paquetes pertenencientes al mensaje antes de pasarlo al nivel superior.
 
-**** Acercamiento de datagrama: servicio sin conexión
+*** Acercamiento de datagrama: servicio sin conexión
 - Al iniccio cada paquete es independiente.
       - Pueden viajar por caminos distintos cada paquete.
 
-**** Acercamiento del circuito virtual: servicio orientado a la conexión
+*** Acercamiento del circuito virtual: servicio orientado a la conexión
 - Existe una relación entre todos los paquetes de un mensaje.
 - Se establece el camino antes del primer envío.
       - *Identificador del circuito virtual*, El paquete contiene una etiqueta de sentido de flujo (que camino debe seguir).
@@ -1414,7 +1413,7 @@
       - Transferencia de datos.
       - Desmontaje.
 
-***** Fase de configuración
+**** Fase de configuración
 - El enrutador crea una entrada para un circuito virtual. Tabla de reenvio.
   | entrante |          | saliente |          |
   | puerto   | eitqueta | puerto   | etiqueta |
@@ -1436,17 +1435,17 @@
       3. El origen también recibe la etiqueta de su enrutador.
       4. Las fuentes usan la etiqueta de salida para los paquetes que se envían al destino y la etiqueta entrada para los que vuelven al origen.
 
-***** Fase de transferencia de datos
+**** Fase de transferencia de datos
 - Desde el origen al destino con su etiqueta.
       - cada enrutador usa la etiqueta de entrada y la cambia por la de salida.
             - La etiqueta salida de un enrutador es la etiqueta de entrada del siguiente en el circuito virtual.
       - Este paso se repite hasta llegar al destino.
 
-***** Fase de desmontaje
+**** Fase de desmontaje
 - Cuando acaba el proceso desde el origen se envía un paquete especial para borrar las entradas de la tabla de reenvio.
 
-*** Rendimiento en el nivel de red
-**** Retardo
+** Rendimiento en el nivel de red
+*** Retardo
 - *Retardo de transmisión*
       - $Retardo_{tr} = L_{paquete}/ V_{tr}$
             - $L_{paquete}$, longitud del paquete.
@@ -1468,17 +1467,17 @@
             - $n$, el número de enrutadores.
             - $(n+1)$, número de enlaces.
 
-**** Tasa de transferencia efectiva
+*** Tasa de transferencia efectiva
 - número de bits que pasan por un punto de la red en un segundo.
 - Cada tramo entre enlaces puede tener diferentes velocidades.
       - La tasa de transferencia es la menor de todos los tramos de la red.
 - $T_{tr} = min(T_{tr(1)}, ..., T_{tr(n)})$
 - Hay que tener en cuenta que pueden haber varios flujos entre dos enrutadores y la velocidad se reparte.
 
-**** Pérdida de paquetes
+*** Pérdida de paquetes
 - El enrutador puede tener sus buffers de entrada completos.
 
-**** Control de la congestión
+*** Control de la congestión
 - *Control de la congestión en bucle abierto (prevención)*
       - *Política de retransmisión*, Esperar si es necesario.
       - *Política de ventanas*, ventana de repetición selectiva.
@@ -1496,15 +1495,14 @@
       - *Señalización explícita*, Una señal que se incluye en los paquetes notifica a la fuente.
             - No es un paquete especial como en el *estrangulamiento*.
 
-
-*** Direcciones IPV4
+** Direcciones IPV4
 - IPV4 32bits $\to 2^32$ direcciones.
 - *Notaciones*
       - binario: 10000000 00001011 00000011 00011111
       - punto decinal: 128.11.3.11
       - hexadecimal: 80 0B 03 1F
 
-**** Jerarquía en el direccionamiento
+*** Jerarquía en el direccionamiento
 | 32 bits |        |
 |---------+--------|
 | Prefijo | sufijo |
@@ -1512,7 +1510,7 @@
 - *Prefijo*, define la red.
 - *Sufijo*, define una conexión en la red. 
 
-**** Direccionamiento con clase
+*** Direccionamiento con clase
 - Obsoleto.
 - Los primeros bits definen la clase
 
@@ -1528,13 +1526,165 @@
       - Pocas direcciones para dar servicio a todo el mundo.
       - La clase C soporta pocas estaciones conectadas.
 
-**** Direccionamiento sin clase
+*** Direccionamiento sin clase
 - *Prefijo longitud: notación barra* (CIDR)
-      - 
-# TODO: seguir aquí
+      - Byte | Byte | Byte | Byte / n
+      - n, longitud del prefijo.
+            - de izquierda a derecha
+      - $2^{32-N}$ direcciones cada red
+      - Encontrar la primera dirección
+            - N bits se mantienen | 32-N bits a 0
+      - Encontrar última dirección
+            - N bits se mantienen | 32-N bits a 1
+- *Máscara*
+      - Forma de anotar el prefijo, formas equivalentes
+            - 11111111.11111111.11111111.00000000
+            - 255.255.255.0
+            - /24
+- *Asignación de bloques*
+      - *ICANN*, autoridad que asigna direcciones de red.
+            - No a usuarios, sino a ISPs o grandes organizaciones.
+            - El número de direcciones solicitadas debe ser potencia de 2.
+            - Primera dirección de un bloque siempre es [ Prefijo | 0's ].
+- *Subnetting*
+      - Se puede dividir un rango de direcciones en varios subrangos (ampliando el Prefijo).
+      - Una subred puede dividirse en más subredes (siempre de tamaño potencia de 2).
+            - $n_{prfj} = 32 - log_2(n_{rdes})$
+
+- *Direcciones especiales*
+      - *Dirección de máquina host*, 0.0.0.0/32
+      - *Dirección de difusión limitada*, 255.255.255.255/32
+            - Paquete a todos los nodos de la red, pero no sale de la red.
+            - Enrutadores bloquean la salida.
+      - *Dirección de loopback*, 127.0.0.0/8. nunca sale del host
+            - localhost
+      - *Direcciones privadas*, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 y 169.254.0.0/16
+            - ver *NAT*
+      - *Direcciones multidifusión*, 224.0.0.0/4
+            - Reservado a direcciones multicast.
+
+** Protocolo de configuración de host dinámico (DHCP)
+- Es un programa de nivel aplicación que utiliza el paradigma cliente/servidor.
+- También conocido como protocolo *plug and play*.
+- Se configura para asignar direcciones IP permanentes o móviles a dispositivos.
+- Un equipo necesita saber, el servidor DHCP los puede proporcionar.
+      - Su dirección IP
+      - prefijo de la red
+      - dirección del enrutador
+      - la dirección del DNS
+- *Formato DHCP*
+      - *Opcode* (8 Bit), tipo de solicitud
+      - *HType* (8 Bit), tipo de hardware
+      - *HLen* (8 Bit), Longitud de la dirección de hardware
+      - *HCount* (8 Bit), número máximo de saltos
+      - *ID de transacción* (32 Bit), número aleatorio establecido por el cliente
+      - *Tiempo Transcurrido* (16 Bit), en segundos
+      - *Flags* (16 Bit), primer bit 0 unicast 1 milticast
+      - *Dirección del cliente* (32 Bit), 0 si el cliente no lo sabe
+      - *Dirección del servidor* (32 Bit), Una dirección IP de transmisión si el cliente no lo sabe.
+      - *Dirección IP de la puerta de enlace* (32 Bit), Dirección del enrutador por defecto.
+      - *Dirección del hardware del cliente* (48 Bit), la MAC del cliente
+      - *Nombre del servicor* (64 Bytes), nombre de dominio
+      - *Nombre del archivo de inicio* (128 bytes), información adicional.
+      - *Opciones* (64 bytes), 
+- *Proceso*
+      1. El host crea un mensaje DHCPDISCOVER con el valor de *ID de transacción*.
+             - Datagrama de usuario UDP
+             - Puerto origen 68, Puerto destino 67
+             - *Dirección cliente* 0.0.0.0
+             - *Dirección servidor* 255.255.255.255 (difusión amplia)
+      2. Servidor DHCP responde con DHCPOFFER
+             - La respuesta por difusión
+             - Puerto origen 67, puerto destino 68
+             - *Direccion cliente* la IP ofrecida
+             - *Dirección servidor* su propia IP
+             - Incluye el tiempo de alquiler de la IP
+      3. El host que se une recibe una o varias ofertas y elige una.
+             - Envía DHCPREQUEST al servidor del cual aceptó la oferta.
+             - Con los valores conocidos rellenados.
+      4. El servidor responde al cliente con DHCPACK si la dirección ofrecida es válida.
+             - En casocontrario responde con DHCPNACK.
+- El servidor no entrega toda la información en su respuesta DHCPACK
+      - Define una ruta a un archivo con la información completa.
+      - El cliente puede usar *FTP* para encontrar este archivo.
+- *Control de errores*
+      - Requiere que UDP use la suma de comprobación.
+      - Temporizadores
+            - DHCP obliga al cliente a usar un número aleatorio para establecer su temporizador.
+
+** Resolución de direcciones (NAT)
+- Permite el uso de direcciones privadas en una red y al menos una global para internet (el enrutador). Para Internet solo existe el enrutador.
+      - El router ejecuta el software NAT.
+*** *Traducción de la dirección*
+- Todos los paquetes de salida pasan por el enrutador NAT.
+      - Sustituye la dirección origen por la del enrutador NAT.
+- Todos lo paquetes de entrada pasan por el enrutador NAT.
+      - Sustituye la dirección destino (enrutador NAT) por la del host privado.
+
+*** Tabla de traducción
+- El enrutador NAT suele terner almenos 4 direcciones globales.
+      - 4 tablas
+- Tabla con *Direcciones IP y número de puerto*
+      - Para eliminar ambigüedad.
+      - Ejemplo dos hosts acceden al mismo servidor.
+        | Dir. Privada | Puerto Privado | Dirección externa | Puerto externo | Protocolo Transporte |
+        |--------------+----------------+-------------------+----------------+----------------------|
+        |   172.18.3.1 |           1400 |          25.8.3.2 |             80 | TCP                  |
+        |   172.18.3.2 |           1401 |          25.8.3.2 |             80 | TCP                  |
+
+** Reenvío de paquetes IP
+*** Reenvio basado en la dirección de salto
+- Requeire de enrutadores con tabla de enrutamiento
+- La tabla tiene la dirección de la red destino y el siguiente salto hacia ese destino.
+  | Dirección/máscara de red | siguiente salto | Interfaz |
+  |--------------------------+-----------------+----------|
+  | 180.70.65.192/26         | --              | m2       |
+  | 201.4.16.0/22            | --              | m1       |
+  | Por defecto (internet)   | 180.70.65.200   | m2       |
+- *Agregador de direcciones*
+      - Todas las subredes que conectan con un enrutador A pueden tener una red común.
+            - Redes en bloque.
+      - Est simplifica a los enrutadores externos (B) la tabla de enrutación.
+            - Porque todas las subredes de A son una entrada en el enrutador B.
+- *Coincidencia con la máscara más larga*
+      - Las entradas de la tabla de enrutamiento de redes con dirección más larga tienen preferencia.
+            - Las redes más pequeñas y más concretas (menos agrupación de subredes) tienen preferencia en los datos de enrutamiento.
+- *Encaminamiento jerárquico*
+      - Para evitar tablas gigantescas puede organizarse la red en una estructura de árbol de subredes.
+            - Cada nodo puede ser un enrutador de un ISP.
+- *Encaminamiento geográfico*
+      - Extensión del encaminamiento jerárquico.
+      - Se dividen el espacio de direcciones en continentes por ejemplo.
+
+- Algoritmos de búsqueda de la tabla de encaminamiento
+      - Se puede estructurar la tabla en un /tie/ para mejorar la eficiencia.
+
+*** Encaminamiento basado en etiqueta
+- Enfocado a la conexión
+- Uso de *Circuito Virtual*
+- *Conmutación de etiquetas multiprotocolo (MPLS)*
+      - El enrutador se puede comportar como un enrutador o como un conmutador
+            - Como enrutador, reenvia basándose en la dirección destino.
+            - Como conmutador, reenvia basándose en la etiqueta.
+      - Hace falta añadir la etiqueta para el servicio orientado a la conexión (circuito virtual).
+      - IPV4 no soporta esta ampliación
+            - Solución: Se encapsula todo el paquete IP como un paquete MPLS como carga útil (es un poco usar el nivel aplicación).
+            - Se agrega una cabecera MPLS.
+      - IPV6 sí soporta esta ampliación
+      - *Cabecera MPLS*
+            - *Etiqueta* (20 Bits)
+            - *Exp* (3 Bit), fines experimentales.
+            - *S* (1 Bit), 1 cabecera la última de la pila.
+            - *TTL* (8 Bit), Saltos máximos (-1 en cada salta hasta 0).
+
+** Protocolos de nivel de Red
+# TODO
+
+** IP de nueva generación
+# TODO
 
 * Nivel de Transporte
-- Paquete: datagrama de usuario.
+- *Paquete: datagrama de usuario.*
 - Responsable de la comunicación lógica entre aplicaciones.
 - Da servicio al nivel de aplicación.
 - Gestiona el tráfico
@@ -1573,7 +1723,7 @@
 - *Protocolo sin conexión*, los paquetes se mandan de un nodo a otro sin relación entre ellas.
 - *Protocolo orientado a conexión*, Se establece una conexión lógica entre los nodos,
   después se transmiten las tramas, que tienen alguna relación entre ellas.
-- *FSM*, máquina de estados finita.
+- *FSM* (finite state machine), máquina de estados finita.
 - *CRC*, cyclic redundancy check, se suele poner al final. Se calcula a partir del mensaje.
 - *ACK*, acuse de recibo.
 - *NAK*, mensaje de negación.
@@ -1597,3 +1747,4 @@
       - 7 libro -> 9 web
       - 8 libro -> 11 web   
       - 9 libro -> 12 web
+
