@@ -1741,22 +1741,221 @@
 
 *** ICMPv4
 - Mensajes de control para notificar de errores y consultas sobre el estado de un servidor (enrutador o lo que sea).
+- Se encapsulan dentro de datagramas IP
 
   # TODO
+**** Mensajes
+- *Cabecera*
+      - *Tipo* (8 Bit)
+      - *Código* (8 Bit)
+      - *Suma de comprobación* (16 Bit)
+      - de error *Resto del encabezado* (32 Bit)
+      - de consulta
+            - *Identificador* (16 Bit)
+            - *N de secuencia* (16 Bit)
+      - *Datos*
+            - En error incluye el encabezado IP y algunos bytes adicionales.
+                  - Incluye el numero de puerto
+- *Mensajes de informe de error*
+      - No corrige errores, tan solo informa de ellos.
+      - Datagramas con dirección *multidifusión* o de *dirección especial* no generan ICMP de error.
+      - No se genera ICMP de error ante un error en un mensaje ICMP.
+      - En datagramas fragmentados solo se genera ICMP de error para el primer datagrama.
+      - *Destino inalcanzable*, tipo 3.
+      - *Silenciar origen*, tipo 4. Informa al remitente sobre la congestión de la red.
+      - *Redirección*, tipo 5. Informa a la fuente que usó un enrutador equivocado.
+      - *Tiempo excedido* tipo 11. TTL llegó a 0. Se envía a la fuente.
+      - *Problemas con los parámetros*, tipo 12. Problemas en el encabezado de los datagramas.
+- *Mensajes de Consulta*
+      - Sondear, probar actividad, sincronizar relojes.
+
+# TODO        
 
 ** IP de nueva generación
 # TODO
 
 * Nivel de Transporte
-- *Paquete: datagrama de usuario.*
+- *Paquete: datagrama de usuario*, segmentos o paquetes
+
+** Servicios                                                         :ATTACH:
+:PROPERTIES:
+:ID:       a055fc28-fd74-4890-a5b4-559832fc9d15
+:END:
 - Responsable de la comunicación lógica entre aplicaciones.
 - Da servicio al nivel de aplicación.
-- Gestiona el tráfico
-- Dirección Socket. ipv4:puerto
+      - *Comunicación proceso a proceso*
+            - El nivel transporte entrega el mensaje al proceso correcto.
+- *Direccionamiento*
+      - *número de puerto*, 16 bits entero unsigned.
+      - *Dirección Socket*. ipv4:puerto
+      - *puerto efimero*, puerto usado de forma temporal y breve (normalmente el cliente).
+      - *Numeros de puerto bien conocido*, usualmente para servicios en un servidor.
+- *Rangos ICANN*
+      - *Puertos bien conocidos*, [0, 1023]
+      - *Puertos registrados*, [1024, 49151]
+            - Registrados en ICANN para evitar la duplicación
+      - *Puertos dinámicos*, [49152, 65535]
+            - Temporales o privados
+- *Multiplexación*, una entidad acepta mensajes de más de una fuente.
+- *Demultiplexación*, una entidad entrega a más de una fuente.
+- *Control de flujo*
+      - *push*, productor entrega a consumidor, consumidor puede verse abrumado.
+      - *pull*, consumidor solicita la entrega al productor.
+      - *buffers*
+            - Uno en el nivel transporte del emisor.
+                  - Si esta llena avisa al nivel aplicación para que detenga la producción.
+            - Uno en el nivel transporte del receptor.
+                  - Si esta llena avisa al nivel transporte del emisor para que detenga el flujo.
+- *Control de errores*
+      - *Números de secuencia*, identidicar el paquete o si es un duplicado.
+            - Reconoce huecos y puede reordenar aunque llegue fuera de orden.
+            - Depende de los bits disponibles.
+                  - 4 bit el rango es [0,15]
+      - *Confirmación*, un packete ACK por cada uno de los paquete recibidos.
+            - El emisor tiene un temporizador para esperar un ACK antes de reenviar.
+- *Ventana Deslizante*
+      - La ventana se deslizante. cada entrada del buffer del emisor coincide con un número de secuencia
+      - Cuando se envía un paquete con secuencia $i$ se marca en el buffer.
+      - Cuando se recibe un ACK con secuencia $i$ se desmarca la entrada en el buffer.
+      - La ventana se desliza hasta encontrar una entrada marcada al inicio de la ventana.
+      - [[attachment:clipboard-20260126T115628.png]]        
 
-** UDP
+*** Protocolos sin conexión y orientados a conexión
+- *Servicio sin conexión*
+      - Independencia entre los paquetes
+      - No se conoce el orden de los paquetes
+- *Servicio con conexión*
+      - Relación entre los paquetes
+      - Conexión lógica entre los participantes.
+            1. Establecer conexión.
+            2. Intercambio de datos.
+            3. Desmantelar conexión.
+               
+*** Protocolos de nivel de transporte
+# comportamientos generales
+# TODO
+
+** Protocolo UDP
+- *Protocolo de datagrama de usuario*
+- Sin conexión y no fiable.
+- Sencillo y con un mínimo de sobrecarga.
+
+*** *paquete*: datagrama de usuario
+- *Cabecera*
+      - *Número de puerto de origen* (16 Bit)
+      - *Número de puerto destino* (16 Bit)
+      - *Longitud total* (16 Bit)
+      - *Suma de comprobación* (16 Bit)
+
+*** Servicios UDP
+- *Comunicación proceso a proceso*
+      - direcciones socket
+- *Servicio sin conexión*
+- *Control de flujo*, no hay control de flujo
+- *Control de errores*, La suma de comprobación
+      - pseudocabecera (procedente del nivel de red) + cabecera + datos
+      - Si la suma de comprobación es todo 0's es que se ha decidido no calcularse.
+      - El valor de la suma se complementa, si el complemento da todo 0's se vuelve a complementar para que sea todo 1's.
+- No proporciona control de la congestión.
+- Encapsula y desencapsula los mensajes del nivel de aplicación.
+- Colas (buffers) asociadas a puertos.
+- Multiplexación y demultiplexación
+
+*** Aplicaciones UDP
+- TFTP, SNMP, RIP, aplicaciones interactivas en tiempo real.
 
 ** TCP
+*** Servicios TCP
+- *Comunicación de proceso a proceso*
+- *Servicio de flujo de entrega*, conexión imaginaria
+- *Envio y recepción de buffers*, en el emisor y en el receptor.
+      - útiles para el control de flujo.
+- *Paquete: Segmentos*, agrupa los bytes en paquetes llamados segmentos.
+      - No son necesariamente todos del mismo tamaño.
+- *Comunicación full dúplex*
+- *Multiplexación y demultiplexación*
+- *Orientado a la conexión*
+      1. Se establece una conexión lógica entre participantes
+      2. Se intercambian datos
+      3. Se cierra la conexión
+- *Servicio fiable*
+- *Encapsulado*
+
+*** Características
+**** Sistema de numeración
+- Los segmentos se numeran usando dos campos.
+
+- *Numero de secuencia*  
+      - *Numero de Byte*.
+            - Número del byte respecto al mensaje original.
+            - Se usa un número aleatorio entre $[0, 2^{32}-1]$ para el primer byte.
+      - *Número de secuencia*.
+            1. Número de secuencia del primer segmento (ISN) es aleatorio.
+            2. De otro segmento es el Número de secuencia anterior más bytes trasportados por el segmento anterior.
+- *Numero de confirmación*
+      - Cada parte confirma los bytes que ha recibido (respecto al número de secuencia).
+      - campo acumulativo.
+            - Si envio $n$ he recibido correctamente hasta $n-1$.
+
+*** Segmento
+**** Formato
+- *Campos*
+      - *Dir puerto origen* (16 Bits)
+      - *Dir puerto destino* (16 Bits)
+      - *Número de secuencia* (32 Bits)
+      - *Número de confirmación* (32 Bits)
+      - *HLEN* (4 Bits)
+      - *Longitud de la cabecera* (4 Bits), número de palabras de 4 bytes.
+      - *Control* (6 Bits), 6 bits o flags.
+            - URG, urgente
+            - ACK, confirmación
+            - PSH, petición de transmisión
+            - RST, reiniciar conexión
+            - SYN, sincronizar números de secuencia
+            - FIN, terminar conexión
+      - *Tamaño de la ventana* (16 Bit), rwnd, receiver window, se establece por el receptor.
+      - *Suma de comprobación* (16 Bit), obligatorio en TCP
+            - Se incluye incluye una pseudocabecera IP en la suma (direcciones ip)
+      - *Puntero urgente* (16 Bit), válido cuando el campo urgente es 1.
+      - *Opciones* (hasta 40 bytes).
+
+*** Conexión TCP
+**** Establecimiento de conexión
+- *Negociación en 3 pasos*, three-way handshaking
+      1. Cliente envía el primer segmento con SYN activo.
+             - Sincroniza número de secuencias (ISN número de secuencia inicial).
+             - Sin datos pero consume número de secuencia (1byte).
+      2. Servidor envía SYN + ACK activos.
+             - Inicia el número de secuencia del servidor.
+             - Acusa el recibo del segmento SYN del cliente.
+             - se incluye el rwnd para que lo use el cliente.
+             - Como juega el papel de segmento SYN consume 1 número de secuencia.
+      3. El cliente envía un segmento ACK
+             - Si no lleva datos no consume número de secuencia.
+- *Ataque por SYN masivo*
+      - Ataque basado en iniciar muchas conexiones con el servidor para que sature sus recursos.
+- *Ataque por denegación de servicio*
+      - El atacante satura al servidor con peticiones de servicio.
+
+**** Transferencia de datos
+- Transmisión bidireccional.
+- Pueden vijar datos junto a acuses de recibo (*piggybacking*).
+- *Entrega inmediata de datos (pushing)*
+      - la aplicación emisor puede solicitar a su TCP una operación PUSH.
+      - TCP emsisor crea un segmento y lo envía inmediatamente con el bit PSH activo.
+      - El TCP receptor sabe que debe entregarlo rápidamente a la aplicación.
+- *Datos urgentes*
+      - El TCP emisor emite inmediatamente con la flag URG activada.
+      - El campo puntero urgente marca el final de los bytes urgentes.
+            - El primer byte urgente es el inicio del mensaje.
+      - La aplicación receptor es quien maneja estos bytes.
+
+**** Fin de la conexión
+- Cualquier parte puede cerrar la conexión.
+- *Negociación en 3 pasos*
+      1. Se envía un segmento FIN con el flag FIN activo.
+             - Consume número de secuencia (hay que acusarlo de recibo).
+      2. 
 
 ** SCTP
 
