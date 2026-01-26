@@ -1379,8 +1379,6 @@
 
 - Se involucra en el host origen, host destino y todos los enrutadores del camino.
 
-(ICMP, ARP, DHCP, IGMP, )
-
 ** Servicios
 - *Paquetizado*, encapsular la carga útil de los niveles superiores.
       - Añade encabezado con las direcciones (ip) de origen y destino.
@@ -1955,9 +1953,157 @@
 - *Negociación en 3 pasos*
       1. Se envía un segmento FIN con el flag FIN activo.
              - Consume número de secuencia (hay que acusarlo de recibo).
-      2. 
+      2. El servidor TCP informa a su proceso y envía un segundo segmento FIN + ACK.
+             - Confirma la recepción y anuncia el cierre en sentido contrario.
+             - Consume almenos 1 número de secuencia.
+      3. El cliente envía el último ACK para confirmar la recepción.
+- *Semicierre*
+      - Un extremo deja de enviar datos mientras sigue recibiendo.
+      - El participante A envía un segmento FIN
+            - El participante B puede seguir enviando datos si le quedan pendientes.
+            - A solo puede devolver ACK.
+            - B envia un segmento FIN cuando haya concluido y A lo confirmará con un ACK.
+- *Reinicio de la conexión*
+  - Negar una solicitud de conexión, abortar una conexión existente o terminar una conexión inactiva. Todo esto con la flag RST.
+
+*** Estados TCP
+- *Cerrado*, no existe conexión.
+- *Escuchar*, esperando SYN.
+- *SYN-ENV*, SYN enviado, esperando ACK
+- *SYN-REC*, SYN + ACK enviado, esperando ACK
+- *ESTABLECIDO*, transferencia de datos en curso.
+- *FIN-ESPERA1*, Primer FIN enviado, esperando ACK
+- *FIN-ESPERA2*, ACK al primer FIN recivido, esperando segundo FIN
+- *CERRADO-ESPERA*, Primer FIN recibido, ACK enviado.
+- *TIEMPO-ESPERA*, Segundo FIN recibido, ACK enviado, esperando el tiempo límite 2MSL
+- *ÚLTIMO-ACK*, Segundo FIN enviado, esperando ACK
+- *CIERRE*, ambos lados decidieron cerrar simultáneamente.
+  
+*** Ventanas en TCP
+**** Ventana de envío
+- Tamaño de la ventana es el número de bytes.
+      - El tamaño lo anuncia el receptor.
+- Se utiliza un solo temporizador.
+
+**** Ventana de recepción
+- Se permite que el proceso de recepción extraiga datos a su propio ritmo.
+- Tamaño de la ventana de recepción es menor o igual al tamaño del buffer.
+- rwnd = tamaño buffer - bytes en espera de ser extraidos.
+- Confirmación acumulativa.
+
+*** Control de flujo
+- TCP receptor controla a TCP emisor.
+      - TCP emisor controla a proceso emisor.
+- Las ventanas tienen una función reguladora.
+
+**** Sindrome de la ventana Tonta  
+# TODO
+
+*** Control de errores
+**** Sumas de comprobación
+- Campo CRC obligatorio, si un segmento está corrompido se desecha
+
+**** Confirmación
+- ACK, a todo tipo de segmento que consuma número de secuencia
+      - ACK no consume número de secuencia.
+- Tipos de ACK
+      - *Acuse de recibo acumulativo* (ACK), Se anuncia el siguiente byte que es espera recibir, siempre habiendo confirmado los anteriores.
+      - *Reconocimiento selectivo* (SACK), Es una implementación más moderna.
+            - Informa de un bloque de bytes desordenado y de bloques de bytes duplicados.
+            - No sustituye al ACK.
+            - Se implementa como opción en el TCP.
+- *Generar confirmaciones*
+      - Usar Piggybacking para reducir el tránsito.
+      - Retraso del ACK, así puede que confirme varios de golpe.
+            - Habiendo recibido los paquetes esperados no conviene alargar más de dos paquetes seguidos sin confirmar.
+      - Si llega un paquete fuera de orden más alto del esperado, se envía un ACK con el número de secuencia esperado.
+      - Cuando llega un segmento que falta se informa inmediatamente con un ACK el siguiente número esperado.
+      - Si llega un segmento duplicado se descarta y se envía un ACK con el número de secuencia esperado.
+
+**** Retransmisión
+- Cuando se envía un segmento se almacena en una cola hasta que es confirmado.
+- Se agrega un temporiador, si expira el segmento se reenvia.
+      - Si recibe 3 ACK duplicados para el primer segmento de la cola también.
+- *Retransmisión después de un plazo de retransmisión (RTO)*
+      - retransmission time out (RTO)
+      - Se tiene un RTO por cada conexión
+      - Si el RTO vence se reenvía el segmento primero de la cola.
+            - Se reinicia el RTO
+- *Retransmisión después de tres segmentos ACK duplicados*
+      - Si se reciben 3 ACK para el primer elemento de la cola, este se retransmite y se reinicia el RTO.
+- *Segmentos fuera de orden*
+      - No se descartan, se almacenan en el buffer del TCP
+      - No se entregan al proceso, tan solo se entrega cuando la secuencia está sin huecos.
+
+**** Control de la congestión del TCP
+- *Ventana de congestión*
+      - A persar del valor del /rwnd/ los routers intermedios pueden congestionarse.
+      - *cwnd*, Relacionada con la congesitón de la red.
+            - Tamaño real de ventana = /min(rwnd, cwnd)/
+- *Detección de la congestión*
+      - Signos, tiempo de espera sin ACK (congestión fuerte) y la aparición de 3 ACK (congestión ligera).
+- *Políticas de congestión*
+      - *inicio lento: incremento exponencial*
+            - el /cwnd/ comienza con un MSS (tamaño de segmento máximo), se incrementa en 1 MSS cada vez que recibe un ACK.
+                  - Como recibe más ACK crece más rápido por eso es exponencial.
+            - Si llega un ACK, /cwnd = cwnd + 1/
+            - *ssthresh*, variable humbral máximo de crecimiento.
+      - *Evitación de la congestión: incremento aditivo*
+            - Se incremente el /cwnd/ cada vez que una ventana completa es confirmada.
+            - Una ventana es el número de segmentos emitido durante 1 RTT.
+            - Si llega un ACK, /cwnd = cwnd + (1/cwnd)/
+            - Se incrementa hasta detectar congestión
+      - *Recuperación rápida*
+            - Si llega un ACK duplicado, /cwnd = cwnd + 1/
+- *Transición de la política*
+      - *TCP tahoe*, antiguo.
+            - Usaba inicio lento y evitaicón de la congestión.
+            - Ante 3 ACK duplicados o expiración del temporizador.
+                  - ssthresh = cwnd/2
+                        - Se puede incrementar si se llega a un alto /cwnd/.
+                  - cwnd = 1
+      - *TCP reno*, el más común.
+            - Se implementa recuperación rápida.
+            - FSM
+                  - *Inicio lento* (inicio)
+                        - Expiración: ssthresh=cwnd/2; cwnd=1
+                        - Llega ACK: cwnd=cwnd+1;
+                        - cwnd >= ssthresh -> [Evitación de la congestión]
+                        - 3 dupACK: ssthresh=cwnd/2;cwnd=ssthresh+3 -> [Recuperación rápida]
+                  - *Evitación de la congestión*
+                        - Llega ACK: cwnd = cwnd + (1/cwnd)
+                        - Expiración: ssthresh=cwnd/2; cwnd=1; -> [Inicio lento]
+                        - 3 dupACK: ssthresh=cwnd/2; cwnd=ssthresh+3; -> [Recuperación rápida]
+                  - *Recuperación rápida*
+                        - Llega 1 dupACK: cwnd=cwnd+1;
+                        - Llega ACK: cwnd=ssthresh; -> [Evitación de la congestión]
+                        - Expiración:ssthresh=cwnd/2;cwnd=1; -> [Inicio lento]
+      - *Nuevo TCP Reno*
+            - Nueva versión
+- *Tasa de transferencia Efectiva*
+      - /Tasa de transferencia (throughput) = (0.75)/ $W_{max}/RTT$
+            - $W_{max}$, promedio de los tamaños de ventanas cuando se produce la congestión.
+
+**** Temporizadores TCP
+- *Temporizador de transmisión*
+      - tiempo de espera para la retransmisión (RTO)
+      - Cuando TCP envía el siguiente segmento delante de la cola de envío, inicia el temporizador.
+      - Cuando expira, reenvía el primer segmento de la cola, reinicia el temporizador.
+      - Segmentos son reconocidos de forma acumulativa, son purgados de la cola.
+      - Si la cola está vacía detiene el temporizador.
+- *Temporizador de ida y vuelta (RTT)*
+      - RTT, roundtrip time, tiempo de ida y vuelta.
+      - RTT medio
+        # TODO pag. 551
+      - RTT suavizado
+      - RTT desviación
+      - Tiempo de retransmisión (RTO)
+- *Temporizador de persistencia*
+- *Temporizador Keepalive*
+- *Temporizador TIME-WAT*
 
 ** SCTP
+# TODO pag. 555
 
 * Nivel de Aplicación
 - Comunicación entre dos programas.
