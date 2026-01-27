@@ -2107,7 +2107,288 @@
 
 * Nivel de Aplicación
 - Comunicación entre dos programas.
+- No persta servicios a otros protocolos.
 - Programadores pueden crear nuevos protocolos.
+
+** Paradigmas del nivel de aplicación
+*** Paradigma: cliente-servidor
+- Proveedor de servicios es el programa servidor.
+      - Se ejecutacontinuamente esperando al cliente.
+      - Suele haber 1 o pocos servidores.
+- El cliente establece la conexión con el servidor y pide el servicio.
+      - Suelen haber muchos clientes.
+      - Se conectan solo cuando necesitan el servicio.
+
+*** Paradigma: entre pares
+- No hay necesidad de un servidor
+- La responsabilidad se comparte entre pares.
+- Una computadora puede en un momento prestar servicio y en otro ser el cliente.
+      - O al mismo tiempo también
+- La seguridad es más complicada.
+- No encaja con todas la aplicaciones.
+- ejemplos: Bittorrent, Skype (en telefonía funciona bien).
+
+*** Paradigma mixto
+- El emparejamiento entre pares puede estar orquestado por un servidor.
+
+** Programación Cliente-Servidor
+*** Programación con Sockets
+- El Socket es una abstracción, un objeto creado por el programa aplicación.
+      - Se espera comunicación entre dos Sockets.
+      - Dirección Socket: [ Dirección IP (32 Bit) | N. puerto (16 Bit) ]
+      - El soquet lleva implícito en la creación el protocolo de nivel de transporte (UDP, TCP o SCTP).
+- El proceso servidor (local) define el puerto de conexión. Sea bien conocido o uno nuevo.
+      - Conoce la IP y el puerto del cliente cuando este inicia una conexión.
+- El proceso cliente (remoto) conoce el la IP y el puerto del servidor (archivos de configuración por ejemplo).
+      - Puede identificar al servidor por una URL y el acceso a un servidor DNS.
+
+*** Comunicación iterativa usando UDP
+- Iterativa es que maneja la solicitud de un cliente cada vez, dejando el resto de solicitudes en cola hasta que responda a la primera solicitud.
+- Cliente y servidor usan 1 Socket cada uno.
+      - El socket del cliente es efimero.
+- diagrama de flujo
+  | Clientes         | Servidor            | etiquetas |
+  |------------------+---------------------+-----------|
+  |                  | (Comienza)          |           |
+  |                  | Crea Socket         |           |
+  |                  | Enlazar Socket      |           |
+  | (Comienza)       | [Bucle Infinito]    |           |
+  | Crea Socket      | Espera Solicitud    |           |
+  | Enviar Solicitud | Recibe Solicitud    |           |
+  | Espera Respuesta | Maneja Solicitud    |           |
+  | Recibe Respuesta | Envía Respuesta     |           |
+  | Maneja Respuesta | -> [Bucle Infinito] |           |
+  | Destruye Socket  |                     |           |
+  | (Para)           |                     |           |
+
+- *Proceso servidor*
+      - Apertura pasiva y espera una conexión de algún cliente.
+      - Rellena el socket cliente con la conexión de este.
+- *Proceso cliente*
+      - Apertura activa, Crea el socket con los datos del servidor.
+
+*** Comunicación iterativa usando TCP
+- No es muy común en TCP
+- El servidor utiliza 2 Sockets.
+      1. Establecimiento de la conexión (Socket escucha).
+      2. Transferencia de datos
+- El cliente usa un solo Socket.
+- diagrama de flujo
+  | Clientes            | Servidor                 | notas                                    |
+  |---------------------+--------------------------+------------------------------------------|
+  |                     | (Comienza)               |                                          |
+  | (Comienza)          | Crea Socket              |                                          |
+  | Crea Socket         | Enlazar Socket           |                                          |
+  | Conectar            | Escuchar (Socket esucha) | Forma la cola de clientes                |
+  |                     | [Bucle Infinito]         | Cada iteración sirve a un cliente        |
+  |                     | Aceptar                  |                                          |
+  | Transferencia datos | Transferencia datos      | Se usa el Socket de Datos (Nuevo Socket) |
+  | Gestiona Respuesta  | Gestiona Solicitud       |                                          |
+  | Destrouye Socket    | Destruye Socket          | Destruye el socket de Datos              |
+  | (Para)              | -> [Bucle Infinito]      |                                          |
+  |                     |                          |                                          |
+
+*** Comunicación simultánea
+- Puede haber un conexión con un cliente por cada hilo.
+
+** Protocolos  Estándar
+*** World Wide Web y HTTP
+- Distribuido y enlazado (hipertexto o hipermedia).
+- Servicio distribuido en muchos sitios.
+- Cada sitio almacena una o más páginas web.
+      - Cada página web es un archivo con nombre y dirección.
+      - página web compuesta tiene enlaces a otras páginas webs.
+- *Cliente Web (navegador)*
+      - partes
+            - Controlador, recibe entradas del usuario.
+            - Protocolos cliente, Accede a los documentos.
+                  - HTTP, FTP
+            - Intérpretes, Interpreta los documentos (pantalla).
+                  - HTML, java o javascript
+- *Servidor Web*
+      - Apache.
+      - Programa que sirve páginas web, se prorgaman para que sean muy eficientes.
+- *URL (localizador uniforme de recursos)*
+      - Identificador único (host, puerto y ruta) y protocolo.
+      - /protocolo://host/ruta/
+      - /protocolo:///host:puerto/ruta/
+- *Documentos de la Web*
+      - *Documentos estáticos*
+            - Contenido fijo
+            - HTML, XML, XSL, XHTML
+      - *Documentos dinámicos*
+            - Se crea en el servidor web cuando el navegador solicita el documento.
+            - El contenido puede variar de una petición a otra.
+      - *Documentos Activos*
+            - Se necesita un programa o script que se ejecute en el sitio cliente.
+            - javaScript se descarga y ejecuta en el sitio cliente.
+
+**** Protocolo de transferencia de hipertexto (HTTP)
+- Servidor HTTP usa el puerto 80
+- Usa los servicios de TCP.
+- *Conexión no persistente*
+      - pasos
+            1. El cliente abre la conexión y envía una solicitud.
+            2. El servidor responde y cierra la conexión.
+            3. Cliente lee los datos, encuentra el marcador fin de archivo y cierra la conexión.
+      - Si un archivo contiene N enlaces la conexión se abre N+1 veces.
+- *Conexión persistente*
+      - El servidor deja la conexión abierta para más peticiones futuras.
+            - Puede cerrar la conexión por tiempo o petición del cliente.
+              
+***** *Mensaje de petición*
+- Formato
+      - *línea de petición*: [ *Método* ][ ][ *URL* ][ ][ *Version* ][ret]
+      - *Líneas de cabecera*: [ *Nombre de cabecera* ][:][ ][ *Valor* ][ret]
+      - *línea en blanco*: [ret]
+      - *Cuerpo*: [ *mensaje* ]
+- *Métodos*
+      - *GET*: Solicita un documento al servidor.
+      - *HEAD*: Información sobre el documento, no el propio documento.
+      - *PUT*: Envía un documento al servidor.
+      - *POST*: Envía alguno información al servidor.
+      - *TRACE*: Se hace eco de la colicitud entrante.
+      - *DELTE*: Elimina la página web.
+      - *CONNECT*: reservado
+      - *OPTIONS*: Pregunta sobre las opciones disponibles.
+- *Nombres de cabecera*
+      - *User-Agent*: Identifica el programa cliente.
+      - *Accept*: Muestra el formato de los medios que el cliente puede aceptar.
+      - *Accept-Charset*: Muestra el conjunto de personajes que el cliente puede manejar.
+      - *Accept-Encoding*: Muestra el esquema de codificación que el cliente puede manejar.
+      - *Accept-Language*: Muestra el idioma que el cliente puede manejar.
+      - *Authorization*: Muestra que permisos tiene el cliente.
+      - *Host*: Muestra el número de host y de puerto del cliente.
+      - *Date*: Muestra la fecha actual.
+      - *Upgrade*: Especifica el protocolo de comunicación preferido.
+      - *Coockie*: Devuelve la coockue al Servidor
+      - *If-Modified-Since*: Si el archivo se modifico desde una fecha.
+
+***** *Mensaje de respuesta*
+- Formato
+      - *línea de petición*: [ *Método* ][ ][ *Código estado*  ][ ][ *Frase* ][ret]
+      - *Líneas de cabecera*: [ *Nombre de cabecera* ][:][ ][ *Valor* ][ret]
+      - *línea en blanco*: [ret]
+      - *Cuerpo*: [ *mensaje* ]
+- *Nombres de cabecera*
+      - *Date*: Muestra la fecha actual.
+      - *Upgrade*: Especifica el protocolo de comunicación preferido.
+      - *Server*: Da información sobre el servidor.
+      - *Set-Cookie*: El servidor le pide al cliente que guarde una cookie.
+      - *Content-Encoding*: Especifica el esquema de codificación.
+      - *Content-Language*: Especifica el idioma.
+      - *Content-Length*: Muestra la longitud del documento.
+      - *Content-Type*: Especifica el tipo de medio.
+      - *Location*: Pide al cliente que envíe la solicitud a otro sitio.
+      - *Accept-Ranges*: El servidor aceptará los rangos de bytes solicitados.
+      - *Last-modified*: Fecha y hora del último cambio.
+        
+***** Cookies
+- Permite usar la web con estados.
+- Implementación general
+      1. El servidor guarda información sobe el cliente en un archivo o cadena de carácteres.
+             - Esta información incluye a la cookie.
+      2. El servidor incluye la cookie en la respuesta al cliente.
+      3. El navegador del cliente almacena la cookie en un directorio de cookies.
+             - Ordenado por nombre de servidor.
+- Uso de cookies
+      - El cliente incluye la cookie cuando se comunica con el servidor si la cookie existe en su directorio de cookies.
+
+***** Almacenamiento en caché de web (Web Caching): servidores proxy
+- Servidor proxy mantiene copias de las respuestas a peticiones recientes.
+      1. Cliente solicita al servidor proxy
+      2. Si el servidor proxy tiene el contenido lo ofrece
+      3. Sino lo busca en el servidor correspondiente lo cachea y lo ofrece.
+- Reduce la carga del servidor original.
+      - Requiere de configuración con el cliente.
+- Se suele ubicar un servidor proxy en el sitio del cliente.
+
+*****  Seguridad HTTP 
+- Puede ser ejecutado sobre SSL.
+      - Se denomina HTTPS.
+
+
+*** FTP
+- Usa servicios TCP
+- 2 conexiones, Control (puerto 21) y Datos (puerto 20)
+- *Conexión de datos*
+      1. El cliente inicia una apertura pasiva con un puerto efimero.
+      2. El cliente envía la orden PORT con el número de puerto efímero por la conexión de control.
+      3. El servidor recive el paquete y emite una apertura activa.
+- *Tipos de archivo* que puede transmitir: ASCII, EBCDIC o binario.
+- *Estructura de datos*
+      - Estructura de archivo, flujo continuo de bytes.
+      - Estructura de registros, el fichero se divide en registros y se emitem.
+            - Solo archivos de texto.
+      - Estructura de páginas, El archivo se divide en páginas.
+            - Se pueden almacenar y acceder de forma aleatoria (y por tanto secuencial).
+- *Modo de transmisión*
+      - Modo flujo
+      - Modo de bloque
+      - MODO comprimido
+- *Seguridad para el FTP*
+      - SSL-FTP es la versión segura.
+
+*** Correo electrónico
+- Transacción de una sola dirección.
+
+**** Arquitectura
+- A y B están conectados por LAN o WAN a dos servidores de correo.
+- El buzon es una parte del disco de cada servidor
+- el servidor almacena un spool con los mensajes que esperan a ser enviados.
+- Pasos A envía a B
+      1. A usa un agente de usuario (UA)
+      2. El cliente *MTA (agente de transferencia de mensajes)* de A (incluido en su UA) manda el mensaje al servidor MTA de A
+      3. El servidor MTA de A pone el mensaje en una cola
+      4. El servidor De A tiene un cliente MTA que consulta la cola
+             - Cuando este cliente ve el mensaje lo manda al Servidor de B al servicio de MTA
+      5. El servicio MTA de B coloca el mensaje en los buzones del servidor B
+      6. Un servicio *MAA (agente de acceso a mensasjes)* en el servidor de B le ofrece los mensajes al cliente MAA de B (incluido en su UA)
+
+- Agente UA
+      - Interfaz para los usuarios.
+- Direcciones
+      - ParteLocal@Dominio
+      - *ParteLocal*, define un archivo especial (buzón de usuario), donde se almacenan todos sus mensajes.
+- MTA: protocolo SMTP
+      - Simple mail transfer protocol
+      - Puerto conocido 25
+      - El que usa el MTA
+      - *Ordenes*
+        # TODO pag 658
+      - Respuestas
+        # TODO
+      - *Fase de transferencia de correo*
+            - Establecimiento de la conexión
+                  1. El cliente inicia conexión y el servidor responde si está listo (código 220).
+                  2. El cliente se identifica con un mensaje HELO y la dirección de su nombre de dominio.
+                  3. El servidor responde con código 250 si todo OK.
+            - Transferencia del mensaje
+                  1. El cliente envía MAIL_FROM con el correo del remitente.
+                  2. Servidor responde si está todo OK
+                  3. Cliente envía RCTP_TO con el correo del destinatario.
+                  4. Servidor responde si todo OK
+                  5. Cliente envia DATA para iniciar la trasferencia.
+                  6. Servidor responde con 354 si todo OK
+                  7. Cliente envía el mensaje con las líneas consecutivas.
+                  8. Servidor responde si todo OK
+            - Terminación de la conexión
+                  1. Cliente envía QUIT
+                  2. Servidor responde 221, todo OK
+- MAA: protocolo POP e IMAP
+      - POP3
+            - Servidor POP3 reside en el servidor de correo.
+            - Cliente POP3 reside en la computadore receptora.
+            - Descarga los correos desde el servidor de correo.
+      - IMAP
+            - Más completo que POP3
+            # TODO pag 662
+
+*** TELNET
+
+*** SSH
+
+*** DNS
 
 * Glosario
 - *Paquete*, En una red informática es el bloque de datos en la comunicación entre dos extremos.
