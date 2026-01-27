@@ -2147,19 +2147,19 @@
 - Cliente y servidor usan 1 Socket cada uno.
       - El socket del cliente es efimero.
 - diagrama de flujo
-  | Clientes         | Servidor            | etiquetas |
-  |------------------+---------------------+-----------|
-  |                  | (Comienza)          |           |
-  |                  | Crea Socket         |           |
-  |                  | Enlazar Socket      |           |
-  | (Comienza)       | [Bucle Infinito]    |           |
-  | Crea Socket      | Espera Solicitud    |           |
-  | Enviar Solicitud | Recibe Solicitud    |           |
-  | Espera Respuesta | Maneja Solicitud    |           |
-  | Recibe Respuesta | Envía Respuesta     |           |
-  | Maneja Respuesta | -> [Bucle Infinito] |           |
-  | Destruye Socket  |                     |           |
-  | (Para)           |                     |           |
+  | Clientes         | Servidor              | etiquetas |
+  |------------------+-----------------------+-----------|
+  |                  | (Comienza)            |           |
+  |                  | Crea Socket           |           |
+  |                  | Enlazar Socket        |           |
+  | (Comienza)       | [ Bucle Infinito ]    |           |
+  | Crea Socket      | Espera Solicitud      |           |
+  | Enviar Solicitud | Recibe Solicitud      |           |
+  | Espera Respuesta | Maneja Solicitud      |           |
+  | Recibe Respuesta | Envía Respuesta       |           |
+  | Maneja Respuesta | -> [ Bucle Infinito ] |           |
+  | Destruye Socket  |                       |           |
+  | (Para)           |                       |           |
 
 - *Proceso servidor*
       - Apertura pasiva y espera una conexión de algún cliente.
@@ -2337,13 +2337,13 @@
 - El buzon es una parte del disco de cada servidor
 - el servidor almacena un spool con los mensajes que esperan a ser enviados.
 - Pasos A envía a B
-      1. A usa un agente de usuario (UA)
-      2. El cliente *MTA (agente de transferencia de mensajes)* de A (incluido en su UA) manda el mensaje al servidor MTA de A
-      3. El servidor MTA de A pone el mensaje en una cola
-      4. El servidor De A tiene un cliente MTA que consulta la cola
-             - Cuando este cliente ve el mensaje lo manda al Servidor de B al servicio de MTA
-      5. El servicio MTA de B coloca el mensaje en los buzones del servidor B
-      6. Un servicio *MAA (agente de acceso a mensasjes)* en el servidor de B le ofrece los mensajes al cliente MAA de B (incluido en su UA)
+      1. A usa un agente de usuario (UA).
+      2. El cliente *MTA (agente de transferencia de mensajes)* de A (incluido en su UA) manda el mensaje al servidor MTA de A (En el servidor de correo de A).
+      3. El servidor MTA de A pone el mensaje en una cola.
+      4. El servidor De A tiene un cliente MTA que consulta la cola.
+             - Cuando este cliente ve el mensaje lo manda al Servidor de B con el servicio de MTA B.
+      5. El servicio MTA de B coloca el mensaje en los buzones del servidor B.
+      6. Un servicio *MAA (agente de acceso a mensasjes)* en el servidor de B le ofrece los mensajes al cliente MAA de B (incluido en su UA).
 
 - Agente UA
       - Interfaz para los usuarios.
@@ -2385,10 +2385,128 @@
             # TODO pag 662
 
 *** TELNET
+- Registro remoto (TErminal NETwork).
+- Muy poco seguro (se envía todo en texto plano).
+- Actualmente se usa SSH.
+- Funcionamiento
+      1. El cliente accede haciendo el login remoto.
+      2. Las teclas tecleadas se pasan al cliente TELNET y los transforma envaracteres de terminal virtual de red (NVT)
+      3. Las órdenes viajan via TCP como texto hasta el servidor TELNET.
+      4. TELNET escribe en el *controlador de pseudoterminales* e interactuacon el OS del servidor.
+- *NVT*
+      - Interfaz para homogeneizar las diferencias entre OS's.
+      - Traduze carácteres y datos a formato NVT
 
 *** SSH
+- Secure Shell (SSH)
+- Versión actual SSH-2
+- *Componentes*
+      - *SSH-TRANS*
+            - Protocolo de nivel de transporte.
+            - Hace TCP seguro
+            - Cliente y Servidor intercambian parámetros para hacer el canal seguro.
+            - Autentifica el servidor para el cliente.
+      - *SSH-AUTH*
+            - Autentifica el cliente para el servidor.
+            - Similar a SSL (Secure Socket Layer).
+                  - Cliente envía un mensaje con una solicitud.
+                  - La solicitud incluye nombre del usuario, nombre del servidor, método de autentificación y datos necesarios.
+                  - Servidor dice si todo OK.
+      - *SSH-CONN*
+            - Toma el canal seguro creado anteriormente y permite crear conexiones lógicas a partir de este.
+            - Cada nuevo canal puede usarse para un propósito diferente.
+- *Aplicaciones*
+      - Registro Remoto
+            - Por ejemplo OpenSSH, Putty
+      - Transferencia de archivos
+            - stfp (Secure file transfer protocol) o scp en UNIX
+      - *Reenvio a Puerto*
+            - También se conoce como Tunel SSH.
+            - Crea un tunel seguro para otros protocolos.
+- *Formato de los paquetes SSH*
+      - *Longitud* (4 Bytes)
+      - *Relleno* (1-8 Bytes)
+            - Dificulta el desciframiento a atacantes.
+      - *Tipo* (1 Byte)
+      - *Datos* (variable)
+      - *CRC* (4 Bytes)
+            - Comprobar detección de errores.
 
 *** DNS
+- Sistema de asignación de nombres a direcciones.
+- Protocolos TCP/IP usan direcciones IP.
+- No se centralizan todos los mapeos en una sola computadora.
+- *Espacio de nombres*
+      - Deben  ser nombres únicos.
+      - Se usa un espacio de nombres jerárquico.
+            - Se construyen con un grafo tipo árbol.
+            - Nodo raiz es la cadena vacía
+            - Se compone de etiquetas (max 64 carácteres) separadas por puntos.
+            - La etiqueta más a la derecha está más cerca de la raiz del árbol de nombres.
+            - nombre.organización.naturaleza.
+                  - algo.molon.com.                (FQDN)
+                  - El punto final se puede omitir (PQDN)
+- *Dominio*
+      - El nombre de un dominio es el nombre del nodo superior de un subárbol.
+      - Un dominio se puede subdividir en subdominios.
+- *Distribución de nombres*
+      - Servidores DNS, una jerarquía de servidores igual que la jerarquía de nombres.
+      - *Zona*, sobre lo que un servidor DNS tiene autoridad.
+            - Información detallada se almacena en los servidores de niveles inferiores.
+      - *Servidor Raiz*, Delega autoridad a servidores inferiores.
+            - Mantiene referencias a estos servidores.
+            - Hay varios servidores raized distribuidos por el mundo.
+- *Servidores primarios y secundarios*
+      - *Servidor primario*, almacena un archivo sobre la zona para la que tiene autoridad.
+      - *Servidor Secundario*, Transfiere la información completa sobre la zona desde otro servidor y almazena la copia en su disco local. La idea es crear redundancia.
+      - Un servidor puede ser primario y secundario para dos zonas diferentes.
+- *Dominios genéricos*
+      - com, edu, net, gov
+- *Dominios de países*
+      - Dominios por países
+      - es, fr, us
+- *Resolución*
+      - Convertir el nombre de dominio en una IP
+      - *Resolución recursiva*
+            - La consulta escala hasta la primera raiz común (servidor responsable) y desde aquí baja hasta el dominio consultado (servidor que forma parte del árbol).
+      - *Resolución iterativa*
+            - La consulta va primero al servidor raiz, este manda el siguiente paso donde puede estar la resolución del dominio.
+            - Desde el host se vuelve a probar con el nuevo servidor y este puede enviar la solución o un nuevo servidor al que consultar.
+- *Caché*
+      - Los servidores hacen caché de las consultas para evitar la saturación de los recursos.
+      - Se analiza periódicamente la cache.
+- *Mensajes DNS*
+      - *Consulta/Respuesta*
+            - *Identificación* (16 Bit)
+            - *Banderas* (16 Bit)
+            - *Número de registros de preguntas* (16 Bit)
+            - *Número de registros de respuestas* (16 Bit)
+            - *Número de registros autorizados* (16 Bit)
+            - *Número de registros adicionales* (16 Bit)
+            - *Sección de preguntas*
+            - *Sección de respuestas*
+            - *Sección autorizada*
+            - *Sección adicional*
+- *Encapsulado*
+      - Tanto UDP como TCP
+      - puerto conocido 53
+      - UDP para tamaño inferior a 512 bytes
+      - TCP es más común
+- *Registradores*
+      - Verifica que el nombre es único y lo introduce en una base de datos DNS.
+      - Se necesita el nombre del servidor y la dirección IP.
+- *DDNS*
+      - Maneja cambios sobre los registros DNS
+- *Seguridad del DNS*
+      - Es de los servicios más importantes.
+      - Ataques
+            - Un atacante puede espiar los nombres de los sitios y las ips de los sitios que más accede un usuario.
+              Los mensajes DNS deben ser confidenciales.
+            - Interceptar una respuesta DNS y cambiarla.
+              Se previene con autenticación del mensaje o la integridad del mensaje.
+            - Inundar y colapsar el servidor DNS, este tipo de ataque se previene denegando el acceso.
+      - *DNSSEC*, sistema ideado por el IETF para proteger el DNS.
+            - Se autentican los mensajes y la integridad de estos mediante un servicio denominado firma digital.
 
 * Glosario
 - *Paquete*, En una red informática es el bloque de datos en la comunicación entre dos extremos.
