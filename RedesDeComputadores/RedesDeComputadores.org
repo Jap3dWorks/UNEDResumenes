@@ -633,6 +633,9 @@
 *** QAM (Quadrature amplitude modulation)
 - Se altera la fase y la amplitud.
 - Combinación de ASK y PSK.
+- 4-QAM, 16-QAM
+      - Niveles de QAM
+      - Cada nivel está asociado a un patrón digital.
 
 ** Analógico a analógico
 *** AM (Amplitude modulation)
@@ -1494,7 +1497,7 @@
             - No es un paquete especial como en el *estrangulamiento*.
 
 ** Direcciones IPV4
-- IPV4 32bits $\to 2^32$ direcciones.
+- IPV4 32bits $\to 2^{32}$ direcciones.
 - *Notaciones*
       - binario: 10000000 00001011 00000011 00011111
       - punto decinal: 128.11.3.11
@@ -1539,11 +1542,15 @@
             - 11111111.11111111.11111111.00000000
             - 255.255.255.0
             - /24
+            - número de direcciones del bloque N=NOT(máscara) + 1
+            - *Primera dirección del bloque* = (Cualquier dirección del bloque) AND (máscara)
+            - *última dirección del bloque* = (Cualquier dir del bloque) OR (NOT(Máscara))
 - *Asignación de bloques*
       - *ICANN*, autoridad que asigna direcciones de red.
             - No a usuarios, sino a ISPs o grandes organizaciones.
             - El número de direcciones solicitadas debe ser potencia de 2.
-            - Primera dirección de un bloque siempre es [ Prefijo | 0's ].
+            - *Primera dirección de un bloque* siempre es [ Prefijo | 0's ].
+                  - Identifica la red, no se asigna a hosts.
 - *Subnetting*
       - Se puede dividir un rango de direcciones en varios subrangos (ampliando el Prefijo).
       - Una subred puede dividirse en más subredes (siempre de tamaño potencia de 2).
@@ -1679,7 +1686,7 @@
 *** Protocolo de internet (IP)
 - IPV4, protocolo sin conexión
 
-**** Formato de datagrama
+**** Formato de datagrama (20 - 60 Bytes)
 - *Versión* (4 Bit), valor 4
 - *HLEN* (4 bits), longitud de la cabecera en palabras de 4 bytes.
 - *Tipo de servicio* (8 Bit), TOS.
@@ -1830,6 +1837,30 @@
             3. Desmantelar conexión.
                
 *** Protocolos de nivel de transporte
+**** Protocolo de parada y espera
+- ARQ con parada y espera.
+
+**** Petición de respuesta automática con vuelta atrás N (GBN)
+- ARQ GBN (go back n)
+- *Números de secuencias* módulo de $2^m$.
+      - $m$ bits del campo número de secuencia.
+- Confirmación acumulativa.
+- El número de ACK indica el siguiente paquete que se espera.
+- *Ventana de envío*
+      - Máximo tamaño ventana $2^m - 1$
+            - $m$, bits del campo número secuencia.
+- *Ventana de recepción*
+      - Siempre es 1
+      - Cualquier paquete fuera de orden se descarta.
+- *Temporizadores*
+      - Un solo temporizador
+            - Asociado el primer paquete pendiente de confirmación.
+- *Reenvio*
+      - Cuando el temporizado expira se reenvian todos los paquetes pendientes.
+
+**** Petición de respuesta automática con repetición selectiva
+- ARQ con repetición selectiva (SR)
+        
 # comportamientos generales
 # TODO
 
