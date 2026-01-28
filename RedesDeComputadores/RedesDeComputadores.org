@@ -998,11 +998,12 @@
             - IP, ARP o OSPF
       - *Datos* (46Bytes - 1500Bytes)
             - Si es necesario se añade relleno.
+            - Contiene datos de protocolos superiores.
       - *CRC* (4Bytes), campo para detectar erroes.
-- Longitud de trama
-      - Requerimiento para CSMA/CD con persistencia 1.
-      - Evita que una estación monopolize el medio.
-      - Antes la memoria era cara.
+      - Longitud de trama
+            - Requerimiento para CSMA/CD con persistencia 1.
+            - Evita que una estación monopolize el medio.
+            - Antes la memoria era cara.
 
 **** *Direccionamiento*
       - *NIC*, network interface card, tarjeta de red.
