@@ -1,6 +1,11 @@
 #+title: PREDA
 
 * Voraz
+** Planteamiento general
+
+
+** Esquema general
+
 * Divide y vencerás
 ** Planteamiento General
 - Descomposición de un problema en subproblemas de su mismo tipo.
@@ -98,11 +103,15 @@ fun Quicksort(T[i..j])
 ffun
 #+END_EXAMPLE
 
-** Cálculo del elemento mayoritario en un vector
+** Cálculo del elemento mayoritario en un vector                     :ATTACH:
+:PROPERTIES:
+:ID:       46f2d130-5688-4af6-8c45-9f8dbd7fe57c
+:END:
 - Buscar si un elemento aparece (n/2) + 1 veces en el vector
 - Importante diferenciar que mayoritario no es el que aparece más veces.
   Sino estrictamente el que aparce almenos (n/2) + 1
 
+#+BEGIN_EXAMPLE  
 fun Mayoritario(i,j:natural; v:vector[1..n] de natural): entero
     var
         m: natural
@@ -117,7 +126,9 @@ fun Mayoritario(i,j:natural; v:vector[1..n] de natural): entero
         dev Combinar(s1,s2,i,j,v)
      fsi
 ffun
+#+END_EXAMPLE
 
+#+BEGIN_EXAMPLE
 fun Combinar(a,b:entero; i,j:natural; v:vector[1..n] de natural): entero
     si a=-1 and b=-1 entonces dev -1 fsi
     si a=-1 and b!=-1 entonces dev ComprobarMayoritario(i,j,b,v) fsi
@@ -131,23 +142,92 @@ fun Combinar(a,b:entero; i,j:natural; v:vector[1..n] de natural): entero
         fsi
     fsi
 ffun
+#+END_EXAMPLE
 
+#+BEGIN_EXAMPLE
 fun ComprobarMayoritario(i,j:natural; x:entero; v:vector[1..n] de natural): entenro
     var
         c:natural
     fvar
-    v <- 0
+    c <- 0
     para k <- i hasta j hacer
-        si v[k]=x entonces c<-c+1 fsi
+        si v[k]==x entonces c <- c+1 fsi
     fpara
-    si c > (j-i+1)/2 entonces dev x sino dev -1 fsi
+    si c > (j-i+1)/2 entonces
+        dev x
+    sino
+        dev -1
+    fsi
 ffun
+#+END_EXAMPLE
+
+Ejemplo de una traza
+
+[[attachment:clipboard-20260129T132356.png]]
 
 * Vuelta atrás
+** Planteamiento general
+- búsqueda exaustiva de las posibles soluciones.
+- Recorrido en *Profundidad* del grafo inplícito de un problema.
+      - Grafo sin ciclos
+
+** Esquema general
+- /IniciarExploraciónNivel()/, Opciones posibles para extender la solución k-prometedora.
+- /OpcionesPendientes()/, Compruena que quedan opciones por explorar en el nivel.
+- /SoluciónCompleta()/, Comprueba si se ha encontrado una solución.
+- /ProcesarSolución()/, Hacer las acciones necesarias con la solución.
+  Por ejemplo *dev* o imprimir el resultado.
+- /Completable()/, comprueba que la solución k-prometedora se puede extender.
+
+#+BEGIN_EXAMPLE
+/*
+ * @param v: secuencia k-prometedora
+ * @param k: nivel
+ */
+fun VueltaAtras(v: Secuencia, k: entero)
+    IniciarExploraciónNivel(k)
+    mientras OpcionesPendientes(k) hacer
+        extender v con siguiente opción
+        si SoluciónCompleta(v) entonces
+            ProcesarSolución(v)
+        sino
+            si Competable(v) entonces
+                VueltaAtras(v, k+1)
+            fsi
+        fsi
+    fmientras
+ffun
+#+END_EXAMPLE
+
+Si solo se busca una solución.
+
+#+BEGIN_EXAMPLE
+fun VueltaAtras(v: Secuencia, k: entero, encontrado: booleano)
+    IniciarExploraciónNivel(k)
+    mientras OpcionesPendientes(k) && !encontrado hacer
+        extender v con siguiente opción
+        si SoluciónCompleta(v) entonces
+            ProcesarSolución(v)
+            encontrado <- true
+        sino
+            si Competable(v) entonces
+                VueltaAtras(v, k+1, encontrado)
+            fsi
+        fsi
+    fmientras
+ffun
+#+END_EXAMPLE
+
+** Problema de la reina
+
+
+
+** Coloreado de grafos
+
 * Programación dinámica
 ** Planteamiento general
 - Establecimiento de las ecuaciones que representan el problema.
-- Identificación de los resultados parciales.
+- Identificación de los *resultados parciales*.
 - Construcción de la tabla de resultados parciales:
       - Inicialización de la tabla con los casos base que establece la ecuación del problema.
       - Establecimiento del orden de llenado de la tabla, de forma que se calculen en primer lugar los resultados parciales que requiern pasos posteriores.
@@ -156,8 +236,125 @@ ffun
 ** Esquema General
 - pag 131, no hay esquema general, hay ejemplos con fibonacci
   
+#+BEGIN_EXAMPLE
+fun FibDin(n:entero): entero
+    var
+        i,suma: entero
+        t: tabla[0..n] de entero
+    fvar
+    si n <= 1 entonces
+        dev 1
+    sino
+        t[0] <- 1
+        t[1] <- 1
+        para i <- 2 hasta n hacer
+            t[i] <- t[i-1] + t[i-2]
+        fpara
+        dev t[n]
+    fsi
+ffun
+#+END_EXAMPLE
+
+Reduciendo la complejidad espacial a $O(1)$.
+
+#+BEGIN_EXAMPLE
+fun FibDin2(n: entero): entero
+    var
+        i,suma,f,g: entero
+    fvar
+    si n <= 1 entonces
+        dev 1
+    sino
+        f <- 1
+        g <- 1
+        para i <- 2 hasta n hacer
+            suma <- f+g
+            g <- f
+            f <- suma
+        fpara
+        dev suma
+    fsi
+ffun
+#+END_EXAMPLE
+
+** Devolución del cambio
+- pag 135
+- Encontrar el mínimo número de monedas posible para cierta cantidad C.
+- N monedas diferentes
+
+#+BEGIN_EXAMPLE
+tipo Tabla=matriz[1..N, 0..C] de entero        // N filas por tipos de moneda
+                                               // C columnas por cantidades
+                                               // El índice de la columna representa
+                                               //  La cantidad C
+tipo Vector=matriz[0..N] de entero
+fun DarCambio(C:entero, moneda:Vector): Tabla
+    var
+        t: Tabla
+        i,j: entero
+    fvar
+    para i <- 1 hasta N hacer                         // Primera columna a 0's
+        t[i,0] <- 0
+    fpara
+    para j <- 1 hasta C hacer
+        para i <- 1 hasta N hacer
+            si i=1 and moneda[i] > j entonces         // Si la menor moneda es mayor que
+                                                      //  que la cantidad, No es resoluble.
+                t[i,j] <- infty
+            sino
+                si i = 1 entonces
+                    t[1,j] <- 1 + t[1, j - moneda[1]] // Si no encaja adquiere el
+                                                      //  valor infty
+                sino
+                    si j < moneda[i] entonces         // La moneda es mayor que la cantidad
+                        t[i,j] <- t[i-1,j]            // Valor file superior
+                    sino
+                        // menor entre un resultado parcial + 1 y la fila superior
+                        // Resultado parcial es [IndiceMoneda, Columna - ValorMoneda]
+                        t[i,j] <- min(t[i-1,j], t[i, j - moneda[i]] + 1)
+                    fsi
+                fsi
+            fsi
+        fpara
+    fpara
+    dev t
+ffun
+#+END_EXAMPLE
+
+El resultado está en la última fila de cada columna.
+Para la selección de monedas:
+
+#+BEGIN_EXAMPLE
+tipo Tabla=matriz[1..N,0..C] de entero
+tipo Vector=matriz[0..N] de entero
+fun SeleccionarMonedas(C:entero, moneda:Vector, t:Tabla, seleccion:Vector&)
+    var
+        i,j:entero
+    fvar
+    para i <- 0 hasta N hacer
+        selección[i] <- 0        // Preparamos todo a 0
+    fpara
+    i <- N                       // De abajo a arriba
+    j <- C
+    mientras j > 0 hacer
+        si i > 1 && t[i,j]=t[i-1,j] entonces
+            i <- i-1                         // Subimos una fila
+        sino
+            seleccion[i] <- seleccion[i]+1   // añadimos una moneda a la combinación.
+            j <- j - moneda[i]               // Restamos el valor al resto de la cantidad.
+        fsi
+    fmientras
+ffun
+#+END_EXAMPLE
+
+Si el valor C fuera incompatible con nuestras monedas disponibles el resultado sería
+una moneda del valor inferior, por eso hay que comprobar el resultado de la selección de monedas.
 
 * Ramificación y Poda
+** Planteamiento general
+
+** Esquema general
+
 ** Mochila Entera
 #+BEGIN_EXAMPLE
 tipo TVectorB = matriz[1..n] de booleano
