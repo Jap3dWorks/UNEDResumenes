@@ -17,7 +17,6 @@
       - *Función Selección*, Escoge al candidato más prometedor todavia no seleccionado.
 
 ** Esquema general
-
 #+BEGIN_EXAMPLE
 fun Voraz(c: ConjuntoCandidatos&): ConjuntoCandidatos
     sol <- {}                                // Conjunto de candidatos seleccionados
@@ -37,7 +36,6 @@ ffun
 #+END_EXAMPLE
 
 ** Árbol de recubrimiento mínimo: algoritmo de Prim
-
 *** Planteamiento general
 #+BEGIN_EXAMPLE
 /*
@@ -223,6 +221,10 @@ fun Quicksort(T[i..j])
     fsi
 ffun
 #+END_EXAMPLE
+
+** Merge Sort
+# TODO
+
 
 ** Cálculo del elemento mayoritario en un vector                     :ATTACH:
 :PROPERTIES:
