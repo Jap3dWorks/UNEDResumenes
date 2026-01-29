@@ -1,10 +1,82 @@
 #+title: PREDA
 
+* Estructuras de datos
+** Montículo
+# TODO
+
 * Voraz
 ** Planteamiento general
-
+- Para problemas de optimización donde la solución se puede construir paso a paso sin necesidad de reconsiderar decisiones.
+- Características del esquema.
+      - Resolución de un problema de forma óptima
+      - *Conjunto inicial de candidatos*, elementos que hay que planificar.
+      - *Conjunto de candidatos Seleccionados*, elementos que ya han sido considerados y seleccionados.
+      - *Conjunto de candidatos Reachazados*
+      - *Función Solución*, determina si el conjunto de candidatos es na solución óptima.
+      - *Función factible*, determina si la solución es competable o factible.
+      - *Función Selección*, Escoge al candidato más prometedor todavia no seleccionado.
 
 ** Esquema general
+
+#+BEGIN_EXAMPLE
+fun Voraz(c: ConjuntoCandidatos&): ConjuntoCandidatos
+    sol <- {}                                // Conjunto de candidatos seleccionados
+    mientras c != {} && !Solución(sol) hacer
+        x <- seleccionar(c)                  // Selecciona el mejor candidato
+        c <- c \ {x}
+        si factible(sol union {x}) entonces  // La union de sol y x es factible
+            sol <- sol union {x}
+        fsi
+    fmientras
+    si solucion(sol) entonces                // Comprobamos si es una solución
+        dev sol
+    sino
+        imprimir("No hay solución")
+    fsi
+ffun
+#+END_EXAMPLE
+
+** Árbol de recubrimiento mínimo: algoritmo de Prim
+
+*** Planteamiento general
+#+BEGIN_EXAMPLE
+/*
+ * @param G <N,A>: grafo de N vértices con A aristas
+*/
+fun Prim(G=<N,A>:Grafo): conjunto de aristas
+    AR <- {}                                // árbol de recubrimiento
+    NA <- {un nodo cualquiera de N}         // vértices del árbol de recubrimiento
+    miemtras NA != N hacer
+        Buscar {u,v} de coste mínimo tal que u in NA u v in N \ NA
+        AR <- AR union {(u,v)}
+        NA <- NA union {u}
+    fmientras
+    dev AR
+ffun
+#+END_EXAMPLE
+
+*** Descripción detallada
+#+BEGIN_EXAMPLE
+tipo VectorNat=matriz[0..n] de natural
+tipo VectorEnt=matriz[0..n] de entero
+fun Prim(G=<N,A>: grafo): conjunto de aristas
+    var
+        nodoMinimo: VectorNat
+        costeMinimo: VectorEnt
+        AR: conjunto de aristas
+    fvar
+    AR <- {}
+    costeMínimo[1] <- -1     // Coste del primer vertice consigo mismo
+    para i <- 2 hasta n hacer
+        nodoMinimo[i] <- 1
+        costeMinimo[i] <- Distancia(1,i)
+    fpara
+    para i <- 1 hasta n-1 hacer
+        min <- infty
+        para j <- 2 hasta n hacer
+        
+ffun
+#+END_EXAMPLE
 
 * Divide y vencerás
 ** Planteamiento General
@@ -184,7 +256,7 @@ Ejemplo de una traza
  * @param v: secuencia k-prometedora
  * @param k: nivel
  */
-fun VueltaAtras(v: Secuencia, k: entero)
+fun VueltaAtras(v: Secuencia; k: entero)
     IniciarExploraciónNivel(k)
     mientras OpcionesPendientes(k) hacer
         extender v con siguiente opción
@@ -202,7 +274,7 @@ ffun
 Si solo se busca una solución.
 
 #+BEGIN_EXAMPLE
-fun VueltaAtras(v: Secuencia, k: entero, encontrado: booleano)
+fun VueltaAtras(v: Secuencia; k: entero; encontrado: booleano)
     IniciarExploraciónNivel(k)
     mientras OpcionesPendientes(k) && !encontrado hacer
         extender v con siguiente opción
@@ -219,10 +291,96 @@ ffun
 #+END_EXAMPLE
 
 ** Problema de la reina
+Se quiere situar una reina en cada columna de un tablero de ajedrez de forma que ninguna de ellas pueda eliminar a ninguna otra reina.
 
+La solución mostrada busca todas las soluciones posibles.
+#+BEGIN_EXAMPLE
+/*
+ * @param s: Almacena la solución temporal.
+ *  En cada celda (columna) se almacena el número de la fila donde se posiciona la reina.
+ * @param n: tamaño del tablero
+ */
+fun Reinas(s:Vector[1..n] de entero; n,k:entero)
+    s[k] <- 0
+    mientras s[k] <= n hacer
+        s[k] <- s[k] + 1                    // Se va probando desde la primera
+                                            //  hasta la última fila.
+        si Completable(s,k) entonces
+            si k=n entonces
+                escribir(s)                 // Muestra la solución o
+                                            //  la escribe en un archivo
+            sino
+                Reinas(s,n,k+1)
+            fsi
+        fsi
+    fmientras
+ffun
+#+END_EXAMPLE
 
+#+BEGIN_EXAMPLE
+/*
+ * Comprueba que no hayan reinas en la misma fila ni en la misma diagonal.
+ */
+fun Completable(s:Vector[1..n] de entero; k: entero):booleano
+    var
+        i:entero
+    fvar
+    para i <- 1 hasta k-1 hacer
+        // Es interesante ver la forma de comprobar la diagonal
+        si s[i]==s[k] || (abs(s[i]-s[k])==abs(i-k)) entonces
+            dev falso
+        fsi
+    fpara
+    dev true
+ffun
+#+END_EXAMPLE
 
 ** Coloreado de grafos
+Se desea asignar un color a cada vértice de un grado conexo, de forma que no hayan vertices adyacentes con el mismo color.
+
+Se sabe que se necesitan 4 colores como mínimo para cualquier grafo.
+
+#+BEGIN_EXAMPLE
+// Grafo[i,j]==1 si i,j están conectados.
+tipo Grafo=matriz[i..N,i..N] de entero
+tipo Vector=matriz[i..N] de entero
+
+/*
+ * @param v: Vector k-prometedor, posición i representa al vector i
+ * @param m: Número de colores
+ * @param k: Nivel de la solución
+*/
+fun ColoreaGrafo(g:Grafo; m:entero; k:entero; v:Vector; exito: booleano&)
+    v[k] <- 0
+    exito <- false
+    mientras v[k] < m && !exito hacer
+        v[k] <- v[k] + 1
+        si Competable(g,v,k) entonces
+            si k==N entonces
+                Procesar(v)
+                exito <- true
+            sino
+                ColoreaGrafo(g,m,k+1,v,exito)
+            fsi
+        fsi
+    fmientras
+ffun
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+/*
+ * Comprueba si algún vértice conectado a k tiene el mismo color que el vértice k.
+*/
+fun Completable(g:Grafo, v:Vector, k:entero): booleano
+    i:entero
+    para i <- 1 hasta k-1 hacer
+        si g[k,i]==1 && v[k]==v[i] entonces
+            dev false
+        fsi
+    fpara
+    dev true
+ffun
+#+END_EXAMPLE
 
 * Programación dinámica
 ** Planteamiento general
