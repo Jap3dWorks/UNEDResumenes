@@ -1,9 +1,164 @@
 #+title: PREDA
 
+* Voraz
+* Divide y vencerás
+** Planteamiento General
+- Descomposición de un problema en subproblemas de su mismo tipo.
+- Resolución recursiva de los subproblemas.
+- Combinación si procede de las soluciones del problema.
+
+** Esquema General
+#+BEGIN_EXAMPLE
+fun DyV(problema)
+    si trivial(problema) entonces
+        dev solución-trivial
+    sino hacer
+        {p1,p2,...,pk} <- descomponer(problema)
+        para i in (1..k) hacer
+            si <- DyV(pi)
+        fpara
+    fsi
+    dev combinar(s1,s3,...,sk)
+ffun
+#+END_EXAMPLE
+
+** Búsqueda Binaria
+#+BEGIN_EXAMPLE
+fun bbinaria(i,j:entero; v:vector[1..N] de entero; x:entero): booleano
+    // Primer índice del vector 1 para simplificar
+    var
+        m:entero
+    fvar
+    si i=j entonces                  // los dos índices han convergido al mismo valor
+        si v[i]=x entonces
+            dev verdadero
+        sino
+            dev falso
+        fsi
+    sino
+        m <- (i+j) div 2
+        si x <= v[m] entonces
+            bbinaria(i,m,v,x)
+        sino
+            bbinaria(m+1,j,v,x)
+        fsi
+    fsi
+ffun
+#+END_EXAMPLE
+
+** Ordenación rápida (Quicksort)                                     :ATTACH:
+:PROPERTIES:
+:ID:       b26bd1bd-be2d-4542-bb20-c2908cedde80
+:END:
+- pag 124, ordena de menor a mayor.
+- Menores que el pivote a la izquierda del pivote, mayores a la derecha.
+
+#+BEGIN_EXAMPLE
+fun Pivotar(T:vector[i..j] de entero; pivote:natural)
+    var
+        p,k,l:entero
+    fvar
+    p <- T[i]                                  // Primer valor de T
+    k <- i                                     // Primer índice de T
+    l <- j+1                                   // último índice de T + 1
+    repetir k <- k+1 hasta T[k] > p or k >= j  // k+1 hasta que T[k] mayor que
+                                               //  el primer  valor de T o k al final de T
+    repetir l <- l-1 hasta T[l] <= p           // l-1 hasta que T[l] menor igual 
+                                               //  que el primer valor de T
+    mientras k < l hacer                       // hasta que k y l se crucen
+        intercambiar(T,k,l)                    // Se intercambian los valores
+        repetir k <- k + 1 hasta T[k] > p      // subir índice izquierdo hasta que T[k]
+                                               //  mayor que el primer valor de T
+        repetir l <- l - 1 hasta T[l] <= p     // Bajar índice derecho hasta que T[l]
+                                               //  menos o igual que el primer valor de T
+    fmientras
+    intercambiar(T,i,l)
+    pivote <- l
+ffun
+#+END_EXAMPLE
+
+[[attachment:clipboard-20260129T110042.png]]
+  
+#+BEGIN_EXAMPLE
+fun Quicksort(T[i..j])
+    var
+        l:natural
+    fvar
+    l <- i                                     // Se suele elegir el primer elemento
+                                               //  Como pivote.
+    si trivial(i-j) entonces Insertar(T[i..j]) // Trivial si son tan solo dos elementos
+    sino
+        Pivotar(T[i..j],l)                     // Pivotar actualiza el valor de l
+                                               // Desde el pivote dividimos el vector
+                                               //  El pivote no se incluye en el
+                                               //  proceso recursivo
+        Quicksort(T[i..l-1])
+        Quicksort(T[l+1..j])
+    fsi
+ffun
+#+END_EXAMPLE
+
+** Cálculo del elemento mayoritario en un vector
+- Buscar si un elemento aparece (n/2) + 1 veces en el vector
+- Importante diferenciar que mayoritario no es el que aparece más veces.
+  Sino estrictamente el que aparce almenos (n/2) + 1
+
+fun Mayoritario(i,j:natural; v:vector[1..n] de natural): entero
+    var
+        m: natural
+        s1,s2: entero
+    fvar
+    si i=j entonces                     // Caso trivial
+        dev v[i]
+    sino
+        m <- (i+j) / 2                  // Punto medio, división entera
+        s1 <- Mayoritario(i,m,v)        // La mitad menor (caso de n impar)
+        s2 <- Mayoritario(m+1,j,v)      // La mitad mayor
+        dev Combinar(s1,s2,i,j,v)
+     fsi
+ffun
+
+fun Combinar(a,b:entero; i,j:natural; v:vector[1..n] de natural): entero
+    si a=-1 and b=-1 entonces dev -1 fsi
+    si a=-1 and b!=-1 entonces dev ComprobarMayoritario(i,j,b,v) fsi
+    si a!=-1 and b!=-1 entonces dev ComprobarMayoritario(i,j,a,v) fsi
+        si ComprobarMayoritario(i,j,a,v)=a entonces
+            dev a
+        sino si ComprobarMayoritario(i,j,b,v)=b entonces
+            dev b
+        sino
+            dev -1
+        fsi
+    fsi
+ffun
+
+fun ComprobarMayoritario(i,j:natural; x:entero; v:vector[1..n] de natural): entenro
+    var
+        c:natural
+    fvar
+    v <- 0
+    para k <- i hasta j hacer
+        si v[k]=x entonces c<-c+1 fsi
+    fpara
+    si c > (j-i+1)/2 entonces dev x sino dev -1 fsi
+ffun
+
+* Vuelta atrás
+* Programación dinámica
+** Planteamiento general
+- Establecimiento de las ecuaciones que representan el problema.
+- Identificación de los resultados parciales.
+- Construcción de la tabla de resultados parciales:
+      - Inicialización de la tabla con los casos base que establece la ecuación del problema.
+      - Establecimiento del orden de llenado de la tabla, de forma que se calculen en primer lugar los resultados parciales que requiern pasos posteriores.
+      - Sustitución de las llamas recursivas del algoritmo por consultas a la tabla.
+
+** Esquema General
+- pag 131, no hay esquema general, hay ejemplos con fibonacci
+  
+
 * Ramificación y Poda
-
 ** Mochila Entera
-
 #+BEGIN_EXAMPLE
 tipo TVectorB = matriz[1..n] de booleano
 tipo TVectorR - matriz[1..n] de real
@@ -169,3 +324,5 @@ fun EstimacionPes(pesos, valores: TVectorR, P:real,
 ffun                  
 
 #+END_EXAMPLE
+
+

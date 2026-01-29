@@ -850,7 +850,10 @@
             - No se guarda la trama.
       - Si hay colisión (otra trama detectada) se envía luego de nuevo.
 - Tamaño de la tarma mínima.
-      - $T_{Fr} = 2 \times T_{p}$
+      - $T_{fr} = 2 \times T_{p}$
+            - $T_{fr}$, tiempo de transmisión
+            - $T_{p}$, tiempo de propagación
+      - Trama mínima (bits) = $T_{fr} \times bps$
 - *Procedimiento*
       - Transmisión detección continuo.
       - *Señal de interferencia*, de envía una señal corta en caso que otras estaciones no hayan detectado la colisión.
@@ -987,23 +990,24 @@
 *** Ethernet Stándar, 10 Mbps
 **** Características
 - Servicio sin conexión e inestable
-- Formato de trama
-      - *Preámbulo* (7Bytes)
-      - *Delimitador de comienzo de trama (SDF)* (1Byte)
-      - *Dirección destino* (6Bytes)
+- Formato de trama (64 bytes - 1518 bytes) (preámbulo/delimitador + 1 Byte)
+      - *Preámbulo* (7 Bytes)
+            - Cabecera de nivel físico
+      - *Delimitador de comienzo de trama (SDF)* (1 Byte)
+      - *Dirección destino* (6 Bytes)
             - Dirección de nivel de enlace (MAC)
-      - *Dirección origen* (6Bytes)
+      - *Dirección origen* (6 Bytes)
             - (MAC)
-      - *Tipo* (2Bytes)
+      - *Tipo* (2 Bytes)
             - IP, ARP o OSPF
-      - *Datos* (46Bytes - 1500Bytes)
+      - *Datos* (46 Bytes - 1500 Bytes)
             - Si es necesario se añade relleno.
             - Contiene datos de protocolos superiores.
-      - *CRC* (4Bytes), campo para detectar erroes.
-      - Longitud de trama
-            - Requerimiento para CSMA/CD con persistencia 1.
-            - Evita que una estación monopolize el medio.
-            - Antes la memoria era cara.
+      - *CRC* (4 Bytes), campo para detectar erroes.
+- *Longitud de trama*
+      - Requerimiento para CSMA/CD con persistencia 1.
+      - Evita que una estación monopolize el medio.
+      - Antes la memoria era cara.
 
 **** *Direccionamiento*
       - *NIC*, network interface card, tarjeta de red.
@@ -1299,7 +1303,7 @@
 ** Dispositivos de conexión y LAN virtuales
 *** Dispositivos de conexión
 **** Concentradores
-- Funciona a nivel físico
+- Funciona solo a nivel físico
 - Repite las señales que se atenuan con la distancia
 - No tiene capacidad de filtrado
 
