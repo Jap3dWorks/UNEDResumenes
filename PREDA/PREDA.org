@@ -74,9 +74,12 @@ fun Prim(G=<N,A>: grafo): conjunto de aristas
     para i <- 1 hasta n-1 hacer
         min <- infty
         para j <- 2 hasta n hacer
-        
+        # TODO
 ffun
 #+END_EXAMPLE
+
+** Árbol recubrimiento mínimo: Kruskal
+# TODO
 
 * Divide y vencerás
 ** Planteamiento General
