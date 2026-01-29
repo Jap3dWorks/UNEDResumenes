@@ -66,20 +66,66 @@ fun Prim(G=<N,A>: grafo): conjunto de aristas
         AR: conjunto de aristas
     fvar
     AR <- {}
-    costeMínimo[1] <- -1     // Coste del primer vertice consigo mismo
+    costeMínimo[1] <- -1                        // Coste del primer vertice consigo mismo
     para i <- 2 hasta n hacer
-        nodoMinimo[i] <- 1
-        costeMinimo[i] <- Distancia(1,i)
+        nodoMinimo[i] <- 1                      // Iniciamos con el primer nodo
+        costeMinimo[i] <- Distancia(1,i)        // Distancia con el primer nodo
     fpara
     para i <- 1 hasta n-1 hacer
         min <- infty
         para j <- 2 hasta n hacer
-        # TODO
+            // Nodos con coste -1 ya están dentro del AR
+            //  cogemos el nodo de menor coste con cualquiera de los
+            //  nodos que ya están en el AR
+            si 0 <= costeMinimo[j] && costeMinimo[j] < min entonces
+                min <- costeMinimo[j]
+                nodo <- j
+            fsi
+        fpara
+        AR <- AR union {(nodoMinimo[nodo], nodo)}    // añadimos el nodo de menor coste
+        costeMinimo[nodo] <- -1
+        para j <- 2 hasta n hacer
+            // Actualizamos la lista de costeMinimo y nodoMinimo con las distancias
+            //  De los nodos externos al AR con el nuevo nodo
+            si Distancia(j,nodo) < costeMinimo[j] && costeMinimo[j] != -1 entonces
+                costeMinimo[j] <- Distancia(j,nodo)
+                nodoMinimo[j] <- nodo
+            fsi
+        fpara
+    fpara
+    dev AR
 ffun
 #+END_EXAMPLE
 
 ** Árbol recubrimiento mínimo: Kruskal
-# TODO
+#+BEGIN_EXAMPLE
+fun Kruskal(G=<N,A>:grafo): conjunto de aristas
+    var
+        AR: conjunto de aristas
+    fvar
+    Ordenar(A)                               // Ordenar las aristas en peso crecientes.
+                                             //  un montículo es ideal.
+    n <- número nodos de N
+    AR <- {}
+    Iniciar n conjuntos uno con cada nodo de N  // [{a}, {b}, ..., {u}, {v}]
+    mientras AR no tenga n-1 aristas hacer   // Con n-1 aristas todos los nodos pueden
+                                             //  estar conectados
+        pop(A,u,v)                           // Arista (u,v) aún no añadida ni descartada
+        comU <- buscarComponenteConvexa(u)   // Buscamos el conjunto que contiene a u
+                                             //  Originalmente es el conjunto {u}
+        comV <- buscarComponenteConvexa(v)   // Buscamos el conjunto que contiene a v
+                                             //  originalmente es el conjunto {v}
+        si comU != comV entonces             // Si son componentes convexas diferentes
+                                             //  aún no hemos añadido esta arista a AR
+            fusionar(comU, comV)             // Fusionamos las dos componentes convexas
+                                             //  Así sabemos que estos dos nodos ya
+                                             //  están conectados en el AR
+            AR <- AR union {(u,v)}
+        fsi
+    fmientras
+    dev AR
+ffun
+#+END_EXAMPLE
 
 * Divide y vencerás
 ** Planteamiento General
