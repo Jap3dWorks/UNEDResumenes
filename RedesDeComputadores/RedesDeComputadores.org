@@ -682,8 +682,10 @@
       - Multiplexación multinivel
             - Si hay diferentes tasas de datos. pueden multiplexarse los más bajos para que coincidan con los más altos.
       - Multiplexación multiples ranuras.
-            - pues demultiplexarse un emisor para rellenar las ranuras de un multiplexor posterior.
+            - Consiste en demultiplexar un emisor (en 2 tasas más lentas) para rellenar las ranuras de un multiplexor posterior (que es más lento que el emisor).
       - Inserción de pulsos, relleno para las tasas más bajas y así asemejarlas a las tasas más altas.
+      - *Sincronización de tramas*, A cada trama TDM se le añade unos bits al inicio que puede seguir un patrón de sincronización, ejemplo patrón 101.
+            - [1|A3|B3|C3] [0|A2|B2|C2] [1|A1|B1|C1]
 
 - *TDM estadística pot división de tiempo*
       - Solo cuando una entrada tiene datos que enviar se le asigna una ranura.
@@ -1692,7 +1694,7 @@
 - IPV4, protocolo sin conexión
 
 **** Formato de datagrama (20 - 60 Bytes)
-- *Versión* (4 Bit), valor 4
+- *Versión* (4 Bits), valor 4
 - *HLEN* (4 bits), longitud de la cabecera en palabras de 4 bytes.
 - *Tipo de servicio* (8 Bit), TOS.
 - *Longitud total* (16 Bit), cabezera + datos en bytes.
@@ -1726,7 +1728,7 @@
                   - Si no puede pasar se descarta y se envía un mensaje de error ICMP al origen.
             - ##1, el datagrama no es el último fragmento.
             - ##0, es el último fragmento del datagrama
-      - *Desplazamiento de la fragmentación*, Desplazamiento respecto a los datos del datagrama original medido en unidades de 8 bytes.
+      - *Desplazamiento de la fragmentación*, Desplazamiento respecto a los datos del datagrama original medido en unidades de *8 bytes*.
             - Si se fragmenta un fragmento sigue siendo relativo al datagrama original.
             - Notese que es sobre los datos, sobre la carga útil.
             - El primer fragmento se identifica por tener desplazamiento 0.
@@ -1844,6 +1846,7 @@
 *** Protocolos de nivel de transporte
 **** Protocolo de parada y espera
 - ARQ con parada y espera.
+# TODO
 
 **** Petición de respuesta automática con vuelta atrás N (GBN)
 - ARQ GBN (go back n)
@@ -1920,9 +1923,8 @@
 - Los segmentos se numeran usando dos campos.
 
 - *Numero de secuencia*  
-      - *Numero de Byte*.
-            - Número del byte respecto al mensaje original.
-            - Se usa un número aleatorio entre $[0, 2^{32}-1]$ para el primer byte.
+      - Número del byte respecto al mensaje original.
+      - Se usa un número aleatorio entre $[0, 2^{32}-1]$ para el primer byte.
       - *Número de secuencia*.
             1. Número de secuencia del primer segmento (ISN) es aleatorio.
             2. De otro segmento es el Número de secuencia anterior más bytes trasportados por el segmento anterior.
