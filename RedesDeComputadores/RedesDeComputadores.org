@@ -831,7 +831,7 @@
 - Acceso múltiple por detección de portadora (CSMA).
 - Se comprueba el medio antes de usarlo.
 - El retardo de propagación puede generar colisión igualmente.
-- *Periodo vulnerable*
+- *Periodo vulnerable* es $T_p$.
       - $T_p$, el tiempo de propagación.
 - *Métodos de persistencia*
       - persistencia 1, si el medio está libre envía la trama inmediatamente.
@@ -849,9 +849,9 @@
       - Si no se detecta otra trama la transmisión se realiza con éxito.
             - No se guarda la trama.
       - Si hay colisión (otra trama detectada) se envía luego de nuevo.
-- Tamaño de la tarma mínima.
+- Tamaño de la trama mínima.
       - $T_{fr} = 2 \times T_{p}$
-            - $T_{fr}$, tiempo de transmisión
+            - $T_{fr}$, tiempo de transmisión (tiempo transmitiendo una trama)
             - $T_{p}$, tiempo de propagación
       - Trama mínima (bits) = $T_{fr} \times bps$
 - *Procedimiento*
@@ -990,7 +990,7 @@
 *** Ethernet Stándar, 10 Mbps
 **** Características
 - Servicio sin conexión e inestable
-- Formato de trama (64 bytes - 1518 bytes) (preámbulo/delimitador + 1 Byte)
+- *Formato de trama* (64 bytes - 1518 bytes) (preámbulo/delimitador + 1 Byte)
       - *Preámbulo* (7 Bytes)
             - Cabecera de nivel físico
       - *Delimitador de comienzo de trama (SDF)* (1 Byte)
@@ -1875,10 +1875,10 @@
 - Sencillo y con un mínimo de sobrecarga.
 
 *** *paquete*: datagrama de usuario
-- *Cabecera*
+- *Cabecera* (8 Bytes)
       - *Número de puerto de origen* (16 Bit)
       - *Número de puerto destino* (16 Bit)
-      - *Longitud total* (16 Bit)
+      - *Longitud total* (16 Bit), en bytes
       - *Suma de comprobación* (16 Bit)
 
 *** Servicios UDP
@@ -1932,26 +1932,24 @@
             - Si envio $n$ he recibido correctamente hasta $n-1$.
 
 *** Segmento
-**** Formato
-- *Campos*
-      - *Dir puerto origen* (16 Bits)
-      - *Dir puerto destino* (16 Bits)
-      - *Número de secuencia* (32 Bits)
-      - *Número de confirmación* (32 Bits)
-      - *HLEN* (4 Bits)
-      - *Longitud de la cabecera* (4 Bits), número de palabras de 4 bytes.
-      - *Control* (6 Bits), 6 bits o flags.
-            - URG, urgente
-            - ACK, confirmación
-            - PSH, petición de transmisión
-            - RST, reiniciar conexión
-            - SYN, sincronizar números de secuencia
-            - FIN, terminar conexión
-      - *Tamaño de la ventana* (16 Bit), rwnd, receiver window, se establece por el receptor.
-      - *Suma de comprobación* (16 Bit), obligatorio en TCP
-            - Se incluye incluye una pseudocabecera IP en la suma (direcciones ip)
-      - *Puntero urgente* (16 Bit), válido cuando el campo urgente es 1.
-      - *Opciones* (hasta 40 bytes).
+**** Formato (20 - 60 Bytes)
+- *Dir puerto origen* (16 Bits)
+- *Dir puerto destino* (16 Bits)
+- *Número de secuencia* (32 Bits)
+- *Número de confirmación* (32 Bits)
+- *Longitud de la cabecera, HLEN* (4 Bits), número de palabras de 4 bytes.
+- *Control* (6 Bits), 6 bits o flags.
+      - URG, urgente
+      - ACK, confirmación
+      - PSH, petición de transmisión
+      - RST, reiniciar conexión
+      - SYN, sincronizar números de secuencia
+      - FIN, terminar conexión
+- *Tamaño de la ventana* (16 Bit), rwnd, receiver window, se establece por el receptor.
+- *Suma de comprobación* (16 Bit), obligatorio en TCP
+      - Se incluye incluye una pseudocabecera IP en la suma (direcciones ip)
+- *Puntero urgente* (16 Bit), válido cuando el campo urgente es 1.
+- *Opciones* (hasta 40 bytes).
 
 *** Conexión TCP
 **** Establecimiento de conexión
@@ -2416,6 +2414,9 @@
             - Servidor POP3 reside en el servidor de correo.
             - Cliente POP3 reside en la computadore receptora.
             - Descarga los correos desde el servidor de correo.
+            - Dos modos de funcionamiento
+                  - Borrado
+                  - Mantenimiento
       - IMAP
             - Más completo que POP3
             # TODO pag 662
@@ -2584,6 +2585,23 @@
   | Microsegundos (\mu s) | 10^{-6} s   | Megaherzio (MHz) | 10^{6} Hz   |
   | Nanosegundos (ns)     | 10^{-9} s   | Gigaherzio (GHz) | 10^{9} Hz   |
   | Picosegundos (ps)     | 10^{-12} s  | Teraherzio (THz) | 10^{12} Hz  |
+
+* Fórmulas
+- Capacidad Shanon, $Capacidad = B \cdot log_2(1 + SNR)$ tasa de datos (bps)
+- $SNR_{dB} = 10 \cdot log_{10}(SNR)\ dB$
+- $SNR_{dB}\ Cuantificacion=6.02n_b + 1.76$
+      - $n_b$, bits necesarios para codificar los niveles.
+- Tasa elementos señal, $S=c \cdot N \cdot 1/r = B_{min}$
+      - $N$, tasa de datos (bps)
+      - $S$, tasa de elementos señal
+      - $r$, datos transportados por 1 elemento señal.
+      - $c$, elemento caso, es una variable.
+      - $B_{min}$, ancho de banda mínimo.
+- Tasa Bits Muestro $= 2 \cdot B \cdot log_2(L)\ bps$
+- $B_{BPSK}=B_{QPSK}=(1+d)S\ Hz$, pero $r_{bpsk}=1$ y $r_{qpsk}=2$.
+- Tasa de productividad Aloha, $S=G \cdot e^{-2G}$
+- Aloha con ranuras, $S_r = G \cdot e^{-G}$
+- Tiempo transmisión CSMA/CD $T_{fr} = 2T_{p}$
 
 * Recursos
 - Link a los recursos del texto base.
