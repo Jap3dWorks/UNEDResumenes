@@ -1061,7 +1061,7 @@
             - Topología en estrella con un concentrador.
             - Fullduplex
 
-*** Ethernet rápida (100 MBPS)
+*** Ethernet rápida (100 MBPS) (fast ethernet)
 - Compatible con ethernet estandar
       - Mismo formato de trama
       - Direcciones MAC 48 bit.
@@ -1783,8 +1783,102 @@
 
 # TODO        
 
-** IP de nueva generación
-# TODO
+** IP de nueva generación (IPv6)
+*** Representación
+- Mayor espacio de direcciones, 128bit, 16bytes.
+- Notación:
+      - Binaria, 1111111011..1100000000
+      - Hexadecimal de dos puntos, FEF6:BA98:7654:3210:ADEF:BBFF:2922:FF00
+- Abreviaruta,
+      - Omisión de 0's, 0074->74, 000F->F, 0000->0
+      - Compreión de 0's, FDEC:0:0:0:0:BBFF:0:FFFF -> FDEC::BBFF:0:FFFF
+            - Solo se puede aplicar una vez.
+- una dirección IPv4 puede estar incrustada en una IPv6
+      - los 32 bits más a la derecha
+      - ..FF:192.168.1.131
+- Usa notación CIDR, con prefijo y sufijo.
+      - FDEC::BBFF:0:FFFF/60
+
+*** Espacio de direcciones
+- inagotable $2^{128}$
+
+**** Dirección unicast
+- Enviado a una única interfaz.
+
+**** Dirección anycast
+- Un grupo de nodos que comparte una dirección.
+  El mensaje solo llega al nodo más accesible (solo a uno).
+
+**** Dirección multicast
+- Un grupo de nodos comparte una dirección.
+  El mensaje llega a todos los nodos del grupo.
+
+***  Asignación del espacio de direcciones
+| CIDR      | Asignación de bloques               |
+|-----------+-------------------------------------|
+| 0000::/8  | Direcciones especiales              |
+| 2000::/3  | unicast global, Unidifusión mundial |
+| FC00::/7  | Unicast exclusivo local             |
+| FE80::/10 | Direcciones de enlace locales       |
+| FF00::/8  | Direcciones multidifusion           |
+
+**** Direcciones Unicast global
+- Direccion para comunicación entre hosts en la Internet.
+- CIDR 2000::/3
+- Tamaño del bloque $2^{125}$
+- [ *prefijo de la ruta global* (empezando con 0010) (48 bit) |
+   *Identificador de subredes* (16 bit) |
+   *Identificador de la interfaz* (64 bit) ]
+- Inclusión de la MAC en ipv6
+      - Sobre el *Identificdor de la interfaz* (64 bit).
+      - [ 3 Bytes MAC | 1..10 | 3 Bytes de MAC]
+      - Primer byte de MAC #..#0# -> #..#1#
+
+**** Direcciones Especiales
+- CIDR 0000::/8
+- Sin especificar 0000::/128, todo 0s. para DHCP cuando un host no conoce su IP.
+- Loopback 0000::1/128
+- Compatible 0000::/96, [todo 0s | Dir IPv4]
+      - Emisor IPv6 envía un mensaje a un receptor IPv6
+- Mapeada 0000::FFFF/96, [80 bit 0s | 16 bit 1s | Dir IPv4]
+      - Emisor IPv6 envía un mensaje a un receptor IPv4
+
+*** Autoconfiguración
+- Prefijo local de enlace FE80::/10
+- [ pref local enlace | 54 bit 0s | *Identificador de la interfaz* ]
+      - El identificador de la interfaz lleva la MAC incrustada.
+- El host que se autoconfigura debe comprobar que la dirección IPv6 es única.
+      - Si el proceso falla el host necesitará otro proceso como DHCP
+- Si el proceso es exitoso se almacena como dirección local de enlace.
+- El router proporcionará la dirección unicast global si puede.
+
+*** Protocolo de IPv6
+**** Formato del paquete
+- Cabecera (40 bytes)
+      - *Versión* (4 Bit)
+      - *Clase de tráfico* (8 Bit)
+      - *Etiqueta del flujo* (8 Bit)
+      - *Longitud de la carga* (16 Bit), en bytes
+      - *Cabecera siguiente* (8 Bit), tipo de la siguiente cabecera de extensión
+      - *Limite de salto* (8 Bit), como TTL en IPv4
+      - *Direcciones origen* (128 Bit), 
+      - *Dirección destino* (128 Bit),
+      - *Carga útil*,  Cabeceras de extensión más datos
+
+**** Cabecera de extensión
+- [ Cabecera siguiente | Longitud | Cabecera extensión ]
+
+*** Transición a IPv6
+**** Doble pila
+- Una estación ejecuta conjuntamente IPv4 y IPv6.
+
+**** Túneles
+- Ante una región solo compatible con IPv4, se encapsula el datagrama IPv6 en un datagrama IPv4.
+- Al salir de la región se vuelve a IPv6
+
+**** Traducción de cabeceras
+- Un host no comprende IPv6 y un systema IPv6 se quiere comunicar con él.
+- El router local puede traducir las cabeceras para hacerle llegar a los hosts datagramas IPv4.
 
 * Nivel de Transporte
 - *Paquete: datagrama de usuario*, segmentos o paquetes
