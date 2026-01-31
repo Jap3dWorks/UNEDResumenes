@@ -1148,11 +1148,11 @@
       - 10GBase-SR
             - 2 Fibra 850 nm
             - 300m longitud
-            - Codificación 64B66B
+            - Codificación 64B/66B
       - 10GBase-LR
             - 2 Fibra 1310nm
             - 10km longitud
-            - Codificación 54B66B
+            - Codificación 54B/66B
       - 10GBase-EW
             - 2 Fibra 1350nm
             - 40Km longitud
@@ -1716,7 +1716,7 @@
 *** Fragmentación
 **** MTU, Unidad de transferencia máxima
 - Cada protocolo de trama (nivel de enlace) tiene un tamaño máximo.
-- *MTU*, longitud máxima de la carga útil de la trama.
+- *MTU*, longitud máxima de la carga útil de la *trama* (ojo de la trama).
 - *Fragmentación*, dividir el datagrama para que entre en tramas de tamaño menores.
 - Enrutadores pueden fragmentar.
 - El ensamblado de los fragmentos se hace en el host destino.
@@ -1732,6 +1732,7 @@
             - Si se fragmenta un fragmento sigue siendo relativo al datagrama original.
             - Notese que es sobre los datos, sobre la carga útil.
             - El primer fragmento se identifica por tener desplazamiento 0.
+            - El tamaño del fragmento debe permitir que sea divisible por 8
 
 *** Opciones
 - Parte variable de la cabecera del datagrama.
@@ -2694,10 +2695,14 @@
       - $c$, elemento caso, es una variable.
       - $B_{min}$, ancho de banda mínimo.
 - Tasa Bits Muestro $= 2 \cdot B \cdot log_2(L)\ bps$
+- $B_{BASK} = (1 + d)S\ Hz$
+- $B_{BFSK} = (1+d)S + 2\Delta_f$
 - $B_{BPSK}=B_{QPSK}=(1+d)S\ Hz$, pero $r_{bpsk}=1$ y $r_{qpsk}=2$.
 - Tasa de productividad Aloha, $S=G \cdot e^{-2G}$
 - Aloha con ranuras, $S_r = G \cdot e^{-G}$
 - Tiempo transmisión CSMA/CD $T_{fr} = 2T_{p}$
+- Retardo total de Red = $(n+1)(Retardo_{tr} + Retardo_{pg} + Retardo_{pr}) + (n)(Retardo_{qu})$
+      - $n$, routers intermedios en la red.
 
 * Recursos
 - Link a los recursos del texto base.
