@@ -347,6 +347,7 @@
 - *Elemento señal frente a elemento de datos*
       - *Elemento dato*, la unidad más pequeña de información (bit).
       - *Elemento señal*, unidad más corta en el tiempo de una señal digital.
+            - Un elemento señal representa el cambio.
       - Elementos dato son transportados elementos señal son portadores.
             - Tasa $r$, elementos dato transportados por una señal.
 - *Tasa de datos frente a tasa de señales*
@@ -361,6 +362,8 @@
       - $S_{ave}=c \times N \times \frac{1}{r}\ baudios$
             - $S_{ave}$, señales promedio.
             - $c$, factor de caso, varia en cada caso.
+            - Es el caso medio, las señal no tiene porque estar cambiando en cada pulso.
+              si la señal no cambia no es una nueva señal.
       - $B_{min} = c \times N \times \frac{1}{r}$
             - $B_{min}$, ancho de banda de frecuencias mínimo
       - $N_{max} = \frac{Br}{c}$
@@ -396,7 +399,7 @@
             - Si el voltaje cambia bit=1, 0 si no cambia.
       - 
         [[file:images/NRZBipolar.png]]
-      - Tasa de señal media N/2 baudios
+      - $S_{ave} = N/2\ bd$
       - Tienen problemas de componentes DC.
 - *RZ* (con retorno a cero)
       - La señal cambia durante el bit
@@ -1627,6 +1630,7 @@
 ** Resolución de direcciones (NAT)
 - Permite el uso de direcciones privadas en una red y al menos una global para internet (el enrutador). Para Internet solo existe el enrutador.
       - El router ejecuta el software NAT.
+
 *** *Traducción de la dirección*
 - Todos los paquetes de salida pasan por el enrutador NAT.
       - Sustituye la dirección origen por la del enrutador NAT.
@@ -2052,7 +2056,7 @@
 **** Establecimiento de conexión
 - *Negociación en 3 pasos*, three-way handshaking
       1. Cliente envía el primer segmento con SYN activo.
-             - Sincroniza número de secuencias (ISN número de secuencia inicial).
+             - Sincroniza número de secuencias (*ISN* número de secuencia inicial).
              - Sin datos pero consume número de secuencia (1byte).
       2. Servidor envía SYN + ACK activos.
              - Inicia el número de secuencia del servidor.
