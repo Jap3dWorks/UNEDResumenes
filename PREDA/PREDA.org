@@ -1,8 +1,356 @@
 #+title: PREDA
 
 * Estructuras de datos
-** Montículo
+** Grafos
+- $G=<N,A>$ grafo de $N$ vértices y $A$ aristas.
+  
 # TODO
+*** Matriz de adyacencia
+|   | 1 | 2 | 3 |
+| 1 | - | 1 | - |
+| 2 | - | - | 1 |
+| 3 | 1 | - | - |
+
+- Si es no dirigido la matriz es simétrica
+
+*** Listas de adyacencia
+- Una lista por cada nodo
+- Cada lista de cada nodo $i$ tiene una secuencia de nodos adyacientes a $i$.
+
+*** Funciones de manipulación de grafos
+- *fun Creargrafo(): grafo*
+      - Crea un grafo vacío.
+- *fun AñadirArista(u,v:vértice; p:peso; g:grafo): grafo*
+      - Añade una arista entre los vértices $u$ $v$ y peso $p$.
+- *fun AñadirVertice(v:vértice;  g:grafo): grafo*
+      - Añade un vértice al grafo.
+- *fun BorrarArista(v1,v2:vértice; g:grafo): grafo*
+      - Elimina la arista.
+- *fun BorrarVertice(v:vértice, g:grafo): grafo*
+      - Borra el vértice v y todas las aristas que partan o lleguen a él.
+- *fun Adyacente?(v1,v2:vértice; g:grafo): booleano*
+      - true si v1 y v2 son adyacentes.
+- *fun Adyacentes(v:vértice; g:grafo): lista*
+      - Lista con vértices adyacentes a v.
+- *fun Etiqueta(v1,v2:vértice; g:grafo): etiqueta*
+      - Peso asociado o etiqueta asociada a la arista.
+
+Costes de manipulación de Grafos
+
+|               | Matriz de adyacencia   | Lista de adyacencia |
+| CrearGrafo    | O(1)                   | O(1)                |
+| AñadirArista  | O(1)                   | O(1)                |
+| AñadirVertice | O(n) (sin relocalizar) | O(1)                |
+| BorrarArista  | O(1)                   | O(n)                |
+| BorrarVertice | O(n)                   | O(n+a)              |
+| Adyacente?    | O(1)                   | O(n)                |
+| Adyacentes    | O(n)                   | O(1)                |
+| Etiqueta      | O(1)                   | O(n)                |
+
+*** Recorrido en profundidad
+
+#+BEGIN_EXAMPLE
+fun RecProfundidadRecursivo(v:nodo; visitado:Vector)
+    var
+        w: nodo
+    fvar
+    visitado[v] <- true
+    para cada w adyacente a v hacer
+        si !visitado[w] entonces
+            RecProfundidadRecursivo(w,visitado)
+        fsi
+    fpara
+ffun
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+tipo Vector=matriz[0..n] de booleano
+fun Recorridorofundidad(G=<N,A>: grafo)
+    var
+        visitado:Vector
+        v:nodo
+    fvar
+    para cada v in N hacer
+        visitado <- falso
+    fpara
+    para cada v in N hacer
+        si !visitado[v] entonces
+            RecProfundidadRecursivo(v, visitado)
+        fsi
+    fpara
+ffun
+#+END_EXAMPLE
+
+Versión Iterativa del recorrido en profundidad
+
+#+BEGIN_EXAMPLE
+fun RecProfundidadIterativo(v:nodo; visitado:Vector)
+    var
+        u,w: nodo
+        P: TPila
+    fvar
+    P <- PilaVacía()
+    visitado[v] <- cierto
+    Apilar(v,P)
+    mientras not Vacía(P) hacer
+        u=Cima(P)
+        Desapilar(P)
+        para cada w adyacente a u hacer
+            si not visitado[w] entonces
+                visitado[w] <- true
+                Apilar(w,P)
+            fsi
+        fpara
+    fmientras
+ffun
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+tipo Vector=matriz[0..n] de booleano
+fun RecorridoProfundidad(G=<N,A>: grafo)
+    var
+        visitado: Vector
+        v: nodo
+    fvar
+    para cada v in N hacer
+        visitado[v] <- false
+    fpara
+    para cada v in N hacer
+        si not visitado[v] entonces
+            RecProfundidadIterativo(v, visitado)
+        fsi
+    fpara
+ffun
+#+END_EXAMPLE
+
+*** Recorrido en amplitud
+
+#+BEGIN_EXAMPLE]
+fun RecAnchura(v:nodo; visitado:Vector)
+    var
+        u,w:nodo
+        Q:TCola
+    fvar
+    Q <- ColaVacía()
+    visitado[v] <- true
+    Encolar(v,Q)
+    mientras not Vacía(Q) hacer
+        u <- Primero(Q)
+        Desencolar(u,Q)
+        para cada w adyacente a u hacer
+            si !visitado[w] entonces
+                visitado[w] <- true
+                Encolar(w,Q)
+            fsi
+        fpara
+    fmientras
+ffun
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+tipo Vector=matriz[0..n] de booleano
+fun RecorridoAnchura(G=<N,A>: grafo)
+    var
+        visitado: Vector
+        v: nodo
+    fvar
+    para cada v in N hacer
+        visitado[v] <- false
+    fpara
+    para cada v in N hacer
+        si !visitado[v] entonces
+            RecAnchura(v, visitado)
+        fsi
+    fpara
+ffun
+#+END_EXAMPLE
+
+*** Árbol de recubrimiento
+- Aristas usadas en un recorrido en anchura o profundidad
+- $(n-1)$ aristas.
+
+*** Punto de articulación
+- $u$ es un punto de articulación si al eliminar $u$ y todas sus aristas el grafo deja de ser conexo.
+- *Grafo biconexo*, sin puntos de articulación.
+- *Conectividad K*, si eliminar *K* nodos cualesquiera no desconecta el grafo.
+
+  # TODO
+
+*** Ordenación topológica de un grafo dirigido acícliclo (GDA)
+- gda, existencia de arco <u,v> indica que el nodo u precede al nodo v en una ordenación lineal.
+
+Algoritmo de Khan para calcular un gda
+
+#+BEGIN_EXAMPLE
+tipo Vector=matriz[identNodo_1..identNodo_n] de natural
+fun OrdenTopologicoKahn(G=<N,A>: grafo): Vector
+    var
+        u,v:nodo
+        Q:TCola
+        orden: Vector
+    fvar
+    Q <- {u in N : GradoEntrante(A,u)=0}     // Nodos sin conexiones entrantes
+    i <-1
+    mientras !Vacia(Q) hacer
+        u <- Primero(Q)
+        Desencolar(u,Q)
+        orden[u] <- i
+        i <- i+1
+        para cada (u,v) in A hacer            // Para cada conexión saliente de u
+            A <- A \ {(u,v)}
+            si GradoEntrante(A,v)=0 entonces  // Nodos sin conexiónes entrantes
+                Encolar(v,Q)
+            fsi
+        fpara
+    fmientras
+    dev orden
+ffun
+#+END_EXAMPLE
+
+*** Camino más corto desde la raiz a cualquier otro nodo
+- Coincide con el árbol de recubrimiento en anchura (ARA) desde la raiz.
+
+** Montículo
+- Caso especial de árbol binario implementado sobre vectores
+- Es un árbol balanceado y completo
+- Cada nodo contiene un valor mayor o igual que el de sus hijos (mónticulo máximos)
+      - O tambien montículo de mínimos.
+- En la cima está el nodo raiz $T[1]$
+- Nodo $T[i]$
+      - Hijo izquierdo $T[2i]$
+      - Hijo derecho $T[2i+1]$
+      - Padre $T[i\ div\ 2]$ (división entera)
+
+*** Implementación y operaciones
+#+BEGIN_EXAMPLE
+registro monticulo
+T: vector[1..n] de entero;
+c: natural;                  // Elementos en el montículo
+MAX: natural;                // Máximo número de elementos
+fregistro
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+fun CreaMonticuloVacio(m: monticulo)
+    m.T <- null
+    m.c <- 0
+    m.MAX <- n
+ffun    
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+fun MonticuloVacio?(m: monticulo): boleano
+    si (m.c=0) entonces dev true sino dev false fsi
+ffun
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+fun flotar(T:vector, i:natural)
+    mientras (i>1) && (T[i div 2] < T[i]) hacer  // padre menor que el nodo i
+        intercambiar(T[i], T[i div 2])
+        i <- i div 2
+    fmientras
+ffun
+#+END_EXAMPLE
+
+#+begin_example
+fun Hundir(m:monticulo, i:natural)
+    var
+        hi,hd,p:natural
+    fvar
+    repetir
+        hi <- 2*i
+        hd <- 2*i + 1
+        p <- i
+        si (hd <= m.c) && (m.T[hd] > m.T[i]) entonces
+            i <- hd
+        fsi
+        si (hi <= m.c) && (m.T[hi] > m.T[i]) entonces
+            i <- hi
+        fsi
+        intercambiar(m.T[p],m.T[i])      // Se intercambia con el mayor de los dos hijos
+    hasta p=i
+ffun
+#+end_example
+
+#+begin_example
+fun Insertar(e:elemento; m:monticulo): monticulo
+    si m.c = m.MAX entonces
+        error(MonticuloLleno)
+    sino
+        m.c <- m.c + 1
+        m.T[m.c] <- e          // Se inserta al final del montículo
+        Flotar(m.T, m.c)
+    fsi
+ffun
+#+end_example
+
+#+begin_example
+fun Primero(m: monticulo): elemento
+    si m.c=0 entonces dev error
+    sino
+        dev m.T[1]
+    fsi
+ffun
+#+end_example
+
+#+begin_example
+fun ObtenerCima(m:monticulo): elemento
+    var
+        e:elemento
+    fvar
+    si m.c != 0 entonces
+        e <- m.T[1]
+        m.T[1]<-m.T[m.c]
+        m.c <- m.c - 1
+        Hundir(m.T,1)
+        dev e
+    fsi
+ffun
+#+end_example
+
+#+begin_example
+/**
+ * Convierte el montículo el vector T
+*/
+fun CreaMonticuloLineal(T:vector[1..n]): monticulo
+    var
+        m: monticulo
+    fvar
+    m <- CreaMonticuloVacio()
+    m.T <- T
+    m.c <- n    
+    para i <- n/2 hasta 1 paso -1 hacer
+        hundir(T,i);
+    fpara
+
+    dev m
+ffun
+#+end_example
+
+*** Algoritmo Heapsort
+
+#+begin_example
+fun Heapsort(T:vector[1..n]): vector[1..n]
+    var
+        e:entero
+        m:monticulo
+        S:vector[1..n]
+    fvar
+    M <- CreaMonticuloLineal(T);
+    para i <- 1 hasta n hacer
+        e <- ObtenerCima(M)
+        S[i] <- e
+    fpara
+    dev S
+ffun
+#+end_example
+
+** Tablas de dispersión (Hash)
+# TODO
+
+
+
 
 * Voraz
 ** Planteamiento general
@@ -561,13 +909,41 @@ una moneda del valor inferior, por eso hay que comprobar el resultado de la sele
 
 * Ramificación y Poda
 ** Planteamiento general
+# TODO
 
 ** Esquema general
+Problema de minimización
+
+#+begin_example
+fun RamificacionYPoda(nodoRaiz, mejorSolución:TNodo; cora:real)
+    monticulo = CrearMonticuloVacio()
+    cota = EstimacionPes(nodoRaiz)
+    Insertar(nodoRaiz, monticulo)
+    mientras !MonticuloVacio?(monticulo) && EstimaciónOpt(Primero(monticulo)) <= cota hacer
+        nodo <- ObtenerCima(monticulo)
+        para cada hijo extensión válida de nodo hacer
+            si solución(hijo) entonces
+                si coste(hijo) <= cota entonces
+                    cota <- coste(hijo)
+                    mejorSolucion <- hijo
+                fsi
+            sino
+                si EstimacionOpt(hijo) <= cota entonces
+                    Insertar(hijo, monticulo)
+                    si EstimacionPes(hijo) < cota entonces
+                        cota <- EstimacionPes(hijo)
+                    fsi
+                fsi
+            fsi
+        fpara
+    fmientras
+ffun
+#+end_example
 
 ** Mochila Entera
 #+BEGIN_EXAMPLE
 tipo TVectorB = matriz[1..n] de booleano
-tipo TVectorR - matriz[1..n] de real
+tipo TVectorR = matriz[1..n] de real
 tipo TNodo = registro        // Solución parcial o final
     moch: TVectorB           // Elementos incluidos
     k: entero                // etapa de búsqueda, posición del objeto a considerar
@@ -732,3 +1108,7 @@ ffun
 #+END_EXAMPLE
 
 
+* Glosario
+- *Recorrido postorden*, se recorre en profundidad [izquierdo, derecho, raiz]
+- *Recorrido preorden*, Se recorre en profundidad [raiz, izquierdo, derecho]
+- *Recorrido inorden*, Se recorre en profundidad [izquierdo, raiz, derecho]
