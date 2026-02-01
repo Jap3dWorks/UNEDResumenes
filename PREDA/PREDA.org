@@ -912,10 +912,10 @@ una moneda del valor inferior, por eso hay que comprobar el resultado de la sele
 # TODO
 
 ** Esquema general
-Problema de minimización
+Esquema general de un problema de minimización.
 
 #+begin_example
-fun RamificacionYPoda(nodoRaiz, mejorSolución:TNodo; cora:real)
+fun RamificacionYPoda(nodoRaiz, mejorSolución: TNodo; cora: real)
     monticulo = CrearMonticuloVacio()
     cota = EstimacionPes(nodoRaiz)
     Insertar(nodoRaiz, monticulo)
