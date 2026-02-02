@@ -136,19 +136,19 @@
 ** Protocolos TCP/IP
 *** Capas y mensajes
 
-| capa            | paquete                         | cabeceras                               | Direccionamiento                     |
-|-----------------+---------------------------------+-----------------------------------------+--------------------------------------|
-| Aplicación      | Mensaje                         | [mensaje]                               | Nombres                              |
-| Transporte      | segmento / datagrama de usuario | [c.trasporte][mensaje]                  | Número de puerto                     |
-| Red             | datagrama de red                | [c.red][c.transporte][mensaje]          | Direcciones lógicas (IP)             |
-| Enlace de Datos | trama                           | [c.datos][c.red][c.transporte][mensaje] | Direcciones de nivel de enlace (MAC) |
-| Físico          | bits                            | --                                      | --                                   |
+| capa            | paquete                                     | cabeceras                               | Direccionamiento                     |
+|-----------------+---------------------------------------------+-----------------------------------------+--------------------------------------|
+| Aplicación      | Mensaje                                     | [mensaje]                               | Nombres                              |
+| Transporte      | segmento (TCP) / datagrama de usuario (UDP) | [c.trasporte][mensaje]                  | Número de puerto                     |
+| Red             | datagrama de red                            | [c.red][c.transporte][mensaje]          | Direcciones lógicas (IP)             |
+| Enlace de Datos | trama                                       | [c.datos][c.red][c.transporte][mensaje] | Direcciones de nivel de enlace (MAC) |
+| Físico          | bits                                        | --                                      | --                                   |
 
 *** Multiplexación y demultiplexación
 - *Multiplexación*, Un protocolo de un nivel puede encapsular varios protocolos del nivel superior.
       - ftp y http se encapsulan en tcp.
 - *Demultiplexación*, Un protocolo puede desencapsular y entregar paquetes a varios protocolos de nivel superior.
-      - IP puede entregar a TCP y UDP
+      - IP puede entregar a TCP y UDP.
 
 ** Modelo OSI
 - OSI es un modelo para entender y diseñar una arquitectura de red que sea flexible, robusta e interoperable.
@@ -202,7 +202,7 @@
 
 *** Señal compuesta
 - *Señal compuesta*, compuesta por múltiples onda seno.
-- Según el analisis de Fourier, cualquier señal compuesta esuna combinación de ondas senoidales simples
+- Según el analisis de Fourier, cualquier señal compuesta es una combinación de ondas senoidales simples
   con diferentes frecuencias, amplitudes y fases.
 - Una señal compuesta periódica puede descomponerse en un número finito de ondas seno
   con frecuencia discreta, números naturales.
@@ -233,12 +233,12 @@
 - Una señal digital es una señal analógica compuesta por un ancho de banda infinito.
       - No es posible en la vida real.
 - *Transmisión en banda base*
-      - consiste en enviar una señal digital sin cambiar a una señal analógica.
+      - Consiste en enviar una señal digital sin cambiar a una señal analógica.
             - Las ondas preservan la forma digital.
       - Requiere de un *canal paso-baja*.
-            - Canal con un ancho de banda que comienza en 0.
+            - Canal con un ancho de banda que comienza en 0 Hz.
             - Transmitir en *banda base* una señal digital que preserva su forma solo es posible con un
-              ancho de banda infinito y muy grande.
+              ancho de banda infinito o muy grande.
       - $B=\frac{N}{2}$
             - $B$, ancho de banda analógico.
             - $N$, número de bits a enviar.
@@ -248,12 +248,11 @@
       - Podemos añadir armónicos para mejorar la forma de la señal, en este caso.
       - $B = \frac{aN}{2}$.
             - $a$ es el armónico mayor que vamos a usar.
-
 - *Transmisión en banda ancha*
       - Usando modulación (por ejemplo modificar la amplitud de la onda).
       - Implica cambiar la señal digital a analógica.
             - Permite el uso de un *canal paso-banda*.
-                  - Canal con un ancho de banda que NO empieza en 0.
+                  - Canal con un ancho de banda que NO empieza en 0 Hz.
         
 ** Deterioro de la transmisión  
 *** Atenuación
@@ -268,7 +267,7 @@
 
 *** Distorsion
 - Una señal cambia la forma de su onda.
-- Ocurre en una señal compuesta cada señal componente tiene su propia propagación.
+- Ocurre en una señal compuesta donde cada señal componente tiene su propia propagación.
 
 *** Ruido
 - *Ruido térmico*, movimiento aleatorio de electrones en un cable.
@@ -312,12 +311,12 @@
 
 *** Ancho de Banda
 - *Ancho banda en hercios*, Rango de frecuencias.
-- *Ancho banda en bps*, número de bits por segundo de un canal.
+- *Ancho banda en bps*, número de bits por segundo de un canal (tambiés se conoce como tasa de bits).
 - Mayor ancho de banda en hercios mayor ancho de banda en bps.
 
 *** Tasa de transferencia relativa (throughput)
-- bps reales de un canal, siempre es inferior al ancho de banda del canal.
-- Se de a congestiones y otras causas.
+- bps reales de un canal, siempre es inferior al ancho de banda del canal (tasa de bits).
+- Se de a congestiones o otras causas.
 
 *** Latencia
 - Cuanto tarda un mensaje completo en llegar a su destinatario desde la salida del primer bit en la fuente.
@@ -332,7 +331,7 @@
         antes de que pueda ser procesado.
 
 *** Producto ancho de banda - retardo
-- número de bits que llenaría el canal.
+- Número de bits que llenaría el canal.
 - *2 x ancho de banda (Hz) x retardo*
       - Tamaño de cada ráfaga para aprovechar la capacidad del enlace.
 
@@ -347,11 +346,11 @@
 - *Elemento señal frente a elemento de datos*
       - *Elemento dato*, la unidad más pequeña de información (bit).
       - *Elemento señal*, unidad más corta en el tiempo de una señal digital.
-            - Un elemento señal representa el cambio.
-      - Elementos dato son transportados elementos señal son portadores.
+            - Un elemento señal representa el cambio de la señal.
+      - Los elementos dato son transportados y los elementos señal son portadores.
             - Tasa $r$, elementos dato transportados por una señal.
 - *Tasa de datos frente a tasa de señales*
-      - Tasa de datos son los bps
+      - Tasa de datos son los bps.
       - *Tasa de señales*, número de elementos señal enviados en 1 segundo (*baudios*).
             - También se conoce como tasa de pulsos, tasa de modulación o tasa de baudios.
       - Se busca incrementar tasa de datos y reducir tasa de señales.
@@ -361,11 +360,11 @@
             - $r$. elementos dato por cada señal.
       - $S_{ave}=c \times N \times \frac{1}{r}\ baudios$
             - $S_{ave}$, señales promedio.
-            - $c$, factor de caso, varia en cada caso.
-            - Es el caso medio, las señal no tiene porque estar cambiando en cada pulso.
+            - $c$, factor de caso, varia en cada caso (suele ser 1/2).
+            - Es el caso medio, las señal no tiene porque estar cambiando en cada intérvalo de tiempo.
               si la señal no cambia no es una nueva señal.
       - $B_{min} = c \times N \times \frac{1}{r}$
-            - $B_{min}$, ancho de banda de frecuencias mínimo
+            - $B_{min}$, ancho de banda de frecuencias mínimo.
       - $N_{max} = \frac{Br}{c}$
             - Si se conoce el ancho de banda de frecuencias se puede determinar la tasa de bits máxima.
 - *Variaciones de la línea base*.
@@ -399,7 +398,7 @@
             - Si el voltaje cambia bit=1, 0 si no cambia.
       - 
         [[file:images/NRZBipolar.png]]
-      - $S_{ave} = N/2\ bd$
+      - $r=1$, $S_{ave} = N/2\ bd$
       - Tienen problemas de componentes DC.
 - *RZ* (con retorno a cero)
       - La señal cambia durante el bit
@@ -411,16 +410,17 @@
       - *Manchester*
             - RZ + NRZ-L
             - El bit se divide en 2 el voltaje cambia en la segunda mitad.
+            - $r=1/2$, $S_{ave}=N\ bd$
             - 
               [[file:images/ManchesterPolar.png]]
       - *Manchester Diferencial*
             - RZ + NRZ-I
             - El bit se divide en 2, al inicio del bit el voltaje se invierte si el bit es 0.
               no se invierte si el bit es 1.
+            - $r=1/2$, $S_{ave}=N\ bd$              
             - 
               [[file:images/ManchesterDiferencialPolar.png]]
       - La transición a mitad del bit ofrece sincronización.
-      - El ancho de banda mínimo es dos veces NRZ.
 
 **** Esquemas Bipolares
 - Voltajes de tres niveles positivo, negativo y cero.
@@ -430,10 +430,12 @@
 - *AMI* (bipolar con inversión de marca alternada)
       - Voltaje neutro es 0, voltajes alternados (+, -) es 1
       - Se suele usar en comunicaciones de larga distancia
+      - $r=1$, $S_{ave}=N/2$
       - 
         [[file:images/AmiBipolar.png]]
-- *pseudoternaria*,
+- *pseudoternaria*
       - Voltaje neutro es 1, alternados (+,-) es 0
+      - $r=1$, $S_{ave}=N/2$
       - 
         [[file:images/PseudoternariaBipolar.png]]
 
@@ -442,10 +444,10 @@
       - Se codifica un patrón de $m$ elementos de datos en un patrón de $n$ elementos señal.
       - $m$ elementos dato -> $2^m$ patrones.
 - los esquemas *mBnL* indican *m* elementos binario (*B*) codificados en un patrón *n* elementos señal.
-  *L* significa los niveles de la señal
+  *L* significa los niveles de la señal.
 - *2B1Q*, dos binario 1 cuaternario.
-      - Codifica dos bits en una señal de dos cuatro niveles.
-      - Tasa señal: $S = \frac{N}{4}$
+      - Codifica dos bits en una señal de cuatro niveles.
+      - $r=2$, $S_{ave} = \frac{N}{4}$
       - No hay patrones de señal redundantes.
       - Se utiliza en la tecnología DSL.
 - *8B6T*
@@ -455,7 +457,7 @@
       - Los patrones de señal tienen peso 1 o 0 (suma de voltajes positivos y negativos).
             - Si dos patrones seguidos tienen peso 1, el segundo se invierte para que de peso -1.
             - Así se asegura el equilibrio DC.
-      - Tasa media: $S_{ave} = 1/2 \times N \times 6/8$
+      - $r=8/6$, $S_{ave} = 1/2 \times N \times 6/8$
       - $B_{ave} = 3N/4$
 - *4D-PAM5*
       - Tetradimensional con modulación por amplitud de pulso de cinco niveles.
@@ -465,6 +467,7 @@
             - Los otro cuatro nieveles crean algo similar a *8B4Q*.
       - Peor tasa de señal es $S_{bad} = N \times 4/8 \times N/2$.
       - $B_{ave} = N/8$.
+      - $r=8/4$ (creo).
       - LAN Gigabit usa esta técnica, datos a 1Gbps.
             - 125 MBaudios
       - Esquema con mucha redundancia
@@ -473,7 +476,7 @@
 **** Multitransmisión
 - *MLT-3*
       - Transmisión multilínea, codificación de tres niveles.
-      - codificiación diferencial
+      - Codificiación diferencial
             - Si el siguiente bit es 0, no hay transición.
             - Si el siguiente bit es 1 y el nivel actual *no* es 0, el siguiente nivel es 0.
             - Si el siguiente bit es 1 y el nivel actual es 0, el siguiente nivel es opuesto al último nivel distinto de 0.
@@ -548,7 +551,7 @@
 
 **** Ancho de banda PCM
 - Ancho de banda mínimo para una señal digitalizada.
-- $B_{min} = n_b \times B_{analog}$
+- $n_b \times B_{analog}$ tasa de bits.
 
 **** Tasa de datos máxima de un canal
 - L niveles fijos, canal de paso-baja con ancho de banda B Hz, muestreo $2 \times B$
@@ -727,7 +730,7 @@
       - *Dirección multidifusión (multicast)*, uno a muchos con jurisdicción local.
       - *Dirección de broadcast*, se envía a todas las entidades de la red.
             - FF:FF:FF:FF:FF:FF
-- *protocolo ARP*, Es de nivel de red, pero sirve para conocer las direcciones de enlace de otros dispositivos en la red.
+- *protocolo ARP*, *Es de nivel de red*, pero sirve para conocer las direcciones de enlace de otros dispositivos en la red.
       - Actualización de la tabla arp en el sistema.
       - Consulta *broadcast* respuestas *unicast*.
 
@@ -839,11 +842,11 @@
 - *Periodo vulnerable* es $T_p$.
       - $T_p$, el tiempo de propagación.
 - *Métodos de persistencia*
-      - persistencia 1, si el medio está libre envía la trama inmediatamente.
+      - *Persistencia 1*, si el medio está libre envía la trama inmediatamente.
             - Mayores colisiones.
-      - No persistencia, Si el medio está libre envía inmediatamente.
+      - *No persistencia*, Si el medio está libre envía inmediatamente.
             - Si no lo está espera un tiempo aleatorio y vuelve a probar.
-      - Persistencia P, Se usa si el tiempo de una ranura es mayor al tiempo de propagación.
+      - *Persistencia P*, Se usa si el tiempo de una ranura es mayor al tiempo de propagación.
             1. Si la línea está libre con probabilidad $p$ envía la trama.
             2. Con probabilidad $1-p$ se espera a la siguiente ranura de tiempo.
                    - Si está libre se pasa a 1.
@@ -861,35 +864,37 @@
       - Trama mínima (bits) = $T_{fr} \times bps$
 - *Procedimiento*
       - Transmisión detección continuo.
-      - *Señal de interferencia*, de envía una señal corta en caso que otras estaciones no hayan detectado la colisión.
+      - *Señal de interferencia*, se envía una señal corta en caso que otras estaciones no hayan detectado la colisión.
 - *Nivel de energía*
       - Cero, canal libre.
-      - normal, la estación está usando el canal.
-      - anormal, hay una colisión y el nivel de energía es dos veces el normal.
+      - Normal, la estación está usando el canal.
+      - Anormal, hay una colisión y el nivel de energía es dos veces el normal.
 - *Productividad*
       - Mayor que Aloha.
 
 **** CSMA/CA
+:PROPERTIES:
+:ID:       5f58767c-28b3-4ffe-8988-9e5f24ad8f99
+:END:
 - Acceso múltiple por detección de portadora y evitación de colisiones.
 - Se evitan las colisiones con
-      - Espacio entre tramas (IFS), No se emite inmediatamente, se espera un periodo llamado IFS.
+      - Espacio entre tramas (*IFS*), No se emite inmediatamente, se espera un periodo llamado IFS.
             - Así se comprueba que no se detecta el inicio de la transmisión de otra estación.
       - Ventana de contención, Cantidad de tiempo dividido en ranuras.
             - La estación elige un número de ranuras aleatorio como su tiempo de espera.
             - El número de ranuras se duplica cada vez que no se puede emitir.
-            - 
       - Confirmaciones
             - Confirmación por parte del receptor y temporizadores.
 - Linea de tiempo de intercambio de trama
       1. Se detecta el medio
              - Persistencia con retroceso hasta que el canal está inactivo.
              - Espera *DIFS* (espacio interframe), evía una trama de control *RTS* (solicitud de envío).
-                   - Se incluye el NAV, que indica el tiempo que se necesitará ocupar el medio.
+                   - Se incluye el *NAV*, que indica el tiempo que se necesitará ocupar el medio.
       2. La estación destino tras recibir el *RTS* espera *SIFS* (short interframe space) y envía *CTS* (clear to send, permiso para enviar).
       3. La estación origen tras recibir el CTS espera SIFS y retrasmite.
-      4. El destino después de esperar SIFS envía un ACK.
+      4. El destino, al acabar la retransmisiónm, después de esperar SIFS envía un ACK.
 
-- Si no se recibe un CTS se asume que ha habido colisión y se vuelve a intentar.         
+- Si no se recibe un *CTS* se asume que ha habido colisión y se vuelve a intentar.         
 
 # TODO gráfico pag 308  
 
@@ -906,7 +911,7 @@
 - Topologías con una estación primaria.
 - Dispositivo primario controla el enlace.
 - *Selección*
-      - El nodo primario debe alertar a el nodo secundario de su deseo de transmitir (trama de selección SEL).
+      - El nodo primario debe alertar al nodo secundario de su deseo de transmitir (trama de selección SEL).
       - El nodo secundario debe confirmar que está listo.
   
 - *Muestreo*
@@ -1030,7 +1035,7 @@
       - Broadcast
             - FF:FF:FF:FF:FF:FF
             - Todos los miembros reciben y mantienen la trama.
-**** Acceso y eficacia              
+**** Acceso y eficacia
 - Acceso CSMA/CD con Persistencia 1.
 - Eficacia = $1 / (1 + 6.4 \times a)$
       - $a$, Tramas que caben en el medio.
@@ -1065,8 +1070,8 @@
             - Fullduplex
 
 *** Ethernet rápida (100 MBPS) (fast ethernet)
-- Compatible con ethernet estandar
-      - Mismo formato de trama
+- Compatible con ethernet estandar.
+      - Mismo formato de trama.
       - Direcciones MAC 48 bit.
 
 **** Método de acceso        
@@ -1175,14 +1180,14 @@
 - *ERROR*, menor SNR,  mayor ruido que en redes cableadas.
 
 *** Control de acceso
-- CSMA/CA
+- [[id:5f58767c-28b3-4ffe-8988-9e5f24ad8f99][CSMA/CA]]
 
 *** Proyecto IEEE 802.11
 **** Arquitectura
-- BSS, Conjunto de servicios básicos
+- *BSS*, Conjunto de servicios básicos
       - Red ad hoc, sin access point, solo nodos.
       - Red con infraestructura, con access point.
-- ESS, Conjunto de servicios extendido.
+- *ESS*, Conjunto de servicios extendido.
       - Dos o más BSS con AP (access point).
       - Se conectan a un sistema de distribución que suele ser una LAN con cable.
 - Tipos de estaciones
@@ -1190,20 +1195,20 @@
             - Siempre dentro de una BSS
       - Estación con *movilidad con transición BSS*
             - Puede moverse entre BSS's pero dentro de un ESS
-      - Estadión con *movilidad con transición ESS*
+      - Estación con *movilidad con transición ESS*
             - Se puede mover de un ESS a otro ESS.
-      - IEEE 802.11 no garantiza la conexión continua durante el movimiento.
+      - *IEEE 802.11* no garantiza la conexión continua durante el movimiento.
 
 **** Subnivel MAC
 - Dos subniveles MAC
       - DCF, función de coordinación distribuida.
-            - Control de acceso CSMA/CA
+            - Control de acceso *CSMA/CA*
       - PFC, función de coordinación puntual.
             - Método opcional para redes con infraestructura.
             - El AP hace un muestreo de la red.
                   - Las estaciones envian cualquier dato que tengan durante el muestreo.
             - *PIFS* (PCF IFS), es más corto que el DIFS, por ello el muestreo del PFC tiene mayor prioridad que el DCF de las estaciones.
-- Fragmentación, el protocolo recomienda dividir tramas grandes en otras más pequeñas.
+- *Fragmentación*, el protocolo recomienda dividir tramas grandes en otras más pequeñas.
 - Formato de trama
       - *FC* (2Bytes), tipo de trama junto con información de control, subcampos:
             - *versión* (2bit)
@@ -1307,12 +1312,12 @@
 
 ** Dispositivos de conexión y LAN virtuales
 *** Dispositivos de conexión
-**** Concentradores
+**** Concentradores (HUB)
 - Funciona solo a nivel físico
 - Repite las señales que se atenuan con la distancia
 - No tiene capacidad de filtrado
 
-**** Conmutador del nivel de enlace
+**** Conmutador del nivel de enlace (SWITCH)
 - Opera a nivel físico y de enlace.
 - Puede comprobar las direcciones MAC contenidas en las tramas y filtrar el mensaje.
 - *Conmutadores transparentes*
@@ -1372,7 +1377,7 @@
       - *Mantenimiento de la tabla*, los conmutadores se envían las tablas entre si para actualizarlas.
       - *Marcado de trama*, Cabecera extra a la trama MAC para definir su VLAN destino.
       - *TDM, multiplexación por división en el tiempo*
-            - Destino VLAN1 en la celda1, VLAN2 en la celda2, etc
+            - Destino VLAN1 en la celda1, VLAN2 en la celda2, etc.
 
 - *IEEE 802.1Q*
   - Indica el formato del marcado de trama.
@@ -1440,7 +1445,7 @@
 
 - *Paquete de reconocimiento*
       1. El destino responde con la etiqueta que ha asignado.
-             - El enrutador conectado a el destino usará esta etiqueta para rellenar su tabla de conexión y saber que puerto de salida corresponde a esta conexión.
+             - El enrutador conectado al destino usará esta etiqueta para rellenar su tabla de conexión y saber que puerto de salida corresponde a esta conexión.
       2. Los enrutadores comparten su etiqueta de entrada de la conexión (eligida anteriormente) con el enrutador que le precede.
              - Así los enrutadores podrán identificar cada uno su entrada en la tabla y ayudar a los enrutadores del camino a que encuentren la entrada correcta.
       3. El origen también recibe la etiqueta de su enrutador.
@@ -1492,7 +1497,7 @@
 - *Control de la congestión en bucle abierto (prevención)*
       - *Política de retransmisión*, Esperar si es necesario.
       - *Política de ventanas*, ventana de repetición selectiva.
-      - *Política de reconocimiento*, por ejemplo el acude de recibo de N paquetes a la vez.
+      - *Política de reconocimiento*, por ejemplo el acuse de recibo de N paquetes a la vez.
       - *Política de descartes*, descartar paquetes menos sensibles (en streaming).
       - *Política de admisión*, negarse a establecer la conexión de circuito virtual si hay riesgo de congestión.
 
@@ -1585,7 +1590,7 @@
 - Un equipo necesita saber, el servidor DHCP los puede proporcionar.
       - Su dirección IP
       - prefijo de la red
-      - dirección del enrutador
+      - dirección del enrutador (gateway)
       - la dirección del DNS
 - *Formato DHCP*
       - *Opcode* (8 Bit), tipo de solicitud
@@ -1618,7 +1623,7 @@
              - Envía DHCPREQUEST al servidor del cual aceptó la oferta.
              - Con los valores conocidos rellenados.
       4. El servidor responde al cliente con DHCPACK si la dirección ofrecida es válida.
-             - En casocontrario responde con DHCPNACK.
+             - En caso contrario responde con DHCPNACK.
 - El servidor no entrega toda la información en su respuesta DHCPACK
       - Define una ruta a un archivo con la información completa.
       - El cliente puede usar *FTP* para encontrar este archivo.
@@ -1650,7 +1655,7 @@
 
 ** Reenvío de paquetes IP
 *** Reenvio basado en la dirección de salto
-- Requeire de enrutadores con tabla de enrutamiento
+- Require de enrutadores con tabla de enrutamiento
 - La tabla tiene la dirección de la red destino y el siguiente salto hacia ese destino.
   | Dirección/máscara de red | siguiente salto | Interfaz |
   |--------------------------+-----------------+----------|
@@ -1660,7 +1665,7 @@
 - *Agregador de direcciones*
       - Todas las subredes que conectan con un enrutador A pueden tener una red común.
             - Redes en bloque.
-      - Est simplifica a los enrutadores externos (B) la tabla de enrutación.
+      - Esto simplifica a los enrutadores externos (B) la tabla de enrutación.
             - Porque todas las subredes de A son una entrada en el enrutador B.
 - *Coincidencia con la máscara más larga*
       - Las entradas de la tabla de enrutamiento de redes con dirección más larga tienen preferencia.
@@ -2698,9 +2703,9 @@
       - $r$, datos transportados por 1 elemento señal.
       - $c$, elemento caso, es una variable.
       - $B_{min}$, ancho de banda mínimo.
-- Tasa Bits Muestro $= 2 \cdot B \cdot log_2(L)\ bps$
+- Tasa Bits Muestreo $= 2 \cdot B \cdot log_2(L)\ bps$
 - $B_{BASK} = (1 + d)S\ Hz$
-- $B_{BFSK} = (1+d)S + 2\Delta_f$
+- $B_{BFSK} = (1+d)S + 2\Delta_f\ Hz$
 - $B_{BPSK}=B_{QPSK}=(1+d)S\ Hz$, pero $r_{bpsk}=1$ y $r_{qpsk}=2$.
 - Tasa de productividad Aloha, $S=G \cdot e^{-2G}$
 - Aloha con ranuras, $S_r = G \cdot e^{-G}$
