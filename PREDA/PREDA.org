@@ -1,4 +1,5 @@
 #+title: PREDA
+#+startup: latexpreview overview
 
 * Estructuras de datos
 ** Grafos
@@ -351,7 +352,6 @@ ffun
 
 
 
-
 * Voraz
 ** Planteamiento general
 - Para problemas de optimización donde la solución se puede construir paso a paso sin necesidad de reconsiderar decisiones.
@@ -382,6 +382,43 @@ fun Voraz(c: ConjuntoCandidatos&): ConjuntoCandidatos
     fsi
 ffun
 #+END_EXAMPLE
+
+** Devolución del cambio Voraz
+- pag 62
+- Consultar [[id:16c6495c-9fc5-41e0-be73-deee5a797ee2][Devolución del cambio PD]].
+- devolución del cambio por una máquina expendedora usando el mínimo número de monedas.
+- Nota: Al menos disponemos de monedas de 1 de valor.
+
+#+begin_example
+tipo VectorNat=matriz[1..n] de natural
+/*
+ * @param T:VectorNat, valor de las monedas ordenadas de menor a mayor (ascendente)
+*/ 
+fun MonedasCambio(T:VectorNat; C:natural): VectorNat
+    var
+        solucion:VectorNat
+    fvar
+
+    // cantidad de cada moneda i
+    para i <- 1 hasta n hacer
+        solucion[i] <- 0
+    fpara
+
+    camRestante <- C           // Iniciamos con el valor total del cambio
+    i <- n                     // bucles máximo es el número de monedas diferentes
+                               //  que tenemos
+
+    mientras camRestante != 0 && i >= 1 hacer
+        solucion[i] <- camRestante div T[i]    // división de entero
+                                               //  número de monedas de valor T[i]
+        camRestante <- camRestante mod T[i]    // El resto de la división entera
+                                               //  es el cambio que nos falta por asignar.
+        i <- i-1                               // Pasamos a comprobar la siguiente moneda.
+    fmientras
+    
+    dev solucion
+ffun
+#+end_example
 
 ** Árbol de recubrimiento mínimo: algoritmo de Prim
 *** Planteamiento general
@@ -472,6 +509,117 @@ fun Kruskal(G=<N,A>:grafo): conjunto de aristas
     dev AR
 ffun
 #+END_EXAMPLE
+
+** Camino de coste mínimo: algoritmo de Dijkstra
+
+- $G$ es un grafo dirigido con pesos mayor o igual a 0.
+- *Camino especial*, se conoce el camino mínimo desde el origen a cada nodo del camino especial.
+
+#+begin_example
+tipo VectorNat=matriz[0..n] de natural
+fun Dijkstra(G=<N,A>:grafo): VectorNat, VectorNat
+    var
+        especial,predecesor:VectorNat    // longitudes mínimas y el nodo predecesor.
+        C:conjunto de nodos              // Nodos aún no seleccionados.
+    fvar
+    C={2,3,..,n}
+    
+    para i <- 2 hasta n hacer
+        especial[i] <- Distancia(1,i)   // Si dos nodos no están conectados la
+                                        //  distancia es infty
+        predecesor[i] <- 1
+    fpara
+    
+    mientras C contenga más de 1 nodo hacer
+        v <- nodo in C que minimiza especial[]  // Un nodo con el menor peso de camino
+        C <- C \ {v}
+        para cada w in C hacer                  // Por cada nodo aún no seleccionado
+                                                //  Se compara su distancia con
+                                                //  la distancia que puede existir
+                                                //  partiendo de v
+            
+            si especial[w] > especial[v] + Distancia(v,w) entonces
+                especial[w] <- espacial[v] + Distancia(v,w)  // Distancia v,w es menor
+                                                             //  que la distancia que tenía
+                                                             //  w anteriormente
+                predecesor[w] <- v                           // Se actualiza el predecesor
+                                                             //  para poder reconstuir el
+                                                             //  camino.
+            fsi
+        fpara
+    fmientras
+    dev especial[],predecesor[]
+ffun
+#+end_example
+
+** Planificación con plazos
+:PROPERTIES:
+:ID:       ad3eb2c8-5ccf-44d3-bc53-c006098e81ae
+:END:
+- Se trata de seleccionar, planificar y realizar tareas antes de su fecha límite con el máximo beneficio.
+      - $f_i$, fecha límite de la tarea $i$.
+      - $b_i$, benificio de la tarea $i$.
+- Solo se puede realizar una tarea a la vez.
+- Realizar una tarea consume siempre una unidad de tiempo.
+- Para comprobar si un conjunto es *factible* se comprueba que las tareas
+  ordenadas en orden *no descendente* (ascendente o igual) son factibles.
+      - Ser *factible* es que ninguna tarea finalize fuera de plazo.
+- Suponemos que las tareas están ordenadas tal que.
+  $b_i \leq b_2 \leq \dots \leq \b_n$
+
+#+begin_example
+tipo VectorNat=matriz[0..n] de natural
+/**
+ * @param f:VectorNat, f[i] contiene la fecha límite del trabajo i
+*/
+fun PlanificacionPlazosDetallado(f:VectorNat, n:natural): VectorNat,natural
+    var
+        S:VectorNat  // Almacena los trabajos en orden de ejecución,
+                     //  S[i] es el i-ésimo trabajo en la solución óptima.
+    fvar
+    
+    S[0] <- 0  // Elemento centinela
+    S[1] <- 1  // Trabajo 1 es el de mayor beneficio
+    k <- 1     // número de elementos en S
+    
+    para i <- 2 hasta n hacer
+        r <- k                // se busca posición válida para i
+                              //  r inicia en la posición del último trabajo
+                              //  seleccionado.
+
+        mientras f[S[r]] > f[i] && f[S[r]] != r hacer
+        
+        // Mientras la finalización del trabajo en posición r sea mayor que el trabajo i
+        //  (recuerda los trabajos se ejecutan de menor a mayor fecha de finalización)
+        //  y la finalización del trabajo en posición r sea diferente a la ronda r
+        //  bajamos a una ronda anterior.
+        // Si F[S[r]] es igual a r es la última ronda que tenemos para ejecutar S[r]
+        //  y hay que recordar que los trabajos se han incluido en orden de mayor valor
+        //  Por tanto esta es la última oportunidad de ejecutar S[r]
+        
+            r <- r-1
+        fmientras
+
+        // Comprobamos si la finalización de la tarea en posición r es menor o igual
+        //  que la tarea que estamos comprobando i, queremos las tareas ordenadas
+        //  en orden no descendente de tiempo. En otro caso la tarea no es interesante.
+        //  Y que la tarea i finaliza después de la ronda r, sino está fuera de tiempo.
+        
+        si f[S[r]] <= f[i] && f[i]>r entonces
+            para q <- k mientras q >= r+1 incr <- -1 hacer
+                // hacemos sitio para insertar la tarea
+                // desde k hasta r+1 se desplazan una casilla hacia el final
+                S[q+1] <- S[q]
+            fpara
+            
+            S[r+1] <- i       // Asignamos la tarea en la posición r+1
+                              //  La posición r la queremos conservar.
+            k <- k+1          // Guardamos que se ha incluido una tarea.
+        fsi
+    fpara
+    dev S,k
+ffun
+#+end_example
 
 * Divide y vencerás
 ** Planteamiento General
@@ -636,6 +784,135 @@ Ejemplo de una traza
 
 [[attachment:clipboard-20260129T132356.png]]
 
+* Programación dinámica
+** Planteamiento general
+- Establecimiento de las ecuaciones que representan el problema.
+- Identificación de los *resultados parciales*.
+- Construcción de la tabla de resultados parciales:
+      - Inicialización de la tabla con los casos base que establece la ecuación del problema.
+      - Establecimiento del orden de llenado de la tabla, de forma que se calculen en primer lugar los resultados parciales que requiern pasos posteriores.
+      - Sustitución de las llamas recursivas del algoritmo por consultas a la tabla.
+
+** Esquema General
+- pag 131, no hay esquema general, hay ejemplos con fibonacci
+  
+#+BEGIN_EXAMPLE
+fun FibDin(n:entero): entero
+    var
+        i,suma: entero
+        t: tabla[0..n] de entero
+    fvar
+    si n <= 1 entonces
+        dev 1
+    sino
+        t[0] <- 1
+        t[1] <- 1
+        para i <- 2 hasta n hacer
+            t[i] <- t[i-1] + t[i-2]
+        fpara
+        dev t[n]
+    fsi
+ffun
+#+END_EXAMPLE
+
+Reduciendo la complejidad espacial a $O(1)$.
+
+#+BEGIN_EXAMPLE
+fun FibDin2(n: entero): entero
+    var
+        i,suma,f,g: entero
+    fvar
+    si n <= 1 entonces
+        dev 1
+    sino
+        f <- 1
+        g <- 1
+        para i <- 2 hasta n hacer
+            suma <- f+g
+            g <- f
+            f <- suma
+        fpara
+        dev suma
+    fsi
+ffun
+#+END_EXAMPLE
+
+** Devolución del cambio
+:PROPERTIES:
+:ID:       16c6495c-9fc5-41e0-be73-deee5a797ee2
+:END:
+- pag 135
+- Encontrar el mínimo número de monedas posible para cierta cantidad C.
+- N monedas diferentes
+
+#+BEGIN_EXAMPLE
+tipo Tabla=matriz[1..N, 0..C] de entero        // N filas por tipos de moneda
+                                               // C columnas por cantidades
+                                               // El índice de la columna representa
+                                               //  La cantidad C
+tipo Vector=matriz[0..N] de entero
+fun DarCambio(C:entero, moneda:Vector): Tabla
+    var
+        t: Tabla
+        i,j: entero
+    fvar
+    para i <- 1 hasta N hacer                         // Primera columna a 0's
+        t[i,0] <- 0
+    fpara
+    para j <- 1 hasta C hacer
+        para i <- 1 hasta N hacer
+            si i=1 and moneda[i] > j entonces         // Si la menor moneda es mayor que
+                                                      //  que la cantidad, No es resoluble.
+                t[i,j] <- infty
+            sino
+                si i = 1 entonces
+                    t[1,j] <- 1 + t[1, j - moneda[1]] // Si no encaja adquiere el
+                                                      //  valor infty
+                sino
+                    si j < moneda[i] entonces         // La moneda es mayor que la cantidad
+                        t[i,j] <- t[i-1,j]            // Valor file superior
+                    sino
+                        // menor entre un resultado parcial + 1 y la fila superior
+                        // Resultado parcial es [IndiceMoneda, Columna - ValorMoneda]
+                        t[i,j] <- min(t[i-1,j], t[i, j - moneda[i]] + 1)
+                    fsi
+                fsi
+            fsi
+        fpara
+    fpara
+    dev t
+ffun
+#+END_EXAMPLE
+
+El resultado está en la última fila de cada columna.
+Para la selección de monedas:
+
+#+BEGIN_EXAMPLE
+tipo Tabla=matriz[1..N,0..C] de entero
+tipo Vector=matriz[0..N] de entero
+fun SeleccionarMonedas(C:entero, moneda:Vector, t:Tabla, seleccion:Vector&)
+    var
+        i,j:entero
+    fvar
+    para i <- 0 hasta N hacer
+        selección[i] <- 0        // Preparamos todo a 0
+    fpara
+    i <- N                       // De abajo a arriba
+    j <- C
+    mientras j > 0 hacer
+        si i > 1 && t[i,j]=t[i-1,j] entonces
+            i <- i-1                         // Subimos una fila
+        sino
+            seleccion[i] <- seleccion[i]+1   // añadimos una moneda a la combinación.
+            j <- j - moneda[i]               // Restamos el valor al resto de la cantidad.
+        fsi
+    fmientras
+ffun
+#+END_EXAMPLE
+
+Si el valor C fuera incompatible con nuestras monedas disponibles el resultado sería
+una moneda del valor inferior, por eso hay que comprobar el resultado de la selección de monedas.
+
 * Vuelta atrás
 ** Planteamiento general
 - búsqueda exaustiva de las posibles soluciones.
@@ -781,135 +1058,92 @@ fun Completable(g:Grafo, v:Vector, k:entero): booleano
 ffun
 #+END_EXAMPLE
 
-* Programación dinámica
-** Planteamiento general
-- Establecimiento de las ecuaciones que representan el problema.
-- Identificación de los *resultados parciales*.
-- Construcción de la tabla de resultados parciales:
-      - Inicialización de la tabla con los casos base que establece la ecuación del problema.
-      - Establecimiento del orden de llenado de la tabla, de forma que se calculen en primer lugar los resultados parciales que requiern pasos posteriores.
-      - Sustitución de las llamas recursivas del algoritmo por consultas a la tabla.
+** Asignación de cursos en una escuela
+- Se trata de asignar $n$ profesores y $n$ aulas a $n$ cursos de una escuela.
+- *válida(aula,k): booleano*, devuelve true si el *aula* puede usarse en el curso *k*.
+- *especialidad(prof,k): booleano*, devuelve true si el profesor está capacitado para impartir el curso k.
 
-** Esquema General
-- pag 131, no hay esquema general, hay ejemplos con fibonacci
-  
-#+BEGIN_EXAMPLE
-fun FibDin(n:entero): entero
+#+begin_example
+tipo TCurso = registro
+    aula:entero
+    profesor:entero
+fregistro
+
+tipo TEscuela=matriz[1..n] de TCurso
+tipo TVectorB=matriz[1..n] de booleano
+
+fun CursosEscuela(escuela:TEscuela, k:enteros, asigAula:TVectorB, asigProf:TVectorB, exito:booleano)
     var
-        i,suma: entero
-        t: tabla[0..n] de entero
+        es_solucion:booleano
+        aula:entero
+        prof:entero
     fvar
-    si n <= 1 entonces
-        dev 1
-    sino
-        t[0] <- 1
-        t[1] <- 1
-        para i <- 2 hasta n hacer
-            t[i] <- t[i-1] + t[i-2]
-        fpara
-        dev t[n]
-    fsi
-ffun
-#+END_EXAMPLE
+    
+    aula <- 1
+    mientras aula <= n && !exito hacer
+        si !asigAula[aula] && válida(aula,k) entonces
+            prof <- 1
+            mientras prof <= n && !exito hacer
+                si !asigProf[prof] && especialidad(prof,k) entonces
 
-Reduciendo la complejidad espacial a $O(1)$.
+                    // Si es compatible asignamos el profesor y el aula para el curso
+                    escuela[k].aula <- aula
+                    escuela[k].prof <- prof
 
-#+BEGIN_EXAMPLE
-fun FibDin2(n: entero): entero
-    var
-        i,suma,f,g: entero
-    fvar
-    si n <= 1 entonces
-        dev 1
-    sino
-        f <- 1
-        g <- 1
-        para i <- 2 hasta n hacer
-            suma <- f+g
-            g <- f
-            f <- suma
-        fpara
-        dev suma
-    fsi
-ffun
-#+END_EXAMPLE
-
-** Devolución del cambio
-- pag 135
-- Encontrar el mínimo número de monedas posible para cierta cantidad C.
-- N monedas diferentes
-
-#+BEGIN_EXAMPLE
-tipo Tabla=matriz[1..N, 0..C] de entero        // N filas por tipos de moneda
-                                               // C columnas por cantidades
-                                               // El índice de la columna representa
-                                               //  La cantidad C
-tipo Vector=matriz[0..N] de entero
-fun DarCambio(C:entero, moneda:Vector): Tabla
-    var
-        t: Tabla
-        i,j: entero
-    fvar
-    para i <- 1 hasta N hacer                         // Primera columna a 0's
-        t[i,0] <- 0
-    fpara
-    para j <- 1 hasta C hacer
-        para i <- 1 hasta N hacer
-            si i=1 and moneda[i] > j entonces         // Si la menor moneda es mayor que
-                                                      //  que la cantidad, No es resoluble.
-                t[i,j] <- infty
-            sino
-                si i = 1 entonces
-                    t[1,j] <- 1 + t[1, j - moneda[1]] // Si no encaja adquiere el
-                                                      //  valor infty
-                sino
-                    si j < moneda[i] entonces         // La moneda es mayor que la cantidad
-                        t[i,j] <- t[i-1,j]            // Valor file superior
+                    // Se marca al profesor y al aula como asignados
+                    //  para explorar las soluciones que parten de este nodo.
+                    asigAula[aula] <- true
+                    asigProf[prof] <- true
+                    
+                    si k = n entonces
+                        PresentarSolucion(escuela)
+                        exito <- true
                     sino
-                        // menor entre un resultado parcial + 1 y la fila superior
-                        // Resultado parcial es [IndiceMoneda, Columna - ValorMoneda]
-                        t[i,j] <- min(t[i-1,j], t[i, j - moneda[i]] + 1)
+                        // Búsqueda en profundidad de las soluciones
+                        //  que parten de esta solución
+                        CursosEscuela(escuela, k+1, asigAula, asigProf, exito)
                     fsi
+
+                    // Para explorar la siguiente solución de este nivel k
+                    //  se deshacen las asignaciones actuales.
+                    asigAula[aula]<-falso
+                    asigAula[prof]<-falso
                 fsi
-            fsi
-        fpara
-    fpara
-    dev t
-ffun
-#+END_EXAMPLE
-
-El resultado está en la última fila de cada columna.
-Para la selección de monedas:
-
-#+BEGIN_EXAMPLE
-tipo Tabla=matriz[1..N,0..C] de entero
-tipo Vector=matriz[0..N] de entero
-fun SeleccionarMonedas(C:entero, moneda:Vector, t:Tabla, seleccion:Vector&)
-    var
-        i,j:entero
-    fvar
-    para i <- 0 hasta N hacer
-        selección[i] <- 0        // Preparamos todo a 0
-    fpara
-    i <- N                       // De abajo a arriba
-    j <- C
-    mientras j > 0 hacer
-        si i > 1 && t[i,j]=t[i-1,j] entonces
-            i <- i-1                         // Subimos una fila
-        sino
-            seleccion[i] <- seleccion[i]+1   // añadimos una moneda a la combinación.
-            j <- j - moneda[i]               // Restamos el valor al resto de la cantidad.
+                prof <- prof + 1
+            fmientras
         fsi
+        aula <- aula + 1
     fmientras
 ffun
-#+END_EXAMPLE
+#+end_example
 
-Si el valor C fuera incompatible con nuestras monedas disponibles el resultado sería
-una moneda del valor inferior, por eso hay que comprobar el resultado de la selección de monedas.
+Podemos llamar la función anterior desde otra función simplificada.
+
+#+begin_example
+fun HorarioValido(escuela:TEscuela&; n:entero; asigAula:TVectorB&; asigProf:TVectorB&)
+    var
+        exito:booleano
+    fvar
+    
+    para i=1 hasta n hacer
+        asigAula[i] <- false
+        asigProf[i] <- false
+    fpara
+
+    exito <- false
+
+    CursosEscuela(escuela,1,asigAula,asigProf,exito)
+
+ffun
+#+end_example
 
 * Ramificación y Poda
 ** Planteamiento general
-# TODO
+- Cota de resultado mínimo general
+- Si la cota máxima de un nodo no supera la cota mínima general ese camino
+  se poda directamente.
+- Recorridos por el camino más probable de cada hijo.
+  - Construcción de un *montículo* de soluciones.
 
 ** Esquema general
 Esquema general de un problema de minimización.
@@ -1056,7 +1290,9 @@ fun Mochila(pesos: TVectorR, valores: TVectorR,
         fsi
     fmientras
 ffun
+#+end_example
 
+#+begin_example
 fun EstimacionOpt(pesos, valores : TVectorT, P: real,
                   k: entero, pesoT: real, valorT: real): real
     var
@@ -1082,7 +1318,9 @@ fun EstimacionOpt(pesos, valores : TVectorT, P: real,
     fmientras
     dev estimacion
 ffun
+#+end_example
 
+#+begin_example
 fun EstimacionPes(pesos, valores: TVectorR, P:real,
                   k:entero, pesoT: real, valorT: real) : real
     var
@@ -1104,11 +1342,275 @@ fun EstimacionPes(pesos, valores: TVectorR, P:real,
     
     dev cota
 ffun                  
+#+end_example
 
-#+END_EXAMPLE
+** Asignación de tareas: Pastelería
+- $n$ pasteleros con distintos tipos de destreza.
+  Ejemplo de tabla de tiempos de hacer cada pastel.
+  | pastelero | t.pastel 1 | t.pastel 2 | t.pastel 3 |
+  |         1 |          2 |          5 |          3 |
+  |         2 |          5 |          3 |          2 |
+  |         3 |          6 |          4 |          9 |
+  |         4 |          6 |          3 |          8 |
+  |         5 |          7 |          5 |          8 |
+
+- Hay que asignar los pastelero  un pedido minimizando el tiempo.
+- Los pedidos se presentan como una lista, [11321]
+- Cada pastelero solo se puede asignar una vez.
+
+#+begin_example
+tipo TVectorB=matriz[1..n] de booleano
+tipo TVector=matriz[1..n] de entero
+
+// TNodo es la representación de una solución
+tipo TNodo=registro
+    pasteleros: TVector  // pastelero asignado al pedido en posición i
+    asignados: TVectorB  // qué pastelero i ha sido asignado
+    k: entero            // último pedido asignado, para saber si hemos acabado
+    costeT: real         // Coste de las asignaciones
+    estOpt: real         // estimacion optimista a la baja del coste que se puede alcanzar
+                         //  Marca el orden dentro del montículo.
+fregistro
+
+tipo TTabla=matriz[1..n,1..n] de entero
+
+fun AsignaPasteleros(costes:TTabla; pedido:TVector; pasteleros:TVector&; costeT:entero&)
+    var
+        monticulo: TMonticulo
+        nodo, hijo: TNodo
+        cota, estPes: real
+    fvar
+
+    monticulo <- CrearMonticuloVacio()
+    costeT <- 0
+    
+    // Construimos el primer nodo
+    nodo.pasteleros <- pasteleros
+    para i <- 1 hasta n hacer
+        nodo.asignados[i] <- false
+    fpara
+
+    nodo.k <- 0
+    nodo.costeT <- 0
+
+    // Est. optimista es asignando siempre el pastelero más eficiente
+    //  permitiendo que se repitan
+    
+    nodo.estOpt <- EstimacionOpt(costes, pedido, nodo.k, nodo.costeT)
+    Insertar(nodo, monticulo)    // estOpt marca el orden dentro del montículo
+
+    // Est. pesimista o cota es asignando siempre el pastelero menos eficiente
+    //  aunque este se repita.
+    
+    cota <- EstimacionPes(costes, pedido, nodo.k, nodo.costeT)
+
+    mientras !MonticuloVacio?(monticulo) && EstimacionOpt(Primero(monticulo)) <= cota hacer
+        nodo <- ObtenerCima(monticulo)          // Nodo con mejor estOpt
+        
+        hijo.k <- nodo.k + 1  // Se prepara el valor k para emperzar a explorar el
+                              //  nuevo pedido.
+
+        hijo.pasteleros <- nodo.pasteleros      // Se parte del estado del padre
+        hijo.asignados <- nodo.asignados
+
+        // Se recorren los hijos y si procede se añaden al montículo
+
+        para i <- 1 hasta n hacer
+            si !hijo.asignados[i] entonces      // Se comprueba si el pastelero i
+                                                //  ha sido asignado.
+                hijo.pasteleros[hijo.k] <- i    // Se asigna al pedido k el pastelero i
+                hijo.asignados[i] <- true       // Se marca como asignado
+                
+                // Se actualiza el coste total con la asignación
+                //  del nuevo pastelero.
+                
+                hijo.costeT <- nodo.costeT + coste[i, pedido[hijo,k]]
+
+                // Se comprueba si hemos encontrado una solución final
+                
+                si hijo.k = n entonces
+                    si cota >= hijo.costeT entonces  // Se comprueba que la solución
+                                                     //  presenta alguna mejora
+                                                     
+                        // Se actualizan los valores de salida, la solución
+                        
+                        pasteleros <- hijo.pasteleros
+                        costeT <- hijo.costeT
+                        cota <- costeT    // la mejor solución encontrada
+                                          //  pasa a ser la nueva cota
+                    fsi
+                sino si EstimacionOpt(costes, pedido, hijo.k, hijo.costeT) <= cota entonces
+                    // Solución no completa pero con posibilidades
+                    
+                    hijo.estOpt <- EstimacionOpt(costes, pedido, hijo.k, hijo.costeT)
+
+                    Insertar(hijo, monticulo)  // Insertamos una copia del nodo hijo
+
+                    // Si la estimación pesimista es mejor que la cota actual
+                    //  podemos actualizar el valor de la cota
+                    
+                    estPes <- EstimacionPes(costes, perido, hijo.k, hijo.costeT)
+                    si cota > estPes entonces
+                        cota <- estPes
+                    fsi
+                fsi
+                
+                hijo.asignados[i] <- false  // Se desmarca para explorar el siguiente hijo
+                
+            fsi
+        fpara
+    fmientras
+ffun
+#+end_example
+
+#+begin_example
+fun EstimacionOpt(costes: TTabla; pedido: TVector; k: entro; costeT: real): real
+    var
+        estimacion, menorC: real
+        i,j: entero
+    fvar
+    
+    estimacion <- costeT
+    para i <- k+1 hasta n hacer
+        
+        // Se asigna a cada pedido el pastelero más eficiente
+        //  para ese tipo de pastel
+        
+        menorC <- costes[1, pedido[i]]
+        para j <- 2 hasta n hacer
+            si menorC > costes[j,pedido[i]] entonces
+                menorC <- costes[j,pedido[i]]
+            fsi
+        fpara
+        
+        estimacion <- estimacion + menorC  // Al coste total se le suma el coste
+                                           //  estimado de cada pedido restante.
+    fpara
+    
+    dev estimacion
+ffun
+#+end_example
+
+#+begin_example
+fun EstimacionPes(costes:TTabla; pedido:TVector; k:entero; costeT:real): real
+    var
+        estimacion,mayorC: real
+        i,j: entero
+    fvar
+    
+    estimacion <- costeT
+    para i <- k+1 hasta n hacer
+        
+        // Se asigna a cada pedido restante el pastelero
+        //  menos eficiente
+        
+        mayorC <- costes[1,pedido[i]]
+        para j <- 2 hasta n hacer
+            si mayorC < costes[j,pedido[i]] entonces
+                mayorC <- costes[j,pedido[i]]
+            fsi
+        fpara
+        
+        estimacion <- estimacion + mayorC  // Al coste total se le suma
+                                           //  la estimación pesimista.
+        
+    fpara
+    dev estimacion
+ffun
+#+end_example
+
+Coste $O(n!)$.
+
+** El viajante de comercio
+
+#+begin_example
+tipo TVectorB = matriz[1..n] de booleano
+tipo TVector = matriz[1..n] de entero
+
+tipo TNodo = registro
+    ruta: TVector
+    asignados: TVectorB
+    k: entero
+    costeT: real
+    estOpt: real
+fregistro
+
+tipo TGrafo = matriz[1..n,1..n] de entero
+tipo TVector = matriz[1..n] de entero
+fun viajante(grafo:TGrafo; ruta:TVector; costeT:entero)
+    var
+        monticulo:TMonticulo
+        nodo,hijo:TNodo
+        cota,estPes,verticeAnt,minArista:entero
+    fvar
+    monticulo <- CrearMonticuloVacio()
+    minArista <- menorArista(grafo)
+    costeT <- infty
+    
+    // Construimos el primer nodo
+    nodo.ruta <- ruta
+    nodo.asignados[1] <- cierto
+    
+    para i<- 2 hasta n hacer
+        nodo.asignados[i] <- falso
+    fpara
+
+    nodo.k <- 1
+    nodo.costeT <- 0
+    nodo.estOpt <- EstimacionOpt(grafo, minArista, nodo.k, nodo.costeT)
+    Insertar(nodo, monticulo)
+    cota <- infty
+    mientras !MonticuloVacio?(monticulo) && EstimacionOpt(Primero(monticulo)) < cota hacer
+        nodo <- ObtenerCima(monticulo)
+        // extensiones válidas de nodo
+        verticeAnt <- nodo.ruta[nodo.k]
+        hijo.k <- nodo.k + 1
+        hijo.ruta <- nodo.ruta
+        hijo.asignados <- nodo.asignados
+        para i <- 2 hasta n hacer
+            si !hijo.asignados[i] && grafo[verticeAnt,i] != infty entonces
+                hijo.ruta[hijo.k] <- i
+                hijo.asignados[i] <- true
+                hijo.costeT <- nodo.costeT + grafo[verticeAnt,i]
+                si hijo.k=n entonces
+                    si grafo[i,1] != infty entonces
+                        hijo.costeT <- hijo.costeT + grafo[i,1]
+                        si costeT > hijo.costeT entonces
+                            ruta <- hijo.ruta
+                            costeT <- hijo.costeT
+                            cota <- costeT
+                        fsi
+                    fsi
+                sino  // Solución no está completa
+                    hijo.estOpt <- EstimacionOpt(grafo, minArista, hijo.k, hijo,costeT)
+                    si hijo.estOpt < costeT entonces
+                        Insertar(hijo, monticulo)
+                    fsi
+                fsi
+                hijo.asignados[i] <- falso
+            fsi
+        fpara
+    fmientras
+ffun
+#+end_example
+
+#+begin_example
+fun EstimacionOpt(grafo:Tgrafo; minArista:entero; k:entero; costeT:real): real
+    // estimacion,menorC:real
+    estimacion:real
+    estimacion <- costeT + (n-k+1) * minArista
+    dev estimacion
+ffun
+#+end_example
+
+** Selección de tareas: cursos de formación
 
 
 * Glosario
 - *Recorrido postorden*, se recorre en profundidad [izquierdo, derecho, raiz]
 - *Recorrido preorden*, Se recorre en profundidad [raiz, izquierdo, derecho]
 - *Recorrido inorden*, Se recorre en profundidad [izquierdo, raiz, derecho]
+
+* Tareas
+** TODO [[id:ad3eb2c8-5ccf-44d3-bc53-c006098e81ae][Practicar Planificador de Tareas]]
+** TODO Practicar Prim y Kruscal
