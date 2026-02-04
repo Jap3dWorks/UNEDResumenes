@@ -351,7 +351,6 @@ ffun
 # TODO
 
 
-
 * Voraz
 ** Planteamiento general
 - Para problemas de optimización donde la solución se puede construir paso a paso sin necesidad de reconsiderar decisiones.
@@ -632,7 +631,7 @@ ffun
 fun DyV(problema)
     si trivial(problema) entonces
         dev solución-trivial
-    sino hacer
+    sino
         {p1,p2,...,pk} <- descomponer(problema)
         para i in (1..k) hacer
             si <- DyV(pi)
@@ -720,7 +719,6 @@ ffun
 
 ** Merge Sort
 # TODO
-
 
 ** Cálculo del elemento mayoritario en un vector                     :ATTACH:
 :PROPERTIES:
@@ -837,6 +835,9 @@ fun FibDin2(n: entero): entero
 ffun
 #+END_EXAMPLE
 
+** Coeficientes binomiales
+# TODO
+
 ** Devolución del cambio
 :PROPERTIES:
 :ID:       16c6495c-9fc5-41e0-be73-deee5a797ee2
@@ -861,7 +862,7 @@ fun DarCambio(C:entero, moneda:Vector): Tabla
     fpara
     para j <- 1 hasta C hacer
         para i <- 1 hasta N hacer
-            si i=1 and moneda[i] > j entonces         // Si la menor moneda es mayor que
+            si i=1 && moneda[i] > j entonces         // Si la menor moneda es mayor que
                                                       //  que la cantidad, No es resoluble.
                 t[i,j] <- infty
             sino
@@ -870,7 +871,7 @@ fun DarCambio(C:entero, moneda:Vector): Tabla
                                                       //  valor infty
                 sino
                     si j < moneda[i] entonces         // La moneda es mayor que la cantidad
-                        t[i,j] <- t[i-1,j]            // Valor file superior
+                        t[i,j] <- t[i-1,j]            // Valor de la fila superior
                     sino
                         // menor entre un resultado parcial + 1 y la fila superior
                         // Resultado parcial es [IndiceMoneda, Columna - ValorMoneda]
@@ -1149,9 +1150,9 @@ ffun
 Esquema general de un problema de minimización.
 
 #+begin_example
-fun RamificacionYPoda(nodoRaiz, mejorSolución: TNodo; cora: real)
-    monticulo = CrearMonticuloVacio()
-    cota = EstimacionPes(nodoRaiz)
+fun RamificacionYPoda(nodoRaiz: TNodo; mejorSolución: TNodo&; cota: real)
+    monticulo <- CrearMonticuloVacio()
+    cota <- EstimacionPes(nodoRaiz)
     Insertar(nodoRaiz, monticulo)
     mientras !MonticuloVacio?(monticulo) && EstimaciónOpt(Primero(monticulo)) <= cota hacer
         nodo <- ObtenerCima(monticulo)
@@ -1604,7 +1605,6 @@ ffun
 #+end_example
 
 ** Selección de tareas: cursos de formación
-
 
 * Glosario
 - *Recorrido postorden*, se recorre en profundidad [izquierdo, derecho, raiz]
