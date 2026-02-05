@@ -345,7 +345,36 @@ ffun
 #+end_example
 
 ** Tablas de dispersión (Hash)
-# TODO
+*** Tiposde función Hash
+- *Función Módulo*, $h(k) \to (k\ mod\ (M+1))$
+      - $M$ es el número de indices existentes en la tabla.
+- *Función Cuadrado*, $h(k) \to (c\ bits\ cenrales\ de\ k^2)$.
+      - Si $c=2$ los índices son el rango [0, 99].
+- *Función Plegado*, Partes de la clave y se opera sobre ellas.
+      - Útil por ejemplo para strings.
+      - $h(GITS)=G \oplus I \oplus T \oplus S$
+- *Función multiplicación*, $h(k)=floor(M((k \alpha)\ mod\ 1))$
+      - $h(3)=floor(1000((0.618 \times 3) mod 1)) = 854$
+      - $\alpha=(\sqrt{5}-1) / 2$ es bastante común.
+
+*** Colisiones
+- *Factor de carga*, $\delta = n/m$
+      - tabla tamaño $m$ con $n$ elementos.
+- *Hashing abierto*
+      - *Niveles (buckets)*, Dimensiones adicionales para valores que colisionen.
+      - *Encadenamiento directo*, cuando hay una colisión se asigna una estructura lineal para esa entrada de la tabla.
+- *Hashing cerrado*, $m$ es el tamaño de la tabla, $h'(k)$ una función hash, $i$ el índice de la colisión.
+      - *Recorrido lineal*
+            - $h(k,i)=(h'(k) + i)\ mod\ m$
+            - Tiende a la creación de clusters
+      - *Recorrido cuadrático*
+            - $h(k,i)=(h'(k) + c_1i + c_2i^2)\ mod\ m$
+            - Mejor dispersión.
+      - *Recorrido mediante doble hashing*
+            - Se usa una segunda función hash $h_2(k)$ llamada funcón de paso.
+            - $h(k,i)=(h_1(k) + ih_2(k))\ mod\ m$
+                  - $h_2(x) \neq 0$
+                  - Los valores de $h_2(x)$ deben ser primos relativos de $m$.
 
 * Voraz
 ** Planteamiento general
@@ -417,6 +446,9 @@ ffun
 
 ** Árbol de recubrimiento mínimo: algoritmo de Prim
 *** Planteamiento general
+- NA son los nodos seleccionados.
+- AR el árbol de recubrimiento
+  
 #+BEGIN_EXAMPLE
 /*
  * @param G <N,A>: grafo de N vértices con A aristas
@@ -437,31 +469,37 @@ ffun
 #+BEGIN_EXAMPLE
 tipo VectorNat=matriz[0..n] de natural
 tipo VectorEnt=matriz[0..n] de entero
+
 fun Prim(G=<N,A>: grafo): conjunto de aristas
     var
         nodoMinimo: VectorNat
         costeMinimo: VectorEnt
         AR: conjunto de aristas
     fvar
+    
     AR <- {}
     costeMínimo[1] <- -1                        // Coste del primer vertice consigo mismo
     para i <- 2 hasta n hacer
         nodoMinimo[i] <- 1                      // Iniciamos con el primer nodo
         costeMinimo[i] <- Distancia(1,i)        // Distancia con el primer nodo
+                                                //  infty si no hay conexión
     fpara
-    para i <- 1 hasta n-1 hacer
+    
+    para i <- 1 hasta n-1 hacer                 // Necesitamos n-1 aristas
         min <- infty
         para j <- 2 hasta n hacer
-            // Nodos con coste -1 ya están dentro del AR
-            //  cogemos el nodo de menor coste con cualquiera de los
-            //  nodos que ya están en el AR
+            // Nodos con coste -1 ya están dentro del AR.
+            // Cogemos el nodo con arista de menor coste
+            // con cualquiera de los nodos que ya están en el AR.
             si 0 <= costeMinimo[j] && costeMinimo[j] < min entonces
                 min <- costeMinimo[j]
                 nodo <- j
             fsi
         fpara
+        
         AR <- AR union {(nodoMinimo[nodo], nodo)}    // añadimos el nodo de menor coste
-        costeMinimo[nodo] <- -1
+        costeMinimo[nodo] <- -1                      // Se marca como añadido
+        
         para j <- 2 hasta n hacer
             // Actualizamos la lista de costeMinimo y nodoMinimo con las distancias
             //  De los nodos externos al AR con el nuevo nodo
@@ -633,8 +671,8 @@ fun DyV(problema)
         para i in (1..k) hacer
             si <- DyV(pi)
         fpara
+        dev combinar(s1,s3,...,sk)
     fsi
-    dev combinar(s1,s3,...,sk)
 ffun
 #+END_EXAMPLE
 
@@ -1032,7 +1070,7 @@ fun VueltaAtras(v: Secuencia; k: entero)
         si SoluciónCompleta(v) entonces
             ProcesarSolución(v)
         sino
-            si Competable(v) entonces
+            si Completable(v) entonces
                 VueltaAtras(v, k+1)
             fsi
         fsi
@@ -1667,6 +1705,8 @@ ffun
 Coste $O(n!)$.
 
 ** El viajante de comercio
+- Búsqueda de un ciclo hamiltoniano con un grafo pesado.
+- Se busca obtener el ciclo hamiltoniano de menor peso.
 
 #+begin_example
 tipo TVectorB = matriz[1..n] de booleano
