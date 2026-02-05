@@ -5,7 +5,6 @@
 ** Grafos
 - $G=<N,A>$ grafo de $N$ vértices y $A$ aristas.
   
-# TODO
 *** Matriz de adyacencia
 |   | 1 | 2 | 3 |
 | 1 | - | 1 | - |
@@ -174,8 +173,6 @@ ffun
 - $u$ es un punto de articulación si al eliminar $u$ y todas sus aristas el grafo deja de ser conexo.
 - *Grafo biconexo*, sin puntos de articulación.
 - *Conectividad K*, si eliminar *K* nodos cualesquiera no desconecta el grafo.
-
-  # TODO
 
 *** Ordenación topológica de un grafo dirigido acícliclo (GDA)
 - gda, existencia de arco <u,v> indica que el nodo u precede al nodo v en una ordenación lineal.
@@ -350,7 +347,6 @@ ffun
 ** Tablas de dispersión (Hash)
 # TODO
 
-
 * Voraz
 ** Planteamiento general
 - Para problemas de optimización donde la solución se puede construir paso a paso sin necesidad de reconsiderar decisiones.
@@ -485,23 +481,24 @@ fun Kruskal(G=<N,A>:grafo): conjunto de aristas
     var
         AR: conjunto de aristas
     fvar
-    Ordenar(A)                               // Ordenar las aristas en peso crecientes.
-                                             //  un montículo es ideal.
+    
+    Ordenar(A)                                  // Ordenar las aristas en peso crecientes.
+                                                //  un montículo es ideal.
     n <- número nodos de N
     AR <- {}
     Iniciar n conjuntos uno con cada nodo de N  // [{a}, {b}, ..., {u}, {v}]
-    mientras AR no tenga n-1 aristas hacer   // Con n-1 aristas todos los nodos pueden
-                                             //  estar conectados
-        pop(A,u,v)                           // Arista (u,v) aún no añadida ni descartada
-        comU <- buscarComponenteConvexa(u)   // Buscamos el conjunto que contiene a u
-                                             //  Originalmente es el conjunto {u}
-        comV <- buscarComponenteConvexa(v)   // Buscamos el conjunto que contiene a v
-                                             //  originalmente es el conjunto {v}
-        si comU != comV entonces             // Si son componentes convexas diferentes
-                                             //  aún no hemos añadido esta arista a AR
-            fusionar(comU, comV)             // Fusionamos las dos componentes convexas
-                                             //  Así sabemos que estos dos nodos ya
-                                             //  están conectados en el AR
+    mientras AR no tenga n-1 aristas hacer      // Con n-1 aristas todos los nodos pueden
+                                                //  estar conectados
+        pop(A,u,v)                              // Arista (u,v) con peso menor aún no visitada
+        comU <- buscarComponenteConvexa(u)      // Buscamos el conjunto que contiene a u
+                                                //  Originalmente es el conjunto {u}
+        comV <- buscarComponenteConvexa(v)      // Buscamos el conjunto que contiene a v
+                                                //  originalmente es el conjunto {v}
+        si comU != comV entonces                // Si son componentes convexas diferentes
+                                                //  aún no hemos añadido esta arista a AR
+            fusionar(comU, comV)                // Fusionamos las dos componentes convexas
+                                                //  Así sabemos que estos dos nodos ya
+                                                //  están conectados en el AR
             AR <- AR union {(u,v)}
         fsi
     fmientras
@@ -530,7 +527,7 @@ fun Dijkstra(G=<N,A>:grafo): VectorNat, VectorNat
     fpara
     
     mientras C contenga más de 1 nodo hacer
-        v <- nodo in C que minimiza especial[]  // Un nodo con el menor peso de camino
+        v <- nodo in C que minimiza especial[]  // El nodo en C con menor valor en especial[]
         C <- C \ {v}
         para cada w in C hacer                  // Por cada nodo aún no seleccionado
                                                 //  Se compara su distancia con
@@ -673,7 +670,7 @@ ffun
 - Menores que el pivote a la izquierda del pivote, mayores a la derecha.
 
 #+BEGIN_EXAMPLE
-fun Pivotar(T:vector[i..j] de entero; pivote:natural)
+fun Pivotar(T:vector[i..j] de entero; pivote:natural&)
     var
         p,k,l:entero
     fvar
@@ -734,6 +731,7 @@ fun Mayoritario(i,j:natural; v:vector[1..n] de natural): entero
         m: natural
         s1,s2: entero
     fvar
+    
     si i=j entonces                     // Caso trivial
         dev v[i]
     sino
@@ -749,7 +747,8 @@ ffun
 fun Combinar(a,b:entero; i,j:natural; v:vector[1..n] de natural): entero
     si a=-1 and b=-1 entonces dev -1 fsi
     si a=-1 and b!=-1 entonces dev ComprobarMayoritario(i,j,b,v) fsi
-    si a!=-1 and b!=-1 entonces dev ComprobarMayoritario(i,j,a,v) fsi
+    si a!=-1 and b=-1 entonces dev ComprobarMayoritario(i,j,a,v) fsi    
+    si a!=-1 and b!=-1 entonces
         si ComprobarMayoritario(i,j,a,v)=a entonces
             dev a
         sino si ComprobarMayoritario(i,j,b,v)=b entonces
@@ -781,6 +780,42 @@ ffun
 Ejemplo de una traza
 
 [[attachment:clipboard-20260129T132356.png]]
+
+** Distancia más cercana entre dos puntos
+- Tenemos una lista de puntos ordenados de manera ascendente en la coordenada x.
+- $O(n\ log(n))$
+
+#+begin_example
+typo Punto=registro
+    x:float
+    y:float
+fregistro
+
+typo Puntos=matriz[p1..pn] de puntos
+
+/**
+ * @param puntos:Puntos, vector de puntos ordenados de forma ascendente respecto a la coordenada x
+*/
+fun DistMásCercana(puntos:Puntos, l:entero, r:entero): float
+    var
+        dl:float
+        dr:float
+        dc:float
+    fvar
+    
+    si r-l = 1 entonces
+        dev Dist(puntos[l], puntos[r])         // Caso trivial
+    sino si r-l < 1 entonces
+        dev infty                              // Caso trivial de un grupo con un solo vértice
+    sino
+        dl <- DistMásCercana(l, r/2)
+        dr <- DistMásCercana(r/2 + 1, r)
+        dc <- DistMásCercana(r/2, r/2 + 1)     // Distancia entre los puntos más cercanos a la línea de corte.
+
+        dev min(dl,dr,dc)
+    fsi
+ffun
+#+end_example
 
 * Programación dinámica
 ** Planteamiento general
@@ -913,6 +948,63 @@ ffun
 
 Si el valor C fuera incompatible con nuestras monedas disponibles el resultado sería
 una moneda del valor inferior, por eso hay que comprobar el resultado de la selección de monedas.
+
+
+** Multiplicación Asociativa de matrizes
+- La intención es minimizar el número de operaciones entre matrices apoyándose sobre la propiedad asociativa.
+- Coste temporal $O(N^3)$ espacial $O(N^2)$
+
+#+begin_example
+tipo Tabla=matriz[1..N,1..N] de entero
+tipo Vector=matriz[0..N] de entero
+fun MultMatrices2(d:Vector, N:entero; mult:Tabla; pos:Tabla)
+    var
+        i,diag: entero
+    fvar
+    para i<- 1 hasta N hacer
+        para i<-1 hasta N-diag hacer
+            MinMultiple(mult,d,i+diag, minimo,posicion)
+            mult[i,i+diag] <- minimo
+            pos[i,i+diag] <- posicion
+        fpara
+    fpara
+    EscribeParentizado(pos,1,N)
+ffun
+#+end_example
+
+#+begin_example
+fun MinMultiple2(mult:Tabla; d:Vector; i:entero; j:entero; minimo:entero; pos:entero&)
+    var
+        k,tmp:entero
+    fvar
+    minimo <- infty
+    pos <- i
+    para k <- i hasta j-1 hacer
+        tmp <- mult[i,k] + mult[k+1,j] + d[i-1]*d[k]*d[j]
+        si tmp < minimo entonces
+            minimo <- tmp
+            pos <- k
+        fsi
+    fpara
+ffun
+#+end_example
+
+#+begin_example
+fun EscribeParentizado(pos:Tabla; i:entero; j:entero)
+    var
+        k:entero
+    fvar
+    si i=j entonces
+        Imprimir "M", imprimir i
+    sino
+        k <- pos[i,j]
+        Imprimir "("
+        EscribeParentizado(pos,i,k)
+        EscribeParentizado(pos,k+1,j)
+        imprimir ")"
+    fsi
+ffun
+#+end_example
 
 * Vuelta atrás
 ** Planteamiento general
@@ -1135,6 +1227,58 @@ fun HorarioValido(escuela:TEscuela&; n:entero; asigAula:TVectorB&; asigProf:TVec
 
     CursosEscuela(escuela,1,asigAula,asigProf,exito)
 
+ffun
+#+end_example
+
+** Ciclos Hamiltonianos
+
+#+begin_example
+tipo Grafo=matriz[1..N,1..N] de entero
+tipo Vector=matriz[1..N] de entero
+tipo VectorB=matriz[i..N] de entero
+
+/**
+ * @param v:Vector, secuencia de nodos del camino
+ * @param incluidos:VectorB, nodos incluidos
+*/
+fun CiclosHamiltoniano(g:Grafo; k:entero; v:Vector; incluidos:VectorB)
+    var
+        i:entero
+    fvar
+    para i <- 2 hasta n hacer
+        si g[v[k-1],i] && !incluidos[i] entonces   // si hay conexión con el anterior nodo
+                                                   //  y este nodo no está incluido
+            v[k] <- i                              // Se incluye como siguiente nodo
+            incluidos[i] <- true                   // Se marca como incluido
+            
+            si k=n entonces
+                si g[v[n],1] entonces              // Si se conecta con el primero
+                                                   //  hemos encontrado una solución
+                    PresentarSolucion(v)
+                fsi
+            sino
+                CiclosHamiltonianos(g, k+1, v, incluidos)
+            fsi
+            incluidos[i] <- falso                  // Deshacer cambios para la siguiente
+                                                   //  exploración
+        fsi
+    fpara
+ffun
+#+end_example
+
+#+begin_example
+fun PresentarHamiltonianos(g)
+    var
+        v:Vector
+        incluidos:VectorB
+        i:entero
+    fvar
+    v[1] <- 1
+    incluidos[1]<-true
+    para i<-2 hasta n hacer
+        incluidos[i] <- falso
+    fpara
+    CiclosHamiltoniano(g,2,v,incluidos)
 ffun
 #+end_example
 
