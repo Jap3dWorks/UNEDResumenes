@@ -1754,7 +1754,4 @@ ffun
 - *Recorrido postorden*, se recorre en profundidad [izquierdo, derecho, raiz]
 - *Recorrido preorden*, Se recorre en profundidad [raiz, izquierdo, derecho]
 - *Recorrido inorden*, Se recorre en profundidad [izquierdo, raiz, derecho]
-
-* Tareas
-** TODO [[id:ad3eb2c8-5ccf-44d3-bc53-c006098e81ae][Practicar Planificador de Tareas]]
-** TODO Practicar Prim y Kruscal
+- *Ciclo Hamiltoniano*, Camino que recorre todos los vértices de un grafo sin repetir ningún vértice y volviendo al vértice de salida.
