@@ -603,8 +603,7 @@ ffun
 - Para comprobar si un conjunto es *factible* se comprueba que las tareas
   ordenadas en orden *no descendente* (ascendente o igual) son factibles.
       - Ser *factible* es que ninguna tarea finalize fuera de plazo.
-- Suponemos que las tareas están ordenadas tal que.
-  $b_i \leq b_2 \leq \dots \leq \b_n$
+- Suponemos que las tareas están ordenadas tal que $b_i \geq b_2 \geq \dots \geq \ b_n$.
 
 #+begin_example
 tipo VectorNat=matriz[0..n] de natural
@@ -1873,7 +1872,7 @@ fun EstimacionOpt(grafo:Tgrafo; minArista:entero; k:entero; costeT:real): real
 ffun
 #+end_example
 
-** Selección de tareas: cursos de formación
+** Selección de tareas: Cursos de formación
 
 #+begin_example
 tipo TVectorB=matriz[i..n] de booleano
@@ -2043,7 +2042,6 @@ fun EstimacionPes(beneficios, tiempos:TVectorR,
 ffun
 #+end_example
 
-
 ** Distancia de edición de una cadena de texto
 #+begin_example
 tipo TVectorCar = matriz[1..m+n] de TCadena
@@ -2156,7 +2154,6 @@ ffun
 #+end_example
 
 # TODO here
-
 
 * Glosario
 - *Recorrido postorden*, se recorre en profundidad [izquierdo, derecho, raiz]
