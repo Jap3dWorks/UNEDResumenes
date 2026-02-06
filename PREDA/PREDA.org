@@ -18,7 +18,7 @@
 - Cada lista de cada nodo $i$ tiene una secuencia de nodos adyacientes a $i$.
 
 *** Funciones de manipulación de grafos
-- *fun Creargrafo(): grafo*
+- *fun CrearGrafo(): grafo*
       - Crea un grafo vacío.
 - *fun AñadirArista(u,v:vértice; p:peso; g:grafo): grafo*
       - Añade una arista entre los vértices $u$ $v$ y peso $p$.
@@ -175,9 +175,9 @@ ffun
 - *Conectividad K*, si eliminar *K* nodos cualesquiera no desconecta el grafo.
 
 *** Ordenación topológica de un grafo dirigido acícliclo (GDA)
-- gda, existencia de arco <u,v> indica que el nodo u precede al nodo v en una ordenación lineal.
+- En un *GDA* la existencia de un arco <u,v> indica que el nodo u precede al nodo v en una ordenación lineal.
 
-Algoritmo de Khan para calcular un gda
+Algoritmo de Khan para calcular un gda.
 
 #+BEGIN_EXAMPLE
 tipo Vector=matriz[identNodo_1..identNodo_n] de natural
@@ -345,7 +345,12 @@ ffun
 #+end_example
 
 ** Tablas de dispersión (Hash)
-*** Tiposde función Hash
+*** Funciones Hash
+- Funciones no inyectivas
+- Deben ser eficientes y deterministas
+- Suele interesar una distribución de datos lo más dispersa posible.
+
+*** Tipos de función Hash
 - *Función Módulo*, $h(k) \to (k\ mod\ (M+1))$
       - $M$ es el número de indices existentes en la tabla.
 - *Función Cuadrado*, $h(k) \to (c\ bits\ cenrales\ de\ k^2)$.
@@ -987,6 +992,58 @@ ffun
 Si el valor C fuera incompatible con nuestras monedas disponibles el resultado sería
 una moneda del valor inferior, por eso hay que comprobar el resultado de la selección de monedas.
 
+
+** Mochila Entera
+#+begin_example
+tipo Tabla = matriz[0..n,0..V] de entero
+tipo Vector = matriz[0..n] de entero
+fun MochilaEntera(vol:Vector, ben:Vector, n:entero, V:entero, V:Tabla)
+    var
+        i,j: entero
+    fvar
+    para i<-1 hasta n hacer
+        M[i,0] <- 0
+    fpara
+    para j <- i hasta V hacer
+        M[0,j] <- 0
+    fpara
+    para i <- hasta n hacer
+        para j <- hasta V hacer
+            si vol[i] > j entonces
+                M[i,j] <- M[i-1,j]
+            sino
+                // aquí se evita poner dos veces el mismo objeto
+                //  usando el índice i-1
+                M[i,j] <- max(M[i-1,j], M[i-1, j - vol[i]] + ben[i])
+            fsi
+        fpara
+    fpara
+ffun
+#+end_example
+
+#+begin_example
+fun ObjetosMochila(vol:vector, M:Tabla, n:entero, V:entero, objetos:Vector)
+    var
+        i,W:entero
+    fvar
+    W <- V
+
+    // Se recorre de atrás hacia delante.
+
+    para i <- n hasta 1 incremento -1 hacer
+        si M[i,W] = M[i-1, W] entonces
+            objetos[i] <- 0
+        sino
+        
+            // seleccionamos la fila donde hay un cambio
+            //  respecto a la fila superior
+            
+            objetos[i] <- 1
+            W <- W - vol[i]
+        fsi
+    fpara
+ffun
+#+end_example
 
 ** Multiplicación Asociativa de matrizes
 - La intención es minimizar el número de operaciones entre matrices apoyándose sobre la propiedad asociativa.
@@ -1707,6 +1764,8 @@ Coste $O(n!)$.
 ** El viajante de comercio
 - Búsqueda de un ciclo hamiltoniano con un grafo pesado.
 - Se busca obtener el ciclo hamiltoniano de menor peso.
+- A la hora de podar soluciones tenemos la difcultad que no sabemos si la
+  solución será completable hasta haber cerrado el ciclo. Por eso se evita la poda en esta versión.
 
 #+begin_example
 tipo TVectorB = matriz[1..n] de booleano
@@ -1722,57 +1781,83 @@ fregistro
 
 tipo TGrafo = matriz[1..n,1..n] de entero
 tipo TVector = matriz[1..n] de entero
-fun viajante(grafo:TGrafo; ruta:TVector; costeT:entero)
+
+/**
+ * @param grafo:TGrafo, matriz de conectividad del grafo.
+ * @param ruta:TVector&, Secuencia de nodos que definen la mejor ruta.
+*/
+fun viajante(grafo:TGrafo; ruta:TVector&; costeTotal:entero)
     var
         monticulo:TMonticulo
         nodo,hijo:TNodo
         cota,estPes,verticeAnt,minArista:entero
     fvar
+
     monticulo <- CrearMonticuloVacio()
     minArista <- menorArista(grafo)
-    costeT <- infty
+    costeTotal <- infty
     
     // Construimos el primer nodo
     nodo.ruta <- ruta
-    nodo.asignados[1] <- cierto
+    nodo.asignados[1] <- cierto          // Primer nodo asignado a la ruta
     
-    para i<- 2 hasta n hacer
+    para i <- 2 hasta n hacer
         nodo.asignados[i] <- falso
     fpara
 
     nodo.k <- 1
-    nodo.costeT <- 0
-    nodo.estOpt <- EstimacionOpt(grafo, minArista, nodo.k, nodo.costeT)
+    nodo.costeTotal <- 0
+    nodo.estOpt <- EstimacionOpt(grafo, minArista, nodo.k, nodo.costeTotal)
     Insertar(nodo, monticulo)
     cota <- infty
+    
     mientras !MonticuloVacio?(monticulo) && EstimacionOpt(Primero(monticulo)) < cota hacer
         nodo <- ObtenerCima(monticulo)
+        
         // extensiones válidas de nodo
+        
         verticeAnt <- nodo.ruta[nodo.k]
-        hijo.k <- nodo.k + 1
-        hijo.ruta <- nodo.ruta
+        hijo.k <- nodo.k + 1                    // siguiente paso
+        hijo.ruta <- nodo.ruta                  // copia de parámetros
         hijo.asignados <- nodo.asignados
+        
         para i <- 2 hasta n hacer
             si !hijo.asignados[i] && grafo[verticeAnt,i] != infty entonces
+
+                // Si i no se ha asignado a la ruta y tiene conexión con el
+                //  vértice anterior (k) entonces incluimos a i en la ruta.
+            
                 hijo.ruta[hijo.k] <- i
                 hijo.asignados[i] <- true
-                hijo.costeT <- nodo.costeT + grafo[verticeAnt,i]
+                hijo.costeTotal <- nodo.costeTotal + grafo[verticeAnt,i]
+                
                 si hijo.k=n entonces
+
+                    // Revisamos si i es una solución válida.
+
                     si grafo[i,1] != infty entonces
-                        hijo.costeT <- hijo.costeT + grafo[i,1]
-                        si costeT > hijo.costeT entonces
+
+                        // Se comprueba si el último nodo tiene conexión con el primero.
+
+                        hijo.costeTotal <- hijo.costeTotal + grafo[i,1]
+                        si cota > hijo.costeTotal entonces
                             ruta <- hijo.ruta
-                            costeT <- hijo.costeT
-                            cota <- costeT
+                            costeTotal <- hijo.costeTotal
+                            cota <- costeTotal
                         fsi
                     fsi
-                sino  // Solución no está completa
-                    hijo.estOpt <- EstimacionOpt(grafo, minArista, hijo.k, hijo,costeT)
-                    si hijo.estOpt < costeT entonces
-                        Insertar(hijo, monticulo)
+                sino
+                    hijo.estOpt <- EstimacionOpt(grafo,
+                                                 minArista,
+                                                 hijo.k,
+                                                 hijo,
+                                                 costeTotal)
+                    si hijo.estOpt < cota entonces
+                        Insertar(hijo, monticulo)        // Insertamos una copia
+                                                         // Notese que no hay estimación pesimista
                     fsi
                 fsi
-                hijo.asignados[i] <- falso
+                hijo.asignados[i] <- falso   // Se desmarca la solución
             fsi
         fpara
     fmientras
@@ -1781,14 +1866,297 @@ ffun
 
 #+begin_example
 fun EstimacionOpt(grafo:Tgrafo; minArista:entero; k:entero; costeT:real): real
-    // estimacion,menorC:real
     estimacion:real
     estimacion <- costeT + (n-k+1) * minArista
+    
     dev estimacion
 ffun
 #+end_example
 
 ** Selección de tareas: cursos de formación
+
+#+begin_example
+tipo TVectorB=matriz[i..n] de booleano
+tipo TVectorR=matriz[i..n] de real
+tipo TVector=matriz[i..n] de entero
+tipo TNodo = registro
+    cursos: TVectorB
+    k: entero
+    beneficioT: real
+    tiempoT: real
+    estOpt: real
+fregistro
+#+end_example
+
+#+begin_example
+/**
+ * @param beneficios: TVectorR, Beneficio del curso a impartir en cada empresa i.
+ * @param tiempos:TVector, Duración del curso de cada empresa i.
+ * @param limites:TVector, Tiempo límite de cada empresa i.
+ * @param cursos: TVectorB, cursos seleccionados.
+*/
+fun Cursos(beneficios:TVectorR; tiempos,limites:TVector; cursos:TVectorB; beneficioT:real)
+    var
+        monticulo:TMonticulo
+        nodo, hijo: TNodo
+        cota, estPes: real
+    fvar
+    monticulo <- CrearMonticuloVacio()
+    beneficioT <- 0
+
+    // Primer nodo
+
+    nodo.cursos <- cursos
+    nodo.k <- 0
+    nodo.tiempoT <- 0
+    nodo.beneficioT <- 0
+    nodo.extOpt <- EstimacionOpt(beneficios,
+                                 tiempos,
+                                 limites,
+                                 nodo.k,
+                                 nodo.tiempoT,
+                                 nodo.beneficioT)
+    Insertar(nodo, monticulo)
+    cota <- EstimacionPes(beneficios,
+                          tiempos,
+                          limites,
+                          nodo.k,
+                          nodo.tiempoT,
+                          nodo.beneficioT)
+                          
+    mientras !MonticuloVacio?(monticulo) && EstimacionOpt(Primero(monticulo)) >= cota hacer
+        nodo <- ObtenerCima(monticulo)
+        
+        // Extensiones válidas del nodo
+
+        hijo.k <- nodo.k + 1
+        hijo.cursos <- nodo.cursos
+
+        si nodo.tiempoT + tiempos[hijo.k] <= limites[hijo.k] entonces
+            
+            // El curso entra dentro de plazo y se actualiza la solución
+            
+            hijo.cursos[hijo.k] <- true
+            hijo.beneficioT <- nodo.beneficioT + beneficios[hijo.k]
+            hijo.tiempoT <- nodo.tiempoT + tiempos[hijo.k]
+            hijo.estOpt <- nodo.estOpt      // En la estimación optimista ya se tiene
+                                            //  en cuenta que todos los cursos que pueden
+                                            //  incluirse se han incluido.
+                                            // En el caso que la estimación optimista
+                                            //  incluya un nodo que no se puede incluir
+                                            //  por fechas, en ese caso no se entraría
+                                            //  en esta sección de código.
+            
+            si hijo.k = n entonces
+
+                // Una posible solución final
+
+                si cota <= hijo.beneficio entonces
+                    cursos <- hijo.cursos
+                    beneficioT <- hijo.beneficioT
+                    cota <- beneficioT
+                fsi
+            sino
+            
+                // Las estimaciones optimistas y pesimistas siguen siendo
+                //  vigentes en este caso
+                
+                Insertar(hijo, monticulo)
+            fsi
+        fsi
+
+        // Caso en el que no se imparte el curso
+        // Hay que recalcular la estimación optimista, porque el nodo origen
+        //  puede haber tenido en cuenta que este nodo entraba en la selección.
+
+        hijo.estOpt <- ExtimacionOpt(beneficios,
+                                     tiempos,
+                                     limites,
+                                     hijo.k,
+                                     nodo.tiempoT,
+                                     nodo.beneficioT)
+                                     
+        si hijo.estOpt >= cota entonces
+            hijo.cursos[hijo.k] <- false
+            hijo.beneficioT <- nodo.beneficioT
+            hijo.tiempoT <- nodo.tiempoT
+            
+            si hijo.k = n entonces
+                si cota <= hijo.beneficioT entonces
+                    cursos <- hijo.cursos
+                    beneficioT <- hijo.beneficioT
+                    cota <- beneficioT
+                fsi
+            sino
+                Insertar(hijo, monticulo)
+                estPes <- EstimacionPes(beneficios,
+                                        tiempos,
+                                        limites,
+                                        hijo.k,
+                                        hijo.tiempoT,
+                                        hijo.beneficioT)
+
+                si cota < estPes entonces
+                    cota <- estPes
+                fsi
+            fsi
+        fsi
+    fmientras
+ffun
+#+end_example
+
+#+begin_example
+fun EstimacionOpt(beneficios, tiempos:TVectorR, limites:TVector, k:entero, tiempoT:real, beneficioT:real): real
+    var
+        estimacion: real
+        i: entero
+    fvar
+    estimacion <- beneficioT
+    para i <- k+1 hasta n hacer
+        si tiempoT + tiempos[i] <= limites[i] entonces
+            estimacion <- estimacion + beneficios[i]
+        fsi
+    fpara
+    dev estimacion
+ffun
+#+end_example
+
+#+begin_example
+fun EstimacionPes(beneficios, tiempos:TVectorR,
+                  limites:TVector,
+                  k:entero,
+                  tiempoT:real,
+                  beneficioT:real): real
+    var
+        estimacion,tiempo:real
+        i:entero
+    fvar
+    estimacion <- beneficioT
+    tiempo <- tiempoT
+    para i <- k+1 hasta n hacer
+        si tiempo + tiempos[i] <= limites[i] entonces
+            estimacion <- estimacion + beneficios[i]
+            tiempo <- tiempos + tiempos[i]
+        fsi
+    fpara
+    dev estimacion
+ffun
+#+end_example
+
+
+** Distancia de edición de una cadena de texto
+#+begin_example
+tipo TVectorCar = matriz[1..m+n] de TCadena
+tipo TNodo = registro
+    cadena:TCadena
+    long:entero
+    k:entero
+    transf:TVectorCad
+    costeT:entero
+    estOpt:entero
+fregistro
+#+end_example
+
+#+begin_example
+fun DistanciaEdición(cadenaX, cadenaY:TCadena, n,m:enteros, transf:TVectorCad, costeT:entero)
+    var
+        monticulo:TMonticulo
+        nodo,hijo:TNodo
+        cota,estPes:entero
+        listaN:Lista de Tnodo
+    fvar
+
+    monticulo <- CrearMonticuloVacio()
+    costeT <- 0
+    // Primer nodo
+    nodo.cadena <- cadenaX
+    nodo.long <- 0
+    nodo.k <- 0
+    nodo.costeT <- 0
+    nodo.estOpt <- EstimacionOpt(n,m,nodo.k,nodo.costeT)
+    Insertar(nodo, monticulo)
+    cota <- EstimacionPes(n,m,nodo.k,nodo.costeT)
+
+    mientras !MonticuloVacio?(monticulo) && EstimaciónOpt(Primero(monticulo)) <= cota hacer
+        nodo <- ObtenerCima(monticulo)
+
+        listaN <- Compleciones(cadenaY, n, m, nodo)
+        mientras !ListaVacia(ListaN) hacer
+            hijo <- Primero(ListaN)
+            si hijo.k = m entonces
+                si cota >= hijo.costeT entonces
+                    transf <- hijo.transf
+                    costeT <- hijo.costeT
+                    cota <- costeT
+                fsi
+            sino
+                hijo.estOpt <- EstimaciónOpt(hijo.long, m, hijo.k, hijo.costeT)
+                Insertar(hijo, monticulo)
+                estPes <- EstimacionPes(hijo.long, m, hijo.k, hijo.costeT)
+                si cota > estPes entonces
+                    cota <- estPes
+                fsi
+            fsi
+        fmientras
+    fmientras
+ffun
+#+end_example
+
+#+begin_example
+fun Compleciones(cadenaY:TCadena, n,m:enteros, nodo:TNodo): lista de TNodo
+    var
+        hijo:TNodo
+        listaN:Lista de TNodo
+    fvar
+    listaN <- CrearLista()
+    hijo.k <- nodo.k + 1
+
+    hijo.cadena <- nodo.cadena
+    hijo.transf <- nodo.transf
+
+    si nodo.cadena[hijo.k] = cadenaY[hijo.k] entonces
+        hijo.costeT <- nodo.costeT
+        hijo.estOpt <- nodo.estOpt
+        hijo.long <- nodo.long
+        listaN <- Añadir(listaN, hijo)
+    sino
+        // Borrado
+        si nodo.cadena[hijo.k+1]=cadenaY[hijo.k] entonces
+            para i<-hijo.k hasta hijo.long-1 hacer
+                hijo.cadena[i] <- hijo.cadena[i+1]
+            fpara
+            hijo.costeT <- nodo.costeT + costeBorrado
+            hijo.transf[hijo.k] <- "borrado posición" + hijo.k
+            hijo.long <- nodo.long - 1
+            listaN <- Añadir(listaN, hijo)
+        fsi
+        
+        // sustitución
+        hijo.cadena <- nodo.cadena
+        hijo.cadena[hijo.k] <- cadenaY[hijo.k]
+        hijo.costeT <- nodo.costeT + costeSustitución
+        hijo.transf[hijo.k] <- "sustituido posic" + hijo.k + "carácter" + cadenaY[hijo.k]
+        hijo.long <- nodo.long
+        
+        // Inserción
+        si nodo.long < m entonces
+            hijo.cadena <- nodo.cadena
+            para i <- hijo.long hasta hijo.k incremento -1 hacer
+                hijo.cadena[i+1] <- hijo.cadena[i]
+            fpara
+            hijo.cadena[hijo.k] <- cadenaY[hijo.k]
+            hijo.costeT <- nodo.costeT + costeInserción
+            hijo.transf[hijo.k] <- "inserción posic" + hijo.k + "carácter" + cadenaY[hijo.k]
+            hijo.long <- nodo.long + 1
+            listaN <- Añadir(listaN, hijo)
+        fsi
+    fsi
+    dev listaN
+ffun
+#+end_example
+
+# TODO here
+
 
 * Glosario
 - *Recorrido postorden*, se recorre en profundidad [izquierdo, derecho, raiz]
