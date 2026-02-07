@@ -1099,7 +1099,10 @@ fun EscribeParentizado(pos:Tabla; i:entero; j:entero)
 ffun
 #+end_example
 
-** Distancia de edición
+** Distancia de edición de una cadena de texto
+:PROPERTIES:
+:ID:       5138539e-f54a-48c5-b96d-abd7ceb3316f
+:END:
 - Dadas dos cadenas de texto X e Y te tamaño diferente, el sobjetivo es transformar X en Y con el mínimo número de pasos.
 - Las posibles operaciones son.
       - Borrar un carácter de X
@@ -1112,12 +1115,15 @@ fun DistanciaEdicion(X:Vector[1,,n] de caracter, Y:Vector[1..m] de caracter, n,m
     var
         i,j,tmp:entero
     fvar
+    
     para i<-0 hasta n hacer
         C[i,0] <- i
     fpara
+    
     para j <- 0 hasta m hacer
         C[0,j] <- j
     fpara
+    
     para i <- 1 hasta n hacer
         para j <- 1 hasta m hacer
             tmp <- min(1 + C[i-1,j], 1 + C[i,j-1])
@@ -2116,6 +2122,14 @@ ffun
 #+end_example
 
 ** Distancia de edición de una cadena de texto
+- El problema consiste en transformar la cadena *X* en la cadena *Y* con el mínimo coste posible.
+- Cada operación tiene asociada un coste.
+      - Borrar un carácter de *X*, con un coste $c_b$.
+      - Insertar uno de los carácteres de *Y* en *X*, con un coste $c_i$.
+      - Sustituir un carácter de *X* por uno de los de *Y*, con un coste $c_s$.
+        
+- Este problema también se puede resolver usando [[id:5138539e-f54a-48c5-b96d-abd7ceb3316f][Programación Dinámica]].
+
 #+begin_example
 tipo TVectorCar = matriz[1..m+n] de TCadena
 tipo TNodo = registro
@@ -2139,6 +2153,7 @@ fun DistanciaEdición(cadenaX, cadenaY:TCadena, n,m:enteros, transf:TVectorCad, 
 
     monticulo <- CrearMonticuloVacio()
     costeT <- 0
+    
     // Primer nodo
     nodo.cadena <- cadenaX
     nodo.long <- 0
@@ -2226,7 +2241,30 @@ fun Compleciones(cadenaY:TCadena, n,m:enteros, nodo:TNodo): lista de TNodo
 ffun
 #+end_example
 
-# TODO here
+#+begin_example
+fun EstimacionOpt(lonX, lonY, k, costeT:enteros): entero
+    var
+        estimación: entero
+    fvar
+    si lonX < lonY entonces
+        estimación <- costeT + costeInserción * (lonY-lonX)
+    sino
+        estimación <- costeT + costeBorrado * (lonX-lonY)
+    fsi
+    dev estimación
+ffun
+#+end_example
+
+#+begin_example
+fun EstimacionPes(lonX, lonY, k, costeT:entero): entero
+    var
+        estimación: entero
+    fvar
+    estimación <- costeT + costeBorrado * (lonX - k)
+    estimación <- estimación + costeInserción * (lonY - k)
+    dev estimación
+ffun
+#+end_example
 
 * Glosario
 - *Recorrido postorden*, se recorre en profundidad [izquierdo, derecho, raiz]
