@@ -621,7 +621,7 @@ fun PlanificacionPlazosDetallado(f:VectorNat, n:natural): VectorNat,natural
     k <- 1     // número de elementos en S
     
     para i <- 2 hasta n hacer
-        r <- k                // se busca posición válida para i
+        r <- k                // Se busca posición válida para i
                               //  r inicia en la posición del último trabajo
                               //  seleccionado.
 
@@ -991,7 +991,6 @@ ffun
 Si el valor C fuera incompatible con nuestras monedas disponibles el resultado sería
 una moneda del valor inferior, por eso hay que comprobar el resultado de la selección de monedas.
 
-
 ** Mochila Entera
 #+begin_example
 tipo Tabla = matriz[0..n,0..V] de entero
@@ -1097,6 +1096,80 @@ fun EscribeParentizado(pos:Tabla; i:entero; j:entero)
         EscribeParentizado(pos,k+1,j)
         imprimir ")"
     fsi
+ffun
+#+end_example
+
+** Distancia de edición
+- Dadas dos cadenas de texto X e Y te tamaño diferente, el sobjetivo es transformar X en Y con el mínimo número de pasos.
+- Las posibles operaciones son.
+      - Borrar un carácter de X
+      - Insertar uno de los carácteres de Y en X
+      - Sustituir un carácter de X por uno de Y
+
+#+begin_example
+tipo Tabla=matriz[0..n,0..m] de entero
+fun DistanciaEdicion(X:Vector[1,,n] de caracter, Y:Vector[1..m] de caracter, n,m:entero, C:Tabla)
+    var
+        i,j,tmp:entero
+    fvar
+    para i<-0 hasta n hacer
+        C[i,0] <- i
+    fpara
+    para j <- 0 hasta m hacer
+        C[0,j] <- j
+    fpara
+    para i <- 1 hasta n hacer
+        para j <- 1 hasta m hacer
+            tmp <- min(1 + C[i-1,j], 1 + C[i,j-1])
+            si X[i] = Y[j] entonces
+                C[i,j] <- min(tmp, C[i-1,j-1])
+            sino
+                C[i,j] <- min(tmp, C[i-1,j-1] + 1)
+            fsi
+        fpara
+    fpara
+ffun
+#+end_example
+
+#+begin_example
+tipo Trans = registro
+    ope: Vector[1..30] de caracter
+    pos: entero
+    car: caracter
+fregistro
+
+fun IdentificarTrans(X:Vector[1..n] de caracter, Y:Vector[1..m] de caracter, n,m:entero, C:Tabla, transforma:Vector[1..nm] de Trans)
+    var
+        i,j,k:entero
+    fvar
+    i <- n
+    j <- m
+    k <- C[n,m]
+    mientras k > 0 hacer
+        caso de
+            i > 0 && C[i,j] = C[i-1,j]+1 hacer
+                transforma[k].ope <- "borrado"
+                transforma[k].pos <- j+1
+                k <- k-1
+                i <- i-1
+            j > 0 && C[i,j] = C[i,j-1] + 1 hacer
+                transforma[k].ope <- "insercion"
+                transforma[k].pos <- j
+                transforma[k].car <- Y[j]
+                k <- k - 1
+                j <- j - 1
+            i > 0 && j > 0 && C[i,j] = C[i-1, j-1] + 1 hacer
+                transforma[k].ope <- "sustitucion"
+                transforma[k].pos <- j
+                transforma[k].car <- Y[j]
+                k <- k-1
+                j <- j-1
+                i <- i-1
+            i > 0 && j > 0 && C[i,j]=C[i-1,j-1] hacer
+                j <- j-1
+                i <- i-1
+            fcaso
+    fmientras
 ffun
 #+end_example
 
