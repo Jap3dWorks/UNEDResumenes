@@ -869,7 +869,7 @@ ffun
       - Sustitución de las llamas recursivas del algoritmo por consultas a la tabla.
 
 ** Esquema General
-- pag 131, no hay esquema general, hay ejemplos con fibonacci
+- pag 131, no hay esquema general, hay ejemplos con fibonacci.
   
 #+BEGIN_EXAMPLE
 fun FibDin(n:entero): entero

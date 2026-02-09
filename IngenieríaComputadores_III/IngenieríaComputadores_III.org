@@ -1,0 +1,118 @@
+#+title: Ingeniería Computadores III
+
+* Fundamentos del diseño del hardware digital
+- *HDL (hardware description languaje)*, lenguaje para la descripción del Hardware.
+- *VHDL*, VHSIC Hardware Description Language
+      - Very High Speed Description Langage
+
+** Pasos del diseño de un circuito integrado
+# TODO gráfico
+
+** HDL más usados
+- *Verilog* HDL, 
+- *VHDL*
+- SystemC, basado en C++
+
+** Tecnologías de circuitos integrados
+- ASIC, particularizadas en fábrica
+- non-ASIC particularizadas en el campo (PLD)
+
+*** Clasificación  
+
+**** Full-custom ASIC
+- Todos los elementos del circuito diseñados para una determinada aplicación.
+- Se usa en pequeños dircuitos básicos (un sumador por ejemplo).
+
+**** Standard-cell ASIC
+- Trabajo a nivel de puertas lógicas combinando celdas estándar predefinidas.
+
+**** Gate array ASIC
+- Circuito construido a partir de un array de celdas base.
+- Macroceldas, librerías de componentes prediseñados para realizar funciones básicas.
+      - Puede realizarse el diseño conectando macrozeldas.
+
+**** Dispositivos complejos programables en campo
+- Un array de celdas lógicas e interconexión genérica entre ellas.
+      - Fusibles que permiten programar.
+- Tipos según la estructura circuital de sus celdas.
+      - *CPLD*, Complex programable logic device
+      - *FPGA*, Field programable Gate Array
+
+**** Dispositivos sencillos programables en campo
+- Conocidos como PLDs.
+- Estructura interna más sencilla que los CPLD y FPGAs.
+- Dos arrays, una array de puertas AND y otra de puertas OR
+- tipos
+      - *PROM*, programable read only, se programa la matriz OR.
+      - *PAL*, Programable array logic, se programa la matriz AND.
+      - *PLA*, Programable logic array, pueden programarse ambas matrices.
+- Son usados raramente
+
+**** Circuitos estándar de pequeña y mediana integración
+- Circuitos integrados prefabricados (SSI/MSI, Small/Medium-Scaled Integrated circuits).
+- Se seleccionaban los circuitos y se aplicaban sobre una placa impresa para la aplicación.
+- Ya no se usa.
+
+*** Comparación entre tecnologías
+- Se compara FPGS, Gate array y standar cell.
+
+**** Área
+- Circuitos más pequeños requieren menos recursos, tienen mejor rendimiento en fabricación y los tests son más sencillos.
+- Circuitos con mayor área son más complejos y rápidos.
+- En *standar cell*, el chip está optimizado con desperdicio mínimo,
+- En *Gate Array*, La posición de las celda base está predeterminada.
+      - El aprovechamiento no es óptimo.
+      - Requiere de mayor área, entre 20% y 100% más que standar cell.
+- *FPGA* son unas 2 y 5 veces mayor que con tecnología ASIC.
+
+**** Velocidad
+- Tiempo para realizar una función.
+- Hace falta usar arquitecturas más complejas que ocupan mayor área.
+- En idénticas arquitecturas normalmente el circuito de mayor área es más lento.
+- *Standar cell* permite mayor velocidad (menores retardos de propagación).
+- *FPGA*, la de menor velocidad.
+
+**** Potencia consumida
+- Menor consumo mejor.
+- *Standar cell* es la que menos consume.
+- *FPGA* consume la mayor cantidad de potencia.
+
+**** Coste
+- *Coste de producción*
+      - $C_{prod} = C_{fab} + \frac{C_{ing}}{Unidades\ producidas}$
+      - $C_{ing}$, coste de ingeniería, prototipos, máscaras de fotolitografía, dearrollo de tests.
+      - $C_{fab}$, Coste de fabricar encapsular y testear un dispositivo.
+            - FPGA > gate array > standar cell
+            - Standar cell aprovecha mejor el área en la oblea de silicio.
+- *Coste de desarrollo* de standar cell > gate array
+      - Coste de diseñar el circuito
+- *Coste del tiempo de llegada al mercado*
+      - Influenciado por el ciclo de vida de los dispositivos.
+      - Standar Cell necesita más tiempo de validaciones lo que retrasa su llegada al mercado (1,2 años).
+      - Gate array unos meses.
+      - FPGA la particularización del circuito a la aplicación puede hacerse en minutos.
+        
+** Propiedades de los circuitos digitales
+*** Retardo de los dispositivos
+- *glitch*, cambio temporal, pico de subida o bajada, en el voltaje.
+- *Retardo inercial*, Si el tiempo de propagación es mayor que el glitch, este no afecta al funcionamiento.
+      - hay que mantener el estado en un dispositivo para que el cambio se propague.
+- *Retardo de transporte o retardo puro*. Glitches de entrada se manifiestan en los pines de salida.
+      - adecuado para modelar dispositivos de poca inercia.
+- La síntesis determina el retardo de un circuito.
+
+#+begin_src vhlc
+y1 <= x after 100 ns;
+y2 <= transport x after 100 ns;
+#+end_src
+
+*** Ejecución Concurrente
+- Los módulos lógicos se ejecutan concurrentemente.
+
+*** Diseños marginales
+- 
+        
+* Notas
+- VHDL, lenguage para diseñar circuitos
+- ModelSim, software para editar y simular circuitos
+- Emacs + ghdl, alternativa para simular
