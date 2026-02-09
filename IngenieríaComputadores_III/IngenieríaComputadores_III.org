@@ -46,7 +46,7 @@
       - *PROM*, programable read only, se programa la matriz OR.
       - *PAL*, Programable array logic, se programa la matriz AND.
       - *PLA*, Programable logic array, pueden programarse ambas matrices.
-- Son usados raramente
+- Son usados raramente.
 
 **** Circuitos estándar de pequeña y mediana integración
 - Circuitos integrados prefabricados (SSI/MSI, Small/Medium-Scaled Integrated circuits).
@@ -110,9 +110,181 @@ y2 <= transport x after 100 ns;
 - Los módulos lógicos se ejecutan concurrentemente.
 
 *** Diseños marginales
+- Existen diferencias de retardos entre chips dependiendo de las condiciones de fabricación.
+      - Incluso dentro de una misma oblea.
+- Por eso no es buena idea tomas un diseño que dependa de la propagación mínima.
+
+*** Fortaleza de las señales
+- La salida de un módulo puede ser conectada como máximo a un determinado número de entradas de otros módulos.
+      - La señal eléctrica se debilita.
+- *árbol de buffers*, permite conectar a más entradas una salida sin que se debilite la señal.
+      - Además iguala los retardos de propagación a todas las entradas.
+      - útil para tener sincronizados circuitos flip-flop.
+
+# gráfico pag 51
+
+** Test de los circuitos
+- Ayuda al diseño en el proceso de diseño de un chip.
+- Tamiza los chips defectuosos.
+- Procedimiento básico
+      - Se establecen valores en las entradas de un circuito.
+      - Se comprueban las salidas con el valor esperado.
+- *Vector de test*, todos los valores que se asignan a las entradas de un circuito.
+
+*** Test en manufactura
+- Detectar problemas en el proceso de fabricación
+- Causas comunes
+      - *Abiertos*, conexiones que han quedado abiertas.
+      - *Cortos*, conexiones establecidas que no deberían estar.
+      - *Acoplos*, Valores lógicos que inadvertidamente cambian el calor lógico de otra parte del circuito.
+- La forma de modelar un error es suponer que un aparte del circuito siempre da el valor 1 o 0 independientemente del valor de entrada.
+      - Se diseñan tests para detectar este comportamiento (tests que predicen cual sería la salida si una parte del circuito siempre da 1 o 0).]
+      - Si los tests predicen un error se dice que el error esta cubierto por el vector de test.
+- El test de circuitos secuenciales es más dificil porque se tiene en cuenta el estado del circuito.
+      - Se puede diseñar una secuencia inicial para poner el circuito en el estado deseado antes de ejecutar los tests.
+      - Usar *Scan flip-flops* en el diseño, flip-flops que se pueden configurar desde las entradas al circuito.
+- Mayor número de tests mejor cobertura de erroes.
+- Menor número de tests se pueden comprobar más circuitos.
+
+*** Test funcional
+- Se emplea en todas las fases de diseño de un circuito.
+- Tanto a las partes individuales de bajo nivel como a las combinaciones de estas de más alto nivel.
+- Los primero prototipos suelen tener errores de diseño.
+
+*** Programa de test funcional
+- Se tiende a probar todas las posibles entradas posibles para un circuito.
+- Métodos heurísticos para seleccionar vectores de test.
+      - Conocimiento sobre el circuito puede descartar las combinaciones imposibles.
+      - Test exhaustivo de los subcircuitos, menod exhaustivo del circuito completo.
+      - Escoger conjuntos representativos de vectores de entrada. Relacionadas con la aplicación imagino.
+- Comprobar tests        
+      - Es importante comparar los resultados obtenidos con un conjunto de soluciones correctas comprovadas.
+      - Calcular la salida esperada con otro procedimiento y compararlo con el resultado del test.
+
+*** Banco de pruebas
+- *Banco de pruebas* Codificar en HDL los tests en un módulo (subcircuito generador).
+- Partes de un banco de pruebas
+      - Subcircuito generador.
+      - *UUT*, el circuito siendo probado
+      - Subcircuito de comprobación de los resultados.
+- Importante recalcar que deben testearse también los subcircuitos de un diseño jerárquico.
+
+
+** Representaciones y niveles de abstracción
+*** Representación del sistema
+**** Representación del comportamiento
+- Describe la funcionalidad del sistema.
+- Se ignora su implementación interna.
+- Se definan las entradas y las salidas que deben obtenerse.
+
+**** Representación de la estructura
+- Describe la implementación interna del sistema.
+- Qué componentes y como están conectados entre si.
+- net, conjunto de cables conectados a un mismo nodo.
+- netlist, Descripción esquemática del sistema.
+
+**** Representación física
+- Características físicas del sistema.
+- Tamaño de los componentes, disposición física, cableado físico.
+- Es la especificación final para la fabricación del sistema.
+
+*** Niveles de abstracción
+- No se enfoca la atención en el transistor en concreto, los niveles de abstracción permiten dividir el enfoque a la hora de tratar el diseño.
+
+**** Nivel de transistor
+- Nivel bás bajo
+- resistencias, transistores, capacitores.
+- Sistema descrito por ecuaciones diferenciales y algebraicas que pueden simularse en entornos como Spice.
+- Sistema analógico
+
+**** Nivel de puertas lógicas
+- Bloques constitutivos básicos son AND, OR, XOR, MUX 2:1, memorias o flip-flops entre otros.
+- Se considera si las señales están por encima de un umbral (0 o 1 digital).
+- Sistema descrito por operaciones discretas.
+- Retardo de la propagación, tiempo que precisa un sistema para proporcionar una señal estable.
+- La representación física consiste en la situación espacial de los componentes y del routing.
+- Se usa el área de la puerta NAND como medida básica de medida.
+
+**** Nivel de transferencia entre registros (RTL)
+- Módulos funcionales
+- Las señales pueden intrepetarse como dato.
+- Se usan máquinas de estados finitos para describir el sistema.
+- Si está bien diseñado podemos hablar en términos de ciclos de reloj.
+
+**** Nivel de procesador
+- Mayor nivel de abstracción.
+- procesadores, módulos de memoria, etc
+
+** Desarrollo en VHDL  
+
+*** Banco de pruebas
+- Ejemplo de código VHDL en un banco de pruebas.
+
+#+begin_src vhdl
+-- Banco de pruebas del detector de paridad.
+-- fichero bp_detectorPar.vhd
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity bp_detectorPar is
+end entity bp_detectorPar;
+
+architecture bp_arch of bp_detectorPar is
+  component detectorPar is
+    port (par : out std_logic;
+          a   : in std_logic_vector(2 downto 0));
+  end component detectorPar;
+  signal test_in : std_logic_vector(2 downto 0);
+  signal test_out : std_logic;
+begin
+  UUT: detectorPar port map ( par => test_out, a => test_in);
+  
+  vect_test: process
+  begin
+    test_in <= "000";  wait for 200 ns;
+    test_in <= "001";  wait for 200 ns;
+    test_in <= "010";  wait for 200 ns;
+    test_in <= "011";  wait for 200 ns;
+    test_in <= "100";  wait for 200 ns;
+    test_in <= "101";  wait for 200 ns;
+    test_in <= "110";  wait for 200 ns;
+    test_in <= "111";  wait for 200 ns;
+  end process vect_test;
+
+  verif: process
+    variable error_status : boolean;
+    begin
+      if ((test_in = "000" and test_out = '1') or
+          (test_in = "001" and test_out = '0') or
+          (test_in = "010" and test_out = '0') or
+          (test_in = "011" and test_out = '1') or
+          (test_in = "100" and test_out = '0') or
+          (test_in = "101" and test_out = '1') or
+          (test_in = "110" and test_out = '1') or
+          (test_in = "111" and test_out = '0') or
+          )
+      then
+        error_status := false;
+      else
+        error_status := true;
+      end if
+      assert not error_status report "Test Fallado." severity note;
+  end process verif;
+end architecture bp_arch;
+#+end_src
+
+
+* Glosario
+- *flip-flop*, creo que era un Biestable-T (toggle)
 - 
+
+* Recursos
+- https://www.dia.uned.es/71012018/ página web de la asignatura.
         
 * Notas
 - VHDL, lenguage para diseñar circuitos
 - ModelSim, software para editar y simular circuitos
 - Emacs + ghdl, alternativa para simular
+
+  
