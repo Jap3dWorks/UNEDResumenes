@@ -75,4 +75,100 @@
 gcd u v
     v == 0 -> u
     otherwise -> gcd v (mod u v)
+
+gcd 18 8
 #+end_src
+
+*** Programación lógica
+- Conjunto de sentencias que describen lo que es verdad o conocido.
+- El control lo aporta el modelo de inferencia lógica.
+
+#+begin_src prolog
+gcd(U, 0 , U).
+gcd(U, V, X) :- not (V=0),
+                Y is U mod V,
+                gcd(V, Y, X).
+#+end_src
+
+Busca el valor de X que hace cierta la siguiente pregunta.
+
+#+begin_src prolog
+?- gcd(18,8,X).
+#+end_src
+
+** Descripción de los lenguajes de programación
+- Elementos fundamentales
+      - *Léxico* o tokens (if, else)
+      - *Sintáxis*, Estructura de los diferentes componentes del lenguaje y sus combinaciones.
+            - Se pueden describir con el uso de gramaticas libres de contexto.
+            - 
+              #+caption: Sentencia if de C
+              #+begin_example
+              <sentencia if> ::= if (<expresion>) <sentencia> [else <sentencia>]
+              #+end_example
+
+      - *Semántica*, expresa los efectos de la ejecución en un contexto determinado.
+            - Sistemas de notación de la semántica (no hay una forma aceptada).
+                  - *Semántica operacional*
+                  - *Denotacional*
+                  - *Axiomática*
+
+*** Traducción de los programas para su ejecución
+- *Intérprete*, Un programa que acepta entradas del lenguaje y los ejecuta.
+- *Compilador*, Programa que traduce el languaje a código máquina.
+- El traductos (intérprete o compilador) debe seguír fielmente la definición del lenguaje.
+- Pasos de un intérprete o compilador.
+      - *Analizador léxico*
+      - *Analizador sintáctico*
+      - *Analizador semántico*
+- Tipos de errores
+      - *Errores léxicos*, Suele estar kimitado al uso de carácteres ilegibles.
+      - *Errores sintácticos*, Tokens que faltan o expresiones malformadas.
+      - *Errores semánticos*, Estáticos (uso de tipos incompatibles) o dinámicos (división por 0).
+      - *Errores lógicos*, Comportamiento no deseado.
+
+** Diseño de los lenguajes de programación
+- Control de la complejidad.
+- Legibilidad a la par que facil traducción a lenguaje máquina.
+
+*** La eficiencia
+- El diseño debe permitir al traductor la generación de código ejecutable eficiente.
+- *Eficiencia de traducción*, El lenguaje debe permitir el desarrollo de un traductor eficiente y de tamaño razonable.
+- *Eficiencia de implementación*, Eficiencia con la que puede escribirse un traductor.
+- *Eficiencia de la programación*, Rapidez y facilidad para escribir programas.
+      - Capacidad expresiva.
+      - *Sintactic sugar*, estructuras que facilitan la escritura de un programa.
+            - Por ejemplo las diferentes versiones de bucles.
+
+*** La regularidad
+- Comportamiento de las características del lenguaje.
+- *La Generalidad*, uso y disponibilidad de constructores no están sujetas a casos especiales.
+- *La Ortogonalidad*, Los constructores del lenguaje pueden admitir combinaciones significativas, sin restricciones ni comportamientos inesperados.
+- *La uniformidad*, Consistencia entre la apariencia y el comportamiento de los constructores.
+
+*** Principios Adicionales
+**** Simplicidad
+- Que cada concepto del lenguaje se presente de forma única y legible.
+- Estructuras con reglas de combinación sencillas.
+
+**** Expresividad
+- Facilidad con la que un lenguaje de programación permite expresas procesos y estructuras complejas.
+
+**** Extensibilidad
+- Ampliar el lenguaje con nuevas funcionalidades (nuevos tipos, etc).
+- *Modularidad*, disponer de bibliotecas.
+
+**** Capacidad de restricción
+- El uso suficiente de un subconjunto del lenguaje.
+
+**** Consistencia entre la notación y las convenciones
+- Notaciones y características que ya se hayan convertido en estándares.
+- 
+
+
+
+
+
+
+
+
