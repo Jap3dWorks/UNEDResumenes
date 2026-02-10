@@ -163,7 +163,23 @@ Busca el valor de X que hace cierta la siguiente pregunta.
 
 **** Consistencia entre la notación y las convenciones
 - Notaciones y características que ya se hayan convertido en estándares.
-- 
+
+**** Precisión
+- Definición precisa del lenguaje, de forma que los programas sean predecibles.
+      - El programa se comporta igual en cualquier máquina.
+
+****  Portabilidad
+- La definición del lenguaje de programación es independiente de una máquina en particular.
+- Normalmente los lenguajes interpretados son portables.
+
+**** Seguridad
+- Este principio pretende evitar los errores de programación y permitir su descubrimiento.
+- A veces compromete la expresividad.
+
+**** Interoperabilidad
+- La posibilidad de que un código escrito en un lenguaje interactue con el código escrito en otro lenguaje.
+
+  
 
 
 
