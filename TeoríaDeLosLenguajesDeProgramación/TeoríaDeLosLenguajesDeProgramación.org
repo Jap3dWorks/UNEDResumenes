@@ -1,0 +1,78 @@
+#+title: Teoría de los lenguajes de Programación
+
+* Paradigmas de computación
+- Generaciones Lenguajes Programación
+      - Primera generación lenguajes máquina.
+      - Segunda generación ensambladores (mnemotécnico del lenguaje máquina).
+      - Tercera generación lenguajes de alto nivel como C
+            - Lenguajes de propósito general.
+            - Requieren compiladores o intérpretes.
+      - Cuarta generación lenguajes de propósito específico como SQL.
+      - Quinta generación, muy relacionada con el área de la Inteligencia Artificial.
+            - Se especifica el problema y como se resuelve con una secuencia de acciones.
+            - Prolog y Haskel.
+
+
+** Abstracción en los lenguajes de rogramación
+- Abstracción de datos y de control
+
+| *Abstracción*  | *De Datos*                    | *De Control*                        |
+|--------------+-----------------------------+-----------------------------------|
+| *Básica*       | Tipos atómicos de variables | goto                              |
+| *Estructurada* | tipos estructurados         | bucles condicionales subprogramas |
+| *Unitaria*     | módulos paquetes            | módulos paquetes                  |
+
+*** Abstracción de Datos
+- Abstracciones de datos básicas
+      - *Tipos atómicos*, tipos que no pueden dividirse en tipos más sencillos.
+      - Nombres de variables son una abstracción.
+- Abstracciones de datos estructuradas
+      - Arrays
+      - En C el typedef int MyTable[7]; Crea un tipo de dato estructurado.
+- Abstracciones de datos unitarias
+      - Agrupación de datos y operaciones sobre ellos.
+      - Encapsulado de datos
+      - Clases, Tipos abstractos, interfaces.
+
+*** Abstracción de Control
+- Abstracciones de Control básicas
+      - Sentencias para modificar el flujo de ejecución.
+      - goto
+- Abstracciones de control estructuradas.
+      - Bucles o sentencias condicionales (if)
+      - Permiten anidamiento
+      - Subprogramas (funciones, métodos, procedimientos)
+- Abstracciones de control tipo unitario
+      - Colección de subprogramas en una unidad en si misma independiente del programa.
+        
+        
+** Introducción a los paradigmas de computación
+- Inicialmente los lenguajes se basaron en el *modelo de computación Von Neumann*.
+      1. Ejecución secuencial de instrucciones.
+      2. Variables representan posiciones de memoria.
+      3. Asignación para cambiar el valor de las variables.
+- También se conocen como *Lenguajes Impertarivos*, paradigma imperativo.
+- paradigmas
+      - Imperativo
+            - Programación oritendata a objetos.
+      - Declarativo
+            - Funcional, abstracción de funciones matemáticas.
+            - Lógico
+
+*** Programación orientada a objetos
+- *Objeto*, conjunto de posiciones en memoria más las operaciones sobre los valores que almacenan dichas posiciones.
+
+*** Programación funcional
+- Evaluación de funciones.
+      - Transferencia de valores como parámetros de las funciones que se evaluan.
+      - Generación de resultados en forma de valores devueltos por las funciones.
+- No involucra la asignación de una variable a una posición de memoria.
+- Operaciones repetitivas mediante funciones recursivas.
+      - Operaciones repetitivas NO se representan mediante ciclos.
+
+#+caption: Ejemplo en Haskell        
+#+begin_src haskell
+gcd u v
+    v == 0 -> u
+    otherwise -> gcd v (mod u v)
+#+end_src
