@@ -121,7 +121,6 @@
 
 * Lógica y representación del conocimiento
 
-
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
       - *Inferencia deductiva*, A implica B, C implica B, etc.
@@ -143,7 +142,7 @@
 - *GPT*, Generative pretained trasformer
 - *Interpretabilidad*, propiedad de entender la relación entre los datos procesados y la solución propuesta.
 - *Explicabilidad*, Capacidad de entender el razonamiento efectuado por la máquina.
-- *Frugalidad*, Propiedad de los algoritmos de aprendizaje de necesitar pocos recursos para mostrar una prestaciones aceptables.
+- *Frugalidad*, Propiedad de los algoritmos de aprendizaje de necesitar pocos recursos para mostrar unas prestaciones aceptables.
       - Tanto en el uso como en el entrenamiento.
 
 
