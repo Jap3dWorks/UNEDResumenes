@@ -1,0 +1,149 @@
+#+title: Fundamentos de inteligencia artificial
+
+* Aspectos conceptuales de la Inteligencia Artificial y la ingeniería del conocimiento
+- Propósito general de la IA es desarrollar
+      1. Modelos conceptuales
+      2. Procedimientos de escritura formal de esos procedimientos
+      3. Estratégias de programación y máquinas físicas para reproducir los mecanismos de inteligencia.
+- 4 Objetivos de la IA son modelar, formalizar, programar e implementar máquinas soporte capaces de interactuar con el medio de forma no trivial.
+- Aproximaciones dominantes
+      - IA simbólica, via descendente y uso de conceptos del lenguaje natural para representar el conocimiento necesario para resolver problemas de decisión.
+            - No requiere de un robot.
+      - IA conexionismo situado, via ascendente y usos de conceptos de más bajo nivel semántico.
+            - IA como forma superior de adaptación al medio (requiere robot).
+- Carácter instrumental y objetivos
+      - Ayudar a comoprender los procesos neurofisiológicos, cognitivos y sociales.
+      - Prolongar los analizadores humanos y complementar sus deficiencias.
+
+
+** IA como Ciencia y como IC
+*** IA como Ciencia
+- Tarea de análisis
+- Engloba el conjunto de hechos asociados a la neurología y la cognición.
+- Funciones globales de percepción, memoria, lenguaje, decisión, emoción y acción (acciones humanas).
+      - Emergen de niveles subcelulares, neurológicos, etc.
+- Busca una teoría computable del conocimiento humano.
+
+*** IA como Ingeniería (IC)
+- Nuevo objetivo de la IC es el conocimiento.
+      - Usa la energía como soporte.
+- El mensaje está en la estructura relacional y en el consenso entre los distintos observadores.
+      - Deben dotar de significado a los símbolos formales y físicos que constituyen el cálculo.
+- El conocimiento debe ser
+      - Reutilizable
+      - Impersonal
+      - Transferible
+      - Verificable experimentalmente
+      - Con capacidad de predicción (como una ley física).
+- No puede apoyarse en una sólida teoría del conoccimiento.
+- Tareas que aborda la IC
+      1. Tareas básicas como ver, oir, interpretar el medio, moverse, aprender, etc.
+      2. Tareas cientifico-técnicas en dominios estrechos
+             - Diagnosticar en medicina por ejemplo
+- Procedimiento en *SBCs*, sistemas basados en el conocimiento
+      1. Descripción en lenguaje natural de las interacciones de un humano con el entorno.
+      2. Se modela la descripción con metamodelos (*paradigmas*).
+             - Simbólico
+             - Conexionista (neurona formal)
+             - Situado
+             - Híbrido
+      3. Escritura formal de las inferencias y los "roles" estáticos y dinámicos de acuerdo con el paradigma elegido.
+             - Tipos esenciales de conocimiento
+                   - Situado, Interacción con el medio, un robot.
+                   - No situado, Interfaz entre el sistema IA y el medio es humana.
+      4. Programar los operadores para las interfaces físicas (no humanas).
+
+** Paradigmas actuales en IA
+- *Paradigma* como aproximación metodológica consensuada.
+
+*** Paradigma Simbólico o representacional
+- Se parte de una descripción en lenguaje natural que se intenta describir en reglas.
+- Descripciones declarativas de un conjunto de conceptos.
+- Otro conjunto de reglas de inferencia entre estos conceptos.
+      - Reglas de manipulación.
+- 3 tipos de tareas
+      - Análisis
+      - Síntesis, diseño y construcción con restricciones.
+      - Modificación, ajuste de parámetros.
+- Procesos básicos del razonamiento humano según Craik
+      - Traslación del medio externo a una representación interna.
+      - Derivación de los símbolos anteriores mediante procesos de inferencia (inductiva, deductiva y abductiva).
+      - Retraslación de los nuevos símbolos derivados en término de acciones que vuelven al medio externo.
+- Apropiada para aplicaciones en las que disponemos de conocimiento suficiente para especificar las reglas inferenciales y en aquellos procesos de aprendizaje inductivo en los que también disponemos de conocimiento para especificar las meta-reglas.
+
+*** Paradigma Situado o reactivo
+- También llamado basado en conductas.
+- Toda acción y toda percepción están estructuralmente acopladas.
+      - El sistema a modelar se encuentra en un medio con el que se realimenta.
+            - Sensores y efectores específicos.
+            - Para el sistema solo existe lo que puede ser representado por un sensor.
+- La percepción en el medio de esquemas son las percepciones
+      - Se implementa a bajo nivel.
+- Cuando el agente decide la acción o secuencia de acciones a realizar basta con que las active.
+      - Los patrones espaciotemporales de acción están precalculados.
+- La función de decisión del agente es una asociación (tabla) o autómata finito.
+- Se usa esencialmente en robótica y sistemas en tiempo real.
+
+*** Paradigma Conexionista (RNAs)
+- *RNAs*, redes de neuronas artificiales.
+- Líneas numéricas etiquetadas para la entrada y salida de la red.
+- La inferencia se resuelve mediante un clasificador numérico de naturaleza paraétrica.
+      - El valor de los parámetros se ajusta mediante aprendizaje.
+- Arquitectura modular organizada en capas fuertemente interconectado.
+      - Procesadores elementales son las neuronas que evaluan una sencilla función de cálculo.
+- Características distintivas
+      - Clasificador numérico adaptativo que asocia los valores de un conjunto de observables con los valores de otro conjunto más reducido de clases (salidas de las neuronas de la última capa).
+      - Una parte importante del conocimiento disponible se corresponde con la fase de análisis de datos.
+            - Selección de variables de entrada y salida.
+            - Tipo de cálculo local
+            - Inicialización de pesos
+      - Balance entre datos y conocimiento disponible y naturaleza de esos datos.
+            - Datos etiquetados se usan en el aprendizaje supervisado.
+            - Datos no etiquetados se usan para un preproceso y el aprendizaje autootganizativo.
+- Representación de grafo.
+      - Nodos son neuronas.
+      - Arcos son pesos ajustables.
+- Las salidas numéricas de la última capa se interpretan con etiquetas asociadas a las clases.
+- Hay otra vertiente más basada en mecanismos inspirados por la biología
+      - Conexionismo bioinspirado
+        
+*** Paradigma Híbrido
+- La mayor parte de los problemas son de naturaleza híbrida.
+- Muy usado en *Sistemas borrosos*, inferencias en las que se mezclan componentes neuronales y borrosas.
+      - Adquirir conocimiento, conjuntos borrosos más etiquetas.
+      - Pueden usarse entradas numéricas y tratarlas con neuronas convencionales.
+      - Pueden definirse esquemas de cálculo neuroborroso (operadores borrosos(min, max)).
+      - Subyace conocimiento simbólico usado para especificar las variables y sus rangos, definir funciones de pertenencia y para diseñar la topología inicial de la red.
+- Criterios generales.
+      - Analizar exigencias computacionales del problema y los recursos de los que disponemos.
+      - Descomponer en subtareas e inferencias primitivas.
+      - Operacionalización efectiva del esquema inferencial, con módulos simbólicos y neuronales.
+
+* Lógica y representación del conocimiento
+
+
+* Glosario
+- *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
+      - *Inferencia deductiva*, A implica B, C implica B, etc.
+      - *Inferencia abductiva*, aspiramos a obtener hipótesis.
+            - Inferencia de hipótesis que pueden explicar un hecho.
+            - Hechos con un cierto grado de certeza asociado.
+      - *Inferencia inductiva*, A si y solo si (B o C o D).
+            - A partir de la experiencia constatada.
+- *Agente racional*, Agente que actúa con la intención de alcanzar el mejor resultado. Cuando hay incertidumbre el mejor resultado esperado.
+- *RNN*, Redes neuronales recurrentes
+- *CNN*, Redes neuronales convolucionales
+- *GAN*, Redes generativas adversarias.
+      - Redes neuronales no supervisadas pero basadas en auto-entrenamiento supervisado.
+      - Indicadas para IA Generativa.
+      - Juego de suma 0 entre.
+            - Generador Genera instancias a partir de lo que aprende del dominio
+            - Discriminador, trata de valorar si la instancia es del mundo real o generada.
+- *VAE*, Autocodificadores variacionales.
+- *GPT*, Generative pretained trasformer
+- *Interpretabilidad*, propiedad de entender la relación entre los datos procesados y la solución propuesta.
+- *Explicabilidad*, Capacidad de entender el razonamiento efectuado por la máquina.
+- *Frugalidad*, Propiedad de los algoritmos de aprendizaje de necesitar pocos recursos para mostrar una prestaciones aceptables.
+      - Tanto en el uso como en el entrenamiento.
+
+
