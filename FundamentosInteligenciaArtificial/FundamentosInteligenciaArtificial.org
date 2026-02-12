@@ -15,7 +15,6 @@
       - Ayudar a comoprender los procesos neurofisiológicos, cognitivos y sociales.
       - Prolongar los analizadores humanos y complementar sus deficiencias.
 
-
 ** IA como Ciencia y como IC
 *** IA como Ciencia
 - Tarea de análisis

@@ -1,0 +1,225 @@
+#+title: Bases De Datos
+#+author: Jordi Amposta Pérez
+
+* Introducción
+- *SGBD*, Sistema gestor de bases de datos, colección de datos interrelacionados y un conjunto de programas par acceder a dichos datos.
+      - *Base de datos*, colección de datos que contienen información relevante.
+        
+** Aplicaciones de los sistemas de bases de datos
+- Aplicaciones representativas
+      - Información empresarial
+            - ventas
+            - Recursos humanos
+            - Fabricación
+            - Comercio en línea
+      - Banca finanzas
+            - Banca
+            - Transacciones de tarjetas de crédito
+            - Finanzas
+      - Universidades
+      - Líneas aéreas
+      - Telecomunicaciones
+
+** Propósitos de los sistemas de bases de datos
+- Problemas de guardar la información en archivos convencionales.
+      - *Redundancia e inconsistencia de los datos*
+      - *Dificultad en el acceso a los datos*
+      - *Aislamiento de los datos*, Se refiere a que los datos estén dispersos o incluso en diferentes formatos.
+      - *Problemas de integridad*
+      - *Problemas de atomicidad*, la operación ocurre o no ocurre.
+      - *Anomalías en el acceso concurrente*, race conditions.
+      - *Problemas de seguridad*, evitar usuarios con acceso a la totalidad de los datos.
+
+** Visión de los datos
+- El sistema oculta ciertos detalles del modo en que se almacenan y mantienen los datos.
+
+*** Abstracción de datos
+- *Nivel físico*, nivel más bajo de abstracción.
+      - Describe en detalle las estructuras de datos complejas a bajo nivel.
+- *Nivel lógico*, Describe qué datos se almacenan en la base de datos y que relaciones existen entre ellos.
+      - *Independencia de los datos físicos*, no es necesario conocer la implementación física.
+- *Nivel vistas*, Usuarios con acceso a una parte de los datos.
+      - Simplifica la interacción con el sistema.
+      - El sistema puede proporcionar muchas vistas de los datos.
+
+*** Ejemplares y esquemas
+- *Ejemplar*, colección de información alamcenada en la base de datos en un momento dado.
+- *Esquema*, diseño general de la base de datos.
+      - *Esquema físico*, describe el diseño a nivel físico.
+      - *Esquema lógico*, describe el diseño a nivel lógico.
+            - Usado en tareas de programación.
+      - *Subesquemas*, esquemas de nivel vista.
+- *Independencia física respecto de los datos*, Pueden efectuarse cambios en el nivel físico sin comprometer los datos.
+
+*** Modelos de datos
+- Bajo la estructura de las bases de datos se encuentra el *modelo de datos*, se trata de una colección de herramientas conceptuales para describir los datos, sus relaciones, su semántica y las restricciones de consistencia.
+- *Modelo relacional*
+      - Uso de tablas para representar datos y relaciones.
+      - Más ampliamente utilizado.
+- *El modelo entidad-relación* (E-R)
+      - Se basa en los objetos básicos *entidades* y la relaciones entre ellos.
+      - Se usa mucho en el diseño de base de datos.
+- *Modelo de datos basado en objetos*
+      - Extensión de E-R con encapsulación.
+      - Influenciado por la programación orientada a objetos.
+- *Modelo de datos semiestructurados*
+      - Permite definir tipos en los que elementos individuales del tipo tengan diferentes atributos.
+      - tipo XML.
+- *Modelo de datos de red* y *modelo de datos jerárquico* casi no se usan.
+
+** Lenguajes de bases de datos
+*** Lenguaje de manipulación de datos (LDM)
+- Permite acceder y manipular los datos.
+- Tipos de acceso
+      - Recuperación de información almacenada.
+      - Inserción de información nueva.
+      - Borrado de información de la base de datos.
+      - Modificación de la información almacenada.
+- Tipos de LDM
+      - *LDM procedimentales*, Necesita que el usuario especifique qué datos y como obtener los datos.
+      - *LDM declarativos*, El usuario especifica qué datos sin definir como obtenerlos.
+- *Consulta*, instrucción que solicita recuperar información.
+      - *Lenguaje de consultas*, parte del LDM para realizar consultas.
+
+*** Lenguaje de definición de datos (LDD)
+- Define los esquemas de la base de datos.
+- *Lenguaje de almacenamiento y definición de datos*, subconjunto del LDD.
+      - Estas instrucciones define los detalles de implementación de los esquemas.
+- *Restricciones de consistencia*, Los valores almacenados deben satisfacer ciertas restricciones.
+      - *Restricciones de dominio*, dominio de valores posibles a cada atributo.
+      - *Integridad referencial*, valor de un atributo exista en un atributo de una entidad relacionada (creo que como el id).
+      - *Asertos*, condiciones que la base de datos debe satisfacer siempre.
+      - *Autorización*, diferenciación de acceso entre los ususarios.
+            - Autorización de lectura.
+            - Autorización de inserción.
+            - Autorización de actualización.
+            - Autorización de eliminación.
+- El output del LDD suele almacenarse como metadatos en el *Diccionario de datos*.
+      - Normamelte colo accesible por el propio sistema.
+
+** Base de datos relacionales
+- Representan los datos y la relaciones usando tablas.
+- Incluyen un *LMD* y un *LDD*.
+- Uso de *SQL*
+- Modelo basado en registros.
+
+*** Tablas
+- Columnas son atributos y las filas los registros (las entradas).
+
+*** Ejemplos SQL
+
+Una consulta usando el LDM de SQL
+
+#+begin_src sql
+select profesor.nombre from profesor where profesor.nombre_depth="Historia"
+#+end_src
+
+Definir una tabla usando el LDD de SQL
+
+#+begin_src sql
+create table departamento (
+  nombre_depth  char(20),
+  edificio      char(15),
+  presupuesto   numeric(12.2));
+#+end_src
+
+*** Acceso a las bases de datos desde programas de aplicación
+- Operaciones complejas las efectuan los programas anfitrión (C/C++).
+- Los programas de aplicación facilitan a los usuarios la interacción con la base de datos.
+  
+** Diseño de base de datos
+*** Proceso de diseño
+- Caracterizar completamente los requisitos de datos de los hipotéticos usuarios de la base de datos.
+- Diseño conceptual, definir los datos y sus relaciones.
+- Fase de diseño lógico, serelaciona el esquema conceptual con el modelo de implementación de datos.
+- Fase de diseño físico, se especifican las características físicas de la base de datos.
+
+*** El modelo entidad-relacion
+- las entidades son un esquema de el conjunto de atributos que tendrá la entidad
+      - Conjunto de entidades, conjunto entidades del mismo tipo
+- La relación es un objeto que asocia varias entidades.
+      - Conjunto de relaciones del mismo tipo
+- Se usa notación UML ampliamente para describir el E-R
+
+*** Normalización
+- El objetivo es generar un conjunto de esquemas de relaciones que permita almacenar información sin redundancias innecesarias.
+      - También debe permitir recuperar la información con facilidad.
+- Se usa el enfoque de *Dependencias funcionales*.
+
+** Almacenamiento de datos y consultas
+
+*** Gestor de almacenamiento        
+- Importante la estructura de los datos para que las consultas sean rápidas incluso en bases de datos muy grandes (terabytes).
+- Traduce instrucciones LMD a comandos de bajo nivel del sistema de archivos del OS.
+- Componentes
+      - *Gestor de autorizaciones e integridad*
+      - *Gestor de transacciones*
+            - Garantiza que la base de datos queda en un estado consistente.
+      - *Gestor de archivos*, gestiona la asignación de espacio de almacenamiento de disco.
+            - También las estructuras de datos usadas.
+      - *Gestor de memoria intermedia*, responsable de traer datos desde el memoria secundaria a memoria principal.
+- Implementa varias estructuras de datos.
+      - *Archivos de datos*, La base de datos en si misma.
+      - *Diccionario de datos*, metadatos acerca de la estructura de la base de datos.
+      - *Índices*, que pueden proporcionar acceso rápido a los datos.
+
+*** Procesador de consultas
+- Contiene
+      - *Intérprete de LDD*.
+      - *Compilador LMD*, para que lo entienda el motor de evaluación de consultas.
+            - Se aplican optimizaciones, elige el plan de evaluación de menor coste.
+      - *Motor de evaluación de consultas*, Ejecuta las instrucciones de bajo nivel generadas por el compilador LMD.
+
+** Gestión de transacciones
+- *Transacción*, Varias operaciones forman una unidad lógica de forma atómica.
+- *Atomicidad*, ocurre o no ocurre, sin punto medio.
+- *Recuperación de fallos*, detectar inconsistencias y restaurar el sistema a antes de los fallos.
+- *El gestor de control de concurrencia* debe gestionar la interacción entre transacciones concurrentes.
+
+** Arquitectura de bases de datos
+- Pueden ser tipo cliente-servidor.
+      - Servidores ejecutan los sistemas de bases de datos.
+- Las bases de datos distribuidas se extienden por varias máquinas geográficament separadas.
+- *Arquitectura dos capas*, el cliente invoca la funcionalidad del sistema que está en un servidor.
+      - Usa instrucciones del lenguaje de consultas.
+- *Arquitectura de tres capas*, El cliente no alberga llamadas a la base de datos
+      - El cliente se comunica con un servidor de aplicaciones.
+            - Aquí reside la lógica de negocio de la aplicación.
+      - El servidor de aplicaciones se comunica con el sistema de base de datos.
+      - Más adecuado par aplicaciones de gran tamaño.
+
+** Minería y análisis de datos
+- Análisis semiautomático de grandes bases de datos para descubrir patrones útiles.
+- El conocimiento descubierto se represetna mediante un conjunto de reglas.
+- Suele haber un preprocesado de los datos, preparación para los algoritmos.
+- Suele haber un postprocesado de los patrones descubiertos.
+- *Almacenes de datos*, Datos de distintas fuentes bajo un esquema unificado en un punto.
+- *Recuperación de la información*, consulta de datos textuales no estructurados. 
+
+** Bases de datos específicas
+*** Modelos de datos basados en objetos
+- E-R con nociones de encapsulación, métodos e identidad de objetos.
+
+*** Modelos de datos semiestructurados
+- Cada elemento de datos del mismo tipo puede tener atributos diferentes.
+- XML, puede representar datos con estructura anidada.
+
+** Usuarios y administradores de bases de datos
+*** Usuarios de bases de datos e interfaces
+- *Usuarios normales*, Interactuan con el sistema invocando algunos de los programas de aplicación.
+- *Programas de aplicaciones*, Profesionales informáticos que escriben programas de aplicación.
+- *Usuarios sofisticados*, Formulan consultas con un lenguaje de consultas o con herramientas software de análisis de datos.
+- *Usuarios especializados*, Son usuarios sofisticados que escriben aplicaciones de bases de datos especializadas que no encajan en el marco tradicional del procesamiento de datos.
+
+*** Administrador de bases de datos
+- *ABD*, administrados de bases de datos, tiene el control central del sistema.
+- Funciones del ABD
+      - *Definición del esquema*, Crea el esquema central mediante instrucciones LDD.
+      - *Definición de la estructura y del método de acceso*.
+      - *Concesión de autorización para el acceso a los datos*.
+      - *Mantenimiento rutinario*, Importante que el rendimiento no se degrade.
+            - Copia de seguridad periodica.
+            - Asegurarse de que se dispone de suficiente espacio en disco.
+            - Supervisar los trabajos que se ejecutan en la base de datos y asegurarse de que el rendimiento no se degrade a causa de tareas muy costosas.
+
+
