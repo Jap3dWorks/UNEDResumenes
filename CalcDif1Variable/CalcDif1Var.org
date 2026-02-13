@@ -96,56 +96,105 @@ f(x) \leq f(a)\ \ \forall x \in U_a \cap D
 
 ** Aplicación al cálculo del límite
 
-
-* La integral de Riemann
+* La Integral de Riemann
 ** Particiones de un intérvalo
 
 Partición del intérvalo $[a,b]$
-\begin{*equation}
+\begin{equation*}
 P=\{x_0, \dots, x_n\}\ \ tal\ que\ \ a=x_0 < x_1 < \dots < x_n = b
-\end{*equation}
+\end{equation*}
 
 Si $P \supset P'$, $P$ es más fina que $P'$.
 
 Sea $f:[a,b] \to \mathbb{R}$ una función *acotada* en [a,b] para cada $P$ existen
 
-\begin{*equation}
+\begin{equation*}
 m_i = inf\{f(x): x \in [x_{i-1}, x_i]\}
-\end{*equation}
+\end{equation*}
 
 y
 
-\begin{*equation}
+\begin{equation*}
 M_i = sup\{f(x) : x \in [x_{i-1}, x_i]\}
-\end{*equation}
+\end{equation*}
 
 *** Suma superior y suma inferior
 *Suma inferior*.
-\begin{*equation}
+\begin{equation*}
 L(f,P) = \sum_{i=1}^n m_i(x_i - x_{i-1})
-\end{*equation}
+\end{equation*}
 
 *Suma superior*.
-\begin{*equation}
+\begin{equation*}
 U(f,P) = \sum_{i=1}^n M_i(x_i - x_{i-1})
-\end{*equation}
+\end{equation*}
 
-*** Se verifican las siguientes propiedades
+*** Propiedades de funciones acotadas en [a,b]
+- Sea $f:[a,b] \to \mathbb{R}$ una función acotada en [a,b].
 - $L(f,P) \leq U(f,P)$ para toda partición $P$ de [a,b].
 - Si $P$ y $P'$ son dos particiones de [a,b] tales que $P'$ es más fina que $P$ entonces.
   
-\begin{*equation}
+\begin{equation*}
 L(f,P) \leq L(f, P')\ y\ U(f,P) \geq U(f,P')
-\end{*equation}
+\end{equation*}
 
 - $L(f,P) \leq U(f,P)$ para todo par de particiones $P_1$ y $P_2$ de [a,b].
 
 ** Funciones integrables
+\begin{equation*}
+\sup_PL(f,P) = \sup\{L(f,P): \forall P\ de\ [a,b]\}
+\end{equation*}
+
+\begin{equation*}
+\inf_PU(f,P) = \inf\{U(f,P): \forall P\ de\ [a,b]\}
+\end{equation*}
+
 - Una función es integrable en [a,b] cuando
 
-\begin{*equation}
+\begin{equation*}
 \sup_PL(f,P) = \inf_PU(f,P)
-\end{*equation}
+\end{equation*}
+
+*** Condición de integralidad de Riemman
+$F:[a,b] \to \mathbb{R}$ acotada es integrable en [a,b] si y sólo si para cada $\epsilon > 0$ existe una partición $P$ de [a,b] tal que.
+
+\begin{equation*}
+U(f,P) - L(f,P) < \epsilon
+\end{equation*}
+
+Si $f$ es monótona en [a,b] entonces $f$ es integrable en [a,b].
+
+Si $f$ es continua en [a,b] entonces $f$ es integrable en [a,b].
+
+** Propiedades de las funciones integrables y de la integral
+- $f$ y $g$ son dos funciones integrables en [a,b].
+\begin{equation*}
+\int_a^b(c_1f + c_2g) = c_1\int_a^b f + c_2\int_a^b g
+\end{equation*}
+
+- Sean $a<b<c$ tres número reales, entonces.
+\begin{equation*}
+\int_a^b f = \int_a^c f + \int_c^b f
+\end{equation*}
+
+- Si $f$ es intregable en [a,b] entonces $|f|$ es tambien intregable en [a,b].
+
+- Si $f$ y $g$ son integrables en [a,b] entonces $fg$ es intregable en [a,b].
+
+- Si $f$ es intregable en [a,b] y $f \geq 0$ en [a,b] entonces.
+\begin{equation*}
+\int_a^b f \geq 0
+\end{equation*}
+
+- Si $f$ y $g$ son intregables en [a,b] y $f \leq g$ en [a,b] entonces.
+\begin{equation*}
+\int_a^b f \leq \int_a^b g
+\end{equation*}
+
+- Si $f$ es integrable en [a,b] entonces.
+\begin{equation*}
+\int_a^b f \leq \int_a^b |f|
+\end{equation*}
 
 * Tools
 
