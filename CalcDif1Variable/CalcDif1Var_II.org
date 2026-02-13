@@ -1,2 +1,0 @@
-#+title: Calculo diferencial de 1 variable II
-
