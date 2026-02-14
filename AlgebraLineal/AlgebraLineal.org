@@ -1,4 +1,6 @@
 #+title: Álgebra Lineal
+#+author: Jordi Amposta Pérez
+#+startup: latexpreview
 
 * Aplicaciones Lineales
 - $f: U \to V$
@@ -9,11 +11,18 @@
       - $f: V \to V$
 
 
+** Proyecciones y simetrías
+# TODO
+
+        
 ** Espacio Dual
 - *Forma lineal*, aplicación lineal de $V$ en $\mathbb{K}$.
       - $f: V \to \mathbb{K}$
 - *Espacio Dual*, conjunto de formas lineales de $V$.
       - $V^* = \mathcal{L}(V,\mathbb{K}) \simeq \mathfrak{M}_{1 \times n}$
+
+* Formas Canónicas de endomorfismos
+
 
 ** Ejercicios
 [[file:images/C4E1.png]]
