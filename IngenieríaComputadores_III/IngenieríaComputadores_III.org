@@ -1,4 +1,5 @@
 #+title: Ingeniería Computadores III
+#+startup: latexpreview
 
 * Fundamentos del diseño del hardware digital
 - *HDL (hardware description languaje)*, lenguaje para la descripción del Hardware.
@@ -462,10 +463,241 @@ y1 <= transport x3 + x4 after 10 ns;     -- 10 ns de retardo de transporte
 
 Si no se indica el retardo es infinitesimal $\delta$.
 
-*** Asignación concurrentes conficionales
+*** Asignación concurrentes condicionales
+Sintaxis:
+#+begin_src vhdl
+señal <= expr_nuevo_valor_señal_1 when expr_booleana_1 else
+         expr_nuevo_valor_señal_2 when expr_booleana_2 else
+         expr_nuevo_valor_señal_3 when expr_booleana_3 else
+         ...
+         expr_nuevo_valor_señal_n;
+#+end_src
+
+- Se evalua por orden, el nuevo valor calculado se asigna trascurrido un retardo, por defecto $\delta$.
+
+Ejemplo MUX 8:1
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity mux4 is
+  port (
+    x : out std_logic_vector(7 downto 0);       -- de 7 a 0, 8 bits
+    a,b,c,d : in std_logic_vector(7 downto 0);
+    s       : in std_logic_vector(1 downto 0));
+end entity mux4;
+
+architecture arch_cond of mux4 is
+begin
+  x <= a when (s="00") else
+       b when (s="01") else
+       c when (s="10") else
+       d;
+end architecture arch_cond;  
+#+end_src
+
+- La sintesis en hardware de las sentencias condicionales involucran.
+      - Circuitos para expresiones booleanas.
+      - Circuito que implementa la red de prioridad (red MUX 2:1).
+
+*** Asignaciones concurrentes de selección
+Sintaxis:
+
+#+begin_src vhdl
+with expresion_seleccion select
+  señal <= expr_nuevo_valor_señal_1 when valor_seleccion_1,
+           expr_nuevo_valor_señal_2 when valor_seleccion_2,
+           ...
+           expr_nuevo_valor_señal_n when valor_seleccion_n;
+#+end_src
+
+- *expresion_seleccion* puede ser un entero o un vector unidimensional.
+- Puede definirse explicitamente los retardos o usar el valor ínfimo $\delta$.
+- valor_selección_# deben cumplir algunas restricciones.
+      - Deben ser mutuamente excluyentes.
+      - Deben incluir todos los posibles valores de *expresión_selección*.
+
+Ejemplo MUX 4:1
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity mux4 is
+  port( x : out std_logic_vector(7 downto 0);
+        a,b,c,d : in std_logic_vector(7 downto 0);
+        s : in std_logic_vector(1 downto 0));
+end entity mux4;
+
+architecture arch_selec of mux4 is
+begin
+  with s select
+    x <= a when "00",
+         b when "01",
+         c when "10",
+         d when others;       -- others para el resto
+end architecture arch_selec;
+#+end_src
+
+Ejemplo Prioridad 4 a 2
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity codificadorPrioridad4a2 is
+  port ( codigo : out std_logic_vector(1 downto 0);
+         activo : out std_logic;
+         x      : in  std_logic_vector(3 downto 0));
+end entity codificadorPrioridad4a2;
+
+architecture codPrior4a2_selec of codificadorPrioridad4a2 is
+begin
+  with x select
+    codigo <= "11" when "1000" | "1001" | "1010" | "1011" |
+                        "1100" | "1101" | "1110" | "1111",
+              "10" when "0100" | "0101" | "0110" | "0111",
+              "01" when "0010" | "0011",
+              "00" when others;
+    activo <= x(3) or x(2) or x(1) or x(0);
+end architecture codPrior4a2_selec;
+#+end_src
+
+*** Sensibilidad de las sentencias concurrentes
+- Una asignación concurrente es /sensible/ a todas las señales que intervienen en el cálculo del valor.
+- Una sentencia condicional es /sensible/ a todas las señales que intervienen en el cálculo del nuevo valor y de las condiciones booleanas.
+- Una sentencia de selección concurrente es /sensible/ a todas las señales que intervienen en el nuevo valor y las condiciones booleanas.
+
+** Sentencia Generate
+Facilita la ejecución iterativa o condicional de una porción de código concurrente.
+
+*** Sentencia generate iterativa
+Sintaxis
+#+begin_src vhdl
+etiqueta: for indice in rango_bucle generate
+  -- Declaración de señales locales y constantes locales
+begin  -- Puede omitirse si no se declaran señales o constantes locales
+  -- sentencias_concurrentes
+end generate etiqueta;
+#+end_src
+
+- Sólo es sintetizable si los límites del rango son estáticos.
+
+Ejemplo
+#+begin_src vhdl
+signal z : std_logic_vector(7 downto 0);
+signal x : std_logic_vector(7 downto 0);
+signal y : std_logic_vector(15 downto 0);
+E1 : for i in x'range generate   -- x'range para iterar por los índices de x
+  z(i) <= x(i) AND y(i+8);
+end generate E1;
+#+end_src
+
+*** Sentencia generate condicional
+Syntaxis
+#+begin_src vhdl
+etiqueta : if expresion_booleana generate
+  -- Declaración de señales y constantes locales
+begin
+  -- Sentencias Condicionales
+  etiqueta2 : if expresion_booleana2 generate
+    -- ...
+  end generate etiqueta2;
+end generate etiqueta;
+#+end_src
+
+*** Bloque process
+Sintaxis
+
+#+begin_src vhdl
+-- la etiqueta es opcional pero recomendable
+etiqueta : process(lista_de_sensibilidad)          -- Se ejecuta cada vez que cambia el valor
+                                                   --  de algún elemento de la lista de sensibilidad
+  -- Declaración de variables locales
+  variable nombre_variable tipo rango := valor_inicial;  -- valor_inicial no es sintetizable
+  -- Declaración de subprogramas (funciones y procedimientos)
+begin
+  -- Código secuencial
+end process etiqueta;
+#+end_src
+
+- Se ejecutan en orden secuencial.
+- No puede declararse señales.
+- Los bloques process son concurrente entre ellos.
+- El bloque se ejecuta indefenidamente, para controlar la ejecución de un bloque process usamos.
+      - *lista de sensibilidad*
+      - sentencias *wait*
+
+*** Sentencias wait
+**** Wait on
+Sintaxis
+#+begin_src vhdl
+wait on señal1, señal2, ..., señalN;
+#+end_src
+
+- Suspende la ejecución de código secuencial hasta que cambia el valor de alguna señal.
+
+**** Waint until
+Sintaxis
+#+begin_src vhdl
+wait until expresion_booleana;
+
+wait on señal1, ..., señalN  -- Puede especificarse la lista de sensibilidad
+  until expresión_booleana;
+#+end_src
+
+- Se suspende la ejecución hasta que se evalue la expresión booleana y esta sea *true*.
+      - Solo se tienen en cuenta el cambio de valor de las señales para evaluar la expresión.
+
+**** Wait for
+Sintaxis
+#+begin_src vhdl
+wait for expresion_temporal;
+#+end_src
+
+- Suspende la ejecución hasta que transcurra determinado intérvalo de tiempo.
+
+Se puede combinar con otros wait
+#+begin_src vhdl
+wait until clk='1' and enable and v<30 for 50 ns;
+#+end_src
+
+- Suspende la ejecución secuencial hasta una de las dos condiciones.
+      - Cambia el valor de alguna señal y además se satisface `clk='1' and enable and v<30`.
+      - han pasado 50 ns.
+
+*** Lista de sensibilidad
+El bloque process se es ejecutado en el instante que una o varias señales de la lista cambian de valor.
+Tan solo pueden incluirse puertos de entrada (pueden ser leídos).
+
+#+begin_src vhdl
+-- Biestable D con reset asíncrono activado en LOW
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity flipflop_D is port (
+  q, q_n : out std_logic;
+  d, clk, reset_n : in std_logic);
+end entity flipflop_D;
+
+architecture flipflop_D of flipflop_D is
+begin
+  process (reset_n, clk) is       -- Lista de sendibilidad con reset_n y clk
+  begin
+    if reset_n = '0' then
+      q <= '0';
+      q_n <= '1';
+    elsif rising_edge(clk) then   -- flanco de subida?
+      q <= d;
+      q_n <= not d;
+    end if
+  end process
+end architecture flipflop_D
+#+end_src
 
 * Glosario
-- *flip-flop*, creo que era un Biestable-T (toggle)
+- *flip-flop*, circuito biestable.
+  # creo que era un Biestable-T (toggle)
 - *VHDL*, lenguage para diseñar circuitos
 
 * Recursos
@@ -483,3 +715,5 @@ ghdl -a hello.vhd       # analysis
 ghdl -e hello_world     # elaborate
 ghdl -r hello_world     # run
 #+end_src
+
+
