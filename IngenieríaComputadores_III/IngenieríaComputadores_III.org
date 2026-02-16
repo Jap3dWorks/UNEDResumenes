@@ -97,7 +97,7 @@
 - *glitch*, cambio temporal, pico de subida o bajada, en el voltaje.
 - *Retardo inercial*, Si el tiempo de propagación es mayor que el glitch, este no afecta al funcionamiento.
       - hay que mantener el estado en un dispositivo para que el cambio se propague.
-- *Retardo de transporte o retardo puro*. Glitches de entrada se manifiestan en los pines de salida.
+- *Retardo de transporte o retardo puro*. Los glitches de entrada se manifiestan en los pines de salida.
       - adecuado para modelar dispositivos de poca inercia.
 - La síntesis determina el retardo de un circuito.
 
@@ -169,7 +169,6 @@ y2 <= transport x after 100 ns;
       - Subcircuito de comprobación de los resultados.
 - Importante recalcar que deben testearse también los subcircuitos de un diseño jerárquico.
 
-
 ** Representaciones y niveles de abstracción
 *** Representación del sistema
 **** Representación del comportamiento
@@ -216,7 +215,6 @@ y2 <= transport x after 100 ns;
 - procesadores, módulos de memoria, etc
 
 ** Desarrollo en VHDL  
-
 *** Banco de pruebas
 - Ejemplo de código VHDL en un banco de pruebas.
 
@@ -274,17 +272,214 @@ begin
 end architecture bp_arch;
 #+end_src
 
+*** Buffer triestado
+#+begin_src vhdl
+-- Modelo del buffer triestado
+-- bufferTriestado.vhd
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity Buffer_TriEstado is port
+                             (
+                               y: out std_logic;
+                               E: in  std_logic;
+                               d: in  std_logic
+                               );
+end entity Buffer_TriEstado;
+
+architecture Behavioral of Buffer_TriEstado is
+begin
+  process (E,d)
+  begin
+    if (E = '1') then
+      y <= d;
+    else
+      y <='Z';  -- Z debe ser alta impedancia
+    end if;
+  end process;
+end architecture Behavioral;
+#+end_src
+
+#+begin_src vhdl
+-- Banco de pruebas
+-- bp_bufferTriestado.vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity bp_Buffer_TriEstado is
+end entity bp_Buffer_TriEstado;
+
+architecture bp_Buffer_TriEstado of bp_Buffer_TriEstado is
+  signal y : std_logic;
+  signal d,E : std_logic;
+
+  component Buffer_TriEstado is port
+                                  (
+                                    y : out std_logic;
+                                    E,d : in std_logic;
+                                    );
+  end component Buffer_TriEstado
+begin
+  -- Instanciar y conectar UUT
+  uut : component Buffer_TriEstado port map
+    (y => y, E => E, d => d);
+
+  gen_vec_test : process
+  begin
+    E <= '0'; d<= '0';
+    wait for 10 ns;
+    d <= '1';
+    wait for 10 ns;
+    E <= '1';
+    wait for 10 ns;
+    d <= '0';
+    wait for 10 ns;
+    report "Final de la simulación";
+    wait;
+  end process gen_vec_test;
+end architecture bp_Buffer_TriEstado;
+#+end_src
+
+
+* Conceptos Básicos de VHDL
+** Unidades de diseño
+- *Entity*, Definición de la interfaz entre el diseño y el entorno que la usa.
+      - Define *puertos de conexión* (señales entrada salida).
+      - Lo que es visible desde el mundo exterior.
+- *Architecture*, Define el comportamiento y la estructura de la entidad de diseño.
+      - Permite varias *architecture* para una *entity*.
+- *Package*, agrupa una colección de tipos de datos, subprogramas y componentes.
+      - Lo veo como una librería.
+- *Configuration*, Permite relacioner en tiempo de compilación la entity con la architecture.
+      - Está fuera del temario (ver en la documentación del ghdl).
+
+** Entity
+*** Cláusula port
+- Señales de la interfaz
+
+#+begin_src vhdl
+entity nombre is
+  port(
+    nombrePtSalida1 : (out|inout) tipo_dato;
+    ...
+    nombrePtEntreda1 : (in) tipo_dato;
+    ...
+);
+end entity nombre;
+#+end_src  
+
+- Señales de salida no pueden usarse nunca para alimentar otro puerto.
+      - Conviene definir señales intermedias. Por ejemplo.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity modoPuertos is
+  port(
+    x,y : out std_logic;
+    a,b : in std_logic
+    );
+end entity modoPuertos;
+
+architecture arch_correcta of modoPuertos is
+  signal ab : std_logic;             -- Señal intermedia del valor a and b
+begin
+  ab <= a and b;
+  x <= ab;
+  y <= not ab;                       -- y <= x está mal
+                                     --  x es modo out
+end architecture arch_correcta  
+#+end_src
+
+*** Cláusula generic
+- Se declara en la *entity*
+- Declara constantes que necesitan ser modificadas para adaptar el diseño a diferentes aplicaciones.
+- Valores típicos son los bits de un bus o el valor de los retardos
+
+#+begin_src vhdl
+entity and2 is
+  generic (Tpd : time);    -- Cláusula generic, puede ser usado
+                           --  en el cuerpo de cualquier
+                           --  architecture asociado
+  port    (y0 : out std_logic;
+           x0, x1 : in std_logic);
+end entity and2;
+#+end_src
+
+*** Declaraciones
+- subprogramas, atributos tipos de datos, etc que son visibles desde la propia *entity* y las *architectures* asociadas.
+
+#+begin_src vhdl
+entity bp is
+  constant WORD_SZ : integer := 16;
+  constant DELAY   : timer   := 10 ns;
+end entity bp;
+#+end_src
+
+*** Sentencias
+- sentencias assert.
+- llamadas concurrentes a procedimientos.
+- bloques process.
+- No deben producirse asignaciones a señales.
+- Se incluyen después de la asignación de puertos.
+
+** Architecture
+- Define el comportamiento y la estructura de la entidad de diseno.
+      - *Descripción estructural*, conexión de componentes de más bajo nivel.
+      - *Descripción de su comportamiento*.
+      - *Descripción mixta*, estructural y de comportamiento.
+
+#+begin_src vhdl
+architecture nombre_architecture of nombre_entity is
+  -- Declaración de señales y constantes locales
+  -- Declaración de componentes
+  -- Declaración de subprogramas
+begin
+  -- Instanciación de los componentes
+  -- Asignaciones concurrentes a señales y bloques process
+end architecture nombre_architecture;  
+#+end_src        
+
+** Asignaciones concurrentes
+- *Asignaciones concurrentes*, asignaciones contenidas entre el *begin* y el *end* de un *architecture*.
+- Se evaluan de forma concurrente.
+
+*** Asignación concurrentes simples
+Sintaxis:
+#+begin_src vhdl
+señal <= forma_de_onda;
+#+end_src
+
+La ejecución de una señal de asignación concurrente simple se produce en el instante en que cambia el valor de alguna de las señales que aparecen en la expresión a la derecha de <=.
+
+Se puede especificar el valor de retardo.
+
+#+begin_src vhdl
+y0 <= x1 + x2 after 10 ns;               -- 10 ns de retardo inercial
+y1 <= transport x3 + x4 after 10 ns;     -- 10 ns de retardo de transporte
+#+end_src
+
+Si no se indica el retardo es infinitesimal $\delta$.
+
+*** Asignación concurrentes conficionales
 
 * Glosario
 - *flip-flop*, creo que era un Biestable-T (toggle)
-- 
+- *VHDL*, lenguage para diseñar circuitos
 
 * Recursos
 - https://www.dia.uned.es/71012018/ página web de la asignatura.
-        
+- https://ghdl-rad.readthedocs.io/en/stable/using/QuickStartGuide.html, ghdl documentation.
+
 * Notas
-- VHDL, lenguage para diseñar circuitos
-- ModelSim, software para editar y simular circuitos
+- *ModelSim*, software para editar y simular circuitos
 - Emacs + ghdl, alternativa para simular
 
-  
+* GHDL
+** Compile and run
+#+begin_src sh
+ghdl -a hello.vhd       # analysis
+ghdl -e hello_world     # elaborate
+ghdl -r hello_world     # run
+#+end_src
