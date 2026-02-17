@@ -307,7 +307,8 @@ infixl 6 +,-      -- e.g 3 - 5 - 2 = (3 - 5) - 2
 identificador <patron1> <patron2> ... <patronN> = <expresión>
 #+end_example
 
-- *patron*, argumentos de entrada de cada función.
+- *patron*, Como argumentos de entrada de cada función.
+      - Más versatil que un simple argumento.
 - Una función puede definirse con más de una ecuación.
 
 ***** Patrones Constantes
@@ -333,11 +334,11 @@ siempre2 _ = 2
 ***** Patrones para listas
 - [], lísta vacía (patrón constante).
 - [x], lista con un único elemento referenciado como x.
-- [x:xs], lista con un elemento de cabeza x y una cola xs.
+- (x:xs), lista con un elemento de cabeza x y una cola xs.
 
 #+begin_src haskell
 suma [] = 0
-suma [x:xs] = x + suma xs
+suma (x:xs) = x + suma xs
 #+end_src
 
 ***** Patrones para tuplas
@@ -346,6 +347,12 @@ Se referencian entre paréntesis, eg. (x,y,z).
 ***** Patrones con nombre
 #+begin_src haskell
 duplicaCabeza l@(x:xs) = x:l
+#+end_src
+
+***** Patron aritmético
+La siguiente definición substrae 3 del valor de entrada. Están deprecados.
+#+begin_src haskell
+f (n + 3) = n
 #+end_src
 
 **** Expresiones case
@@ -563,6 +570,15 @@ dos = Sucesor uno
 tres = Sucesor dos
 #+end_src
 
+Función mayor que.
+
+#+begin_src haskell
+mayor (Sucesor _) Cero = True              -- Aquí (Sucesor _) acepta un elemento
+                                           --  con una capa de (Sucesor )
+mayor Cero _ = False
+mayor (Sucesor x) (Sucesor y) = mayor x y  -- Los patrones de entrada eliminan
+                                           --  una capa de (sucesor )
+#+end_src
 
 
 * Glosario
