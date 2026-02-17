@@ -711,7 +711,7 @@ end architecture flipflop_D
 * GHDL
 ** Compile and run
 #+begin_src sh
-ghdl -a hello.vhd       # analysis
+ghdl -a hello.vhd       # analysis, genera hello.o
 ghdl -e hello_world     # elaborate
 ghdl -r hello_world     # run
 #+end_src

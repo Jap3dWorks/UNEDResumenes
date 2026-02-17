@@ -1,4 +1,5 @@
 #+title: Teoría de los lenguajes de Programación
+#+author: Jordi Amposta Pérez
 
 * Paradigmas de computación
 - Generaciones Lenguajes Programación
@@ -11,7 +12,6 @@
       - Quinta generación, muy relacionada con el área de la Inteligencia Artificial.
             - Se especifica el problema y como se resuelve con una secuencia de acciones.
             - Prolog y Haskel.
-
 
 ** Abstracción en los lenguajes de rogramación
 - Abstracción de datos y de control
@@ -44,7 +44,6 @@
       - Subprogramas (funciones, métodos, procedimientos)
 - Abstracciones de control tipo unitario
       - Colección de subprogramas en una unidad en si misma independiente del programa.
-        
         
 ** Introducción a los paradigmas de computación
 - Inicialmente los lenguajes se basaron en el *modelo de computación Von Neumann*.
@@ -179,12 +178,393 @@ Busca el valor de X que hace cierta la siguiente pregunta.
 **** Interoperabilidad
 - La posibilidad de que un código escrito en un lenguaje interactue con el código escrito en otro lenguaje.
 
+* Programación Funcional
+- Diferente a la programación imperativa.
+      - No tan cercano al hardware.
+- *Currificación*, devolver una función desde otra función, aprovechando para reducir el número de parámetros.
+
+**  Programas como funciones
+- Un programa funcional contiene funciones definidas por el programador.
+      - El programador no se preocupa cómo se realiza el cálculo.
+- Las variables no hacen referencia a posiciones en memoria.
+- No existe la asignación.
+- Sentencias del tipo $x=x+2$ no son válidas.
+- Una constante puede ser considerada una función sin parámetro.
+- Desaparecen los bucles, en su lugar se hace uso de la *recursión*.
+- No existe *estado del cómputo*.
+- En programación funcional un programa consiste en la definición matemática de una seria de funciones que toman unos argumentos de entrada y realizan un cómputo sobre ellos.
+
+Ejemplo función factorial en C y en Haskell  
+
+#+begin_src c
+int factorial(int n) {
+    int f = 1;
+    for (int x=1; x <=n; x++) {
+        f = f*x;
+    }
+    return f;
+}
+#+end_src  
+
+#+begin_src haskell
+factorial n
+  n <= 0 = 1                       -- definición si n <= 0
+  otherwise = n * factorial(n-1)   -- definicinón en otro caso
+#+end_src
+
+- Las funciones son ciudadanos de primera clase.
+      - Pueden devolverse desde otra función.
+      - Pueden pasarse como parámetro.
+
+#+begin_src haskell
+suma3 x = x  3
+funCuadrado f x = f x * f x
+
+funCuadrado suma3 5
+#+end_src
+
+#+RESULTS:
+
+** Evaluación Perezosa
+- Se evalua el valor de un parámetro solo cuando se usa.
+- función *no estricta*, no necesita conover el valor de todos sus parámetros para devolver un resultado.
+- *memoización*, permite guardar el valor de un parámetro la primera vez que se evaluó.
+
+Ejemplo con listas de haskell.
+
+#+begin_example
+[1..]      -- Define una lista de todos los números Naturales desde el 1
+1:[2..]    -- Se evalua el primer elemento (lista tipo cabeza cola)
+1:2:[3..]
+#+end_example
+
+- Permite programar funciones *productoras* y funciones *consumidoras*.
+
+#+begin_src haskell
+-- los valores se irán calculando a medida que se acceden
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+#+end_src  
+
+** Introducción a Haskell
+- Case sensitive
   
+*** Tipos de datos
+- Los tipos se escriben en PascalCase
+- *Tipos atómicos*
+      - *Int*, enteros ligados a la arquitectura del ordenador (acotados).
+      - *Integer*, conjunto de números enteros sin ningún límite.
+      - *Float*, reales de precisión simple.
+      - *Double*, reales de precisión doble.
+      - *Char*, carácteres ACII-7.
+      - *Bool*, booleanos, True o False.
+- *Tipos estructurados*
+      - *Tupla*,secuencia finita de valores, pueden tener tipos diferentes.
+            - `(4,"vacio", False)`
+      - *Lista*, una colección no necesariamente finita de valores del mismo tipo
+            - Las cadenas de carácteres son listas de [Char].
+            - Son estructuras recursivas cabeza:cola:..:[].
+            - *Listas definidas por extensión*
+                  - [1,2,3]
+                  - [1,3..10]
+                  - [1,3..]
+            - *Listas definidas por comprensión*
+                  - [p | p <- [1..], mod p 2 /=0 ]
+
+*** Definición de Funciones
+- Dos formas de definirse
+      - *Identificador* una palabra que empiezan siempre en *minúscula*.
+            - Puede contener ' _ entre otros símbolos.
+            - Se usan de forma *prefija*
+            - Se puede usar de forma *infija* usando `
+                  - 3 `suma` 4
+      - *Operadores*, secuencia de uno más de los siguientes carárcters
+            - : ! # $ % * + . / < + > ? @ \ ^ | -
+            - Las siguientes combinaciones tienen un uso especial.
+                  - :: = .. @ \ | <- -> ~ =>
+            - Se utilizan de forma *infija* (exactamente 2 parámetros de entrada).
+            - Se pueden usar de forma *prefija* con el uso de ().
+                  - (+) 3 4
+- *precedencia* y *asociatividad*
+      - Se asigna un valor de *precedencia* a cada función (más alto mejor).
+      - funciones definidas con *identificador* tiene más precedencia que las definidas por *operador*.
+            - f x + 1 sería (f x) + 1
+
+Definir reglas de precendencia y asociatividad.
+
+#+begin_src haskell
+asociatividad precedencia lista_de_operadores
+-- asociatividad: infixr (derecha), infixl (izquierda), infix (no asocian)
+-- precedencia: entre 0 y 9
+-- lista_de_operadores: símbolos de operador separados por ,
+
+-- ejemplo de suma y resta
+
+infixl 6 +,-      -- e.g 3 - 5 - 2 = (3 - 5) - 2
+#+end_src              
+
+**** Definición ecuacional y encaje de patrones
+#+begin_example
+identificador <patron1> <patron2> ... <patronN> = <expresión>
+#+end_example
+
+- *patron*, argumentos de entrada de cada función.
+- Una función puede definirse con más de una ecuación.
+
+***** Patrones Constantes
+#+begin_src haskell
+f 1 = True
+f 2 = False
+#+end_src
+
+Cualquier otro valor de entrada generaría un error.
+
+***** Patrones Variables
+#+begin_src haskell
+suma x y = x + y
+#+end_src
+
+***** Patrones anónimos
+Se representan con _, no pueden ser referenciados.
+
+#+begin_src haskell
+siempre2 _ = 2
+#+end_src
+
+***** Patrones para listas
+- [], lísta vacía (patrón constante).
+- [x], lista con un único elemento referenciado como x.
+- [x:xs], lista con un elemento de cabeza x y una cola xs.
+
+#+begin_src haskell
+suma [] = 0
+suma [x:xs] = x + suma xs
+#+end_src
+
+***** Patrones para tuplas
+Se referencian entre paréntesis, eg. (x,y,z).
+
+***** Patrones con nombre
+#+begin_src haskell
+duplicaCabeza l@(x:xs) = x:l
+#+end_src
+
+**** Expresiones case
+#+begin_src haskell
+case expresion of
+  patron1 -> resultado1
+  patron2 -> resultado2
+  -- ...
+  patronN -> resultadoN
+#+end_src
+
+**** Funciones definidas a trozos
+#+begin_example
+identificador <lista_de_patrones>
+  | guarda1 = expresion1
+  -- ...
+  | guardaN = expresionN
+#+end_example
+
+- Las guardas son expresiones tipo *Bool*.
+- Se devuelve el valor de la primera guarda con valor *True*.
+
+#+begin_src haskell
+abs x
+  | x >= 0 = x
+  | x < 0  = -x
+#+end_src
+
+Usando *otherwise*, si no se cumple ninguna guarda.
+
+#+begin_src haskell
+abs x
+  | x >= 0 = x
+  | otherwise = -x
+#+end_src
+
+**** Definiciones locales
+#+begin_example
+definición_de_la_funcion
+  where
+    subfuncion1
+    ...
+    subfuncionN
+#+end_example
+
+#+begin_src haskell
+f x y = (a+1) * (c-1)
+  where
+    a = div (x+y) 2
+    c = mod (x+y) 2
+#+end_src
+
+- Permite usar patrones en cualquier punto de una expresión.
+
+#+begin_example
+let definición in expresión
+#+end_example
+
+Por ejemplo
+
+#+begin_src haskell
+let a x = x + 1 in a 100
+#+end_src
+
+**** Funciones anónimas
+- Expresiones lambda
+
+#+begin_src haskell
+esPar x = mod x 2 == 0
+#+end_src
+
+En expresión anónima sería.
+
+#+begin_src haskell
+(\x -> mod x 2 == 0) 4
+#+end_src
+
+**** La función error
+- Detiene la ejecución y muestra un mensaje informativo
+
+#+begin_src haskell
+divide a 0 = error "No se puede dividir por 0"
+divide a b = a / b  
+#+end_src
+
+*** El tipo de las funciones
+#+begin_example
+identificador :: expresionDeTipo
+#+end_example
+
+- Muy similar a la notación matemática $f: \mathbb{R} \to \mathbb{R}$
+
+#+begin_src haskell
+doble :: Float -> Float
+
+doble x = 2*x
+#+end_src  
+
+**** Polimorfismo
+- Funciones con una definición para varios tipos de datos.
+
+**** Currificación de funciones y aplicación parcial
+#+begin_src haskell
+suma :: Float -> Float -> Float
+suma x y = x + y  
+#+end_src
+
+El operador -> asocia a la derecha, por tanto.
+
+#+begin_example
+suma :: Float -> Float -> Float
+-- realmente se aplica la currificación
+suma :: Float -> (Float -> Float)
+#+end_example  
+
+- Función definida por *aplicación parcial*.
+
+#+begin_src haskell
+suma3 :: Float -> Float
+suma3 = suma 3  
+#+end_src
+
+**** Funciones de orden superior
+- Funciones que reciben como parámetro de entrada otras funciones.
+
+#+begin_src haskell
+aplica f x y = f x y
+#+end_src  
+
+*** Tipos de datos avanzados
+**** El valor indefenido: Bottom
+- /undefined/ representa un valor indefenido de cualquier tipo.
+
+**** Sinónimos de tipos: type
+- Definición de un nuevo nombre para un tipo que ya existe.
+
+#+begin_src haskell
+type Caracter = Char
+type String = [Caracter]
+#+end_src
+
+#+begin_src haskell
+type Complex = [Double, Double]
+a :: Complex
+a = (3.4, 2.5)
+#+end_src
+
+**** Definición de nuevos tipos de datos: data
+***** Tipos enumerados
+Deben empezar con mayúscula.
+
+#+begin_src haskell
+data Semaforo = Rojo | Amarillo | Verde
+  deriving (Eq,Ord,Show,Read)   -- Deriva de estas clases
+#+end_src
+
+- Clases más usadas como deriving.
+      - Eq, permite comparar elementos.
+      - Ord, establece una relación de orden entre los elementos.
+      - Show, permite que el intérprete pueda mostrar un valor de este tipo.
+      - Read, permite convertir cadenas de texto en elementos del tipo.
+            - read "Rojo"::Semaforo , crea el elemento rojo del tipo Semáforo.
+
+***** Unión de tipos
+:PROPERTIES:
+:ID:       a8e2199b-13a0-421a-9c31-cdd5cac0feff
+:END:
+
+Permite agrupar en un único tipo elementos de dos tipos diferentes.
+
+#+begin_src haskell
+data BooleanoEntero = Booleano Bool | Entero Integer
+
+listaMixta :: [BooleanoEntero]
+listaMixta = [Entero 0, Booleano True, Booleano False, Entero -1]  
+#+end_src
+
+***** Producto Cartesiano
+
+#+begin_src haskell
+data Asignatura = Asig String Integer String
+#+end_src
+
+Más similar a un tipo registro.
+
+#+begin_src haskell
+data Asignatura = Asig { nombre :: String, curso :: Integer, web :: String }
+#+end_src
+
+Definición de una función constante.
+
+#+begin_src haskell
+tlp = Asig { nombre = "Nombre", curso=2, web="una web" }
+#+end_src
+
+Y para acceder a uno de los atributos podemos hacer.
+
+#+begin_src haskell
+esDePrimero x = curso x == 1
+#+end_src
+
+***** Tipo de datos recursivos
+
+#+begin_src haskell
+data Natural = Cero | Sucesor Natural
+#+end_src
+
+Parece similar a una [[id:a8e2199b-13a0-421a-9c31-cdd5cac0feff][Unión de tipos]].
+
+Luego puede escribirse.
+
+#+begin_src haskell
+uno = Sucesor Cero
+dos = Sucesor uno
+tres = Sucesor dos
+#+end_src
 
 
 
-
-
-
-
+* Glosario
+- *Evaluación impaciente*, /factorial(4*5)/ primero evalua el resultado de 4*5.
 
