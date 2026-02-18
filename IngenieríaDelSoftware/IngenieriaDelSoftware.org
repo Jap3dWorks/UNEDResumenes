@@ -1,0 +1,111 @@
+#+title: Introducción a la ingenería del software
+#+author: Jordi Amposta Perez
+
+* Introducción
+
+** Tipos de software
+- *Software de sistemas*, Sistemas operativos, compiladores
+      - Dan soporte a otros programas.
+- *Software de aplicación*, Resolver problemas específicos de los negocios.
+- *Software de ingeniería y ciencias*, Elaboración de algoritmos matemáticos para modelar y simular complejos sistemas o procesos.
+- *Software incristado*, Reside en el interior de un producto o sistema.
+- *Software de linea de producto*, da una determinada funcionalidad al consumidor.
+- *Aplicaciones Web*, webapps
+- *Software de inteligencia artificial*, aplicaciones robóticas, visión artificial, etc.
+- *Software en la nube*, Servicios informáticos a través de internet.
+
+** Ingeniería del software
+- Aplicación de un enfoque sistemático, disciplinado y cuantificable al desarrollo, operación y mantenimiento de software.
+
+** Calidad del software
+- Factores
+      - *Corrección*, grado en el que cumple sus especificaciones. Porcentaje de requisitos.
+      - *Fiabilidad*, grado de ausencia de fallos.
+      - *Eficiencia*, Relación entre la cantidad de resultados y los recursos requeridos.
+      - *Seguridad*, Dificultad de acceso a los datos o operaciones por personal no autorizado.
+      - *Facilidad de uso*, Inversa al esfuerzo requerido para aprender a utilizar el software adecuadamente.
+      - *Mantenibilidad*, Facilidad para corregir el el producto en caso necesario.
+      - *Flexibilidad*, Facibilidad para modificar el producto de software.
+      - *Facilidad*, Inversa al esfuerzo requerido para comprobar su corrección y fiabilidad.
+      - *Transportabilidad*, Facilidad para adaptar el producto software a una plataforma.
+      - *Reusabilidad*, Facilidad para emplear partes del producto en otros desarrollos posteriores.
+      - *Interoperatividad*, Facilidad o capacidad del producto de software para trabajar en combinación con otros productos.
+- El software se somete a pruebas para detectar errores
+      - La ausencia de errores en las pruebas no implica que el software esté libre de estos.
+      - El número de errores tiende a dispararse siempre que se introducen cambios en el software.
+
+** Fábrida de software
+- Empresa de la industria del software cuya misión es el desarrollo de software para sus clientes.
+      - También proporciona a los clientes personal para el desarrollo o mantenimiento de aplicaciones software.
+
+* Ciclo de vida del Software
+- Fases
+      - *Análisis*, Necesidades que tienen los usuarios del futuro sistema de software.
+            - Deben satisfacerse mediante el funcionamiento del software.
+      - *Diseño*, Consiste en elaborar un esquema o diseño donde se contemplan los elementos necesarios para que el sistema funcione según lo especificado en el análisis.
+            - También se establece la organización del sistema para su construcción.
+            - Los planos de lo que se va a construir.
+      - *Codificación*, Se produce materialmente lo que va a hacer que funcione el sistema de software.
+      - *Integración*, Unir los elementos para construir el sistema completo.
+      - *Explotación*, Periodo de funcionamiento de la aplicación.
+      - *Mantenimiento*, Cambios y arreglo de errores durante la fase de explotación.
+- Cada fase genera actividades o tareas que hay que realizar y documentar.
+- Deben poderse completar por grupos de trabajo diferentes.
+
+** Documentos que se generan en el ciclo de vida
+*** Decumentos de requisitos del software
+- *SRD*, Software Requirements Document.
+- Producto de la fase de análisis.
+- Especificación precisa y completa de lo que debe hacer el sistema.
+      - Prescindiendo de los detalles internos.
+
+*** Documento de diseño del software
+- *SDD*, Software Design Document.
+- Producto de la fase de diseño.
+- Descripción de la estructura global del sistema.
+- Indica que debe hacer cada una de sus partes y la combinación de unas con otras.
+
+*** Código fuente
+- Producto de la fase de codificación.
+- Contiene los programas fuente en el lenguaje de programación elegido.
+      - Debidamente comentados.
+
+*** El sistema software
+- Ejecutable como producto de la fase de integración.
+- Debe documentarse el procedimiento de integración.
+- Deben documentarse las pruebas realizadas.
+
+*** Documentos de cambios
+- Hay que dejar constancia de cada modificación en la fase de mantenimiento.
+- Suelen organizarse de la siguiente manera.
+      - Información sobre el problema detectado.
+      - Descripción de la solución adoptada.
+      - Modificaciones realizadas sobre el sistema par aplicar dichas soluciones.
+
+** Tipos de ciclo de vida del software
+*** Ciclo de vida en cascada
+- Secuencia de las distintas fases de producción del software.
+- Los documentos descritos actuan como elementos de unión entre las fases.
+- Obliga a terminar cada fase antes de empezar con la siguiente.
+- Se establecen procesos de revisión al terminar cada fase.
+      - Se sigue una lista de comprobaciones establecida de antemano.
+
+*** Ciclo de vida en V
+- Se basa en una secuencia de fases parecida al ciclo tipo cascada.
+- Se da importancia a una visión jerarquizada de las distintas fases.
+- pag 39
+
+** Prototipos
+- Sistema auxiliar que permite probar experimentalmente ciertas soluciones parciales a las necesidades del usuario o a los requisitos del sistema.
+- Coste sensiblemente inferior al sistema final.
+- Para reducir el costo del prototipo se puede.
+      - Limitar las funciones y desarrollar solo una pocas.
+      - Limitar su capacidad.
+      - Limitar su eficiencia.
+      - Evitar limitaciones con un hardware más potente.
+      - Reducir la parte a desarrollar, usando un apoyo software más potente.
+
+*** Prototipos rápidos        
+- Pretenden adquirir experiencia sin pretender aprovecharlo.
+- Se aprovechan dentro de las fases de análisis y/o diseño.
+- 
