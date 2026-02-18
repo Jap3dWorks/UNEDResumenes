@@ -1,4 +1,5 @@
 #+title: Fundamentos de inteligencia artificial
+#+startup: latexpreview
 
 * Aspectos conceptuales de la Inteligencia Artificial y la ingeniería del conocimiento
 - Propósito general de la IA es desarrollar
@@ -119,6 +120,224 @@
       - Operacionalización efectiva del esquema inferencial, con módulos simbólicos y neuronales.
 
 * Lógica y representación del conocimiento
+
+* Introducción a las técnicas de búsqueda
+** Algunos ejemplos
+*** Generación de planes de actuación de robots
+- Un entorno de actuación y un robot con un repertorio finito de opciones.
+- Programar un robot consiste en.
+      - Funciones de percepcion del entorno.
+      - Funciones de formulación de planes de actuación.
+      - Funciones de seguimientos de los planes.
+- Según pag 311 es un problema de optimización casi tipo *Ramificación y poda* o *vuelta atrás*.
+      - se usa una función /mueve(x,y)/ para ir avanzando en la solución.
+
+*** Problema de rutas óptimas en grafos        
+- pag 312, habla del algoritmo de dijkstra y el del viajante de comercio (travelling salesman problem (TSP)) (ram. y poda).
+
+*** Juegos con contrincante
+- pag 313
+- Juegos como damas o ajedrez.
+- La idea es que cada jugador (ambos IA) eligan la jugada más favorable.
+
+** Formulación de problemas de búsqueda
+- Componentes principales de un *sistema de búsqueda*.
+      - *Los estados*, todas las situaciones por las que el agente puede eventualmente pasar durante la solución del problema.
+            - Implica la elección de el modelo de representación.
+      - *Reglas u operadores*, modelan las acciones elementales que es capaz de realizar el agente.
+            - La interpretación del coste de cada operador debe hacerse a partir de la función objetivo.
+      - *La estratégia de control*, Decide el orden en que se van explorando los estados.
+            - La *búsqueda a ciegas* implica visitar más estados.
+            - *La búsqueda inteligente* debe implicar visitar menos estados.
+- *Estados* y *operadores* definen en *espacio de búsqueda*.
+      - Algunos *nodos* (representación de grafo) del espacio de búsqueda representan las soluciones.
+- Un *algoritmo de búsqueda es completo* si siempre encuentra solución, en el caso que exista alguna.
+- Un *algoritmo de búsqueda es admisible* o exacto si siempre encuentra una solución óptima.
+
+** Métodos de búsqueda sin información
+- Búsquedas de forma sistemática sin tener en cuenta nungún tipo de información sobre el dominio del problema.
+- Se suele considerar un árbol como espacio de búsqueda.
+      - El grafo para espacios de búsqueda más generales.
+
+*** Recorrido de árboles
+**** Primero en Anchura
+- Es un *algoritmo completo*.
+- Si todas las reglas tienen un coste de 1 es *admisible*.
+- Tiempo de ejecución y el espacio de memoria crecen de forma exponencial.
+- El número de nodos total (que pueden visitarse) de un árbol es una *sucesión geométrica*.
+      - $\sum_{i=0}^d b^{i} = \frac{b^{d+1} - 1}{b-1}$
+            - $b$ es el número de hijos de cada nodo, que puede ser el caso medio.
+            - Se supone que el nivel 0 es de 1 solo nodo.
+
+#+begin_src pseudocode
+ABIERTA=(inicial)
+mientras NoVacia(ABIERTA) hacer
+    n <- ExtraePrimero(ABIERTA)
+    
+    si EsObjetivo(n) entonces
+        dev Camino(inicial,n)
+    fsi
+    
+    S = Sucesores(n)
+    
+    para cada q en S hacer
+        pone q en la TABLA_A con         // TABLA_A almacena los datos de un estado de búsqueda
+            Anterior(q) = n,
+            Coste(inicial,q) <- Coste(inicial,n) + Coste(n,q)
+        ABIERTA <- ABIERTA union {q}
+    fpara
+fmientras
+dev "No encontrado"
+#+end_src
+
+**** Primero en profundidad
+- No es una estratégia admisible ni completa, puede adentrarse en un rama infinita.
+      - Suele establecerse una profundidad límite.
+- Si la profundidad límite es $d$, el espacio requerido máximo es.
+      - $(b-1)(b-2) + b$ para ABIERTA
+      - $1+(d-1)b$ para TABLA_A
+- Máximo de nodos visitados $\frac{b^{d+1}-1}{b-1}$
+
+#+begin_src pseudocode
+ABIERTA=(inicial)                 // Es una pila
+mientras NoVacia(ABIERTA) hacer
+    n=ExtraePrimero(ABIERTA)
+    si EsObjetivo(n) entonces
+        devolver Camino(inicial,n)
+    fsi
+    S={}
+    si Profundidad(n) < ProdundidadLimite entonces
+        S = Sucesores(n)
+    fsi
+    si Vacio(S) entonces
+        LimpiarTabla_A(n)
+    fsi
+    para cada q en S hacer
+        pone q en la TABLA_A con
+            Anterior(q) <- n,
+            Coste(inicial,1) <- Coste(inicial,n) + Coste(n,q),
+            Profundidad(q) <- Profundidad(n) + 1
+        Encola(q, ABIERTA)
+    fpara
+fmientras
+
+dev "No encontrado"
+#+end_src        
+
+**** Coste uniforme
+- En vez de usar una pila o una cola pueden insertarse los nodos en una estructura ordenada.
+      - Se ordenan por coste desde el nodo inicial.
+- Es un *algoritmo admisible*.
+
+****   Búsquedas en profundidad y en anchura iterativas
+pag 320
+
+- Búsqueda en profunidad que se va ampliando la produndidad límite si no se encuentra ninguna solución.
+
+#+begin_src pseudocode
+ProfundidadLimite <- 1
+Solucion <- BusquedaPrimeroenProfundidad
+mientras Solucion = "No encontrado" hacer
+    Solucion <- BusquedaPrimeroenProfundidad
+fmientras
+dev Solucion
+#+end_src
+
+- Búsqueda en anchura que va ampliando la anchura límite si no se encuentra ninguna solución.
+
+#+begin_src pseudocode
+AnchuraLimite <- 0
+mientras se pueda aumentar la AnchuraLimite hacer
+    AnchuraLimite <- AnchuraLimite + 1
+    ABIERTA <- (inicial)
+    mientras NoVacia(ABIERTA) hacer
+        n <- ExtraePrimero(ABIERTA)
+        
+        si EsObjetivo(n) entonces
+            dev Camino(inicial,n)
+        fsi
+        
+        S <- Sucesores(n,AnchuraLimite)  // AnchuraLimite limita el número
+                                         //  de nodos sucesores
+        para cada q en S hacer
+            poner q en la TABLA_A con
+                Anterior(q) <- n,
+                Coste(inicial,q) <- Coste(inicial,n) + Coste(n,q)
+                
+            Encolar(q, ABIERTA)
+        fpara
+    fmientras
+fmientras
+dev "No encontrado"
+#+end_src
+
+*** Recorrido de grafos
+- A veces el ábol no sirve para modelar los estados de una solución.
+      - Por ejemplo en el cálculo de actuación de planes de un robot.
+
+**** Algoritmo general de búsqueda en grafos (AGBG)
+- Grafo dirigido simple a partir de operadores o reglas de producción.
+- Número de reglas con un coste $\leq \varepsilon$, $\varepsilon > 0$, debe ser finito.
+- Grafo localmente finito, cada nodo tiene un número finito de sucesores.
+
+#+begin_src pseudocode
+// TABLA_A contiene el mejor camino encontrado desde inicial a cada nodo.
+ABIERTA <- (inicial)
+mientras NoVacia(ABIERTA) hacer
+    n <- ExtraePrimero(ABIERTA)
+    si EsObjetivo(n) entonces
+        dev Camino(inicial, n)
+    fsi
+    S <- Sucesores(n)
+    Añade S a la entrada n en TABLA_A
+    para cada q de S hacer
+        si q en TABLA_A entonces
+            Rectificar(q,n,Coste(n,q))   // Se comprueba si el nuevo camino es mejor
+            Ordenar(ABIERTA)             // Ordenación por coste
+            // No se incluye en ABIERTA
+        sino
+            pone q en la TABLA_A con
+                Anterior(q) <- n,
+                Coste(inicial,q) <- Coste(inicial,n) + Coste(n,q)
+            ABIERTA <- Mezclar(q, ABIERTA)  // Inserta q en abierta
+                                            //  Según la posición la búsqueda será
+                                            //  en profundidad o en anchura
+        fsi
+    fpara
+fmientras
+dev "No solución"
+#+end_src
+
+#+begin_src pseudocode
+fun Rectificar(n,p,costepn)
+    si (Coste(inicial,p) + costepn) < Coste(inicial,n) entonces
+        modifica la entrada del nodo n en la TABLA_A con
+            Coste(inicial,n) <- Coste(inicial,p) + costepn
+            Anterior(n) <- p
+        RectificarLista(n)
+    fsi
+ffun
+
+fun RectificarLista(n)
+    LISTA <- Sucesores(n)    // Registrados en la TABLA_A
+    para cada q de LISTA hacer
+        Rectificar(q,n,Coste(n,q))
+    fpara
+ffun
+#+end_src
+
+**** Búsqueda bidireccional
+- Buscar simultáneamente en dos direcciones.
+      - De inicio a los objetivos.
+      - De los objetivos a inicio.
+- La búsqueda se detiene cuando las fronteras (listas ABIERTA) tienen algún nodo en común.
+- En lugar de exponencial a $d$ podrían ser dos algoritmos a $d/2$.
+- Hay que conocer los estados objetivos.
+- Almenos una de las búsquedas debe retener en memoria todos los estados visitados.
+      - Por tanto búsqueda en anchura.
+      - Por tanto el espacio requerido es exponencial en $d/2$.
+- Requiere un método eficiente para comprobar intersecciones de las dos listas.
+      - tablas Hash puede valer.
 
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
