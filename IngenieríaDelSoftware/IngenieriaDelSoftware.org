@@ -2,7 +2,6 @@
 #+author: Jordi Amposta Perez
 
 * Introducción
-
 ** Tipos de software
 - *Software de sistemas*, Sistemas operativos, compiladores
       - Dan soporte a otros programas.
@@ -107,5 +106,228 @@
 
 *** Prototipos rápidos        
 - Pretenden adquirir experiencia sin pretender aprovecharlo.
-- Se aprovechan dentro de las fases de análisis y/o diseño.
-- 
+- Se aprovechan dentro de las fases de *análisis y/o diseño*.
+- Importante desarrollarlos en poco tiempo.
+
+*** Prototipos evolutivos
+- Trata de aprovechar al máximo su código.
+- Se desarrolla sobre el hardware/soporte final.
+- Se inicia tras unas fases parciales de análisis y diseño.
+      - Se itera entre análisis y diseño y se avanza el prototipo hasta el producto final.
+
+*** El modelo en espiral
+- Puede considerarse como un refinamiento del modelo evolutivo general.
+- Introduce la actividad de análisis de riesgo como elemento fundamental para guiar la evolución del proceso de desarrollo.
+- Cada ciclo en espiral realiza una parte del desarrollo total.
+- Ejes cartesianos
+      - PLANIFICACIÓN
+      - ANÁLISIS DE RIESGO
+      - INGENIERÍA
+      - EVALUACIÓN
+
+** Programación extrema
+- Metodología de desarrollo ágil.
+- Pretende ser capaz de responder de una forma rápida y de calidad a las exigencias de los clientes.
+      - Da por sentado que las exigencias del cliente cambian durante el tiempo.
+- 4 valores esenciales
+      - SENCILLEZ, Se programa solo aquello que se ha pedido.
+            - Se asume que se recodificará de forma continua.
+      - COMUNICACIÓN, se potencia el trabajo en equipo.
+            - Tanso con el grupo de desarrollo como con el cliente.
+      - RETROALIMENTACIÓN, En muy poco tiempo se evalua el diseño y se cambia si es necesario.
+            - Se preparan pruebas unitarias e integración continua.
+      - VALENTÍA (XDD), Los programadores afrontan recodificación continua, modificaciones, peticiones del cliente, etc.
+            - Importante el respeto hacia el trabajo de otros miembros del equipo.
+- Propone ciclos de desarrollo muy cortos realizando pruebas de unidad inmediatas y una integración continua.
+      - Se replanifica y rediseña con cada nueva versión.
+
+** Mantenimiento del software
+- Consiste en repetir o rehacer partes  de las actividades de fases enteriores.
+- La aplicación ya se encuentra en explotación.
+
+*** Evolución de las aplicaciones
+- Aunque el software no se deteriora como el hardware hay motivos para modificarlo.
+
+**** Mantenimiento correctivo
+- Corregir errores que no habían sido detectados y eliminados durante el desarrolo inicial.
+
+**** Mantenimiento adaptativo
+- Aplicaciones cuya explitación dura bastantes años.
+- Modificar la aplicación para adaptarla a las nuevas características del entorno.
+
+**** Mantenimiento perfectivo
+- Aplicaciones sujetas a competencia de mercado.
+- Ir obteniendo versiones mejoradas del producto que permitan mantener el éxito.
+- Las necesidades iniciales del usuario evolucionan.
+  
+*** Gestión de cambios
+- Un cambio muy amplio en el software puede plantearse como un nuevo desarrollo.
+- Cambios localizados deben actualizar los documentos afectados.
+- A los cambios les suelen acompañar dos documentos.
+      - Informe del problema.
+            - Puede ser originado por los usuarios.
+      - Informe del cambio.
+
+*** Reingeniería
+- Es la ingeniería inversa.
+- Debe aplicarse en el mantenimiento de software desarrollado de forma artesanal.
+- Incluye modificar el código fuente para reestructurarlo más apropiadamente.
+- Incluye generar un systema bien organizado y documentado.
+  
+** Garantía de calidad de software
+*** Plan de garantía de calidad
+- *Plan de garantía de calidad del Software*, Documento que incluye la organización del proceso de desarrollo. Contempla los siguientes aspectos.
+      - Organización de equipos de personas y la dirección y seguimiento del desarrollo.
+      - Modelo de ciclo de vida a seguir.
+            - Con detalle de sus fases y actividades.
+      - Documentación requerida, especificando el contenido de cada documento y un guión del mismo.
+      - Revisiones y auditorías que se llevarán a cabo durante el desarrollo.
+      - Organización de las pruebas que se realizarán sobre el producto software a distintos niveles.
+            - A veces es un plan separado
+      - Organización de la etapa de mantenimiento.
+
+*** Revisiones
+- Inspeccionar el resultado de un aactividad para determinar si es aceptable.
+- Se aplican a la documentación generada en cada etapa o fase del desarrollo.
+- Recomendaciones sobre como formalizar las revisiones.
+      - Las revisiones deben realizarse por grupos de personas.
+      - Un grupo reducido de personas (de 3 a 5 personas).
+      - No debe ser realizada por los autores del producto.
+      - Se revisa el producto, pero no el productor ni el proceso de producción.
+      - Si la revisión ha de decidir la aceptación o no de un producto debe establecerse de antemano.
+      - Debe levantarse acta de la reunión de revisión.
+            - Este documento puede considerarse el producto de la revisión.
+
+*** Pruebas
+- Hacer funcionar el producto software o una parte de el en condiciones determinadas.
+- Las pruebas no garantizan la calidad del producto.
+      - Pueden haber errores que no se comprueban con las pruebas.
+
+*** Gestión de configuración
+- Manera en que diversos elementos se combinan para construir el producto software.
+- Elementos componentes de la configuración son todos los que intervienen en el desarrollo.
+      - Documentos del desarrollo.
+      - Código fuente de los módulos.
+      - Programas, datos y resultados de las pruebas.
+      - Manuales de usuario.
+      - Documentos de mantenimiendo.
+      - Prototipos intermedios.
+      - Normas particulares del proyecto
+      - etc
+- Para mantener el control de cada configuración se usan técnicas particulares.
+      - Control de versiones.
+      - Control de cambios.
+
+**** Control de versiones
+- Almacenar de forma organizada las sucesivas versiones de cada elemento de configuración.
+
+**** Control de cambios
+- Garantizar que las diferentes configuraciones del software se componen de elementos compatibles entre si, que constituyen un conjunto coherente.
+- *Línea base*, Configuración particular del sistema.
+      - Cada nueva *línea base* se construye con la inclusión de cambios a otra *línea base*.
+      - Deben superar pruebas y revisiones apropiadas.
+      - Constituyen configuraciones estables que no pueden ser modificadas.
+
+*** Normas y estándares
+- Son por ejemplo procedimeintos, recomendaciones, normas de codificación o la estructura de los documentos.
+- Encontramos las siguientes normas
+      - *IEEE*, Institute of Electrical and Electronics Enginering.
+            - Establece las normas ANSI.
+      - *DoD*, Departamento de defensa americano.
+            - Normas DoD-STD-2167A
+      - *ESA*, Agencia Europea del Espacio.
+            - Norma ESA91, normal genereral para el desarrollo de software.
+      - *ISO*, International Standards Organization.
+            - ISO-9001, Criterios que han de cumplir empresas que desarrollen software.
+                  - Se obtienen certificaciones.
+      - *CMMI*, Integración de Modelos de Madurez de Capacidades.
+            - Califica a las empresas según su nivel de madurez.
+            - Niveles de madurez.
+                  - Nivel 0, inexistente
+                  - Nivel 1, inicial
+                  - Nivel 2, Repetible
+                  - Nivel 3, Definido
+                  - Nivel 4, Gestionado
+                  - Nivel 5, Optimizado
+- Normas de carácter nacional español.
+      - *METRICA-2*, desarrolada por el Consejo Superior de Informática del Ministerio para las Administraciones Públicas (MAP).
+            - desarrollo de sistemas de información de las administraciones públicas.
+      - *METRICA-3*, Evolución de *METRICA-2*.
+
+* Especificación de Requisitos
+** Modelado de sistemas
+- Establecer modelos conceptuales que reflejen la organización de la información y las transformaciones que se llevan a cabo sobre dicha información.
+
+*** Concepto de modelo
+- El modelo de un sistema debe establecer las pripiedades y restricciones del sistema.
+- Visión de alto nivel.
+- El modelo explica Qué hace el sistema pero *NO* cómo debe hacerlo.
+- Objetivos a cubrir con el modelo.
+      - Facilitar la comprensión delproblema a resolver.
+      - Establecer un marco para la discusión.
+      - Fijar las bases para realizar el diseño.
+      - FAcilitar la verificación del cumplimiento de los objetivos del sistema.
+
+*** Técnicas de modelado
+**** Descomposición. Modelo jerarquizado
+- Descomponer el problema en otros más sencillos.
+- *Descomposición Horizontal*, trata de descomponer el problema según funcionalidad.
+      - Los subproblemas se pueden volver a dividir.
+- *Descomposición Vertical*, Se descompone tratando de detallar su estructura.
+      - Supone aplicar el método de refinamientos sucesivos al modelado.
+
+**** Aproximaciones sucesivas
+- Usar un modelos a un problema similar como punto de partida.
+- Se depura mediante aproximaciones sucesivas hasta alcanzar el modelo final.
+
+**** Empleo de diversas notaciones
+- A veces el modelo es demasiado complejo para usar una única notación para su elaboración.
+- Esquemas e imágenes son de gran valor.
+- Mención a las herramientas CASE.  
+
+**** Cosiderar distintos puntos de vista
+- Punto de vista del usuario final
+- Punto de vista del futuro mantenedor
+- Punto de vista funcional
+- etc
+
+**** Analisis del dominio
+- *Dominio* cuadro de acción en el que se encuadra el sistema.
+      - Terminologías existentes, manera de hacer las cosas, antecedentes, etc.
+- Es importante analizar el dominio para situar la aplicación en un entorno más global.
+- Algunas ventajas son.
+      - Facilitar la comunicación entre analista y usuario del sistema.
+      - Creación de elementos realmente significativos del sistema.
+      - Reutilización posterior del software desarrollado.
+
+** Análisis de requisitos de software
+- El ingeniero que realiza la fase de *analisis* es el *analista*.
+- El analisis de requisitos trata de de caracterizar el problema a resolver.
+- *Cliente*, un interlocutor válido para obtener información.
+      - Puede ser una o varias personas.
+- Si el cliente no existe por diferentes motivos, hay que buscarlo mediante documentación exhaustiva sobre el tema.
+
+*** Objetivos del análisis
+- Obtener las especificaciones que debe cumplir el sistema a desarrollar.
+- Se descartan la exigencias inalcanzables (por ser imposibles o por los recursos de los que se dispone).
+- Propiedades de un modelo global del sistema.
+      - Completo y sin omisiones.
+      - Conciso y sin trivialidades.
+      - Sin ambigüedades.
+      - Sin detalles de diseño o implementación.
+            - Se define Qué debe hacer el sistema pero *NO* el cómo.
+      - Facilmente entendible por el cliente.
+      - Separación de requisitos funcionales y no funcionales.
+            - Requisitos funcionales son el fruto del diálogo entre analista y cliente.
+            - Requisitos no funcionales encuadran el sistema dentro de un entorno de trabajo.
+                  - Aspectos de seguridad
+                  - Aspectos de fiabilidad
+                  - ...
+      - Dividir y jerarquizar el modelo.
+      - Fijación de los criterios de validación del sistema.
+            - Es buneo realizar un manual de usuario con carárcter preliminar.
+
+*** Tareas del análisis
+**** Estudio del sistema en su contexto
+
+
