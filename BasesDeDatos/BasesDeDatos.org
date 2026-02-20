@@ -222,4 +222,68 @@ create table departamento (
             - Asegurarse de que se dispone de suficiente espacio en disco.
             - Supervisar los trabajos que se ejecutan en la base de datos y asegurarse de que el rendimiento no se degrade a causa de tareas muy costosas.
 
+* Introducción al modelo relacional
+** Estructura de las bases de datos relacionales
+- Consiste en un conjunto de tablas.
+- *Relación* es una tabla.
+      - Corresponde al concepto *variable* en lenguajes de programación (pag 20 - 2.2).
+- *Tupla* es una fila.
+- *Atributo* es una columna.
+      - *Dominio*, Conjunto de valores permitidos en un atributo.
+      - Un *Dominio* es atómico si los elementos del dominio se consideran indivisibles.
+            - por ejemplo 1 número de teléfono y no una lista de teléfonos.
+      - Valor *null (nulo)* es especial. Significa valor desconocido o no existe.
+- *Ejemplar de relación*, instancia específica de una relación.
 
+** Esquema de la base de datos
+- *Esquema de la base de datos*, es el diseño lógico.
+      - *Esquema de la relación*, corresponde al concepto de definición de tipo.
+- *Ejemplar de la base de datos*, instantánea de los datos de la base de datos en un momento dado.
+
+** Claves
+- No se permite que dos tuplas de una misma relación tengan exactamente los mismos valores en todos los atributos.
+- *Superclave*, conjunto de uno o varios atributos que permiten identificar de manera unívoca una tupla de la relación.
+      - Por ejemplo un atributo *ID*.
+      - Si *K* es una superclave también lo es cualquier superconjunto que contenga a *K*.
+      - *Claves candidatas*, superclaves mínimas.
+      - *Clave primaria*, *clave candidata* elegida por el diseñador como media principal para identificar las tuplas de una relación.
+            - Sus valores no deberían cambiarse nunca.
+            - En un esquema de relación aparecen los primeros y subrallados.
+- *Clave externa*, una *relación* puede incluir la *clave primaria* de otra *relación*.
+      - *relación referenciante*, que incluye la clave primaria de otra relación.
+      - *relación referenciada*, su clave primaria ha sido usada como *clave externa*
+- *Restricción de integridad referencial*, requiere que los valores que aparecen en una *relacion referenciante* también aparezcan en almenos una tupla de la *relación referenciada*.
+
+** Diagramas de esquema
+- Representación gráfica del esquema de una base de datos.
+      - Esquema de la base de datos junto con las dependencias de clave primaria y externa.
+      - Solo se muestran las restricciones de clave externa.
+
+** Lenguajes de consulta relacional
+- *lenguaje de consulta*, lenguaje con el que los usuarios solicitan información de la base de datos.
+      - *Lenguajes procedimentales*, el usuario indica al sistema una seria de operaciones para calcular el resultado deseado.
+            - Algebra relacional
+      - *Lenguajes no procedimentales*, el usuario describe la información deseada sin detallas el procedimiento para obtener información.
+            - Cálcula relacional de tuplas
+            - Cálculo relacional de dominios
+
+** Operaciones relacionales
+- Propio de los *lenguajes procedimentales*.
+- Operaciones sobre una o dos relaciones que dan como resultado una nueva relación.
+      - Así se pueden volver aplicar operaciones sobre la nueva relación.
+      - Una operación común es la selección de tuplas concretas de una relación.
+      - Otra es seleccionar algunos atributos de una relación.
+      - La relación resultante podría contener tuplas duplicadas.
+            - Caso común despues de una selección.
+            - Algunos lenguajes de consultas eliminan las duplicidades.
+      - *join* es una operación para combinar pares de tuplas de dos relaciones distintas.
+            - *reunión natural*, La relación resultante contiene los pares de tuplas que coinciden el valor de uno de sus atributos, eligiendo qué atributo claro.
+            - *producto cartesiano*, La relación resultante contiene todos los pares de tuplas posibles entre dos relaciones.
+            - Las relaciones son conjuntos, por eso se puede aplicar *union*, *intersección* y *diferencia*.
+
+* Tools
+** Create podman container
+
+#+begin_src sh
+podman pull docker.io/library/mysql:8.0
+#+end_src

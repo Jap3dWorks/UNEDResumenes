@@ -288,8 +288,10 @@ mientras NoVacia(ABIERTA) hacer
     si EsObjetivo(n) entonces
         dev Camino(inicial, n)
     fsi
+
     S <- Sucesores(n)
     Añade S a la entrada n en TABLA_A
+    
     para cada q de S hacer
         si q en TABLA_A entonces
             Rectificar(q,n,Coste(n,q))   // Se comprueba si el nuevo camino es mejor
