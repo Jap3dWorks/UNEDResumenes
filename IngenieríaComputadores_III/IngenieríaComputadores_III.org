@@ -1,5 +1,5 @@
 #+title: Ingeniería Computadores III
-#+startup: latexpreview
+#+startup: latexpreview overview
 
 * Fundamentos del diseño del hardware digital
 - *HDL (hardware description languaje)*, lenguaje para la descripción del Hardware.
@@ -341,7 +341,6 @@ begin
 end architecture bp_Buffer_TriEstado;
 #+end_src
 
-
 * Conceptos Básicos de VHDL
 ** Unidades de diseño
 - *Entity*, Definición de la interfaz entre el diseño y el entorno que la usa.
@@ -501,7 +500,9 @@ end architecture arch_cond;
       - Circuito que implementa la red de prioridad (red MUX 2:1).
 
 *** Asignaciones concurrentes de selección
-Sintaxis:
+:PROPERTIES:
+:ID:       3138112f-bc3c-469b-97bf-aad8115fac95
+:END:
 
 #+begin_src vhdl
 with expresion_seleccion select
@@ -594,21 +595,18 @@ end generate E1;
 #+end_src
 
 *** Sentencia generate condicional
-Syntaxis
 #+begin_src vhdl
 etiqueta : if expresion_booleana generate
   -- Declaración de señales y constantes locales
 begin
   -- Sentencias Condicionales
-  etiqueta2 : if expresion_booleana2 generate
+  etiqueta2 : if expresion_booleana2 generate  -- generate anidado
     -- ...
   end generate etiqueta2;
 end generate etiqueta;
 #+end_src
 
 *** Bloque process
-Sintaxis
-
 #+begin_src vhdl
 -- la etiqueta es opcional pero recomendable
 etiqueta : process(lista_de_sensibilidad)          -- Se ejecuta cada vez que cambia el valor
@@ -667,8 +665,9 @@ wait until clk='1' and enable and v<30 for 50 ns;
       - han pasado 50 ns.
 
 *** Lista de sensibilidad
-El bloque process se es ejecutado en el instante que una o varias señales de la lista cambian de valor.
-Tan solo pueden incluirse puertos de entrada (pueden ser leídos).
+- El bloque process se es ejecutado en el instante que una o varias señales de la lista cambian de valor.
+- Tan solo pueden incluirse puertos de entrada (pueden ser leídos).
+- No se permite emplear sentencias *wait* y lista de sensibilidad en un mismo bloque *process*.
 
 #+begin_src vhdl
 -- Biestable D con reset asíncrono activado en LOW
@@ -694,6 +693,304 @@ begin
   end process
 end architecture flipflop_D
 #+end_src
+
+** Código Secuencial
+*** Asignación secuencial a una señal
+#+begin_src vhdl
+señal <= expr_nuevo_valor_señal
+#+end_src
+
+- Imlícitamente se entiende un retardo $\delta$.
+- Si el bloque *process* tiene lista de sensibilidad, se asigna a cada señal el nuevo valor cuando han finalizado todas las sentencias del bloque.
+- Las señales nunca adquieren valores intermedios.
+
+#+begin_src vhdl
+x1, x2, x3, x4, y: std_logic;
+-- ...
+process (x1, x2, x3, x4)
+  begin
+    y <= x1 and x3;
+    y <= x1 or x2;
+    y <= x3 and x4;
+  end process
+#+end_src  
+
+Equivale a
+
+#+begin_src vhdl
+x1, x2, x3, x4, y: std_logic;
+-- ...
+process (x1, x2, x3, x4)
+  begin
+    y <= x3 and x4;
+  end process
+#+end_src
+
+Si fuera código concurrente habría riesgo de conflicto.
+
+*** Asignación secuencial a una variable
+- Dentro de un bloque *process* pueden asignarse variables.
+  
+#+begin_src vhdl
+variable := expr_nuevo_valor_variable;
+#+end_src
+
+- En asignación a variables no se produce *retardo* $\delta$.
+
+#+begin_src vhdl
+signal x1, x2, y : std_logic;
+process (x1, x2)
+  variable aux : std_logic;
+begin
+  aux := '0';         -- aux asume su valor inmediatamente en cada sentencia
+  aux := aux or x1;
+  aux := aux or x2;
+  y <= aux;           -- aquí si que hay un retardo $\delta$
+end process;
+#+end_src
+
+*** Sentencia if
+#+begin_src vhdl
+if expresion_boolana_1 then
+  -- sentencias_secuenciales
+elsif expresion_booleana_2 then
+  -- sentencias_secuenciales
+-- ...
+else
+  -- sentencias_secuenciales
+end if;
+#+end_src
+
+- Las expresiones booleanas se evaluan secuencialmente.
+
+#+caption: Codificador prioridad 4 a 2
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity codificadorPrioridad4a2 is
+  port (codigo : out std_logic_vector(1 downto 0);
+        activo : out std_logic;
+        x      : in  std_logic_vector(3 downto 0));
+end entity codificadorPrioridad4a2;
+
+architecture codPrior4a2_procIf of codificadorPrioridad4a2 is
+begin
+  process (x)
+    if (x(3)='1') then
+      codigo <= "11";
+    elsif (x(2)='1') then
+      codigo <= "10";
+    elsif (x(1)='1') then
+      codigo <= "01";
+    else
+      codigo <= "00";
+    end if;
+
+    activo <= x(3) or x(2) or x(1) or x(0);
+  end process;
+end architecture codPrior4a2_procIf;
+#+end_src  
+
+**** Introducción accidental de memoria
+:PROPERTIES:
+:ID:       bf513822-0bc9-4fc5-b590-7b183cefb87a
+:END:
+- Cuando se asigna valor a una señal en alguna de las ramas de una sentencia *if*, pero no en todas, entonces se está introduciendo "memoria" (diseño no combinacinal) en el circuito.
+      - Se debe a que se definen estados y por tanto el uso de biestables.
+      - Implica que todas las señales deben asignarse en cada bloque.
+      - Implica el uso obligatorio de else.
+      - Puede asignarse un valor por defecto a las señales para evitar este comportamiento.
+            - Ante varias asignaciones a una señal con retardo $\delta$ solo se tiene en cuenta la última asignación.
+
+#+begin_src vhdl
+-- Este código se sintentiza de forma Combinacional
+process(a,b)
+begin
+  mayor <= '0';        -- valores por defecto a cada variable,
+  menor <= '0';        --  es una buena prácica.
+  igual <= '0';
+  if (a > b) then      -- Asignación a cada señal
+    mayor <= '1';
+  elsif (a < b) then
+    menor <= '1';
+  else
+    igual <= '1';
+  end if;
+end process;
+#+end_src        
+
+*** Sentencia case
+#+begin_src vhdl
+case expresion_case if
+  when valor_1 =>
+    sentencias_secuenciales;
+  -- ...
+  when valor_n =>
+    sentencias_secuenciales;
+end case;
+#+end_src
+
+- Puede emplearse *others* como último valor para cubrir el resto de casos.
+
+#+caption: Decodificador Binario 2 a 4
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity decodificador4 is
+  port (x : out std_logic_vector(3 downto 0);
+        x : in  std_lofic_vector(1 downto 0));
+end entity decodificador4;
+
+architecture arch_decProcCase of decodificador4 is
+begin
+  process (s)
+    case s is
+      when "00" =>
+        x <= "0001";
+      when "01" =>
+        x <= "0010";
+      when "10" =>
+        x <= "0100";
+      when others =>
+        x <= "1000";
+    end case;
+  end process;
+end architecture arch_decProcCase;
+#+end_src  
+
+- Análogo secuencial a [[id:3138112f-bc3c-469b-97bf-aad8115fac95][select]].
+- Si se asigna un valor a una señal en un bloque case, pero no en los demás se está introduciendo [[id:bf513822-0bc9-4fc5-b590-7b183cefb87a][memoria]]. pag 132.
+
+*** Bucle for
+#+begin_src vhdl
+for índice in rango_bucle loop   -- indice no necesita ser declarado
+  sentencias_secuenciales
+end loop;
+#+end_src
+
+- Para que el bucle for pueda ser *sinteizado* es precido que el rango_bucle quede fijado en la síntesis.
+
+#+caption: XOR de los bits de una señal de 4 bit
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity xor_1señal_4bits is
+  port (y : out std_logic;
+        a : in  std_logic_vector(3 downto 0));
+end entity xor_1señal_4bits;
+
+architecture xor_1señal_4bits_bucleFor of xor_1señal_4bits is
+  constant WIDTH : integer := 4;
+  signal   tmp   : std_logic_vector(WIDTH-1 downto 0);
+begin
+  process(a, tmp)
+  begin
+    tmp(0) <= a(0);
+    for i in 1 to (WIDTH-1) loop
+      tmp(i) <= a(i) xor tmp(i-1);
+    end loop;
+  end process;
+  y <= tmp(WIDTH-1);
+end architecture xor_1señal_4bits_bucleFor;
+#+end_src  
+
+- La síntesis de un bucle for lo convierte en una secuencia plana de sentencias.
+
+** Descripción de la estructura
+- Describir un circuito mediante instanciación y conexión de otros circuitos.
+
+*** Declarar los componentes
+- un *component* representa una pareja entity/architecture.
+- Define un determinado circuito.
+- Si hay varias *architecture* asociadas deben especificarse definiendo una *configuration*.
+
+#+begin_src vhdl
+component nombre_componnete is   -- nombre_componente es el nombre del entity.
+  clausula_generic;              -- Mismas que las que aparecen en el entity
+                                 --  del circuito que se está instanciando.
+  clausula_port;                 -- Mismas que las que aparecen en el entity
+                                 --  del circuito que se está instanciando.
+end component nombre_componnete;
+#+end_src  
+
+*** Instancias los componentes e indicar su conexión
+#+begin_src vhdl
+nombre_instancia : component nombre_componente  -- {component} es opcional
+                   port map (asociación_puertos_señales);
+#+end_src
+
+- Para conectar puertos entre componentes se usan señales intermedias.
+      - Asociadas a una misma señal del modelo compuesto.
+      - *Asociación posicional*, mediante la posición en que el puerto se declara en la cláusula port de la *entity*.
+      - *Asociación nominal*, tipo puerto => señal.
+
+*** Ejemplos declaración e instanciación de componentes
+#+caption: MUX 2:1 de 1 bit
+#+begin_src vhdl
+-- diagrama en página 137
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity Mux2_1bit is
+  port (d      : out std_logic;
+        i0, i1 : in std_logic;
+        s0     : in std_logic);
+end entity;
+
+architecture Mux2_1bit of Mux2_1bit is
+  component not1 is
+    port(y0 : out std_logic;
+         x0 : in  std_logic);
+  end component not1;
+  component or2 is
+    port(y0     : out std_logic;
+         x0, x1 : in std_logic);
+  end component or2;
+  component and2 is
+    port(y0 : out std_logic;
+         x0, x1 : in std_logic);
+  end component and2;
+  signal n1, n2, n3 : std_logic;                         -- señales intermedias
+begin
+  Inv_1  : not1 port map (x0 => s0, y0 => n1);           -- asociación nominal
+  And2_1 : and2 port map (x0 => i0, x1 => n1, y0 => n2);
+  And2_2 : and2 port map (x0 => i1, x1 => s0, y0 => n3);
+  Or_1   : or2  port map (x0 => n2, x1 => n3, y0 => d);
+end architecture Mux2_1bit;
+#+end_src
+
+#+caption: MUX 2:1 de 4 bit.
+#+begin_src vhdl
+-- diagrama en página 138
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity Mux2_4bit is
+  port (d0, d1, d2, d3 : out std_logic;
+        a0, a1, a2, a3 : in  std_logic;
+        b0, b1, b2, b3 : in  std_logic;
+        s0             : in  std_logic);
+end entity Mux2_4bit;
+
+architecture Mux2_4bit of Mux2_4bit is
+  component Mux2_1bit is
+    port (d      : out std_logic;
+          i0, i1 : in  std_logic;
+          s0     : in  std_logic);
+  end component Mux2_1bit;
+begin
+  Mux2_0 : Mux2_1bit port map (d => d0, i0 => a0, i1 => b0, s0 => s0);
+  Mux2_1 : Mux2_1bit port map (d => d1, i0 => a1, i1 => b1, s0 => s0);
+  Mux2_2 : Mux2_1bit port map (d => d2, i0 => a2, i1 => b2, s0 => s0);
+  Mux2_3 : Mux2_1bit port map (d => d3, i0 => a3, i1 => b3, s0 => s0);
+end architecture Mux2_4bit;
+#+end_src
+
+*** Diseños con estructura regular
+- La sentencia generate puede usarse para describir circuitos con estructura regular.
 
 * Glosario
 - *flip-flop*, circuito biestable.
