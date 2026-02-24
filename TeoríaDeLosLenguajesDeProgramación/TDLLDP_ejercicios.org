@@ -75,4 +75,17 @@ main = putStrLn(show(reescritura reglas ["SALUDO", "SOY UN PROGRAMA", "DESPEDIDA
 
 ** Números expansivos
 - pag 79
+
+#+begin_src haskell
+expand [] = []
+expand [x] = [1,x]
+expand (x:y:ys)
+  | x /= y    = 1:x:(expand (y:ys))
+  | otherwise = iexpand ys 2 x
+  where
+    iexpand [] n x = [n,x]
+    iexpand (y:ys) n x
+      | x /= y   = n:x:(expand (y:ys))
+      |otherwise = iexpand ys (n+1) x
+#+end_src  
   
