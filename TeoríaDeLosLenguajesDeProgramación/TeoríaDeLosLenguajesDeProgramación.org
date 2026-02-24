@@ -1,6 +1,8 @@
 #+title: Teoría de los lenguajes de Programación
 #+author: Jordi Amposta Pérez
 
+#+startup: latexpreview
+
 * Paradigmas de computación
 - Generaciones Lenguajes Programación
       - Primera generación lenguajes máquina.
@@ -227,7 +229,7 @@ funCuadrado suma3 5
 
 ** Evaluación Perezosa
 - Se evalua el valor de un parámetro solo cuando se usa.
-- función *no estricta*, no necesita conover el valor de todos sus parámetros para devolver un resultado.
+- función *no estricta*, no necesita conocer el valor de todos sus parámetros para devolver un resultado.
 - *memoización*, permite guardar el valor de un parámetro la primera vez que se evaluó.
 
 Ejemplo con listas de haskell.
@@ -580,7 +582,179 @@ mayor (Sucesor x) (Sucesor y) = mayor x y  -- Los patrones de entrada eliminan
                                            --  una capa de (sucesor )
 #+end_src
 
+***** Tipos polimórficos
+- Puede contener valores de cualquier tipo.
+      - Como una lista genérica por ejemplo.
+
+#+begin_src haskell
+data TipoMixto a b = Tipo a | Tipo b
+type BooleanoEntero = TipoMixto Bool Integer
+#+end_src        
+
+*** Ejemplos de funciones: trabajando con listas
+**** Contar elementos de una lista
+#+begin_src haskell
+length [] = 0
+length (x:xs) = 1 + length xs
+#+end_src
+
+**** Concatenar listas
+- Listas del mismo tipo
+
+#+begin_src haskell
+[] ++ ys = ys
+(x:xs) ++ ys = x : (xs ++ ys)
+#+end_src  
+
+- Aplanar una lista de listas
+
+#+begin_src haskell
+concat [] = []
+concat (xs:yss) = xs ++ (concat yss)
+#+end_src
+
+**** Combinar listas
+- Operación zip.
+
+#+begin_src haskell
+zip (x:xs) (y:ys) = (x,y):(zip xs ys)  -- El orden afecta a la evaluación
+                                       --  la definición que aparece antes
+                                       --  será seleccionada antes si se puede.
+zip _ _ = []  
+#+end_src
+
+- Operación unzip.
+
+#+begin_src haskell
+unzip xs = unzipAux xs ([],[])
+  where
+    unzipAux [] acumulador = acumulador
+    unzipAux ((a,b):xs) (as,bs) = unzipAux xs (as ++ [a], bs ++ [b])
+#+end_src
+
+**** Aplicar una función a los elementos de una lista
+- función *map*.
+
+#+begin_src haskell
+map _ [] = []
+map f (x:xs) = (f x) : (map f xs)
+#+end_src
+
+- Ejemplo de uso para calcular x*x de cada elemento de una lista.
+
+#+begin_src haskell
+map (\x -> x*x) [1..10]
+#+end_src
+
+- *zipWith*, como map pero con dos listas
+
+#+begin_src haskell
+-- El orden de declaración es importante
+zipWith f (a:as) (b:bs) = (f a b) : (zipWith f as bs)
+zipWith _ _ _ = []  
+#+end_src  
+
+- *iterate*, para crear listas infinitas
+
+#+begin_src haskell
+iterate f x = x : (iterate f (f x))  -- En este caso la memoización de haskell
+                                     --  permite que sea eficiente
+
+potencias2 = iterate (2*) 1
+#+end_src  
+
+**** Filtros sobre listas
+- *take* y *drop*
+
+#+begin_src haskell
+take _ [] = []
+take n (x:xs)
+  | n <= 0 = []
+  | otherwise = x : take (n-1) xs
+#+end_src
+
+#+begin_src haskell
+drop _ [] = []
+drop n (x:xs)
+  | n <= 0 = (x:xs)
+  | otherwise = drop (n-1) xs
+#+end_src
+
+- *filter*
+
+#+begin_src haskell
+filter _ [] = []
+filter p (x:sx)
+  | p x = x : (filter p xs)
+  | otherwise = filter p xs
+#+end_src  
+
+- *takeWhile* y *dropWhile*
+
+#+begin_src haskell
+takeWhile _ [] = []
+takeWhile p (x:xs)
+  | p x = x : takeWhile p xs
+  | otherwise = []
+#+end_src
+
+#+begin_src haskell
+dropWhile _ [] = []
+dropWhile p ys@(x:xs)  -- @ patrones con nombre
+  | p x = dropWhile p xs
+  | otherwise = ys
+#+end_src
+
+**** Listas por comprensión
+#+begin_example
+[ expresión | cualificador1, ... , cualificadorn ]
+#+end_example
+
+- Donde
+      - *expresión*, define la forma de los elementos de la lista resultado.
+      - *cualificadores*, definen propiedades de los elementos.
+            - *generadores*, expresiones que permiten generar una lista.
+            - *filtros*, expresiones booleanas para filtrar elementos.
+            - *definiciones locales*, define elementos locales dentro de la definición de la lista.
+                  - Se usa la palabra reservada *let*.
+
+#+caption: Lista números impares                    
+#+begin_src haskell
+[p | p <- [2..], mod p 2 /= 0 ]  -- números impares, /= not equal
+#+end_src                    
+
+- Ejemplo de lista con números primos.
+  
+#+begin_src haskell
+divisores n = [ d | d <- [1..n] , mod n d == 0 ]
+primos  = [ p | p <- [2..] , divisores p == [1,p]]
+#+end_src
+
+**** Plegado de listas
+- *foldr*  (right) y *foldl* (left)
+
+#+begin_src haskell
+-- z es el caso base
+foldr f z [] = z
+foldr f z (x:xs) = f x (foldr f z xs)
+-- z es el caso base
+foldl f z [] = z
+foldl f z (x:xs) = foldl f (f z x) xs
+#+end_src
+
+#+begin_src haskell
+suma = foldr (+) 0
+concat = foldr (++) []
+#+end_src
+
+* Programación lógica
+
 
 * Glosario
 - *Evaluación impaciente*, /factorial(4*5)/ primero evalua el resultado de 4*5.
 
+* Tools
+** Haskell compiler and interpreter
+#+begin_src sh
+ghci       # Open the haskell interpreter
+#+end_src
