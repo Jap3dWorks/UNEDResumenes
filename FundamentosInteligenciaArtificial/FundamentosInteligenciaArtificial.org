@@ -1,5 +1,5 @@
 #+title: Fundamentos de inteligencia artificial
-#+startup: latexpreview
+#+startup: latexpreview overview
 
 * Aspectos conceptuales de la Inteligencia Artificial y la ingeniería del conocimiento
 - Propósito general de la IA es desarrollar
@@ -230,8 +230,7 @@ dev "No encontrado"
 - Es un *algoritmo admisible*.
 
 ****   Búsquedas en profundidad y en anchura iterativas
-pag 320
-
+- pag 320
 - Búsqueda en profunidad que se va ampliando la produndidad límite si no se encuentra ninguna solución.
 
 #+begin_src pseudocode
@@ -276,6 +275,9 @@ dev "No encontrado"
       - Por ejemplo en el cálculo de actuación de planes de un robot.
 
 **** Algoritmo general de búsqueda en grafos (AGBG)
+:PROPERTIES:
+:ID:       c2bbf2c1-f380-4078-93f6-8b52f0e78859
+:END:
 - Grafo dirigido simple a partir de operadores o reglas de producción.
 - Número de reglas con un coste $\leq \varepsilon$, $\varepsilon > 0$, debe ser finito.
 - Grafo localmente finito, cada nodo tiene un número finito de sucesores.
@@ -340,6 +342,227 @@ ffun
       - Por tanto el espacio requerido es exponencial en $d/2$.
 - Requiere un método eficiente para comprobar intersecciones de las dos listas.
       - tablas Hash puede valer.
+
+* Técnicas basadas en búsquedas heurística
+- Tema 9
+- *heurístico*, mecanismo que permita dirigir la búsqueda hacia zonas más prometedoras.
+      - Ayudan a decidir cual es la mejor alternativa entre varias posibles.
+      - A veces fallan en la predicción de la mejor alternativa.
+      - Se busca que el tiempo *medio* para llegar a una solución mejore.
+            - El caso peor puede llegar aser igual que una búsqueda a ciegas.
+- *metareglas*, reglas sobre como utilizar las reglas (pag 342).
+      - Indican bajo qué condiciones se aplica cada acción.
+
+** Búsqueda primero el mejor (BF, Best First)
+- Una función $f(x)$ indica un valor de lo prometedor que es cada nodo para ser expandido.
+      - Los nodos más prometedores están al principio.
+- A $f(x)$ se le denomina *función heurística de evaluación*.
+
+** El algoritmo A*
+- Especialización de *BF*.
+- Sea $n$ un nodo cualquiera del espacio de búsqueda.
+      - $g^*(n)$, es el *coste del camino de menor coste* desde el nodo inicial hasta $n$.
+      - $h^*(n)$, *coste del camino más corto desde* $n$ al objetivo más cercano a $n$ (objetivo = solución).
+      - $f^*(n)=g^*(n) + h^*(n)$. Es decir es el coste del camino más corto desde el inicial a los objetivos condicionado a pasar por el nodo $n$.
+      - $C^* = f^*(inicial) = h^*(inicial)$, es el coste de la solución óptima.
+- Se trabaja con aproximaciones de las anteriores funciones.
+      - $g(n)$, es el coste del mejor camino desde el inicial a $n$ obtenido hasta el momento durante la búsqueda.
+            - $g(n) \geq g^*(n)$.
+      - $h(n)$, estimación positiva de $h^*(n)$, tal que $h(n)=0$ si $n$ es un objetivo.
+            - $h(n) \geq 0$.
+            - Es la *función heurística* o *heurístico*.
+            - Definir $h(n)$ es un problema no trivial.
+            - Es admisible si $h(n) \leq h^*(n)\ \forall n$
+      - $f(n) = g(n) + h(n)$
+- Se ordenan los nodos candidatos según el valor $f(n)$ de forma ascendente.
+
+*** Descripción del algoritmo A*
+- Basado en [[id:c2bbf2c1-f380-4078-93f6-8b52f0e78859][AGBG]]
+
+#+begin_src pseudocode
+ABIERTA <- (inicial);
+mientras NoVacia(ABIERTA) hacer
+    n = ExtraePrimero(ABIERTA)
+    si EsObjetivo(n) entonces
+        dev Camino(inicial,n)
+    fsi
+    
+    S <- Sucesores(n)
+
+    Añade S a la entrada de n en la TABLA_A
+
+    para cada q de S hacer
+        si (q en TABLA_A) entonces
+            Rectificar(q,n,Coste(n,q))
+            Ordenar(ABIERTA)
+        sino
+            pone q en la TABLA_A con
+                Anterior(q) <- n
+                g(q)        <- g(n) + Coste(n,q)
+                h(q)        <- Heurístico(q)
+            ABIERTA = Mezclar(q, ABIERTA)
+        fsi
+    fpara
+fmientras
+dev "No Solución"
+#+end_src
+
+- Función Rectificar
+
+#+begin_src pseudocode
+fun Rectificar(n,p,costepn)
+    si (g(p) + costepn < g(n) entonces
+        Modificar la entrada del nodo n en la TABLA_A con
+            g(n)        <- g(p) + costepn
+            Anterior(n) <- p
+            RectificarLista(n)
+    fsi
+ffun
+
+fun RectificarLista(n)
+    LISTA <- Sucesores(n)        // Registrados en la TABLA_A
+    para cada q de LISTA hacer
+        Rectificar(q,n,Coste(n,q))
+    fpara
+ffun
+#+end_src
+
+*** Propiedades Formales
+- $s$ estado inicial.
+- $\Gamma$ conjunto nodos objetivo.
+- $\Gamma^* \subseteq \Gamma$  conjunto de objetivos óptimos.
+- $P_{n-n'}$ denota un camino simple desde el nodo $n$ al nodo $n'$.
+- $P_{n-n'}$ camino óptimo desde $n$ a $n'$.
+- $NodosEnAbierta\ \cup \ NodosExpandidos = NodosEncontrados$
+      - La unión es disjunta.
+
+**** Terminación y completitud
+- $A^*$ es completo en grafos *localmente finitos* (teorema pag 346).
+      - localmente finito, grafo infinito con un número finito de sucesores por nodo.
+
+**** Admisibilidad del algoritmo A*
+- Una función heurística $h$ es adimisble si $h(n) \leq h^*(n)\ \forall n$.
+- Antes de que $A^*$ termine, existe un nodo $n'$ en ABIERTA tal que $f(n') \leq C^*$ (lema 9.1).
+- $A^*$ es admisible (teorema 9.2).
+
+**** Comparación de heurísticos admisibles
+- Un heurístico $h_2$ está más informado que $h_1$ si los dos son adimisibles y $h_2(n) > h_1(n)\ \forall n$, $n$ no final.
+      - $A_1^*$ usa $h_1$, $A_2^*$ usa $h_2$.
+- $A_2^*$ domina a $A_1^*$ si los dos son admisibles y todo nodo expandido por $A_2^*$ también lo es para $A_1^*$.
+- Una condición necesaria de expansión de un nodo $n$ es que $f(n) \leq C^*$ (teorema 9.3).
+- Una condición suficiente de expansión de un nodo $n$ es que $f(n) < C^*$.
+- Un camino $P$ desde el inicial $s$ a un nodo $n$ es *C-acotado*, si para todo $n'$ de $P$ se cumple que $g_P(n') + h(n') \leq C$.
+      - Siendo $g_P(n')$ el coste desde $s$ a $n'$ a través del camino $P$.
+      - *Estrictamente C-acotado* si $g_P(n') + h(n') < C$.
+- Una condición suficiente para que $A^*$ expanda un nodo $n$ es que exista un camino estrictamente C*-acotado desde $s$ a $n$ (teorema 9.5).
+- Una condición necesaria de expansión de un nodo $n$ es que exista un camino C*-acotado desde $s$ a $n$ (teorema 9.6).
+- Si $A_2^*$ está más informado que $A_1^*$, entonces $A_2^*$ domina $A_1^*$ (teorema 9.7).
+
+**** Heurísticos consistentes o monótonos  
+- $h$ es *monótono* si para todo par de nodos $n$ y $n'$ se cumple que.
+\begin{equation*}
+h(n) \leq k(n,n') + h(n')
+\end{equation*}  
+- $k(n,n')$ representa el coste mínimo para ir de $n$ a $n'$, $\infty$ si no hay camino.
+- $h$ es *consistente* si para todo par de nodos $n$ y $n'$ se cumple que
+\begin{equation*}
+h(n) \leq c(n,n') + h(n')
+\end{equation*}
+- $c(n,n')$ represetna el coste de la regla que lleva de $n$ a $n'$, $\infty$ si no existe esta regla.
+- *Monotonía* y *consistencia* son propiedades equivalentes.
+- Todo heurístico *monótono* es admisible.
+- Si $h$ es monótono y $A^*$ elige el nodo $n$ para expansión, entonces se cumple que $g(n)=g^*(n)$. El camino encontrado hasta el momento desde $s$ a $n$ es óptimo.
+- Si $h$ es monótono, la condición necesaria de expansión de un nodo $n$ es
+\begin{equation*}
+g^*(n) + h(n) \leq C^*
+\end{equation*}
+- Y la condición suficiente
+\begin{equation*}
+g^*(n) + h(n) < C^*
+\end{equation*}
+- $A_2^*$ domina *ampliamente* a $A_1^*$ si todo nodo expandido por $A_2^*$ es también expandido por $A_1^*$. Excepto quizás algunos nodos que cumplen $h_2(n)=h1(n)=C^* - g^*(n)$
+- Si $h_2(n) \geq h_1(n)$ para todo $n$ y los dos son monótonos, entonces $A_2^*$ domina ampliamente a $A_1^*$.
+
+*** Diseño de heurísticos simples  
+- pag 353
+
+*** Relajación de las condiciones de optimalidad
+- pag 357
+- Se plantea que $A^*$ sea más aficiente aunque pierda admisibilidad.
+
+**** Ajuste de los pesos de g y h
+- Ponderación estática.
+\begin{equation*}
+f_w(n) = (1-w)g(w) + wh(n),\ w \in [0,1]
+\end{equation*}
+- Se encuentra el mejor valor de $w$ de forma experimental.
+      - Si $h$ es admisible el algoritmo es admisible en $0 \leq w \leq 1/2$
+      - Si $h$ es admisible en algoritmo puede perder la admisibilidad en $1/2 \leq w \leq 1$
+
+**** Algoritmos E-admisibles
+- $\varepsilon -admisibles$
+- Sacrifica la obtención de una solución óptima frente a mejoras del rendimiento.
+- $\varepsilon$ controla el deterioro de la solución obtenida.
+- Un algoritmo es $\varepsilon - admisible$ si siempre encuentra una solución con un coste menor de $(1 + \varepsilon)C^*$.
+
+***** Ponderación dinámica
+- Los pesos son dinámicos, cambian a lo largo del proceso.
+      - $h$ tiene un mayor peso al inicio de la búsqueda.
+      - Al final se reduce para asegurar una búsqueda en anchura.
+
+\begin{equation*}
+f(n) = g(n) + h(n) + \varepsilon (1-d(n)/N)h(n)
+\end{equation*}
+
+- $d(n)$ es la profundidad del nodo $n$.
+- $N$ es una cota superior de la profuncidad de la mejor solución.
+- $\varepsilon>0$ indica la desviación que estamos dispuestos a admitir.
+- Su $h$ es admisible el algoritmo de ponderación dinámica es $\varepsilon -admisible$.
+
+***** Algoritmo AE*
+- Algoritmo $A\varepsilon^*$
+- Dentro de ABIERTA se considera una sublista llamada FOCAL formada por nodos cuyo valor de $f$ no se separa más de un factor $(1+\varepsilon)$ del valor mínimo de $f$ en ABIERTA
+
+\begin{equation*}
+FOCAL = \{n \in ABIERTA\ |\ f(n) \leq (1+\varepsilon)min( \{ f(n') : \forall n' \in ABIERTA \}) \}
+\end{equation*}
+
+- Se desarrollan primero los nodos de la sublista FOCAL.
+      - Se usa el heurístico $h'$, que da una estimación del esfuerzo computacional para llegar a una solución.
+      - Puede darse el case que $h'=h$.
+
+- Si $h$ es admisible, $A_\varepsilon^*$ es $\varepsilon -admisible$.        
+
+*** Diseño sistemático de heurísticos
+- pag 360
+- *Método de relajación del problema*, Versiones simplificadas del problema con menos restricciones.
+      - Se enuncia el problema con todas sus restricciones.
+      - Se suponen versiones relajadas.
+            - Se relajan subconjuntos de restricciones.
+            - Hasta conseguir una versión suficientemente simple que pueda ser resuelto con un *algoritmo polinomial*.
+- Todo heurístico $h$ obtenido por *relajación del problema* es monótono.              
+
+** Búsqueda con memoria limitada  
+- Basado en búsqueda en profundidad
+
+*** Algoritmo IDA*
+- pag 362
+- Se establece una longitud límite para la búsqueda del problema igual a $f(inicial)$.
+      - $f(inicial)$ es una cota inferior de la solución óptima.
+      - Cada iteración descarta los nodos $n$ que $f(n)$ supere $f(inicial)$.
+- Si en una iteración no se encuentra solución se realiza una nueva iteración.
+      - Con una nueva longitud límite $f(inicio)$
+            - El valor de $f(n)$ menor de los nodos descartados en la iteración anterior.
+
+#+begin_src pseudocode
+LongitudLimite <- f(inicial)
+Solución <- Primero en Profundidad con Longitud Limitada
+mientras Solución = "No encontrado" hacer
+    LongitudLimite <- NuevaLongitudLimite
+    Solución       <- Primero en Profundidad con Longitud Limitada
+fmientras
+dev Solución
+#+end_src              
 
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
