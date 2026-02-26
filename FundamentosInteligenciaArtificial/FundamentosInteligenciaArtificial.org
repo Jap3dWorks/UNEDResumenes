@@ -564,6 +564,152 @@ fmientras
 dev Solución
 #+end_src              
 
+#+caption: Algoritmo de búsqueda heurística en profundidad en árboles con longitud limitada
+#+begin_src pseudocode
+ABIERTA <- (inicial)
+mientras NoVacia(ABIERTA) hacer
+    n <- ExtraePrimero(ABIERTA)
+    si EsObjetivo(n) entonces
+        dev Camino(inicial, n)
+    fsi
+    S <- {}
+    si f(n) < LongitudLimite entonces
+        LimpiarTABLA_A(n)
+    fsi
+    para cada q de S hacer
+        pone q en la TABLA_A con
+            Anterior(q) <- n,
+            g(q)        <- Coste(inicial,n) + Coste(n,q),
+            h(q)        <- Heurístico(q)
+    fpara
+    Ordena S según los valores de f de menor a mayor
+    ABIERTA <- Concatenar(S, ABIERTA)
+fmientras
+dev "No encontrado", NuevaLongitudLimite
+#+end_src
+
+*** Algoritmo SMA*
+- pag 364
+- IDA* tiene el problema de que se vuelven a expandir muchos nodos.
+- Cuando necesita expandir un nodo y no tiene espacio en TABLA_A, elimina un nodo de esta tabla y de ABIERTA.
+      - Son llamados nodos olvidados, y son los menos prometedores (mayor valor de $f$ en ABIERTA).
+- El algoritmo recuerda en cada nodo el mejor $f$ de los hijos de ese nodo que han sido olvidados.
+      - Para no volver a explorar subárboles que han sido eliminados.
+- SMA* mantiene en los nodos ancestros información acerca de la calidad del mejor camino en cada subárbol descartado.
+- Cuando se descartan todos los sucesores de un nodo $n$, el algoritmo recuerda la estimación del mejor camino a través de $n$.
+
+#+begin_src pseudocode
+Inserta el inicial en ABIERTA y en la TABLA_A
+mientras NoVacia(ABIERTA) hacer
+    n <- Primero(ABIERTA)
+    si EsObjetivo(n) entonces
+        dev Camino(inicial,n)
+    fsi
+    s <- SiguienteSucesor(n)
+    si (NoEsObjetivo(s) && Profundidad(s) = Limite) entonces
+        f(s) <- infty
+    sino
+        f(s) <- max(f(n), g(s) + h(s))
+    fsi
+    si todos los sucesores de n han sido generados entonces
+        Actualiza f(n) y el f de los ancestros de n
+    fsi
+    si todos los sucesores de n están en la TABLA_A entonces
+        Elimina n de ABIERTA
+    fsi
+    si la TABLA_A está llena entonces
+        Elimina de ABIERTA y de la TABLA_A el nodo con mayor f en ABIERTA y menor profundidad,
+          actualizando la estimación del mejor nodo hijo olvidado en el padre del nodo eliminado
+        Inserta el padre del nodo eliminado en ABIERTA si no está
+    fsi
+    Inserta s en ABIERTA y en la TABLA_A
+fmientras
+dev "No solución"
+#+end_src  
+        
+- Propiedades principales
+      - Es capaz de evolucionar utilizando la memoria que tenga disponible.
+      - Evita estados repetidos en la medida en que la memoria se lo permita.
+      - Es completo si la memoria disponible es suficiente para almacenar el camino a la solución menos profunda.
+      - Es admisible si tiene suficiente memoria para almacenar el camino hasta la solución óptima menos profunda.
+      - Si la memoria es suficiente para el árbol de búsqueda completo, la eficiencia de la búsqueda es óptima.
+- No está resuelta la cuestión de si SMA* tiene una eficiencia mejor o igual que otro algoritmo dada la misma información heurística y la misma cantidad de memoria.
+
+** Algoritmo Voraces
+- pag 366
+
+** Algoritmos de ramificación y poda
+- pag 366
+
+** Algoritmos de mejora iterativa o búsqueda local
+- Para algunos problemas el nodo solución contiene toda la información necesaria.
+      - El resto del camino es irrelevante (problemas TSP y N-reinas).
+- La idea es partir de un estado solución e ir iterando con pequeñas mejoras.
+      - Soluciones vecinas
+
+#+caption: Esquema de un algoritmo de búsqueda local
+#+begin_src pseudocode
+S <- SolucionInicial
+mientras ! CriterioDeTerminación hacer
+    V <- SolucionesVecinas(S)
+    EvaluarSoluciones(V)
+    S1 <- Seleccion(V)
+    si CriterioDeAceptacion entonces
+        S <- S1
+    fsi
+fmientras
+dev S
+#+end_src        
+
+*** Algoritmo de escalada o máximo gradiente
+- El criterio de aceptación es que $S_1$ sea mejor o igual a $S$.
+- Problemas de estancamiento.
+      - *Óptimos locales*, en estos puntos todos los vecinos son peores.
+      - *Regiones planas*, todos los vecinos tienen el mismo valor que la solución actual y la búsqueda es aleatoria.
+      - *Crestas*, Puede ser complicado guiar la solución a través de una cresta hasta la solución global.
+- *Multiarranque* Contra los estancamientos se puede reiniciar el algoritmo desde otro punto inicial.
+
+*** Temple Simulado
+- Se admite con una cierta probabilidad que $S_1$ sea peor a $S$.
+- Se realiza una selección aleatoria entre los vecinos.
+      - Si el vecino mejora la solución se acepta.
+      - Si el vecino no mejora la solución se acepta con una probabilidad.
+            - $T$ temperatura, Alta al inicio del algoritmo
+                  - Mayor probabilidad de aceptación.
+                  - $T=\alpha(t,T)$, función alpha.
+                        - $t$ iteración actual
+            - $\Delta E$ incremento de energía
+- Requiere un ajuste muy fino de los parámetros.
+  
+#+begin_src pseudocode
+S <- SolucionInicial
+t <- 0
+T <- T_0
+mientras ! CriterioDeTerminación hacer
+    S_1 <- SelecciónAleatoria(SolucionesVecinas(S))
+    \DeltaE <- Coste(S_1) - Coste(S);
+    si \DeltaE < 0 entonces
+        S = S_1
+    sino
+        S <- S_1 con probabilidad e^(- \DeltaE/T)
+    fsi
+    t <- t + 1
+    T <- \alpha(t,T)
+fmientras
+dev S
+#+end_src
+
+*** Búsqueda tabú
+- pag 373
+- Dispone de un mecanismo de memoria.
+- Evita la generación de algunos vecinos dependiendo de la historia reciente.
+      - Se registra información de cada movimiento.
+- Pueden hacerse excepciones, *criterio de aspiración*,  si un movimiento tabú resulta que mejora la solución actual.
+- Resulta complicado establecer los parámetros.
+      - Criterio de aspiración.
+      - Memoria del histórico.
+      - Información que se registra.
+
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
       - *Inferencia deductiva*, A implica B, C implica B, etc.

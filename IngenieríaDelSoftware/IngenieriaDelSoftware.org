@@ -301,6 +301,9 @@
       - Reutilización posterior del software desarrollado.
 
 ** Análisis de requisitos de software
+:PROPERTIES:
+:ID:       980e8981-dd69-4a38-a58b-3a5dc562cace
+:END:
 - El ingeniero que realiza la fase de *analisis* es el *analista*.
 - El analisis de requisitos trata de de caracterizar el problema a resolver.
 - *Cliente*, un interlocutor válido para obtener información.
@@ -329,5 +332,251 @@
 
 *** Tareas del análisis
 **** Estudio del sistema en su contexto
+- pag 68
+- Conocer el medio
+
+**** Identificación de necesidades
+- pag 69
+- Concretar las necesidades que se pueden cubrir con los medios disponibles.
+      - Dentro del presupuesto y plazos.
+- Dialogo constante entre el analista y el cliente.
+- Se deben aportar soluciones parciales a los problemas de interés que sobrepasen el presupuesto.
+
+**** Análisis de alternativas. Estudio de viabilidad
+- Buscar aquella alternativa que cubra las necesidades reales detectadas en la tarea anterior.
+      - Que tenga en cuenta la viabilidad técnica y económica.
+- Cada alternativa conlleva un estudio de viabilidad.
+
+**** Establecimiento del modelo del sistema
+- Conclusiones de las necesidades y la viabilidad.
+      - El modelo se va perfilando a medida que se avanza en el estudio de las nevesidades y la viabilidad.
+- Debe facilitar la comunicación entre analista, cliente y diseñador.
+      - Uso de procesadores de texto, herramienta CASE, gráficos etc.
+
+**** Documento de especificaciones de requisitos
+- Resultado final del analisis.
+      - Recoge todas las conclusiones del análisis.
+- Punto de partida para el diseño.
+- Debe fijar las condiciones de validación del sistema.
+
+****  Revisión continuada del análisis
+- Control del documento durante las etapas de diseño e implementación.
+      - Puede sufrir modificaciones.
+
+** Notaciones para la especificación
+*** Lenguaje natural
+- Notación más inmediata.
+- Implementaciones pequeñas.
+- Resulta impreciso, con repeticiones y con incorrecciones.
+- Correcto para aclaraciones que el resto de notaciones no sean capaces de reflejar.
+- Se debe estructurar el contenido de los requisitos.
+      - Funcionales
+            - Modos funcionamiento
+            - Formatos de entrada
+            - ...
+      - Calidad
+      - Seguridad
+      - Fiabilidad
+- Todas las frases se construyen en la medida de lo posible de la misma manera (lenguaje estructurado).
+
+*** Diagramas de flujo de datos DFD                                  :ATTACH:
+:PROPERTIES:
+:ID:       444d8717-b0fc-4f06-a28a-311ed01e1879
+:END:
+- Notación Gráfic.
+- Considera que un sistema software es un sistema procesador de datos.
+      - Refleja el flujo de datos que entra al sistema, las transformaciones y la salida transformada.
+- Suele incluir el amacenado y extracción en almacenes de datos.
+- Es una notación sencilla.
+- Son buenos para modelos conceptuales.
+      - No puede establecer la dinámica o secuencia de los procesos.
+      - Fundamentalmente para modelos estáticos.
+
+[[attachment:clipboard-20260226T094308.png]]
+
+- Los DFD se usan de forma jerarquizada
+      - Nivel 0 Diagrama de contexto (el sistema en su contexto)
+      - Nivel 1 DFD 0 - Explosión    (Visión concreta sin contexto del sistema)
+      - Nivel 2 DFD 1 hasta DFD n
+            - De los procesos 1 hasta n del nivel 1
+      - Nivel 3 DFD 1.1 hasta DFD 1.i
+            - De los procesos 1.1 hasta 1.i del nivel 2
+            - DFD 2.1 hasta DFD 2.j
+            - De los procesos 2.1 hasta 2.j del nivel 2
+
+*** Diagramas de transición de estados                               :ATTACH:
+:PROPERTIES:
+:ID:       d53f88b5-8b75-4493-a75d-d55e6a984c17
+:END:
+- pag 79
+- Modelos dinámicos.
+- Descripción de un estado debe ser un adverbio o gerundio
+- Resaltar los estados con trascendencia funcional.
+      - En general hay muchísimos estados.
+- En sistemas complejos pueden ser necesarios varios diagramas de estados.
+
+[[attachment:clipboard-20260226T101121.png]]
+
+*** Descripciones funcionales. Pseudócodigo
+- Más preciso que el lenguaje natural.
+      - Se excluyen aspectos de declaración de tipos, variables constantes y subprogramas.
+- Cuidado con el refinamiento del pseudocódigo.
+
+**** Selección
+#+begin_example
+SI <condición> ENTONCES
+    <Pseudocodigo>
+SINO
+    <Pseudocodigo>
+FIN-SI
+#+end_example  
+
+**** Selección por casos
+#+begin_example
+CASO <especificación del elemento selector>
+    SI-ES <caso 1> HACER
+        <Pseudocodigo>
+    SI-ES <caso 2> HACER
+        <Pseudocodigo>
+    ...
+    OTROS
+        <Pseudocodigo>
+FIN-CASO        
+#+end_example
+
+**** Iteración con pre-condición
+#+begin_example
+MIENTRAS <Pseudocódigo de la condición> HACER
+    <Pseudocódigo>
+FIN-MIENTRAS    
+#+end_example
+
+**** Iteración con post-condición
+#+begin_example
+REPETIR
+    <Pseudocodigo>
+HASTA <Pseudocodigo de la condición>
+#+end_example
+
+**** Número de iteraciones conocido
+#+begin_example
+PARA-CADA <especificación del elemento índice> HACER
+    <Pseudocódigo>
+FIN-PARA
+#+end_example
+
+*** Descripción de datos
+- pag 84
+- Detallar la estructura interna de los datos que maneja el sistema.
+- Diccionario de datos, notación adoptada en el análisis estructurado.
+- Los formatos de descripción de datos deben porder describir la siguiente información.
+
+**** Nombre o nombres
+- denominación que se utilizará para un dato en el resto de la especificación.
+
+**** Utilidad
+- procesos, almacenes de datos, descripciones funcionales que usen el dato.
+
+**** Estructura
+- Elementos con los que está construido el dato. notación.
+      - *A + B*, concatenación de los elementos A y B.
+      - *[A|B]*, Selección entre distintos elementos de A o de B.
+      - $\{A\}^N$, Repetición N veces del elemento A.
+      - *( A )*, Opcionalmente se puede incluir A.
+      - / descripción /, Descripción en lenguaje natural o comentarios.
+      - *=*, Separador entre el nomber de un elemento y su descripción.
+
+*** Diagramas de modelo de datos                                     :ATTACH:
+:PROPERTIES:
+:ID:       7a471046-d69d-4505-8c31-75139d1fd285
+:END:
+- pag 86
+- Organización que facilite las operaciones sobre los datos que se manejan.
+- Relación entre los datos.
+- Es fundamental que en la especificación se establezca el modelo de datos que se considera más adecuado.
+- *Modelo relacional*, Organiza los datos en tablas (relaciones), conjunto de tuplas o registros.
+      - Ninguna tupla puede estar repetida.
+      - Tuplas semejantes aunque con contenido distinto.
+            - Relaciones de tuplas, de ahí el nombre *modelo relacional*.
+      - No tiene porque existir conexión entre distintas relaciones.
+- *Modelo Entidad-Relación (E-R)*, es el modelo más usado.
+      - Relaciones entre las entidades.
+            - Base de datos *relacionada*.
+      - Frecuentemente las entidades están constituidas por tablas de tuplas o registros.
+      - entidad-relación entre relaciones, cuando las tablas adoptan un *modelo relacional*.
+      - Las tablas establecen relaciones entre si.
+
+[[attachment:clipboard-20260226T110919.png]]
+
+- Notese que la entidad es en singular.
+- La flecha indica el sentido de la relación,
+      - e.g, una relación de ciudad país puede ser: [ciudad] -> <Capital> - [País]
+- *Cardinalidad  de una relación*, valores máximos y mínimos de la relación entre entidades.
+
+[[attachment:clipboard-20260226T112053.png]]
+
+** Documento de especificación de requisitos (SRD)
+- pag 91
+- Software requirements document
+- Debe cubrir los objetivos indicados en [[id:980e8981-dd69-4a38-a58b-3a5dc562cace][Análisis de requisitos de software]].
+- Documento en forma de contrato
+      - Debe ser fácil de modificar.
+*** Estructura SRD de la agencia espacial europea
+1. *INTRODUCCIÓN*
+       1. *Objetivo*
+       2. *Ámbito*
+          Nombre al o a los productos resultantes.
+       3. *Definiciones, siglas y abreviaturas*
+       4. *Referencias*
+       5. *Panorámica del documento*
+          Describe la organización del resto del documento.
+2. *DESCRIPCIÓN GENERAL*
+       1. *Relación con otros proyectos*
+          Analogías y diferencias con otros proyetos similares.
+       2. *Relación con proyectos anteriores y posteriores*:
+       3. *Objetivo y funciones*
+          Describir el sistema en su conjunto.
+       4. *Consideraciones de entorno*
+          Características especiales que debe tener el entorno en que se utiliza el sistema.
+       5. *Relaciones con otros sistemas*
+       6. *Restricciones generales*
+          Lenguajes de programación, metodologías, normas particulares, OS, etc.
+       7. *Descripción del modelo*
+          Apartado más extenso, describir el modelo conceptual que se propone desarrollar.
+3. *REQUISITOS ESPECÍFICOS*
+   Sección fundamental del documento.
+       1. *Requisitos funcionales*
+          Qué debe hacer el sistema. Se concretan las operaciones de tratamiento de información.
+       2. *Requisitos de capacidad*
+          Referentes a los volúmenes de información a procesar. Deben expresarse en valores numéricos.
+       3. *Requisitos de interfase*
+          Referentes a cualquier conexión a otros sistemas.
+       4. *Requisitos de operación*
+          Referentes al uso del sistema en general.
+       5. *Requisitos de recursos*
+          Elementos hardware, software, instalaciones, etc.
+       6. *Requisitos de verificación*
+          Para que sea posible verificar y certificar que funciona correctamente.
+       7. *Requisitos de prueba de aceptación*
+       8. *Requisitos de documentación*
+          Referentes a la documentación que debe formar parte del producto a entregar.
+       9. *Requisitos de seguridad*
+       10. *Requisitos de transportabilidad*
+           Por ejemplo si se puede usar con otros OS
+       11. *Requisitos de calidad*
+       12. *Requisitos de fiabilidad*
+           Límite aceptable de fallos
+       13. *Requisitos de mantenibilidad*
+       14. *Requisitos de salvaguarda*
+           Requisitos para evitar que un fallo tenga consecuencias graves.
+4. *APÉNDICES*
+   Elementos que completen el contenido del documento. Se les suele hacer referencia en el documento.
+
+
+
+
+
+
+
 
 
