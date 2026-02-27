@@ -669,7 +669,301 @@ where semestre='Otoño' and año=1009 and
                     where semestre='Primavera' and año=2010);
 #+end_src
 
+#+begin_src sql
+select count(distinct ID)
+from matricula
+where (asignatura_id,secc_id,semestre,año)
+  in (select asignatura_id,secc_id,semestre,año
+    from enseña
+    where enseña.ID=1010);
+#+end_src
 
+*** Comparación de conjuntos
+- *some*, superar condición con almenos uno.
+- válido para >, >=, <, <=, =, y <>
+  
+#+begin_src sql
+select nombre
+from profesor
+where sueldo > some (select sueldo
+                     from profesor
+                     where nombre_depth = 'Biologia');
+#+end_src
+
+- *all*, superar condición con todos.
+
+#+begin_src sql
+select nombre
+from profesor
+where sueldo > all (select sueldo
+                    from profesor
+                    where nombre_dept = 'Biologia');
+#+end_src
+
+- Usando agregación y agrupamiento.
+
+#+begin_src sql
+select nombre_dept
+from profesor
+group by nombre_dept
+having avg (sueldo) >= all (select avg (sueldo)
+                            from profesor
+                            group by numpre_dept);
+#+end_src
+
+*** Comprobación de relaciones vacías
+- pag 41
+- *exists* -> booleano : Posibilidad de comprobar si las consultas tienen alguna tupla en su resultado.
+      - *no exists* : el opuesto a exists.
+
+#+begin_src sql
+select asignatura_id
+from sección as S
+where semestre = 'Otoño' and año=2000 and
+  exists (select *                                    -- y además también en Primavera 2010
+          from sección as T
+          where semestre = 'Primavera' and año=2010
+            and S.asignatura_id = T.asignatura_id)    -- Comprobación de los ids para que
+                                                      --  la comprobación sea sobre la
+                                                      --  misma asignatura
+#+end_src
+
+- *Subconsulta correlación*, subconsulta que usa un nombre de correlación de una consulta externa.
+
+*** Comprobación de la ausencia de tuplas duplicadas
+- pag 42
+- *unique* -> booleano : true si la subconsulta no contiene tuplas duplicadas.
+      - la consulta es flase si contiene algunas tuplas $t_1$ y $t_2$ tal que $t_1 = t_2$.
+      - *not unique* : el contrario
+
+#+begin_src sql
+select T.asignatura_id
+from asignatura as T
+where unique (select R.asignatura_id
+              from sección as R
+              where T.asignatura_id = R.asignatura_id and
+                R.año = 2009);
+#+end_src
+
+*** Subconsultas en la clausula from
+- pag 43
+- La idea es que *from* puede referirse a una relación generada.
+
+#+begin_src sql
+select nombre_dept,med_sueldo                       -- Selecciona el departamento y el
+                                                    --  salario promedio
+from (select nomre_dept, avg(sueldo) as med_sueldo  -- Relación de salarios promedio
+      from profesor
+      group by nombre_dept)
+where med_sueldo > 42000;                           -- Promedios superiores a 42000
+#+end_src
+
+- Renombrando con *as*
+      - Algunas implementaciones de SQL no permiten este renombramiento.
+
+#+begin_src sql
+select nombre_dept, sueldo_medio
+from (select nombre_dept, avg(sueldo)
+      from profesor
+      group by nombre_dept)
+      as dept_medio(nombre_dept, sueldo_medio)
+where sueldo_medio > 42000
+#+end_src  
+
+#+begin_src sql
+-- El departamento con la máxima suma de sueldos
+select max(tot_sueldo)
+from (select nombre_dept,sum(sueldo)
+      from profesor
+      group by nombre_dept)
+        as dept_total(nombre_dept,tot_sueldo)
+#+end_src
+
+- Por defecto desde la subconsulta anidada en *from* no se puede acceder a variables de correlació externas. 
+- *lateral* : permite el acceso a relaciones externas, pero pocas implementaciones la permiten.
+
+#+begin_src sql
+-- Con la clausula lateral no parece ser necesario usar as
+select nombre,sueldo,sueldo_medio
+from profesor I1, lateral(select avg(sueldo) as sueldo_medio
+                             from profesor I2
+                             where I2.nombre_dept = I1.nombre_dept);
+#+end_src
+
+*** La cláusula with
+- *with* : Permite definir vistas temporales solo disponibles para la consulta en la que aparece.
+- Permite consultas más claras y mejor acceso en diferentes partes de la consulta.
+
+#+begin_src sql
+with max_presupuesto (valor) as     -- Vista temporal
+     (select max(presupuesto)
+      from departamento)
+select presupuesto
+from departamento, max_presupuesto
+where departamento.presupuesto = max_presupuesto.valor;
+#+end_src  
+
+#+begin_src sql
+with dept_total(nombre_dept, valor) as
+  (select nombre_dept, sum(sueldo)
+   from profesor
+   group by nombre_dept),
+dept_total_medio(valor) as
+  (select avg(valor)
+   from dept_total)
+select nombre_dept
+from dept_total,dept_total_media
+where dept_total.valor >= dept_total_medio.valor;
+#+end_src
+
+*** Subconsultas escalares
+- *subconsultas escalares* : subconsultas en cualquier punto en el que una expresión devuelve un valor
+
+#+begin_src sql
+select nombre_dept,
+       (select count(*)    -- agregación, número de tuplas
+                           --  SQL extrae el único valor esperado
+                           --  de forma implícita
+        from profesor
+        where departamento.nombre_dept = profesor.nombre_dept)
+        as num_profesores
+from departamento;        
+#+end_src
+
+** Modificación de la base de datos
+*** Borrado
+- Borrado de tuplas.
+- Solo puede borrarse tuplas de una relación a la vez.
+  
+#+begin_src sql
+delete from r where P;
+#+end_src
+
+- Borrar todas las tuplas de una relación.
+
+#+begin_src sql
+delete from profesor;
+#+end_src
+
+- Usando *where*
+
+#+begin_src sql
+delete from profesor where nombre_depth='Finanzas';
+#+end_src  
+
+#+begin_src sql
+delete from profesor
+where nombre_dept in (select nombre_dept
+                      from departamento
+                      where edificio = 'Watson');
+#+end_src
+
+- Borrado combinado con agregación.
+      - Primero se realizan las comprobaciones y luego el borrado.
+
+#+begin_src sql
+delete from profesor
+where sueldo < (select avg(sueldo) from profesor);
+#+end_src
+
+*** Inserción
+- Se especifica la tupla que se quiere insertar.
+
+#+begin_src sql
+insert into asignatura
+values ('CS-437', 'Base de datos', 'Informatica', 4);
+#+end_src
+
+- Especificando los atributos.
+
+#+begin_src sql
+insert into asignatura(asignatura_id, nombre, nombre_dept, créditos)
+values ('CS-437', 'Base de datos', 'Informatica', 4);
+#+end_src  
+
+- Insertar en un relación el resultado de una consulta.
+      - *select* se evalua antes de cualquier inserción.
+
+#+begin_src sql
+insert into profesor
+            select ID, nombre, nomber_dept, 18000
+            from estudiante
+            where nombre_dept = 'Música' andtot_cred > 144;
+#+end_src
+
+- Normalmente las bases de datos tienen utilidades especiales para agregar muchas entradas desde archivos de texto.
+
+*** Actualizaciones
+- pag 44
+- Modificar el valor dentro de una tupla sin modificar toda la tupla.
+
+#+begin_src sql
+update profesor
+set sueldo = sueldo * 1.05;  -- aquí igual es asignación
+#+end_src  
+
+- Usando *where*.
+      - Primero se comprueban las condiciones.
+
+#+begin_src sql
+update profesor
+set sueldo = sueldo * 1.05
+where sueldo < 70000;
+#+end_src
+
+- Con agregaciones.
+
+#+begin_src sql
+update profesor
+set sueldo = sueldo * 1.05
+where sueldo < (select avg(sueldo) from profesor);
+#+end_src
+
+- *case* : Multiples actualizaciones en una instrucción.
+      - Para evitar problemas de actualizaciones fuera de orden.
+      - Se pueden usar en cualquier lugar donde se espere un valor.
+
+#+begin_src sql
+update profesor
+set sueldo = case
+             when sueldo <= 100000 then sueldo * 1.05
+             when <pred2> then <resultado>             -- Ejemplo de la estructura
+             ...
+             else sueldo * 1.03
+             end
+#+end_src        
+
+- *set* : permite subconsultas escalares.
+
+#+begin_src sql
+update estudiante S set tot_créditos = (
+  select sum(créditos)
+  from matricula natural join asignatura
+  where S.ID = matricula.ID and
+               matricula.nota <> 'F' and
+               matricula.nota is not null
+);
+#+end_src
+
+- *set* y *case* :
+
+#+begin_src sql
+update estudiante S set tot_créditos = (
+  select case
+    when sum(créditos) is not null then    -- Suma de los créditos de las asignaturas not null
+      sum(créditos)
+    else 0                                 -- Un estudiante que no ha aprobado ninguna asignatura
+    end
+  from matricula natural join asignatura   -- Atributos de la asignatura
+  where S.ID = matricula.ID and            -- Matricula del estudiante
+               matricula.nota <> 'F' and
+               matricula.nota is not null
+);
+#+end_src   
+
+* Notes
+** mysql Service
+- Done using podman, documented in ORG ROAM.
 
 * Tools
 ** Create podman container
