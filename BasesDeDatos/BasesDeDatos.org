@@ -1,5 +1,6 @@
 #+title: Bases De Datos
 #+author: Jordi Amposta Pérez
+#+startup: latexpreview overview
 
 * Introducción
 - *SGBD*, Sistema gestor de bases de datos, colección de datos interrelacionados y un conjunto de programas par acceder a dichos datos.
