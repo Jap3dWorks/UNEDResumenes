@@ -281,9 +281,398 @@ create table departamento (
             - *producto cartesiano*, La relación resultante contiene todos los pares de tuplas posibles entre dos relaciones.
             - Las relaciones son conjuntos, por eso se puede aplicar *union*, *intersección* y *diferencia*.
 
+* Introducción a SQL
+** Componentes de SQL
+- *LDD*, lenguaje de definición de datos.
+- *LMD*, lenguaje interactivo de manipulación de datos.
+- *Integridad*, el LDD puede especificar las restricciones de integridad. Las actualizaciones que violan la integridad se rechazan.
+- *Definición de vistas*
+- *Control de transacciones*, Se puede especificar el inicio y final de una transacción.
+      - Creo que es que la transacción sea atómica.
+- *SQL incorporado* y *SQL dinámico*, definen cómo se pueden incorporar instrucciones SQL en lenguajes de programación.
+- *Autorización*
+- Pueden haber diferencias entre distintas implementaciones del lenguaje SQL (MySql, PostgrSQL).
+
+** Definición de datos de SQL
+*** Tipos básicos (dominios)
+- Tipos
+      - *char(n)*, cadena de carácteres de longitud fija n.
+            - Puede incluir espacios en blancos para completar la longitud de la cadena n.
+      - *varchar(n)*, cadena de carácteres de longitud variable como máximo hasta n.
+            - Se recomienda este tipo sobre *char*.
+            - Las comparaciones char = varchar no tiene un comportamiento asegurado.
+      - *int*
+      - *smallint*
+      - *numeric(p,d)*, Número de coma fija, cuya precisión la especifica el usuario.
+            - *P* dígitos (con signo) de ellos *d* son decimales.
+      - *real, double precision*, la precisión depende de la máquina.
+      - *float(n)*, Número de coma flotante con precisión de almenos n dígitos.
+- Todos los tipo incluten *null*.
+
+*** Definición básica de esquemas
+- *create table* Creación de relaciones.
+  
+#+begin_example
+create table r
+  (A1 D1,                         // A: atributo, D: dominio(tipo)
+   A2 D2,
+   ...
+   An Dn,
+   <restricción integridad 1>,
+   ...
+   <restricción integridad k>
+   );
+#+end_example
+
+- Algunas restricciones de integridad
+      - *primary key (Aj1, Aj2, ..., Ajm)*, Determina la clave primaria de la relación.
+      - *foreign key (Ak1,..,Akn) references s*, (Ak1,...,Akn) debe coincidir con los atributos clave primarios de la relación *s*.
+      - *not null*, no se permite el valor nulo para este parámetro.
+
+- Manipulaciones de relaciones
+      - *delete from r*; : Elimina todas las tuplas de r.
+      - *drop table r*; : Elimina una relación de la base de datos.
+      - *alter table r add A D;* : Añade atributos a una relación que ya existe.
+      - *alter table r drop A;* : Elimina atributos de una relación que ya existe.
+            - Algunas implementaciones no permiten esta operación.
+
+#+caption: Ejemplo definición de datos
+#+begin_src sql
+create table departamento
+(
+nombre_dept varchar(20),
+edificio    varchar(15),
+presupuesto numeric(12,2),
+primary key (nombre_depth)
+);
+
+create table asignatura
+(
+asignatura_id varchar(7),
+nombre        varchar(50),
+nombre_depth  varchar(20),
+creditos      numeric(2,0),
+primary key (asignatura_id),
+foreign key (nombre_depth) references departamento
+);
+#+end_src              
+
+** Estructura básica de consultas
+*** Consultas sobre una relación única
+#+begin_example
+select [distinct | all] A1,...,An from r [where <predicados>];
+#+end_example
+
+- *distinct*, fuerza que no hayan valores duplicados en la consulta.
+
+#+begin_src sql
+select distinct nombre_dept from profesor;
+#+end_src
+
+- *all*, indica explícitamente que los duplicados no se eliminen.
+
+#+begin_src sql
+select all nombre_depth from profesor;
+#+end_src  
+
+- Puede contener expresiones aritméticas
+
+#+begin_src sql
+select ID, nombre, sueldo*1.1 from profesor;  -- Los valores de sueldo aparecerán
+                                              --  multiplicados por 1.1
+#+end_src  
+
+- *where* permite seleccionar aquellas tuplas que cumplan cierto predicado.
+
+#+begin_src sql
+select nombre from profesor where nombre_depht='Informática' and sueldo > 70000;
+#+end_src  
+
+*** Consultas sobre varias relaciones
+#+begin_example
+select A1,...,An from r1,..,rm where P
+#+end_example
+
+#+begin_src sql
+select nombre, profesor.nombre_depth, edificio  -- profesor.nombre_depth identifica
+                                                --  el atributo nombre_depth de forma unívoca.
+from profesor, departamento
+where profesor.nombre_depth = departamento.nombre_depth;
+#+end_src
+
+- *from* se defina a si misma como el producto cartesiano de las relaciones indicadas (pag31).
+- Pasos generales de una Consulta
+      1) Genere el producto cartesiano de la cáusula *from*.
+      2) Aplique los predicados indicados en la cláusula *where*.
+      3) Para cada tupla del paso 2 estraiga los atributos indicados en la cláusula *select*.
+- Las implementaciones reales optimizan los pasos teóricos anteriores.
+
+*** La union natural
+#+begin_example
+select A1,..,An from r1 natural join r2 ... natural join rm where P;
+#+end_example
+
+- *La unión natural* opera sobre dos relaciones y genera como resultado una relación.
+      - Concatena tuplas en función si comparten mismos valores en atributos comunes.
+            - No se realiza el producto cartesiano.
+
+#+begin_src sql
+select nombre, asignatura_id from profesor natural join enseña;
+#+end_src
+
+- *join r using (A1,...,An)*, permite comparar los valores de solo algunos atributos en común.
+
+#+begin_src sql
+select nombre,nombre_asig
+from (profesor natural join enseña)
+join asignatura using (asignatura_id); -- solo se tendrá en cuenta los valores
+                                       --  del atributo en común asignatura_id
+                                       --  enseña.asignatura_id = asignatura.asignatura_id
+#+end_src  
+
+** Operaciones básicas adicionales
+*** Operación de renombrado
+- pag 34
+
+#+begin_src sql
+select T.nombre as nombre_profesor, asignatura_id
+from profesor as T, enseña as S
+where T.ID = S.ID
+#+end_src  
+
+- Para hacer el producto cartesiano sobre la misma relación.
+
+#+begin_src sql
+-- Profesores con el sueldo mayor que el sueldo
+--  de almenos un profesor de biología.
+select distinct T.nombre
+from profesor as T, profesor as S
+where T.sueldo > S.sueldo and s.nombre_depth = 'Biología';
+#+end_src
+
+*** Operaciones con cadenas de carácteres
+- La norma SQL es case sensitive, 'a' = 'A' se evalua falso.
+      - Algunas implementaciones no siguen esta norma por defecto, es el caso de MySql.
+- Operaciones obre cadenas
+      - upper
+      - lower
+      - trim
+      - || : concatenación
+      - *like* : comparaciones usando patrones
+            - % : coincide con cualquier subcadena.
+            - _ : coincide con cualquier carácter.
+            - \ : para escapar carácteres especiales.
+      - *not like* : comparaciones usando patrones pero negadas.
+      - *similar to* : comparaciones pero con expresiones regulares.
+
+#+begin_src sql
+select nombre_depth
+from departamento
+where edificio like '%Watson%'
+#+end_src
+
+*** Especificación de atributos en la cláusula Select
+
+- *** : se puede usar en la cláusula *select* para indicar todos los atibutos.
+
+#+begin_src sql
+select profesor.*
+from profesor,enseña
+where profesor.ID = enseña.ID;
+#+end_src
+
+*** Orden en la presentación de las tuplas
+- *order by* : hace que las tuplas se presenten con un criterio de orden.
+  
+#+begin_src sql
+select nombre
+from profesor
+where nombre_depth = 'Fisica'
+order by nombre;                -- alfabetico
+#+end_src
+
+- Se puede especificar *asc* o *desc*.
+  
+#+begin_src sql
+slect *
+from profesor
+order by sueldo desc, nombre asc;  -- primero por sueldo descendente y ante las colisiones
+                                   --  por nombre ascendente
+#+end_src
+
+*** Predicados de la cláusula where
+- *between* : dentro de un rango.
+#+begin_src sql
+select nombre
+from profesor
+where sueldo between 90000 and 100000;
+#+end_src
+
+- *not between* : between negado.
+
+- Comparación con listas de forma lexicográfica
+  
+#+begin_src sql
+select nombre,asignatura_id
+from profesor,enseña
+where (profesor.ID, nombre_depth) = (enseña.ID, 'Biología');
+-- equivale a profesor.ID = enseña.ID and nombre_depth = 'Biología'
+#+end_src
+
+** Operaciones sobre conjuntos
+- *union* $\cup$, *intersect* $\cap$ y *except* -.
+
+*** Operación union  
+- *union* : unión entre dos relaciones.
+      - Elimina duplicados automáticamente.
+      - *union all* mantiene duplicados.
+  
+#+begin_src sql
+(select asignatura_id
+from sección
+where semestre = 'Otoño' and año=2009)
+union
+(select asignatura_id
+from sección
+where semestre = 'Primavera' and año=2010);
+#+end_src
+
+*** Operación Intersección
+- *intersect* : intersección entre dos relaciones.
+      - Elimina duplicados.
+      - *intersect all* para mantener duplicados.
+
+#+begin_src sql
+(select asignatura_id
+from sección
+where semestre='Otoño' and año=2009)
+intersect
+(select asignatura_id
+from sección
+where semestre='Primavera' and año=2010);
+#+end_src
+
+*** Operación except
+- *except* : la substracción.
+      - Elimina duplicados.
+      - *except all* mantiene duplicados.
+
+#+begin_src sql
+(select asignatura_id
+from sección
+where semestre = 'Otoño' and año=2009)
+except
+(select asignatura_id
+from sección
+where semestre = 'Primavera' and año=2010)
+#+end_src
+
+** Valores nulos
+- El resultado de las operaciones aritméticas es nulo si cualquiera de los valores de entrada es nulo.
+- *unknown* : tercer valor lógico (junto a true false) para comparaciones con null.
+      - 1 < null  -->  unknown.
+      - true and unknown  --> unknown
+      - false and unknown --> false
+      - unknown and unknown --> unknown
+      - true or unknown  -->  true
+      - false or unknown  -->  unknown
+      - unknown or unknown  -->  unknown
+      - not unknown  -->  unknown        
+- *is null* y *is not null* : Operacion booleana para identificar valores null.
+
+#+begin_src sql
+select nombre
+from profesor
+where sueldo is null;
+#+end_src
+
+- En *select distinct* ('A',null)=('A',null) (solo se mantiene una copia) aunque null=null --> unknown.
+
+** Funciones de agregación
+- *avg* : Media (numérico)
+- *min* : minimo
+- *max* : máximo
+- *sum* : total suma (numérico)
+- *count* : recuento
+  
+*** Agregación básica
+
+- Resultados con una única tupla
+
+#+begin_src sql
+select avg (sueldo) as med_sueldo
+from profesor
+where nombre_dept = 'Informática';
+#+end_src
+
+#+begin_src sql
+select count(distinct ID)
+from enseña
+where semestre='Primavera' and año=2010;
+#+end_src
+
+*** Agregación con agrupamiento
+- pag 39
+- *group by*
+
+#+caption: El sueldo medio de cada departamento  
+#+begin_src sql
+select nombre_dept, avg(sueldo) as med_sueldo
+from profesor
+group by nombre_depth;
+#+end_src  
+
+#+caption: Número de Profesores de cada departamento que enseño algo
+#+begin_src sql
+select nombre_dept, count(distinct ID) as prof_cuenta
+from profesor natural join enseña
+where semestre='Primavera' and año=2010
+group by nombre_depth;  -- Deben estar presentes los atributos
+                        --  que aparecen fuera de la agregación
+#+end_src
+
+*** Cláusula having
+- pag 39
+- *having* : Predicados que se aplican a grupos.
+
+#+begin_src sql
+select nombre_dep, avg(sueldo) as med_sueldo
+from profesor
+group by nombre_dept
+having avg(sueldo) > 42000;
+#+end_src  
+
+- Combinado con *where*.
+
+#+begin_src sql
+select asignatura_id, semestre, año, secc_id, avg(tot_créditos)
+from matricula natural join student
+where año=2009
+group by asignatura_id, semestre, año, secc_id
+having count(ID) >= 2;
+#+end_src
+
+*** Agregación con valores nulos y valores booleanos
+- todas excepto *count* ignoran los null.
+
+** Subconsultas anidadas
+*** Pertenencia a conjuntos
+- *in* : pertenencia a un conjunto.
+      - También existe *not in*.
+  
+#+begin_src sql
+select distinct asignatura_id
+from sección
+where semestre='Otoño' and año=1009 and
+  asignatura_id in (select asignatura_id
+                    from sección
+                    where semestre='Primavera' and año=2010);
+#+end_src
+
+
+
 * Tools
 ** Create podman container
-
 #+begin_src sh
 podman pull docker.io/library/mysql:8.0
 #+end_src
