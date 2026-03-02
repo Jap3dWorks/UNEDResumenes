@@ -990,7 +990,315 @@ end architecture Mux2_4bit;
 #+end_src
 
 *** Diseños con estructura regular
-- La sentencia generate puede usarse para describir circuitos con estructura regular.
+- pag 140
+- La sentencia generate puede usarse para describir circuitos con estructura regular (estructura repetitiva).
+
+#+caption: Array de puertas AND usando GENERATE  
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity arrayAND is
+  port ( y     : out std_logic_vector(7 downto 0);
+         i1,i0 : in  std_logic_vector(7 downto 0));
+end entity arrayAND;
+
+architecture arrayAND of arrayAND is
+  component and2 is
+    port (y0     : out std_logic;
+          x0, x1 : in  std_logic);
+  end component and2;
+begin
+  gen_array : for I in 7 downto 0 generate
+  begin
+    and_array: and2
+      port map (y(I), i1(I), i0(I));
+  end generate gen_array;
+end architecture arrayAND;
+#+end_src
+
+#+caption: Detector de paridad usando sentencia GENERATE condicional
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity paridad is
+  port (parity : out std_logic;
+        parity_IN : in std_logic_vector(7 downto 0));
+end entity paridad;
+
+architecture paridad of paridad is
+  signal temp : std_logic_vector(6 downto 0);
+
+  component xor2 is
+    port (y0 : out std_logic;
+          x0, x1 : in std_logic);
+  end component xor2;
+
+begin
+  parity <= temp(6); -- no lo entiendo
+  gen_array : for I in 0 to 6 generate
+    inicial : if I=0 generate
+      xor_0 : xor2
+        port map (temp(0), temp(0), parity_IN(1));
+    end generate inicial;
+
+    intermedio : if I /= 0 generate
+      resto_xor : xor2
+        port map (temp(I), temp(I-1), parity_IN(I+1));
+    end generate intermedio;
+
+  end generate gen_array;
+end architecture paridad;
+#+end_src
+
+** Parametrización
+*** Parametrización del comportamiento
+
+#+begin_src vhdl
+entity and2 is
+  generic ( Tdp : time);     -- Define el tiempo de retardo
+  port    ( y0  : out std_logic;
+            x0, x1 : in std_logic);
+end entity and2;
+
+architecture and2D of and2 is
+begin
+  y0 <= x0 and x1 after Tdp; -- Aquí se usa el parámetro Tdp
+end architecture and2D;
+#+end_src
+
+*** Parametrización de la estructura
+- Cuando se instancia un componente puede asignarse un calor a sus constantes generic.
+
+#+caption: Sintaxis para asignar valores generic  
+#+begin_src vhdl
+nombre_instancia : component nombre_componente  -- component es opcional
+  generic map (valores_constantes_generic)      -- asignación de valores generic
+  port    map (asociación_puertos_señales);
+#+end_src  
+
+- Por ejemplo
+
+#+begin_src vhdl
+puertaAND1 : component and2
+  generic map (Tdp => 3ns)
+  port    map (y0 => sig_out, x0 => sig0, x1 => sig1);
+#+end_src  
+
+** Señales, Variables y Constantes
+#+caption: Declaraciones  
+#+begin_src vhdl
+signal nombre_señal       : tipo_dato := valor_inicial;  -- valor inicial no es sintetizable
+variable nombre_variable  : tipo_dato := valor_inicial;  -- valor inicial no es sintetizable
+constant nombre_constante : tipo_dato := expresión;
+#+end_src
+
+- *Señales* : corresponden con las señales lógicas reales existentes en el circuito.
+      - Los puertos solo pueden ser señales.
+      - Son declaradas en *packages*, *entity* o *architecture*.
+      - Asginaciones a *señales* pueden ser tanto concurrentes como secuenciales.
+      - Siempre existe un retardo como mínimo $\delta$.
+      - Tienen dirección.
+            - No puede leerse una señal *out*.
+            - No puede asignarse valor a una señal *in*.
+      - Se emplea <=
+
+#+begin_src vhdl
+nombre_señal <= forma_de_onda;
+#+end_src        
+        
+- *Variables* : Pueden o no corresponder con señales físicas.
+      - Se definen variables para realizar cálculos que luego se asignan a las señales.
+      - Como elemento intermedio antes de ser escrito en un puerto *out* (los puertos out no pueden ser leídos).
+      - Son declaradas dentro de *process*, *function* y *procedure* (código secuencial).
+      - Asignar valores a *variables* se realiza inmediatamente (no hay retardos).
+      - Solo en bloques secuenciales.
+      - Se emplea :=
+
+#+begin_src vhdl
+nombre_variable := expresión;
+#+end_src        
+
+- *Constantes* : El valor no cambia durante la simulación.
+      - La asignación de valor se realiza en la declaración.
+      - En las unidades *entity* y *architecture* deben definirse constantes antes del bloque *begin*.
+      - Dentro de la definición de un *package* pueden definirse constantes.
+
+#+begin_src vhdl
+constant nombre_constante : tipo_dato := expresión;
+#+end_src        
+
+** Tipos de datos y operadores
+- Un tipo de dato está definido por conjunto de valores y conjunto de operaciones posibles.
+      - Es fuertemente tipado.
+
+*** Tipos predefinidos en VHDL
+- *integer* : rango mínimo 32 bits, incluye negativos positivos y el 0.
+      - *natural* : 0 más números positivos.
+      - *positive* : números positivos.
+- *boolean* : true o false.
+- *bit* : '0' o '1'
+- *bit_vector* : vector unidimensional del tipo *bit*.
+      - Los literales se escriben entre "", se omiten los símbolos "_"
+      - X"FFF", hexadecimal
+      - 0"7777", octal
+      - B"1111_1111_1111", binario
+      - "1111_1111_1111", por defecto binario
+
+**** Operadores
+- pag 148
+      - Tabla de operadores
+      - Tabla de precedencias
+- Ante misma precedencia se evalua primero el de la izquierda.
+
+*** Tipos del paquete IEEE.std_logic_1164
+**** std_logic
+- Posible valores:
+      - '0'
+      - '1'
+      - 'U' : Valor sin inicializar.
+      - 'X' : No puede determinarse el valor de la señal.
+      - 'Z' : Alta impedancia.
+      - 'W' : Desconocida débil.
+      - 'L' : Cero débil.
+      - 'H' : uno débil.
+      - '-' : Don't care (no importa).
+
+**** std_logic_vector
+- vector de elementos *std_logic*.
+- Según la declaración el bit más significativo estará a la derecha o a al izquerda.
+      - Cuidado, el bit más significativo a la derecha puede dar errores con buses que representan números binarios.
+
+#+begin_src vhdl
+signal a : std_logic_vector(7 downto 0);  -- a7,...,a0
+signal b : std_logic_vectir (o to 7);     -- a0,...,a7, puede dar errores con número binarios
+#+end_src
+
+**** Operadores
+- Hay sobrecarga de operadores.
+- El paquete IEEE.std_logic_1164 implementa los operadores necesarios.
+
+*** Conversión de tipos  
+- El paquete IEEE.std_logic_1164 incluye funciones para conversión de tipos.
+  
+| Conversión de:   | a:               | Función                |
+|------------------+------------------+------------------------|
+| std_logic        | bit              | to_bit(arg)            |
+| bit              | std_logic        | to_stdulogic(arg)      |
+| std_logic_vector | bit_vector       | to_bitvector(arg)      |
+| bit_vector       | std_logic_vector | to_stdlogicvector(arg) |
+|                  |                  |                        |
+
+*** Operadores relacionales
+- Comparaciones.
+- Pueden comparar datos tipo vector.
+      - Los operandos pueden tener diferente número de elementos.
+      - Se compara elemento a elemento de izquierda a derecha.
+      - Aún así es mejor evitar comparaciones de elementos de tamaños diferentes.
+- = /= < <= > >=
+
+*** Operador concatenación
+- &
+- Permite concatenar elementos, segmentos de vectores y vectores completos.
+
+#+caption: Ejemplo de concatenación
+#+begin_src vhdl
+-- Desplazamiento de dos bits a la derecha
+y <= "00" & a(7 downto 2);
+
+-- Rotación de dos posiciones
+y <= a(1 downto 0) & a(7 downto 2);
+#+end_src  
+
+*** Agregación de vectores
+
+- Permite la asignación de valores a vectores
+
+#+begin_src vhdl
+x1 <= "101111";  -- asigna 47
+x2 <= O"57";     -- asigna 47, octal
+x3 <= X"2F";     -- asigna 47, hexadecimal
+#+end_src  
+
+- Asignación mediante asociación posicional
+
+#+begin_src vhdl
+y <= ('1', '0', '1', '0', '1', '0', '1', '0');
+#+end_src  
+
+- Asignación índice => valor, puede hacerse en cualquier orden
+
+#+begin_src vhdl
+y <= (7=>'1', 6=>'0', 5=>'1', 4=>'0', 3=>'1', 2=>'0', 1=>'1', 0=>'0');
+#+end_src  
+
+- Con combinación de índices
+
+#+begin_src vhdl
+y <= (7 | 5 | 3 | 1 => '1',
+      6 | 4 | 2 | 0 => '0');
+#+end_src
+
+- O usando la palabra reservada *others*
+
+#+begin_src vhdl
+y <= (7 | 5 | 3 | 1 => '1',
+      others        => '0');
+#+end_src  
+
+*** Tipos del paquete IEEE.numeric_std
+- Pueden realizarse operaciones aritméticas sobre los datos del tipo *integer*.
+      - Pero se dificulta el trabajo de síntesis aunque valga para simular.
+      - IEEE.numeric_std intenta solucionar ese aspecto.
+
+**** unsigned y signed
+- Definidos en IEEE.numeric_std
+- Son vectores del tipo *std_logic*.
+- *unsigned* : número binario sin signo.
+      - bit más significativo a la izquierda.
+- *signed* : número binario con signo en formato complemento a 2.
+      - bit más significativo a la izquierda.
+- Declaraciones similares a std_logic_vector.
+
+#+begin_src vhdl
+signal a : signed (15 downto 0);
+#+end_src
+
+- uso del paquete IEEE.numeric_std
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+#+end_src  
+
+**** Operadores
+- Están sobrecargados abs, *, /, mod, rem, + y -.
+- Puede producirse rebosamiento.
+
+#+begin_src vhdl
+signal a,b,c,d : unsigned (7 downto 0);
+-- ...
+a <= b+c;
+d <= b+1;
+#+end_src
+
+- Están sobrecargados *=, /=, <, <=, >, >=*.
+      - Asegura la comprobación con tipo signed y unsigned por el valor que representan.
+
+**** Funciones
+- *shift_left(a,b)*, *shift_right(a,b)*, *rotate_left(a,b)*, *rotate_right(a,b)*.
+  Operaciones de desplazamiento y rotación.
+      - a : signed o unsigned
+      - b : natural
+      - return : signed o unsigned
+- *resize(a,b)* : Modifica el número de bits.
+      - a : signed o unsigned
+      - b : natural
+      - return : signed o unsigned
+- *std_match(a,b)* : Se emplea para comparar vectores con el valor '-'.
+      - 
 
 * Glosario
 - *flip-flop*, circuito biestable.
