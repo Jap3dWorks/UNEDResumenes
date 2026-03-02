@@ -1298,7 +1298,346 @@ d <= b+1;
       - b : natural
       - return : signed o unsigned
 - *std_match(a,b)* : Se emplea para comparar vectores con el valor '-'.
-      - 
+      - a : signed o unsigned
+      - b : mismo tipo que a
+      - return : boolean
+
+#+begin_src vhdl
+-- Ejemplo de std_match
+código <= "11" when std_match(x, "1---") else
+          "10" when std_match(x, "01--") else
+          "01" when std_match(x, "001-") else
+          "00";
+#+end_src        
+
+**** Conversión entre tipos
+- pag 160
+- *to_unsigned*, *to_signed*, *to_integer*.
+      - Conversiones hacia integer.
+- *std_logic_vector*, *unsigned* y *signed* tienen casting directo.
+
+#+begin_src vhdl
+signal u1, u2 : unsigned         (7 downto 0);
+signal x1, x2 : std_logic_vector (7 downto 0);
+-- ...
+u1 <= unsigned(x1);
+x2 <= std_logic_vector(u2);
+#+end_src
+
+*** Tipos time y string
+- Útiles para depuración.
+- *time* : representa el tiempo simulado.
+      - Unidad femtosegunfo = $10^{-15}s$
+- *string* : sirve para mostrar mensajes por  pantalla.
+      - *report* : es el print de vhdl, solo acepta *string*.
+
+*** Tipos definidos por el usuario
+- Se permite al usuario definir sus propios tipos.
+
+**** Tipo enteros definidos por el usuario
+#+begin_src vhdl
+type miEntero     is range -32 to 32;
+type miPalabraMem is range 0 to 1024                 
+#+end_src
+
+**** Tipos enumerados
+#+begin_src vhdl
+typo opcode_type is (SUMA, RESTA, SALTO, PARAR);
+#+end_src
+
+- El problema es que no se define el código binario de cada opción.
+
+**** Tipos vectoriales definidos por el usuario  
+#+begin_src vhdl
+type nombre_tipo is array especificacion_dimension of tipo_dato;
+#+end_src
+
+- Ejemplo de una matriz
+
+#+begin_src vhdl
+type regFile_type is array (0 to 3) of std_logic_vector(7 downto 0);
+constant data : regFile_type :=
+  (('0', '0', '1', '1', '0', '0', '1', '0'),
+   ('0', '0', '1', '1', '0', '0', '1', '0'),
+   ('0', '0', '1', '1', '0', '0', '1', '0'),
+   ('0', '0', '1', '1', '0', '0', '1', '0'));
+signal reg_File : regFile_type;
+-- ...
+-- acceso tal que reg_File(2)(3)
+#+end_src
+
+- Ejemplo de matriz std_logic
+
+#+begin_src vhdl
+type matriz2D is array (0 to 3, 7 downto 0) of std_logic;
+constant data : matriz2D :=
+  (('0', '0', '1', '1', '0', '0', '1', '0'),
+   ('0', '0', '1', '1', '0', '0', '1', '0'),
+   ('0', '0', '1', '1', '0', '0', '1', '0'),
+   ('0', '0', '1', '1', '0', '0', '1', '0'));
+signal mem_data : matriz2D;
+#+end_src  
+
+** Atributos
+- pag 166
+- Propiedades de los tipos de datos.
+      - No todos lo satributos son soportados para síntesis.
+- Se puede definir atributos propios.
+
+#+begin_src vhdl
+signal d : std_logic_vector(7 downto 0);
+-- d'low=0   d'high=7   d'left=7   d'right=0
+-- d'length=8   d'range=(7 downto 0)   d'reverse_range=(0 to 7)
+#+end_src
+
+- Son útiles para preparar bancos de pruebas.
+      - No es necesario que se puedan sintetizar.
+- *<tipo>'image(señal)* : convierte la señal a string.
+
+** Librerías
+- pag 167
+- Contiene la definición de un conjunto de tipos, definición de operadores y funciones que pueden aplicarse a esos tipos.
+- *packages* : sublibrerías que estructuran el contenido de una librería.
+- *IEEE* es la librería, algunos paquetes son:
+      - IEEE.std_logic_1164
+      - IEEE.numeric_std
+      - IEEE.math_real
+
+
+** ASSERT
+- pag 169
+- Comprobaciones lógicas que dado el valor esperado en un punto del estado del programa debería valer true.
+- Bueno para evitar errores.
+
+#+begin_src vhdl
+assert condicion_booleana report mensaje_a_mostrar severity nivel_severity;
+#+end_src
+
+- Si la condición vale false se muestra el mensaje.
+- *nivel_severity* son:
+      - note
+      - warning
+      - error
+      - failure
+
+** Subprogramas
+- Fragmentos de código secuencial.
+
+*** Funciones
+- pag 171
+- Rutina que devuelve un valor.
+- Devuelve el resultado de aplicar un Código secuencial a partir de los parámetros formales.
+- Puede ser invocado en sentencias concurrentes y secuenciales.
+- Los parámetros de entrada son todos constantes (*in*).
+- No puede emplearse *wait* dentro de una función.
+
+#+begin_src vhdl
+function nombre_función lista_param_formales return tipo_dato is
+  declaración de variables locales y constantes locales
+begin
+  sentencias secuenciales
+end function nombre_funcion;
+#+end_src
+
+#+begin_src vhdl
+function f (c1,c2 : integer; signal s : std_logic_vector) return boolean is
+-- ...
+end function f;  
+#+end_src
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity conv_int is
+  port(y : out integer range 0 to 15;
+       h : in std_logic_vector(3 downto 0));
+end entity conv_int;
+
+architecture conv_int of conv_int is
+  function conv_integer(signal vector : std_logic_vector) return integer is
+    variable resultado,pot: integer range 0 to 2**vector'length-1;
+  begin
+    pot := 1;
+    if(vector(vector'low)='1') then
+      resultado := 1;
+    else
+      resultado :=0;
+    end if;
+    for i in (vector'low+1) to (vector'high) loop
+      port := pot*2;
+      if(vector(i)='1') then
+        resultado := resultado + pot;
+      end if;
+    end loops;
+    return resultado;
+  end function conv_integer;
+
+begin
+  y <= conv_integer(a);
+end architecture conv_int;
+#+end_src
+
+*** Procedimientos
+- Puede devolve más de un valor
+- Puede declararse en la parte declarativa del *architecture* y de los bloques *process*.
+- Puede invocarse en código concurrente o secuencial.
+      - En código concurrente es como si los parámetros *in* e *inout* fueran la lista de sensibilidad con un *wait* implícito al final.
+- Se permite el uso de *wait*, aunque no es sintetizable.
+
+#+begin_src vhdl
+procedure nombre_procedimiento lista_param_formales is
+  declaracione de variables locales y constantes locales
+begin
+  sentencias secuenciales
+end procedure nombre_procedimiento;
+#+end_src  
+
+- Existen parámetos formales de entrada y salida.
+      - *in*, *out* o *inout*.
+      - *in* no puede modificarse.
+      - Por defecto se asume *in* si no se especifica.
+      - *out* *inout* por defecto son *variables* si no se especifica.
+- Sintaxis declaración de parámetros formales
+  
+#+begin_src vhdl
+constant nombre_constante : modo tipo_dato;
+signal   nomre_señal      : modo tipo_dato;
+variable nombre_variable  : modo tipo_dato;
+#+end_src
+
+#+begin_src vhdl
+procedure proc (a          : in std_logic;
+                signal b,c : in std_logic;
+                signal x   : out std_logic_vector(7 downto 0);
+                signal y   : inout integer range 0 to 99) is
+-- ...
+end procedure proc;  
+#+end_src
+
+- La asignación de los valores o parámetros actuales a los parámetros formales pueden ser:
+      - Asociación posicional
+      - Asociación del tipo : param_formal => (valor_actual | param_actual)
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity minMax is
+  generic(limite : integer := 255);
+  port (min_out, max_out : out integer range 0 to limite;
+        ena : in std_logic;
+        d1_in, d2_in : in integer range 0 to limite);
+end entity minMax;
+
+architecture minMax of minMax is
+  procedure ordena(signal in1, in2 : in integer range 0 to limite;
+                   signam min,max : out integer range 0 to limite) is
+    begin
+      if (in1 > in2) then
+        max <= in1;
+        min <= in2;
+      else
+        max <= in2;
+        min <= in1;
+      end if;
+    end procedure ordena;
+    
+  begin
+
+    process(ena)
+    begin
+      if(ena='1') then
+        ordena(d1_in, d2_in, min_out, max_out);
+      end if
+    end process;
+end architecture minMax;
+#+end_src
+
+*** Diferencias entre funciones y procedimientos
+- pag 176
+
+** Paquetes
+- Contiene:
+      - subprogramas para pode ser reutilizados en diferentes proyectos.
+      - Tipos de datos.
+      - componentes.
+      - constantes
+- Sintaxis
+
+#+begin_src vhdl
+package nombre_paquete is
+  declaraciones   -- Contiene todas las declaraciones de
+                  --  componentes, tipos y subprogramas
+end package nombre_paquete;
+
+package body nombre_paquete is
+  descripción de funciones y procedimientos  -- Necesario para subprogramas
+end package body nombre_paquete;
+#+end_src
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+package ejemplo1 is
+  type estado is (st1, st2, st3, st4);
+  constant datoInicial : std_logic_vector(7 downto 0) := "11111111";
+end package ejemplo1;
+#+end_src
+
+- Imagina que se compila en la librería *work*, para usar ese paquete hay que hacer:
+
+#+begin_src vhdl
+use work.ejemplo1.all;
+#+end_src
+
+- Ejemplos
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+package pack1 is
+  function conv_integer (signal vector : std_logic_vector) return integer;
+end package pack1;
+
+package body pack1 is
+  function conv_integer (signal vector : std_logic_vector) return integer is
+    variable resultado, pot : integer range 0 to 2**vector'length - 1;
+  begin
+    pot := 1;
+    if (vector(vector'low)='1') then
+      resultado :=1;
+    else
+      resultado := 0;
+    end if
+    for i in (vector'low - 1 + 1) to (vector'high) loop
+      pot := pot * 2;
+      if (vector(i)='1') then
+        resultado := resultado + pot;
+      end if;
+    end loop;
+    return resultado;
+  end function conv_integer;
+end package body pack1;
+#+end_src
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use work.pack1.all;
+
+entity conv_int1 is
+  port (y : out integer range 0 to 15;
+        a : in std_logic_vector(3 downto 0));
+end entity conv_int1;
+
+architecture conv_int1 of conv_int1 is
+begin
+  y <= conv_integer(a);
+end architecture conv_int1;
+#+end_src
 
 * Glosario
 - *flip-flop*, circuito biestable.
