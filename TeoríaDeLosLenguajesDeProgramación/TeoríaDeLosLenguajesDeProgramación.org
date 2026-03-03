@@ -747,7 +747,222 @@ suma = foldr (+) 0
 concat = foldr (++) []
 #+end_src
 
-* Programación lógica
+* Programación lógica (ProLog)
+- pag 85
+- Se usa *ProLog*
+      - El Programados se orienta en describir el problema.
+      - Los programas y datos se presentan bediante *cláusulas* definidas.
+      - *Unificación* : equiparación incluida en el sistema (operaciones de sustitución lógica).
+      - Incluye un mecanismo de inferencia automática basado en vualta atrás y búsqueda en profundidad.
+      - Permite un estilo no determinista de programación.
+      - Soporta la recursión y maneja estucturas de datos (lista).
+
+** Especificación de programas
+- Básado en el cálculo de predicados de la lógica clásica.
+      - Símbolos lógicos : conectivasy cuantificadores.
+      - Símbolos no lógicos : Datos.
+- Elementos de formulación de problemas
+      - *átomos* : representan propiedades o relaciones entre objetos.
+            - También conocido como *literales afirmados*.
+            - Símbolo no lógico de *predicado*.
+                  - Un símbolo 0-ario representa un hecho simple, por ejemplo llueve.
+      - *predicados* : Representan relaciones o propiedades que permiten clasificar y discriminar los diferentes tipos de objetos del problema.
+            - entrante(X) : Se usa para luego establecer el atributo entrante.
+      - *cláusulas* : Combinación de relaciones entre objetos y sus propiedades mediante símbolos lógicos que da lugar a fórmulas.
+            - <cabeza> :- <cuerpo>
+      - *Marco conceptual* : Descripción de los símbolos no lógicos necesarios para formular el problema.
+      - *términos* : Los elementos que parecen en la formulación de un problema.
+            - *Variables* :
+            - *Constantes* : Objetos concretos y bien conocidos del dominio.
+                  - camelCase, se pueden entrecomillar para contener espacios.
+            - Símbolo de función con argumentos que son términos.
+
+- Ejemplo de Prolog
+
+#+begin_src prolog
+% constantes
+paella, gazpacho, potaje  % camelCase, constantes
+#+end_src
+
+#+begin_src prolog
+entrante(X)               % sneaky_case y la variable en Mayus
+plato_de_pescado(X)       % X es un plato de pescado
+#+end_src
+
+*** Reglas y programas
+- No se utilizan tipos.
+- *programa* : Secuencia de hechos y reglas que describen los conocimientos relativos a un problema.
+- *reglas* : símbolos lógicos que permiten combinaciones de literales.
+      - También se conocen como *Cáusulas de Horn*.
+      - También se denomina *cláusulas definidas*.
+      - formadas por *cabeza* y *cuerpo* separadas por el símbolo *:-* y acabado en punto.
+
+#+begin_src prolog
+Q :- P1, P2, ... , Pn.
+#+end_src
+
+- Se lee : si es cierto P1, P2, ..., Pn entonces es cierto Q.
+
+- Reglas como "atributo".
+  
+#+begin_src prolog
+% La carta
+entrante(paella).   % la paella es un entrante
+entrante(gazpacho).
+plato_de_carne(filete).
+postre(naranja).
+#+end_src
+
+- Reglas de relación de atributos.
+      - /Para todo X si X es un plato de carne entonces X es un plato fuerte./
+#+begin_src prolog
+plato_fuerte(X) :- plato_de_carne(X)
+plato_fuerte(X) :- plato_de_pescado(X)
+#+end_src  
+
+- , es la conectiva $\land$
+      - /Cualquier tipo de valores X,Y,Z tal que X es entrante, Y es plato fuerte y Z es postre/, se escribe en prolog como:
+
+#+begin_src prolog
+menu(X,Y,Z) :- entrante(X), plato_fuerte(Y), postre(Z)
+#+end_src
+
+- ; es la conectiva $\lor$
+      - $q \lor r \to p$, se escribe en prolog como:
+
+#+begin_src prolog
+p :- q ; r
+#+end_src
+
+#+begin_src prolog
+meny(X,Y,Z) :- entrante(X),
+               (plato_de_carne(Y); plato_de_pescado(Y),
+               postre(Z)).
+#+end_src
+
+- , es prioritario sobre ;
+      - $(q \land r) \lor s \to p$
+
+#+begin_src prolog
+p :- q , r ; s
+#+end_src
+
+*** Extracción de respuestas
+- *Consulta* : extracción de respuestas de un programa.
+- Las consultas empiezan con el símbolos ?-
+- *Instancia de la regla* : Es el resultado de sustituir una variable X por un término cualquiera t.
+      - La sustitución se denota por <X,t>
+
+- $\exists X, mujer(X) \land ama(manuel,X)$, se escribe como:
+  
+#+begin_src prolog
+% Existe alguna mujer a la que manuel ame?
+?- mujer(X), ama(manuel, X).
+#+end_src
+
+- /Cuales son los menús contenidos en la carta?/, se escribe como:
+
+#+begin_src prolog
+?- menu(X,Y,Z).
+#+end_src
+
+- Para confirmar una relación se hace:
+
+#+begin_src prolog
+?- menu(paella, filete, naranja).
+#+end_src  
+
+- Consultas con algunas restricciones.
+
+#+begin_src prolog
+?- menu(paella, X, naranja).
+#+end_src  
+
+*** Guía metodológica para la especificación
+**** 1 Descripción del Marco conceptual
+- pag 97
+- Descripción de los elementos u objetos del Dominio.
+- Descripción de las pripiedades de los objetos.
+- Descripción de las posibles relaciones entre los objetos.
+
+**** 2 Formulación
+- Afirmaciones
+- Fórmulas que representan la interacción entre literales.
+
+- Programación recursiva
+#+begin_src prolog
+antepasado(X,Y) :- hijo-ja(Y,X).  % Si Y es hijo-ja de X
+                                  %  X es un antepasado de Y
+antepasado(X,Y) :- hijo-ja(Y,Z), antepasado(X,Z).
+#+end_src  
+
+- Formulación aritmética
+      - Se expresa mediante *is* con notación infija.
+      - La aritmética en prolog también se entiende en forma predictiva.
+      - Z is 4 + 7, asigna 7 a la variable Z
+
+#+begin_src prolog
+factorial(0,1).        % factorial de 0 es 1
+factorial(N,M) :- I is N-1, factorial(I,A), M is N*A.
+#+end_src
+
+- La consulta se escribe como:
+
+#+begin_src prolog
+?- factorial(3,X)     % Cual es el factorial de 3?
+#+end_src  
+
+** Computación lógica
+- Proceso que resuelve la consulta.
+  
+*** Unificación
+**** Unificación Simple
+- Dos objetivos se unifican si existe un unificador formado por pares de <Variable, término>.
+      1. Dos literales u objetivos se unifican si tienen igual símbolo de predicado, igual número de argumentos y éstos son unificables uno a uno.
+      2. Una variable se unifica con cualquier otro término pasando a tomar ese valor.
+      3. Una constante solo se unifica con otra constante idéntica sintácticamente.
+      4. Dos términos compuestos se unifican si tienen igual símbolo de función, igual número de argumentos y éstos son unificables.
+
+**** Unificación General
+- *Entrada* : A,B literales a unificar.
+- *Algoritmo* :
+#+begin_src pseudocode
+Sea S<-{} la sustitución vacía
+mientras S(A) no sea S(B) hacer
+    Determinar símbolo más a la izquierda de S(A) que sea
+      distinto del símbolo en igual posición en S(B).
+    Calcular a partir de los símbolos anteriores, los términos
+      o fórmulas u_1 y u_2 mínimos que comienzan por ellos.
+      
+    si ni u_1 ni u_2 son variables o uno es un variable contenida en el otro entonces
+      dev "acabar, pues A y B no son unificables"
+    sino
+       Determinar una variable x en u_1 (o en u_2) y el subtérmino
+         b en la misma posición en u_2 (resp. en u_1) y hacer S = S union (<x,b>).
+    fsi
+fmientras
+#+end_src  
+- *Salida :* S es el *unificador de máxima generalidad* (umg) de los literales A y B.
+
+- Una regla o cláusula permite deducir un objetivo si existe una unificación (umg) que.
+      - identifique este objetivo con la conclusión de la regla
+      - o si existe una instancia de la regla del programa que infiere exactamente al objetivo.
+
+*** Resolución
+- Algoritmo de resolución controlada.
+- *Inicio* : La lista de objetivos es la que forma la consulta.
+- *Selección* ...
+      1. ... de un objetivo a resolver: el primero más a la izquierda.
+      2. ... de una regla o cláusula para resolver el objetivo seleccionado:
+         La primera cuya conclusión o parte de la izquierda se unifica con el objetivo.
+- Una vez realizada la selección
+      - El modelo de computación recuerda todas las reglas que podrían haber sido seleccionadas en este momento.
+      - El objetivo es reemplazado en la lista de objetivos por la parte derecha de la regla seleccionada.
+      - Se aplica a la lista de objetivos resultante el unificador que hace posible unificar el objetivo resuelto con la parte izquierda de la regla.
+- *Repetición* : Se continua el proceso de selección hasta que se cumple uno :
+      - Se vacía la lista de objetivos (EXITO), Se devuelve el unificador como respuesta.
+      - No puede ser resuelto un objetivo (FRACASO LÓGICO).
+- Durante la resolución se selecciona el primer objetivo más a la izquierda y la primera cláusula que aparece en el programa.
 
 
 * Glosario

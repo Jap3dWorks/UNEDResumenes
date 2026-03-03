@@ -1403,7 +1403,6 @@ signal d : std_logic_vector(7 downto 0);
       - IEEE.numeric_std
       - IEEE.math_real
 
-
 ** ASSERT
 - pag 169
 - Comprobaciones lógicas que dado el valor esperado en un punto del estado del programa debería valer true.
@@ -1562,7 +1561,7 @@ end architecture minMax;
       - subprogramas para pode ser reutilizados en diferentes proyectos.
       - Tipos de datos.
       - componentes.
-      - constantes
+      - constantes.
 - Sintaxis
 
 #+begin_src vhdl
@@ -1574,16 +1573,6 @@ end package nombre_paquete;
 package body nombre_paquete is
   descripción de funciones y procedimientos  -- Necesario para subprogramas
 end package body nombre_paquete;
-#+end_src
-
-#+begin_src vhdl
-library IEEE;
-use IEEE.std_logic_1164.all;
-
-package ejemplo1 is
-  type estado is (st1, st2, st3, st4);
-  constant datoInicial : std_logic_vector(7 downto 0) := "11111111";
-end package ejemplo1;
 #+end_src
 
 - Imagina que se compila en la librería *work*, para usar ese paquete hay que hacer:
