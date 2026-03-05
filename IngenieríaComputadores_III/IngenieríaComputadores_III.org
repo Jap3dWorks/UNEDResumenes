@@ -1639,7 +1639,7 @@ end architecture conv_int1;
 
 * Notas
 - *ModelSim*, software para editar y simular circuitos
-- Emacs + ghdl, alternativa para simular
+- *Emacs + ghdl*, alternativa para simular
 
 * GHDL
 ** Compile and run

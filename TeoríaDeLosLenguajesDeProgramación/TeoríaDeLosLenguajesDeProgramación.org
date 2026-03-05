@@ -965,8 +965,10 @@ fmientras
 - Durante la resolución se selecciona el primer objetivo más a la izquierda y la primera cláusula que aparece en el programa.
 
 
+
 * Glosario
-- *Evaluación impaciente*, /factorial(4*5)/ primero evalua el resultado de 4*5.
+- *Evaluación impaciente* : /factorial(4*5)/ primero evalua el resultado de 4*5.
+- *mónadas* : indivisibles
 
 * Tools
 ** Haskell compiler and interpreter

@@ -1,18 +1,19 @@
 #+title: Fundamentos de inteligencia artificial
-#+startup: latexpreview overview
+#+startup: latexpreview
+#+author: Jordi Amposta Perez
 
 * Aspectos conceptuales de la Inteligencia Artificial y la ingeniería del conocimiento
 - Propósito general de la IA es desarrollar
-      1. Modelos conceptuales
-      2. Procedimientos de escritura formal de esos procedimientos
+      1. Modelos conceptuales.
+      2. Procedimientos de escritura formal de esos procedimientos.
       3. Estratégias de programación y máquinas físicas para reproducir los mecanismos de inteligencia.
 - 4 Objetivos de la IA son modelar, formalizar, programar e implementar máquinas soporte capaces de interactuar con el medio de forma no trivial.
-- Aproximaciones dominantes
+- Aproximaciones dominantes.
       - IA simbólica, via descendente y uso de conceptos del lenguaje natural para representar el conocimiento necesario para resolver problemas de decisión.
             - No requiere de un robot.
       - IA conexionismo situado, via ascendente y usos de conceptos de más bajo nivel semántico.
             - IA como forma superior de adaptación al medio (requiere robot).
-- Carácter instrumental y objetivos
+- Carácter instrumental y objetivos.
       - Ayudar a comoprender los procesos neurofisiológicos, cognitivos y sociales.
       - Prolongar los analizadores humanos y complementar sus deficiencias.
 
@@ -54,13 +55,13 @@
       4. Programar los operadores para las interfaces físicas (no humanas).
 
 ** Paradigmas actuales en IA
-- *Paradigma* como aproximación metodológica consensuada.
+- *Paradigma* : Aproximación metodológica consensuada.
 
 *** Paradigma Simbólico o representacional
 - Se parte de una descripción en lenguaje natural que se intenta describir en reglas.
 - Descripciones declarativas de un conjunto de conceptos.
 - Otro conjunto de reglas de inferencia entre estos conceptos.
-      - Reglas de manipulación.
+      - *Reglas* de manipulación.
 - 3 tipos de tareas
       - Análisis
       - Síntesis, diseño y construcción con restricciones.
@@ -85,9 +86,9 @@
 - Se usa esencialmente en robótica y sistemas en tiempo real.
 
 *** Paradigma Conexionista (RNAs)
-- *RNAs*, redes de neuronas artificiales.
+- *RNAs* : redes de neuronas artificiales.
 - Líneas numéricas etiquetadas para la entrada y salida de la red.
-- La inferencia se resuelve mediante un clasificador numérico de naturaleza paraétrica.
+- La inferencia se resuelve mediante un clasificador numérico de naturaleza paramétrica.
       - El valor de los parámetros se ajusta mediante aprendizaje.
 - Arquitectura modular organizada en capas fuertemente interconectado.
       - Procesadores elementales son las neuronas que evaluan una sencilla función de cálculo.
@@ -99,7 +100,7 @@
             - Inicialización de pesos
       - Balance entre datos y conocimiento disponible y naturaleza de esos datos.
             - Datos etiquetados se usan en el aprendizaje supervisado.
-            - Datos no etiquetados se usan para un preproceso y el aprendizaje autootganizativo.
+            - Datos no etiquetados se usan para un preproceso y el aprendizaje autoorganizativo.
 - Representación de grafo.
       - Nodos son neuronas.
       - Arcos son pesos ajustables.
@@ -120,8 +121,11 @@
       - Operacionalización efectiva del esquema inferencial, con módulos simbólicos y neuronales.
 
 * Lógica y representación del conocimiento
+# Creo que son lecturas opcionales
 
 * Introducción a las técnicas de búsqueda
+- Tema 8 pag 310
+  
 ** Algunos ejemplos
 *** Generación de planes de actuación de robots
 - Un entorno de actuación y un robot con un repertorio finito de opciones.
@@ -199,15 +203,15 @@ dev "No encontrado"
 - Máximo de nodos visitados $\frac{b^{d+1}-1}{b-1}$
 
 #+begin_src pseudocode
-ABIERTA=(inicial)                 // Es una pila
+ABIERTA <- (inicial)                 // Es una pila
 mientras NoVacia(ABIERTA) hacer
-    n=ExtraePrimero(ABIERTA)
+    n <- ExtraePrimero(ABIERTA)
     si EsObjetivo(n) entonces
         devolver Camino(inicial,n)
     fsi
-    S={}
+    S <- {}
     si Profundidad(n) < ProdundidadLimite entonces
-        S = Sucesores(n)
+        S <- Sucesores(n)
     fsi
     si Vacio(S) entonces
         LimpiarTabla_A(n)
@@ -225,8 +229,9 @@ dev "No encontrado"
 #+end_src        
 
 **** Coste uniforme
+- pag 320
 - En vez de usar una pila o una cola pueden insertarse los nodos en una estructura ordenada.
-      - Se ordenan por coste desde el nodo inicial.
+      - Se ordenan por coste el desde el nodo inicial.
 - Es un *algoritmo admisible*.
 
 ****   Búsquedas en profundidad y en anchura iterativas
@@ -237,6 +242,7 @@ dev "No encontrado"
 ProfundidadLimite <- 1
 Solucion <- BusquedaPrimeroenProfundidad
 mientras Solucion = "No encontrado" hacer
+    ProfundidadLimite <- ProfundidadLimite + 1
     Solucion <- BusquedaPrimeroenProfundidad
 fmientras
 dev Solucion
@@ -344,7 +350,7 @@ ffun
       - tablas Hash puede valer.
 
 * Técnicas basadas en búsquedas heurística
-- Tema 9
+- Tema 9, pag 340
 - *heurístico*, mecanismo que permita dirigir la búsqueda hacia zonas más prometedoras.
       - Ayudan a decidir cual es la mejor alternativa entre varias posibles.
       - A veces fallan en la predicción de la mejor alternativa.
@@ -719,6 +725,7 @@ dev S
       - *Inferencia inductiva*, A si y solo si (B o C o D).
             - A partir de la experiencia constatada.
 - *Agente racional*, Agente que actúa con la intención de alcanzar el mejor resultado. Cuando hay incertidumbre el mejor resultado esperado.
+- *Problemas NP-Duros* : Problemas en los que no se conoce un algoritmo polinomial que los resuelva.
 - *RNN*, Redes neuronales recurrentes
 - *CNN*, Redes neuronales convolucionales
 - *GAN*, Redes generativas adversarias.
@@ -734,4 +741,4 @@ dev S
 - *Frugalidad*, Propiedad de los algoritmos de aprendizaje de necesitar pocos recursos para mostrar unas prestaciones aceptables.
       - Tanto en el uso como en el entrenamiento.
 
-
+- *Expandir un nodo* : En un grafo obtener los nodos descendientes (que derivan del nodo) y añadirlo a la lista de pendientes por visitar.

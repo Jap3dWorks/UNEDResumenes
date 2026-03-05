@@ -1,7 +1,9 @@
 #+title: Introducción a la ingenería del software
 #+author: Jordi Amposta Perez
 
-* Introducción
+#+startup: latexpreview overview
+
+* Introducción. UD 1
 ** Tipos de software
 - *Software de sistemas*, Sistemas operativos, compiladores
       - Dan soporte a otros programas.
@@ -521,6 +523,7 @@ FIN-PARA
 - Debe cubrir los objetivos indicados en [[id:980e8981-dd69-4a38-a58b-3a5dc562cace][Análisis de requisitos de software]].
 - Documento en forma de contrato
       - Debe ser fácil de modificar.
+
 *** Estructura SRD de la agencia espacial europea
 1. *INTRODUCCIÓN*
        1. *Objetivo*
@@ -572,11 +575,384 @@ FIN-PARA
 4. *APÉNDICES*
    Elementos que completen el contenido del documento. Se les suele hacer referencia en el documento.
 
+* Fundamentos del Diseño de Software. UD 2
+- pag 121, Empieza Unidad didáctica 2
+- *Diseño* : Descripción o Bosquejo del sistema a desarrollar.
+      - Se realiza mediante notaciones formales.
+      - Una párctiva común es el *diseño con Patrones de software*.
+      - Es un proceso iterativo (prueba error).
+      - La experiencia del diseñador es determinante.
+- Actualmente el objetivo principal en la mayoría de casos es conseguir un producto fácil de mantener y que se pueda reutilizar.
+- El Documento de diseño responde a *COMO* se debe hacer el producto de software.
+- *Actividades habituales en el diseño de un sistema*
+      - *Diseño arquitectónico* : Se abordan aspectos estructurales y de organización del sistema.
+            - División en subsistemas o módulos.
+      - *Diseño Detallado* : Organización y estructura detallada de los subsistemas o módulos.
+            - Pueden aparecer y desaparecer nuevos módulos al realizar el diseño detallado.
+      - *Diseño Procedimental* : Aborda la organización de las operaciones o servicios que ofrecerá cada uno de los módulos.
+            - Algoritmos de los procedimientos más importantes.
+            - Es común el pseudocódigo o PDL.
+      - *Diseño de Datos* : Aborda la organización de la base de datos del sistema.
+            - El punto de partida es el diccionario de datos y los diagramas E-R.
+      - *Diseño de la Interfaz de usuario* : interfaz, interacción con el usuario y todo eso.
+- *SDD* :  Documento resultado de las *actividades de diseño*.
+      - *ADD* : architectual design document, establecido por la ESA.
+      - *DDD* :Detailed design document, establecido por la DDD.
+
+** Conceptos de base
+- Carácterísticas con especial influencia en el diseño de software.
+
+*** Abstracción
+- Cualquier elemento que forme parte del sistema que se quiere modelar, con la suficiente importancia o entidad para diferenciarlo del resto.
+- Los elementos significativos se intentan abstraer la utilidad específica de cada uno de ellos más allá del sistema software para el que se está diseñando.
+      - Permite que los elementos puedan ser sustituidos o reemplazados más facilmente.
+- *Formas de abstracción*:
+      - *Abstracciones funcionales* : Expresiones parametrizadas.
+      - *Tipos abstractos* : Sirven para crear los nuevos tipos de datos que se nevesitan para abordar el diseño del sistema.
+      - *Máquinas abstractas* : Define de manera formal el comportamiento de una máquina.
+            - Por ejemplo un intérprete de SQL, definición de un protocolo de comunicación.
+
+*** Modularidad
+- Permite el trabajo simultáneo y coordinado de varias personas.
+- Las interfaces de cada módulo debe quedar completamente definida.
+- *Ventajas*:
+      - *Claridad* : más fácil de manejar y entender.
+      - *Reducción de costos* : más barato de desarrollar, probar y mantener.
+      - *Reutilización*.
+
+** Refinamiento
+- Se parte de una idea no muy concreta que se va refinando mediante sucesivas aproximaciones hasta perfilar el más mínimo detalle.
+
+*** Estructuras de datos
+- El diseñador busca y combina las estructuras más adecuadas para dar respuesta a las especificaciones del software.
+- Estructuras fundamentales:
+      - Registros
+      - Conjuntos
+      - Formaciones
+      - Listas
+      - Pilas
+      - Colas
+      - Árboles
+      - Grafos
+      - Tablas
+      - Ficheros
+
+*** Ocultación
+- Ocultación del funcionamiento interno de los módulos del sistema.
+      - Se busca ocultar todos los detalles irrelevantes para su utilización.
+- La Interfaz de un módulo contiene aquello que resulta invariable con cualquier cambio.
+- *Ventajas*:
+      - *Depuración*: Verificar cada módulo por separado en base a lo que hacen, sin tener en cuenta como lo hacen.
+      - *Mantenimiento*: Las modificaciones no afectarán al resto de módulos.
+
+*** Genericidad
+- Agrupar aquellos elementos del sistema que utilizen estructuras semejantes.
+      - Posteriormente cada uno de los elementos agrupados se puede diseñar como un caso particular del elemento genérico.
+- Los templates de C++ es un ejemplo.
+
+*** Herencia
+- Relación de jararquía donde el padre posee una estructura y operaciones básicas.
+      - Los hijos heredan del padre y adaptan operaciones a sus necesidades.
+      - A su vez un hijo puede ser padre de otros hijos.
+- Existe la herencia múltiple entre varios padres.
+- La aplicación de la herencia de la fase de diseño es posible sin mayor problema, sin embargo es más sencillo con lenguajes orientados a objetos.
+
+*** Polimorfismo
+- Un mismo elemento software adquiera varas formas simultáneamente.
+      - La genericidad es una forma de polimorfismo.
+      - *Polimorfismo en herencia*, un objeto hijo puede ser representado con la forma de uno de sus padres.
+            - *Anulación* : La clase Hijo puede anular o modificar procedimientos del Padre (virtual/override).
+            - *Diferido* : El elemento padre no implementa un procedimiento y lo deja como tarea para los hijos.
+            - *Sobrecarga* : Por ejemplo los operadores + - / * según los operandos sean enteros o reales.
+- Está ligado a los lenguajes orientados a objetos.
+
+*** Concurrencia
+- Cuando se trata de diseñar un sistema con restricciones de diemtpo se tiene en cuenta:
+      - *Tareas concurrentes* : Tareas ejecutadas en paralelo.
+            - Especial atención a tareas con tiempo de respuesta más críticos y aquellas que se ejecutan con mayor frecuencia.
+      - *Sincronización de tareas* : Determinar los puntos de sincronización.
+      - *Comunicación entre tareas* : Cooperación se basa en el empleo de datos compartidos o mediante el paso de mensajes entre tareas.
+            - El diseñador debe concretar la estructura de datos compartidos.
+            - Se deben concretar la tareas productoras y las tareas consumidoras.
+            - Especial cuidado con los datos compartidos (garantizar la exclusión mutua).
+      - *Interbloqueos* : Estudiar posibles interbloqueos entre tareas.
+- Es una complejidad adicional.
+- Se usa cuando no hay una solución secuencial sencilla.
+
+** Notaciones para el diseño
+*** Notaciones Extructurales
+- Cubrir un primer nivel del diseño arquitectónico.
+      - Estructurar y desglosar el sistema en sus partes fundamentales.
+- Notaciones informales.
+      - *Diagramas de bloques* : Cajas unidas por una línea.
+            - Puede reflejar cierta jerarquización.
+      - *Diagrama de cajas adosadas* : Cajas en contacto.
+            - Ejemplo el estándar OSI de comunicaciones.
+
+**** Diagramas de estructura
+- pag 143
+- Describir la estructura como una jerarquía de subrpogramaso módulos en general.
+- No representa ninguna secuencia concreta.
+- Símbolos:
+      - *Rectángulo* : Módulo o subprograma, el nombre en el interior.
+      - *Línea* : Une dos rectángulos, el rectángulo superior llama al rectángulo inferior. Puede acabar con una flecha hacie el módulo inferior.
+      - *Rombo* : Se situa sobre la línea, indica que esa llamada es opcional.
+      - *Arco* : Se situa sobre una línea, indica que esa llamada es repetitiva.
+      - *Círculo con flecha* : En paralelo a una línea, representa envío de datos.
+            - La flecha indica el sentido del envío.
+
+**** Diagramas HIPO                                                  :ATTACH:
+:PROPERTIES:
+:ID:       258717e0-3931-4bd9-a0b1-243418de0cb0
+:END:
+- pag 145
+- Herarchy-Input-Process-Output.
+- Destinado a desarrollos software para gestión.
+- Diagrama HIPO de contenidos.
+      - Es similar a un diagrama de estructura simplificado.
+      - Cáda módulo tiene un nombre y una referencia al correspondiente diagrama *HIPO de detalles*.
+        
+[[attachment:clipboard-20260305T123708.png]]
+
+- Diagrama HIPO de detalles.
+      - Tres zonas
+            - I : entrada (input)
+                  - Datos de entrada.
+            - P : proceso (process)
+                  - Se detalla el pseudocódigo con referencias a otros módulos inferiores en la jerarquía.
+                  - Diagramas referenciados se listan a continuación de la partícula PARA.
+            - O : salida (output)
+                  - Datos de salida.
+
+[[attachment:clipboard-20260305T123820.png]]
+
+**** Diagramas de Jackson                                            :ATTACH:
+:PROPERTIES:
+:ID:       d44bd9b5-f7aa-4417-be93-da78aa1a036f
+:END:
+- pag 147
+- Diseño a partir de las estructuras de sis datos de entrada y salida.
+      - Dentro del diseño dirigido por los datos DDD.
+            - *Nota*: ECS Entity Component System.
+- Se lleva a cabo en 3 pasos:
+      1. Especificación de las estructuras de datos de entrada y salida.
+      2. Obtención de una estructura del programa capaz de transformar las estructuras de datos de entrada en las de salida.
+             - Implica una conversión de las estructuras de datos a las estructuras del programa. equivalencias clásicas:
+                   - tupla-secuencia : Elementos de tipo diferente con un orden fjo.
+                   - unión-selección : Selección de un elemento entre varios posibles de tipos diferentes.
+                   - formación-iteración : Colección de un mismo tipo.
+      3. Expansión de la estructura del progrma para lograr el diseño detallado del sistema.
+             - Se usa pseudocódigo.
+
+- Sirve para especificar tanto datos como estructura del programa.
+- La estructura de un elemento superior queda indicada por los elementos inmediatamente inferiores.
+
+[[attachment:clipboard-20260305T125938.png]]
+               
+- Si representan datos.
+      - A = X + Y
+      - B=Z
+      - C = [U|V]
+
+*** Notaciones estáticas
+- Describen características estáticas del sistema.
+      - Por ejemplo la organización de los datos.
+      - En la fase de diseño se detalla mucho mejor que en el SRD.
+      - Mismas notaciones que las empleadas en la especificación.
+
+**** Diccionario de datos
+- Se parte del diccionario de datos incluido en el SRD.
+
+**** Diagramas Entidad-Relación
+- Se parte de la especificación en el SRD.
+
+**** Notaciones dinámicas
+- Permite describir el comportamiento del sistema durante su funcionamiento.
+      - El comportamiento interno permite garantizar el comportamiento externo especificado en el SRD.
+
+**** Diagramas de flujo de datos
+- Mucho más detallado y exhaustivo que en el SRD.
+
+**** Diagramas de transición de estados
+- En la fase de diseño pueden definir estados internos del sistema.
+- Sinembargo es preferible no modificar o ampliar los diagramas de estados encontrados en el SRD.
+
+**** Lenguaje de descripción de programas (PDL)
+- Similar al pseudocódigo, pero más detallado.
+- Para representar mayor detalles adquiere algunas estructuras de lenguajes de alto nivel.
+      - por ejemplo Ada-PDL, incluido en el IEEE.
+
+**** Notaciones híbridas
+- Tratan de cubrir aspectos estructurales, estáticos y dinámicos.
+      - Por ejemplo Warnier-Orr.
+
+**** Diagrama de abstracciones                                       :ATTACH:
+:PROPERTIES:
+:ID:       2a775a35-bfc3-4b54-9e21-3c4d64fcee11
+:END:
+- pag 151
+- Abstracciones
+      - *Funcionales*: Operación sin la parte de contenido.
+      - *TAD o tipos abstractos de datos* : Hay cierta analogía con las clases.
+      - *Datos encapsulados* : Solo existe una variable del tipo indicado.
+- Partes de una abstracción
+      - *Nombre* : Identificador de la abstracción.
+      - *Contenido* : Elemento estático, Se define la organización de datos que constituyen la abstracción.
+      - *Operaciones* : Operaciones definidas sobre como manejar el *Contenido*.
+
+[[attachment:clipboard-20260305T134546.png]]
+
+- *Dato abstracto* : dato concreto de un TAD.
+      - Debe aparecer como constante o variable.
+- Los diagramas de estructura basado en abstracciones tienen un orden jerárquico.
+      - El módulo superior usa al módulo inferior.
+
+[[attachment:clipboard-20260305T135106.png]]
+
+**** Diagrama de objetos
+- pag 154
+- Desarrollado en pararlelo a los diagramas de abstracciones.
+- Tiene algunas diferencias.
+
+| Abstracciones                         | Objetos                       |
+|---------------------------------------+-------------------------------|
+| TAD                                   | Clase de Objeto               |
+| Abstracción Funcional                 | sin equivalencia              |
+| Dato Encapsulado                      | Sin equivalencia              |
+| Dato Abstracto (variable o constante) | Objeto (Ejemplar de la clase) |
+|                                       |                               |
+| Contenido                             | Atributos                     |
+| Operaciones                           | Métodos                       |
+|                                       |                               |
+| LLamada a una operación               | Mensaje a un Objeto           |
+
+- Relaciones especiales de los objetos
+      - *Clasificación, especialización o herencia* : Permite diseñar aplicando el concepto de herencia.
+            - Un triángulo indica que los objetos inferiores hereda del objeto superior.
+      - *Composición* : Describir un objeto mediante los elementos que lo forman.
+            - Un Rombo con una línea indica esta relación.
+            - Se indica la *cardinalidad*.
+                  - (0, $\pitchfork$) : de 0 a varios.
+                  - (1,1) : uno y solo uno
+                  - (1, $\pitchfork$) : almenos uno
+
+** Documento de diseño
+- pag 158
+- La labor de diseño se recoje en el *SDD* (software design document).
+- Es habitual usar dos o más documentos organizados de forma jerárquica.
+- La *ESA* recomienda:
+      - *ADD* : Architectural Design Document.
+            - Visión del conjunto.
+      - *DDD* : Detailed Design Document.
+            - Detalle de las partes.
 
 
 
+*** Documento ADD
+**** Introducción
+- Debe darse una visión general del documento *ADD*.
+- Es conveniente hacer referencia a los correspondientes apartados del *SDR*
 
+**** Panorámica del sistema
+- Visión general de los requisitos funcionales, haciendo referencia al *SDR*.
 
+**** Contexto del sistema
+- Se indicará si este sistema tiene conexión con otros.
+- En cada apartado se especifica la interfaz que se debe usar para comunicarse con otros sistemas.
 
+**** Diseño del Sistema
+- Se describe el nivel superior de diseño.
+- Se hace la primera estructuración de los componentes.
 
+***** [4.1] Metodología de diseño de alto nivel
+- Se describe brevemente la metodología a seguir en el proceso de diseño de la arquitectura del sistema.
 
+***** [4.2] Descomposición del Sistema
+- Se describe el primer nivel de descomposición del sistema en sus componentes principales.
+      - Relaciones estructurales entre ellos.
+
+**** [5] Diseño de los componentes
+- Las subsecciones se repiten para cada uno de los componentes indicados en 4.2
+
+***** [5.n.1] Tipo
+- La clase del componente.
+      - Subprograma, módulo, procedimiento, datos, etc.
+- También se pueden definir nuevos tipos.
+      - Hay que indicar una lista coherente de los tipos usados.
+
+***** [5.n.2] Objetivo
+- Necesidad de que exista el componente.
+
+***** [5.n.3] Función
+- Qué hace el componente.
+      - Por ejemplo mediante la transformación entrada salida.
+
+***** [5.n.4] Subordinados
+- Componentes usados por este componente.
+
+***** [5.n.5] Dependencias
+- Componentes que usan a este componente.
+      - Puede indicarse la naturaleza de la dependencia.
+
+***** [5.n.6] Interfaces
+- Se describe como otros componentes iteractuan con este.
+
+***** [5.n.7] Recursos
+- Elementos usados por este componente que son *externos* a este diseño.
+
+***** [5.n.8] Referencias
+- Se presentan las referencias utilizadas.
+
+***** [5.n.9] Proceso
+- Algoritmos o reglas que usa el componente para realizar su función.
+      - Refinamiento de [5.n.3].
+
+***** [5.n.10] Datos
+- Datos internos del componente.
+      - Diccionario de datos.
+
+**** [6] Viabilidad y recursos estimados
+
+**** [7] Matriz Requisitos componentes
+- Matriz con:
+      - Filas : Todos los requisitos.
+      - Columnas : Todos los componentes.
+
+*** Documento DDD
+- Este documento crece con el desarrollo del proyecto.
+      - Puede ser conveniente organizarlos en varios volúmenes.
+
+- Parte 1. Descripción General
+      1. Introducción
+             1. Objetivo
+             2. Ámbito
+             3. Definiciones, diglas y abreviaturas
+             4. Referencias
+             5. Panorámica del documento
+      2. Normas, Convenios y Procedimientos (Especialmente importante)
+             1. Normas de diseño de bajo nivel
+             2. Normas y convenios de documentación
+             3. Convenios de nombres
+             4. Normas de programación
+             5. Herramientas de desarrollo de software
+- Parte 2. Especificaciones de diseño detallado
+      - n. Identificador del componente
+            1. Identificador
+            2. Tipo
+            3. Objetivo
+            4. Función
+            5. Subordinados
+            6. Dependencias
+            7. Interfaces
+            8. Recursos
+            9. Referencias
+            10. Proceso
+            11. Datos
+- Apéndice A. Listados Fuente
+- Apéndice B. Matriz Requisitos/Componentes
+
+* Glosario
+- *Cardinalidad* : Matemáticamente número de objetos únicos en un conjunto.
+      - Valores máximos y mínimos de la relación entre entidades (0,1), (1,M), (1,1).
+- *SDD* : Software Design Document.
+- *ESA* : Agencia espacia europea.
