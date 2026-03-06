@@ -308,7 +308,7 @@ create table departamento (
             - *P* dígitos (con signo) de ellos *d* son decimales.
       - *real, double precision*, la precisión depende de la máquina.
       - *float(n)*, Número de coma flotante con precisión de almenos n dígitos.
-- Todos los tipo incluten *null*.
+- Todos los tipo incluyen *null*.
 
 *** Definición básica de esquemas
 - *create table* Creación de relaciones.
@@ -568,7 +568,7 @@ from sección
 where semestre = 'Primavera' and año=2010)
 #+end_src
 
-** Valores nulos
+** Valores nulos (null)
 - El resultado de las operaciones aritméticas es nulo si cualquiera de los valores de entrada es nulo.
 - *unknown* : tercer valor lógico (junto a true false) para comparaciones con null.
       - 1 < null  -->  unknown.
@@ -962,9 +962,285 @@ update estudiante S set tot_créditos = (
 );
 #+end_src   
 
+* SQL intermedio
+** Expresiones de reunión (join)
+*** Condiciones de reunión (join ... on)
+- pag 52
+- *join ... on* : permite un predicado general sobre relaciones.
+      - puede expresar cualquier predicado sql.
+- Se suele usar para las condiciones de reunión sobre la cláusula where.
+
+#+begin_src sql
+... join <relación> on <predicados>
+#+end_src
+
+#+begin_src sql
+select *
+from estudiante join matricula on estudiante.ID = matricula.ID;  -- reune si estudiante.ID = matricula.ID
+#+end_src
+
+*** Reunión externa (outer join)
+- Permite valores null en la reunión, y por tanto conserva más tuplas.
+      - Por ejemplo que la tabla from no contenga una equivalencia con la tabla join.
+- Cuano no se conservan tuplas que no tienen coincidencias se llama *reunión interna*.
+      - *join* es igual a *inner join*.
+- Tres formas de reunión externa.
+      - *left outer join* : reunión externa izquierda.
+      - *right outer join* : reunión externa derecha.
+      - *full outer join* : reunión externa completa.
+            - Efectua ambas reuniones.
+- Funcionamiento de la reunión externa, (reunión externa derecha y completa funcionan de forma análoga).
+      - Para cada tupla de la parte izquierda $t$ que no casa con ninguna tupla de la parte derecha en una reunión interna.
+      - Se añade una tupla $r$ que se construye de la siguiente forma.
+            - $r$ deriva de $t$ con sus atributos.
+            - El resto de atributos de $r$ son null.
+
+#+begin_src sql
+select *
+from estudiante natural left outer join matricula;
+#+end_src
+
+- combinación con *on*.
+
+#+begin_src sql
+select *
+from estudiante left outer join matricula on estudiante.ID = matricula.ID;
+#+end_src
+
+** Vistas
+- pag 55
+- Relación virtual que no forma parte del modelo lógico.
+      - Permite mostrar (y ocultar) cierta información a grupos de usuarios.
+      - Las vistas no se precalculan, se crean bajo demanda.
+
+*** Definición de vistas
+- *create_view* : Crea una vista.
+
+#+begin_src sql
+create view v as <expresión de consulta>;
+#+end_src  
+
+#+begin_src sql
+create view facultad as
+select ID,nombre,nombre_dept  -- Esta vista oculta el atributo sueldo
+from profesor;
+#+end_src
+
+#+begin_src sql
+create view fisica_otoño_2009 as
+select asignatura.asignatura_id, sec_id, edificio,número_aula
+from asignatura,sección
+where asignatura.asignatura_id=sección.asignatura_id
+    and asignatura.nombre_dept = 'Física'
+    and sección.semestre = 'Otoño'
+    and sección.año = '2009';
+#+end_src
+
+*** Uso de vistas en consultas
+- pag 55
+- Se pueden hacer consultas como si fuera una relación.
+- La evaluación de una consulta que incluye vistas sustituye cada vista por la expresión que representa.
+- Se pueden definir vistas usando otras vistas.
+
+#+begin_src sql
+select asignatura_id
+from física_otoño_2009
+where edificio = 'Watson';
+#+end_src
+
+- Ejemplo de espicificación de los atributos con grupos.
+
+#+begin_src sql
+create view departamentos_total_sueldos(nombre_dept, total_sueldo) as
+select nombre_dept, sum(sueldo)  -- el nombre del atributo relativo a sum(sueldo) es total_sueldo
+from profesor
+group by nombre_dept;
+#+end_src  
+
+*** Vistas materializadas
+- *Vistas materializadas* : Son vistas almacenadas.
+- *mantenimiento de vistas materializadas* : Ante cualquier modificación de alguna de las relaciones a las que hace referencia la *vista materializada* de recalcula.
+- Depende del sistema de base de datos.
+      - SQL no define ninguna forma estándar de especificar *vistas materializadas*.
+
+*** Actualización de vistas
+- pag 56
+- Las vistas suponen dificultades en las inserciones, actualizaciones y borrados.
+- Se suele decir que una *vista* es actualizable si cumple:
+      - La cláusula *from* solo tiene una relación de base de datos.
+      - *select* solo contiene nombre de atributos (sin expresiones).
+      - Cualquier atributo que no aparezca en la tabla select puede definirse como null.
+      - La consulta no tiene cláusulas *group by* ni *having*.
+- Aún así puede que la inserción de una nueva tupla no aparezca en la vista.
+      - Puede no satisfacer los critérios de pertenencia a la vista.
+      - *with check option* : esta cláusula se usa para comprobar que la tupla que se quiere insertar cumpla las condiciones where de la vista para ser insertada.
+
+*** Transacciones
+- pag 57
+- Secuencia de instrucciones de consulta o de actualización.
+- Se inicia de forma implícita.
+- Una de las siguientes sentencias debe finalizar la transacción.
+      - *commit [work]* : Compromete la transacción, las actualizaciones pasan a ser permanentes.
+            - Una vez hecho el *commit* no puede hacerse el *rollback*.
+            - En caso de algún fallo se garantiza el *rollback*.
+      - *rollback [work]* : retrocede la transacción actual.
+- Si no se especifica *commit* o *rollback* al final de unas instrucciones el comportamiento queda definido por la implementación de sql.
+      - *commit* o *rollback* automático.
+- Muchas implementaciones consideran cada instrucción una transacción independiente.
+      - Se puede desactivar pero depende de cada caso.
+- *begin atomic ... end* : Todas las instrucciones contenidas forma una transacción.
+
+** Restricciones de integridad
+- Garantiza que las modificaciones no den como resultado pérdida de consistencia.
+- Parte del proceso de diseño de la base de datos.
+- Se declaran como parte del *create table*.
+- Pueden añadirse con :
+      - *alter table <nombre-tabla> add <nombre-restricción>*.
+- Si el sistema cumple la restricción declarada esta se añade a la base de datos.
+      - Si el sistema ni puede cumplir la restricción esta se rechaza.
+
+*** Restricción not null
+- No permite valores null.
+      - los valores null están presentes en todos los dominios por defecto.
+- Las claves primarios tienen la restricción *not null* por defecto.
+
+#+begin_src sql
+nombre varchar(20) not null
+presupuesto numeric(12,2) not null
+#+end_src
+
+*** Restricción unique
+- Ningún par de tuplas puede ser igual en todos los atributos indicados.
+      - Es una clave candidata.
+      - Permite que los valores sean null.
+
+#+begin_src sql
+unique (A1, A2, ..., An)
+#+end_src
+
+*** Cláusula check
+- *check(P)* especifica un predicado que deben satisfacer todas las tuplas de la relación.
+- Algunas implementaciones permiten realizar consultas en el predicado.
+      - Realmente casi ninguna
+
+#+begin_src sql
+create table sección
+(asignatura_id varchar(8),
+ secc_id       varchar(8),
+ semestre      varchar(6),
+ año           numeric(6),
+ edificio      varchar(15),
+ número_aula   varchar(7),
+ franja_horaria_id varchar(4),
+ primary key (asignatura_id, secc_id, semestre, año),
+ check (semestre in ('Otoño', 'Invierno', 'Primavera', 'Verano')));
+#+end_src
+
+*** Integridad Referencial
+- pag 59
+- El valor de un conjunto de atributos de una relación aparezca también en otro conjunto de atributos de otra relación.
+      - Ejemplo Una *clave externa* usando *foreign key*.
+- Estas restricciones se llaman *restricciones de integridad referencial*.
+      - No requiere que se haga referencias a claves primarias exclusivamente.
+
+- *foreign key* : Puede especificar acciones ante borrados y actualizaciones.
+
+#+begin_src sql
+create table asignatura
+(...
+ foreign key (nombre_dept) references departamento
+              on delete cascade    -- si se produce una violación de integridad por borrado, borra en cascada.
+              on update cascade,   -- Si se produce una violación por actualización, actualiza en cascada.
+ ...);              
+#+end_src
+
+- Si una operación en cascada viola alguna restricción se aborta la transacción entera.
+- En las claves externas se permiten valores null.
+
+*** Violación de la restricción de integridad durante una transacción
+- En una transacción puede que se viole una restricción de integridad durante los pasos intermedios.
+- *initially deferred* : Cláusula que permite que se comprueba la integridad al final de una transacción.
+- *deferrable* : de manera predeterminada se comprubea inmediatamente.
+      - Pero puede diferirse si se desea.
+
+*** Condiciones de comprobación complejas y asertos
+- *aserto* : una condición que la base de datos debe satisfacer siempre.
+- Pueden introducer mucha sobrecarga.
+- Pocas implementaciones lo soportan.
+
+#+begin_src sql
+create assertion <nombre_aserto> check <predicado>;
+#+end_src
+
+** Tipos de datos y esquemas de SQL
+
+*** Tipos fecha y hora en SQL
+- pag 61
+- *date* : '<YYYY>-<MM>-<DD>' : Fecha del calendario
+- *time* : '<hh>-<mm>-<ss>' : Hora del día en horas minutos y segundos.
+- *timestamp* : '<YYYY>-<MM>-<DD> <hh>-<mm>-<ss>' : Combinación de *date* y *time*
+  
+- *cast e as type* : convierte una cadena e de carácteres al tipo type.
+- *extract(campo from d)* : extrar campos concretos de *date* o *time*. campos son.
+      - year, month, day, hour, minuto o second.
+- funciones para obtener fecha y hora actuales.
+      - current_date, current_time, localtime, current_timestamp y localtimestamp.
+- *interval* : tipo que permite realizar cálculos con fechas, horas e intérvalos.
+
+*** Valores predeterminados
+
+#+begin_src sql
+create table estudiante
+(ID           varchar(5),
+ nombre       varchar(20) not null,
+ nombre_dept  varchar(20),
+ tot_creditos numeric(3,0) default 0,  -- valor por defecto.
+ primary key (ID));
+#+end_src
+
+*** Creación de índices
+- *índice* : Estructura de datos que permite al sistema accelerar las consultas.
+
+#+begin_src sql
+create index estudianteID_indice on estudiante(ID);
+#+end_src
+
+*** Tipos de datos para objetos grandes
+- pag 62
+- Tipo grandes como por ejemplo imágenes.
+- *clob* : tipo para carácteres.
+- *blob* : tipo para binarios.
+
+#+begin_src sql
+revista clob(10KB)
+imagen blob(10MB)
+pelicula blob(2GB)
+#+end_src
+
+- Se suele implementar en forma de localizador.
+
+*** Tipos definidos por los usuarios
+- pag 62
+- *tipos de datos estructurados* : Tipos de datos complejos.
+- *alias de tipos* : *create type ...*
+      - *drop type* : eliminar el tipo.
+      - *alter type* : modificar el tipo.
+
+#+begin_src sql
+create type Euros as numeric(12,2) final;
+create type Libras as numeric(12,2) final;
+#+end_src
+
+
+
+
 * Notes
 ** mysql Service
 - Done using podman, documented in ORG ROAM.
+- password de la base de datos en el libro de la asignatura.
+  
+
+
 
 * Tools
 ** Create podman container
