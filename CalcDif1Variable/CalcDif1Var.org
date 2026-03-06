@@ -1,5 +1,7 @@
 #+title: Cálculo Diferencial en una variable
 #+startup: overview latexpreview
+#+bibliography: (heading-all)
+
 
 * Sucesiones
 
@@ -11,10 +13,27 @@ a_n \leq a_{n+1},\ \forall n \in \mathbb{N}
 \end{*equation}
 
 $(a_n)$ es una sucesión decreciente o sucesión monótona decreciente si y sólo si.
-r\begin{*equation}
+\begin{*equation}
 a_n \geq a_{n+1},\ \forall n \in \mathbb{N}
 \end{*equation}
 
+** Criterio de Stoltz
+- Sean $(a_n)$ y $(b_n)$ dos sucesiones de números reales tales que.
+
+\begin{equation*}
+\lim_n \frac{a_n - a_{n-1}}{b_n - b_{n-1}} = l \in \mathbb{R}
+\end{equation*}
+
+- Si $(b_n)$ es creciente y $\lim_n b_n = +\infty$, se tiene.
+
+\begin{equation*}
+\lim_n \frac{a_n}{b_n} = l
+\end{equation*}
+
+- Nos sirve para poder operar ciertas sucesiones y simplificar términos.
+      - [ejemplo] Análisis Matemático 1 pag 362
+
+* Series
 * Funciones Reales
 ** Características de una función
 $f$ es *Función monótona creciente* si y solo si cualesquiera $x_1, x_2\ \in\ D$, tales que $x_1 < x_2$, se cumple que.
@@ -57,7 +76,7 @@ f(x) \leq f(a)\ \  \forall x \in U_a, x<a \quad \text{y} \quad f(a) \leq f(x)\ \
 f(x) < f(a)\ \  \forall x \in U_a, x<a \quad \text{y} \quad f(a) < f(x)\ \ \forall x \in U_a, a<x
 \end{equation*}
 
-- $f$ es localmente dcreciente en $a$ sí y solo sí existe un entorno dentrado en $a$, $U_a$ tal que.
+- $f$ es localmente decreciente en $a$ sí y solo sí existe un entorno dentrado en $a$, $U_a$ tal que.
 \begin{equation*}
 f(x) \geq f(a)\ \  \forall x \in U_a, x<a \quad \text{y} \quad f(a) \geq f(x)\ \ \forall x \in U_a, a<x
 \end{equation*}
@@ -196,6 +215,31 @@ Si $f$ es continua en [a,b] entonces $f$ es integrable en [a,b].
 \int_a^b f \leq \int_a^b |f|
 \end{equation*}
 
+* Funciones Logarítmicas y exponenciales
+
+* Funciones trigonométricas
+** Funciones Seno y coseno
+- Relaciones trigonométricas en [[id:AMat1]] pag 383
+
+**  Funciones tangente y cotangente
+
+** Arco seno, Arco coseno y arco tangente
+- [[id:AMat1]] pag 386
+
+* Bibliography
+:PROPERTIES:
+:ID:       my-bibliography
+:END:
+
+** Análisis Matemático 1
+:PROPERTIES:
+:TYPE: book
+:TITLE: Análisis Matemático 1
+:AUTHOR: Jesús Fernandez Novoa
+:ID: AMat1
+:END:
+
+
 * Tools
 
 #+begin_src cpp :results output :flags -std=gnu++20
@@ -218,3 +262,4 @@ int main() {
 #+RESULTS:
 : Starting
 : Result: 1.6439345666815615
+
