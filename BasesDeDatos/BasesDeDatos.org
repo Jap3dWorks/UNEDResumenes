@@ -1229,9 +1229,159 @@ pelicula blob(2GB)
 #+begin_src sql
 create type Euros as numeric(12,2) final;
 create type Libras as numeric(12,2) final;
+-- Euros y Libras son dos tipos diferentes aunque deriven de numeric
 #+end_src
 
+- Puede hacerse cast de los tipos de datos.
 
+#+begin_src sql
+cast (departamento.presupuesto to numeric(12,2));
+#+end_src
+
+- Otro mecanismo de creación de dominios es el *domain*.
+      - Puede especificarse como not null.
+      - Pueden definirse valores por defecto.
+      - No aceptan restricciones.
+      - No tienen tipos estrictos.
+
+#+begin_src sql
+create domain DEuros as numeric(12,2) no null;
+#+end_src
+
+- Puede usarse check para especificar condiciones para todos los atributos del dominio.
+
+#+begin_src sql
+create domain SueldoAnual numeric (8.2)
+              constraint valor_sueldo
+                         check(value >= 29000.00);
+#+end_src
+
+*** Extensiones a la creación de tablas
+- *like* : Para crear tablas tomando otra que ya existe como partida.
+  
+#+begin_src sql
+create table temp_profesor like profesor;
+#+end_src
+
+- Se puede guardar una consulta compleja como una nueva tabla.
+
+#+begin_src sql
+create table t1 as (
+    select *
+    from profesor
+    where nombre_depth = 'Música'
+) with data;   -- with data rellena la nueva tabla con los datos.
+#+end_src
+
+*** Esquemas catálogos y entornos
+- pag 64
+- Los primeros sistemas de bases de datos tenían un único espacio de nombres para todas las relaciones.
+- *catálogos* contienen *esquemas*.
+- *esquemas* contienen *objetos sql*.
+- *create schema, *drop schema* : Crea o borra esquemas (databases);
+
+** Autorización
+- pag 64
+- *privilegios* : Diferentes tipos de autorización por usuario.
+      - Autorización de lectura
+      - Autorización de inserción de nuevos datos
+      - Autorización de borrado de datos
+
+*** Convesión y revocación de privilegios
+- Privilegios para
+      - *select*, *insert*, *update* y *delete*.
+      - *all privileges* los engloba todos.
+- Los privilegios se pueden aplicar a nivel esquemas (crear nuevos esquemas) y a nivel relaciones (consultas a ciertas relaciones).
+
+#+begin_src sql
+grant <lista de privilegios>
+  on <nombre de relación o de vista>
+  to <lista de usuarios o de roles>;
+#+end_src
+
+- *grand select* : Permite realizar consultas sobre la relación.
+
+#+begin_src sql
+grant select on departamento to Amit, Satoshi;
+#+end_src
+
+- *grant update* : Permite realizar modificaciones en la tuplas de la relación.
+      - Puede ceñirse a una lista de atriburos
+  
+#+begin_src sql
+grant update (presupuesto) on departamento  -- Permite actualizar el atributo presupuesto de la relación departamento
+    to Amit,Satoshi;
+#+end_src
+
+- *grant insert* : Permite crear nuevas tuplas en una relación.
+      - Puede ceñirse a una lista de atriburos
+- *grant delete* : Permite borrar tuplas de una relación.
+- *public* : nombre de usuario para referirse a todos los usuarios presentes y futuros.
+- *revoke* : similar a *grant* sirve para revocar privilegios.
+
+#+begin_src sql
+revoke <lista de privilegios>
+on <nombre de la relación o nombre de la vista>
+from <lista de usuarios o de roles>;
+#+end_src
+        
+#+begin_src sql
+revoke select on departamento from Amit,Satochi;
+revoke update (presupuesto) on departamento from Amit,Satoshi;
+#+end_src
+
+*** Roles
+- Cada rol engloba una serie de privilegios.
+- Los usuarios pertenencen a uno o varios roles.
+      - Así lo usuarios se conectan con su propio identificador, lo que permite conocer la actividad de cada usuario.
+
+#+begin_src sql
+create role profesor;  -- Crea el rol profesor
+#+end_src
+
+#+begin_src sql
+grant select on matricula to profesor;  -- Otorga el privilegio de select al rol profesor
+#+end_src
+
+- Se pueden conceder *roles* a otros roles.
+      - privilegios de usuario o de un rol = privilegios concedidos directamente + privilegios concedidos a los roles asignados
+
+#+begin_src sql
+alter role role_name add member user_name;
+#+end_src
+
+*** Autorización sobre vistas
+- pag 66
+- Un usuario que crea una vista no puede contradecir los privilegios sobre la relación original a través de la vista.
+
+*** Autorizaciones sobre esquemas
+- pag 66
+- Solo el propietario del esquema puede realizar modificaciones en el esquema.
+
+#+begin_src sql
+-- Permite crear relaciones que hacen referencia a departamento.nombre_dept
+grant references (nombre_dept) on departamento to Mariano;
+#+end_src
+
+*** Transferencia de privilegios
+- *with grant option* : Un usuario con un privilegio concedido puede concederselo a otro usuario.
+
+#+begin_src sql
+grant select on departamento to Amit with grant option; 
+#+end_src
+
+- El creado de un objeto tiene el privilegio de conceder privilegios.
+
+*** Revocación de privilegios
+- *Revocación en cascada*
+      - $U_1 \to U_2 \to U_3$ grafo de concesión de privilegios.
+      - Si $U_1$ revoca el privilegio a $U_2$, $U_3$ también pierde el privilegio.
+      - En el caso que $U_3$ además tiene concedido el privilegio por otro usuario que todavía lo conserva, $U_3$ conservaría el privilegio.
+- La cláusula *restrict* evita una *revocación en cascada*.
+
+#+begin_src sql
+revoke select on departamento from Amit, Satoshi restrict;
+#+end_src
 
 
 * Notes
@@ -1239,8 +1389,6 @@ create type Libras as numeric(12,2) final;
 - Done using podman, documented in ORG ROAM.
 - password de la base de datos en el libro de la asignatura.
   
-
-
 
 * Tools
 ** Create podman container
