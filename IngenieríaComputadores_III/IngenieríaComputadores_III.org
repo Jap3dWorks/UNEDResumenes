@@ -1,5 +1,5 @@
 #+title: Ingeniería Computadores III
-#+startup: latexpreview overview
+#+startup: latexpreview content
 
 * Fundamentos del diseño del hardware digital
 - *HDL (hardware description languaje)*, lenguaje para la descripción del Hardware.
@@ -1628,10 +1628,152 @@ begin
 end architecture conv_int1;
 #+end_src
 
+* Simulación del código VHDL
+- Comparación entre *signal* y *variable*
+
+|                | signal                                                 | variable                   |
+| Asignación     | <=                                                     | :=                         |
+| Qué representa | Interconexiones en el circuito                         | Información local          |
+| Visinilidad    | Puede ser global (visible desde todo el código)        | Local                      |
+| Comportamiento | El nuevo valor es asignado transturrido un retardo     | No existe retardo          |
+| Uso            | package, entity, architecture. los puertos son señales | Sólo en código secuencial. |
+
+** Procesamiento del código VHDL
+- Normalmente se procesa usando una herramienta CAD, etapas:
+      1. *Análisis* : Se comprueba la sintáxis y la semántica.
+             - El análisis ocurre sobre cadaunidad de diseño.
+                   - Si existen dependencias entre ellas debe seguirse un determinado orden.
+      2. *Elaboración* : Empieza por la unidad de diseño de nivel superior y enlaza el *entity* con su *architecture*.
+             - En la *architecture* se van reemplazando los componentes por su definición.
+                   - Recursivamente hasta aplanar el sistema.
+      3. *Ejecución* : La descripción plana del sistema sirve como entrada al software de simulación o de síntesis.
+             - Se resuelve la *inicialización* (cálculo del valor inicial de las señales *explícitas* e *implícitas*).
+             - Los bloques *process* son ejecutados hasta que son suspendidos.
+
+** Orden de complicación
+- Orden:
+      1. Declaraciones de los *package* teniendo en cuenta las interdependencias.
+      2. *entity* que hacen uso de los *package* anteriores.
+             - Las entity representan dependencias para otros componentes.
+      3. Las *architecture*, una architecture no representa una dependencia para otro componente.
+      4. Unidades de diseño *configuration*.
+      5. *package body* en cualquier orden.
+             - No representan dependencias para otros componentes.
+
+- Las dependencias pueden obligar a recompilar varias unidades de diseño ante una modificación de código:
+      1. Si la declaración de un *package* cambia deben recompilarse las *entity*, *architecture* y *configuration* que hace uso del *package*.
+      2. Si cambia el *package body* solo afecta al package body.
+      3. Si se modifiva una *entity* se deben recompilar las *architecture* que utilizan es entity.
+             - También las architecturas que instancian components con esa entity.
+      4. Si una *architecture* se modifica no afecta a otros elementos.
+      5. Si cambia una *configuration* es preciso recompilar dicha configuration.
+
+** Drivers
+- Empleado por el simulador VHDL a fin de realizar la simulación.
+- Se crean automáticamente en la fase de *elaboración*.
+- Cada señal tiene uno o varios drivers asociados.
+      - El valor de la señal se determina por el valor de sus drivers.
+      - Si solo tiene un driver entonces el valor de la señal y del driver coinciden en todo momento.
+- Reglas de asociación:
+      - Un driver para la señal por cada asignación concurrente.
+      - Si dentro de un bloque process se asigna un valor a la señal, entonces se asocia un driver al bloque process.
+            - Si hay varias asignaciones a la señal se sigue asociando un único driver.
+            - Un driver por cada bloque process diferente.
+- El *driver* contiene una cola donde almacena las transacciones futuras.
+      - Creo que la cola se ordena en orden no descendente te tiempo.
+      - La transacción consta del nuevo valor dela señal y del instante de tiempo (tiempo total).
+      - El valor del driver va cambiando de acuerdo se consumen las transacciones, que van siendo eliminadas.
+- Si hay varios drivers asociados a una señal con valores diferentes se produce un conflico.
+      - Se recurre a la *función de resolución* para resolverlo.
+            - Depende del tipo de la señal, *std_logic* tiene función de resolución definida en *std_logic_1164*.
+      - Si no existe función de resolución puede producirse un error.
+
+** Inicialización
+- Cálculos para obtener los valores en el instante $t=0$.
+- Según el valor inicial:
+      - Si una señal declara su valor inicial, los driver de la señal tienen dicho valor.
+            - Las herramientas de síntesis ignoran este valor.
+      - Si no se especifica el valor inicial que adquieren los derivers depende del tipo.
+            - en std_logic el valor inicial es 'U'.
+- A continuación se ejecutan las sentencias concurrentes y los bloques process una vez.
+- En los bloques *process*:
+      - Si el bloque *process* tiene lista de sensibilidad, se ejecuta el código secuencial completo.
+      - Si no se ejecutan las instrucciones hasta enconrar una sentencia *wait*.
+      - Se añaden las transacciones a la cola del driver, si no se especifica retardo se asume $t=\delta$.
+
+*** Ejemplo con un driver
+- [[id:DACircDig][DACircDig]] pag 212.
+#+begin_src vhdl
+architecture drivers2 of srivers2 is
+  signal a : std_logic := 'Z';  -- valor por defecto a='Z'
+begin
+  bloque1 : process
+  begin
+    a <= '1';                   -- Se ejecuta el bloque process
+                                --  En t=0 se planifica la transacción para t=\delta.
+    wait;                       -- Se detiene la ejecución en t=0 del bloque process.
+  end process bloque1;
+end architecture drivers2;
+#+end_src
+
+| tiempo | a   |
+|--------+-----|
+| 0      | 'Z' |
+| \delta | '1' |
+
+- En el ejemplo anterior al avanzar el tiempo de la simulación a $t=\delta$ se asignatia al driver process de a el valor '1'.
+      - Y se elimina la transacción de la cola del driver.
+
+*** Ejemplo con dos drivers
+- [[id:DACircDig]] pag 213
+      - Tablas de evolución de la señal.
+
+** Atributo de las Señales
+- *Evento* : Cambio en el valor de la señal, Ocurre cuando se asigna un valor nuevo diferente al anterior.
+- *Señal activa* : Cuando el valor de una señal es actualizado, independientemente de si es diferente al anterior.
+- *Transacción* : asignar valor a una señal, sea igual o diferente.
+- *Señal implícita* : señal que no está declarada en el código VHDL.
+      - Se deduce del empleo de los atributos *'stable*, *'quiet*, *'delayed* y *'transaction*.
+      - El simulador genera automáticamente una señal implícita.
+- Clasificación atributos de las señales:
+      - Los que representan una señal implícita.
+      - Los que equivalen a una llamanda a una función.
+- Atributos [[id:DACircDig]] pag 218:
+      - *s'event* : Función booleana, devuelve true cuando se produce un evento en la señal.
+      - *s'active* : Función booleana, devuelve true en el instante que se produce una transacción a la señal.
+      - *s'transaction* : Señal implícita tipo bit, '0' o '1' cada vez que se produce una transacción a la señal s.
+      - *s'delayed(T)* : Crea una señal implícita del mismo tipo que s, cuyo valor es igual a s retrasado T.
+            - s'delayed(4 ns) en el instante 10 ns vale s en el instante 6 ns.
+      - *s'stable(T)* : Creat una señal implícita tipo booleano, true si no se ha producido un evento en la señal s durante las anteriores T unidades de tiempo.
+      - *s'quiet(T)* : Crea una señal implícita tipo booleano, true si no se ha producido ninguna transacción durante las T anteriores unidades de tiempo.
+      - *s'last_event* : Función que devuelve un valor del tipo time, Tiempo transcurrido desde el último evento de s.
+      - *s'last_active* : Función que devuelve tipo time, tiempo transcurrido desde que se produjo la última transacción a la señal s.
+      - *s'last_value* : Función que devuelve un valor del mismo tipo que s, valor previo a la última transacción.
+
+** El retardo Delta
+- [[id:DACircDig]] pag 219
+      - Hay un ejemplo bastante detallado.
+- $\delta$ es una cantidad de tiempo infinitesimal, $\delta > 0$ pero vale 0 cuando se suma a una cantidad de tiempo no infinitesimal.
+      - una asignación sin *after* se completa en $t+\delta$.
+      - Si el cambio activa una sentencia *wait* (por ejemplo) donde hay una asignación con *after* *10 ns*. La resolución de esta transacción será $t + \delta + 10 = t+10$.
+            - $\delta$ al sumarse con un valor no infinitesimal vale 0.
+
+** Gestión de la cola de transacciones del dirver
+- Las transacciones encoladas en un driver pueden eliminarse dependiendo del tipo de retardo, *inercial* o de *transporte*.
+- Reglas, suponemos que en $t$ se añaden transacciones $(t_1, t_2, \dots)$ a una cola  planificada para insantes futuros:
+      1. Se eliminan de la cola (transacciones antiguas) todas las transacciones para intantes $\geq t_1$
+      2. Si las nuevas transacciones tienen retardo *inercial*, Se inspeccionan las transacciones que ya se encontraban en la cola. progresando hacia atrás en el tiempo (hacia la cabeza de la cola).
+             1. Si la transacción inspeccionada asigna el mismo valor que que la planificada en $t_1$ esta se mantiene en la cola.
+             2. Si asigna un valor diferente a la planificada para $t_1$ entonces se elimina de la cola de transacción y todas las planificadas para instantes anteriores a esta..
+
+*** Ejemplo Simulación con retardo inercial
+- [[id:DACircDig]] pag 222
+
 * Glosario
 - *flip-flop*, circuito biestable.
   # creo que era un Biestable-T (toggle)
 - *VHDL*, lenguage para diseñar circuitos
+- La notación $a'$ equivale a $\lnot a$.
 
 * Recursos
 - https://www.dia.uned.es/71012018/ página web de la asignatura.
@@ -1649,4 +1791,14 @@ ghdl -e hello_world     # elaborate
 ghdl -r hello_world     # run
 #+end_src
 
+* Bibliografía
+
+** Diseño y Análisis de Cicuitos Digitales con VHDL
+:PROPERTIES:
+:ID: DACircDig
+:TYPE: Book
+:TITLE: Diseño y Análisis de Cicuitos Digitales con VHDL
+:AUTHOR: Alfonso Urquía Moraleda, Carla Martín Villalba
+:EDITION: Septiembre 2011
+:END:
 

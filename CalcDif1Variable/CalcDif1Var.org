@@ -1,7 +1,5 @@
 #+title: Cálculo Diferencial en una variable
 #+startup: overview latexpreview
-#+bibliography: (heading-all)
-
 
 * Sucesiones
 
@@ -226,20 +224,6 @@ Si $f$ es continua en [a,b] entonces $f$ es integrable en [a,b].
 ** Arco seno, Arco coseno y arco tangente
 - [[id:AMat1]] pag 386
 
-* Bibliography
-:PROPERTIES:
-:ID:       my-bibliography
-:END:
-
-** Análisis Matemático 1
-:PROPERTIES:
-:TYPE: book
-:TITLE: Análisis Matemático 1
-:AUTHOR: Jesús Fernandez Novoa
-:ID: AMat1
-:END:
-
-
 * Tools
 
 #+begin_src cpp :results output :flags -std=gnu++20
@@ -262,4 +246,18 @@ int main() {
 #+RESULTS:
 : Starting
 : Result: 1.6439345666815615
+
+* Bibliography
+:PROPERTIES:
+:ID:       my-bibliography
+:END:
+
+** Análisis Matemático 1
+:PROPERTIES:
+:TYPE: book
+:TITLE: Análisis Matemático 1
+:AUTHOR: Jesús Fernandez Novoa
+:ID: AMat1
+:END:
+
 
