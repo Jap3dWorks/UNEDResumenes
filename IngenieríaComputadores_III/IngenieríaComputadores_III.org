@@ -102,7 +102,7 @@
       - adecuado para modelar dispositivos de poca inercia.
 - La síntesis determina el retardo de un circuito.
 
-#+begin_src vhlc
+#+begin_src vhdl
 y1 <= x after 100 ns;
 y2 <= transport x after 100 ns;
 #+end_src
@@ -395,7 +395,7 @@ end architecture arch_correcta
 *** Cláusula generic
 - Se declara en la *entity*
 - Declara constantes que necesitan ser modificadas para adaptar el diseño a diferentes aplicaciones.
-- Valores típicos son los bits de un bus o el valor de los retardos
+- Valores típicos son los bits de un bus o el valor de los retardos.
 
 #+begin_src vhdl
 entity and2 is
@@ -446,24 +446,25 @@ end architecture nombre_architecture;
 - Se evaluan de forma concurrente.
 
 *** Asignación concurrentes simples
-Sintaxis:
+- [[id:DACircDig]] pag 104
+- Sintaxis:
+
 #+begin_src vhdl
 señal <= forma_de_onda;
 #+end_src
 
-La ejecución de una señal de asignación concurrente simple se produce en el instante en que cambia el valor de alguna de las señales que aparecen en la expresión a la derecha de <=.
-
-Se puede especificar el valor de retardo.
+- La ejecución de una señal de asignación concurrente simple se produce en el instante en que cambia el valor de alguna de las señales que aparecen en la expresión a la derecha de <=.
+- Se puede especificar el valor de retardo.
 
 #+begin_src vhdl
 y0 <= x1 + x2 after 10 ns;               -- 10 ns de retardo inercial
 y1 <= transport x3 + x4 after 10 ns;     -- 10 ns de retardo de transporte
 #+end_src
 
-Si no se indica el retardo es infinitesimal $\delta$.
+- Si no se indica el retardo es infinitesimal $\delta$.
 
 *** Asignación concurrentes condicionales
-Sintaxis:
+- Sintaxis:
 #+begin_src vhdl
 señal <= expr_nuevo_valor_señal_1 when expr_booleana_1 else
          expr_nuevo_valor_señal_2 when expr_booleana_2 else
