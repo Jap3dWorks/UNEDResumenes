@@ -1,7 +1,7 @@
 #+title: Teoría de los lenguajes de Programación
 #+author: Jordi Amposta Pérez
 
-#+startup: latexpreview
+#+startup: latexpreview content
 
 * Paradigmas de computación
 - Generaciones Lenguajes Programación
@@ -180,7 +180,7 @@ Busca el valor de X que hace cierta la siguiente pregunta.
 **** Interoperabilidad
 - La posibilidad de que un código escrito en un lenguaje interactue con el código escrito en otro lenguaje.
 
-* Programación Funcional
+* Programación Funcional (Haskell)
 - Diferente a la programación imperativa.
       - No tan cercano al hardware.
 - *Currificación*, devolver una función desde otra función, aprovechando para reducir el número de parámetros.
@@ -964,6 +964,129 @@ fmientras
       - No puede ser resuelto un objetivo (FRACASO LÓGICO).
 - Durante la resolución se selecciona el primer objetivo más a la izquierda y la primera cláusula que aparece en el programa.
 
+*** Control de la ejecución
+# TODO: repasar y dibujar los espacios de búsqueda.
+**** Corte
+- [[id:TeLenProg]] pag 112
+- En Prolog el control de la ejecución es interno y no modificable.
+- Existen algunos mecanismos no lógicos que permiten la variación de la forma de ejecución.
+- *corte* : ! : permite reducir el espacio de búsqueda de un objetivo.
+      - Elimina todas las opciones de la rama en que se encuentra a partir del nodo anterior al de su aparición (Solo se sigue una de las ramas).
+
+#+begin_src prolog
+p :- q,t.
+p :- m, !.                      % ! indica el corte
+p :- r.
+q :- s,!.
+s.
+s :- m.
+t.
+r.
+#+end_src
+
+- Puede introducir errores colaterales, se recomienda su uso cuando se sepa que la solución es única.
+
+#+begin_src prolog
+%% Juan no tiene hermanos, pedro tiene 1 hermanos, cualquier otro tiene 2 hermanos.
+numero_de_hermanos(juan,0) :- !.
+numero_de_hermanos(pedro,1) :- !.
+numero_de_hermanos(X,2) :- dif(X,juan), dif(X,pedro).
+#+end_src
+
+- Con el *corte* podemos escribir la negación por defecto.
+      - *call(x)* : permite parametrizar la resolución Prolog del objetivo X.
+      - *fallo* nunca se definiría en el programa.
+
+#+begin_src prolog
+no(X) :- call(X), !, fallo.
+no(X).
+#+end_src  
+
+- *Corte rojo* : Corte que modifica el significado del programa.
+- *Corte verde* : Corte que no modifica el significado del programa.
+
+*** Estructura de datos: la lista
+# TODO: repasar y dibujar los espacios de búsqueda.
+- [[id:TeLenProg]] pag 119
+- [] :lísta vacía.
+- [1,2,3] : lista con 3 elementso.
+- son del tipo [cabeza|cola]
+- dos listas son unificables si son unificables sus cabezas y sus colas son unificables.
+
+** Técnicas avanzadas de programación lógica
+*** Indeterminismo
+- [[id:TeLenProg]] pag 126
+- Reglas mal planteadas pueden llevar a espacios de búsqueda infinitos.
+- El orden de la declaración de las reglas afecta al funcinamiento del programa.
+- Los cortes pueden modificar el significado del programa.
+
+*** Eficiencia con la estructuras de datos
+- [[id:TeLenProg]] pag 120
+- Se ven funciones como argumentos de objetivos.
+      - Representan un objeto o elemento.
+- Problema del brazo robot y los bloques.
+
+#+begin_src prolog
+%% en(X,Y) X está sobre Y
+%% libre(X) X no tiene nada encima
+%% resultado(llevar(X,Y,Z),E) denota el resultado resultande de llevar X de Y a Z en el estado E
+
+%% Condiciones en el estado 0 o inicial
+cierto(en(bloque_A,bloque_B),0).
+cierto(en(bloque_B,pos1),0).
+cierto(en(bloque_C,pos3),0).
+cierto(libre(pos2),0).
+cierto(libre(bloque_A),0).
+cierto(libre(bloque_C),0).
+
+%% Condiciones para cambiar bloques de sitio
+cierto(en(X,Z), resultado(llevar(X,Y,Z),W)).
+cierto(libre(Y),resultado(llevar(X,Y,Z),W)).
+
+%% Condición de invarianza
+cierto(U, resultado(llevar(XY,Z),W)) :- cierto(U,W),
+                                        dif(U,en(X,Y)),
+                                        dif(U,libre(Z)).
+posible(0).
+posible(resultado(llevar(X,Y,Z), W)) :- posible(W),
+                                        manipulable(X),
+                                        dif(X,Y),
+                                        cierto(libre(X),W),
+                                        cierto(libre(Z),W),
+                                        cierto(en(X,Y),W).
+manipulable(bloque_A).
+manipulable(bloque_B).
+manipulable(bloque_C).
+#+end_src
+
+- la consulta es la descripción del estado final deseado, ha de ser posible alcanzar el estado inicial.
+
+#+begin_src prolog
+?- cierto(en(bloque_A,bloque_B),W),
+   cierto(en(bloque_B,bloque_C),W),
+   cierto(en(bloque_C,pos3),W),
+   posible(W).
+#+end_src
+
+*** Gestión dinámica
+- [[id:TeLenProg]] pag 135
+- *lemas* : Permite guardar resultados intermedios para accelerar las búsquedas posteriores.
+
+#+begin_src prolog
+fib(X,Y):- lfib(X,Y),!.
+fib(X,Y):- A is X-1, fib(A,M), B is X-2, fib(B,N),
+           Y is M+N, assert(lfib(X,Y)).
+initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
+#+end_src
+
+*** Uso eficiente de la recursión
+- [[id:TeLenProg]] pag 137
+- Las técnicas recursivas son el pilar de la programación lógica.
+- Aún así conviene retrasar lo máxima su resolución para no explorar caminos innecesarios.
+
+*** Meta-programación
+- [[id:TeLenProg]] pag 138
+- En prolog se describe el programa y el meta-programa con reglas prolog.
 
 
 * Glosario
@@ -975,3 +1098,15 @@ fmientras
 #+begin_src sh
 ghci       # Open the haskell interpreter
 #+end_src
+
+
+* Bibliografía
+
+** Teoría de los lenguajes de programación
+:PROPERTIES:
+:ID: TeLenProg
+:TIPE: book
+:TITLE: Teoría de los lenguajes de programación
+:EDITORIAL: Ramón Areces
+:AUTHOR: Fernando López Ostenero, Ana María García Serrano
+:END:
