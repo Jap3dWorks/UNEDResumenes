@@ -1,5 +1,6 @@
 #+title: Teoría de los lenguajes de programación Ejercicios
 #+autor: Jordi Amposta Perez
+#+startup: content
 
 * Programación funcional Haskel
 ** Org Babel Usage
@@ -89,21 +90,125 @@ expand (x:y:ys)
       |otherwise = iexpand ys (n+1) x
 #+end_src  
   
-* Sandbox
-#+begin_src haskell :
+** Mergesort
+#+begin_src haskell :compile yes :results output
 main :: IO()
 
-polidivisible n
-  | n <= 0 = False
-  | otherwise = ipolidivisible n (long n)
+mergesort :: Ord a => [a] -> [a]
+mergesort [] = []
+mergesort [x] = [x]
+mergesort xs = merge (mergesort left) (mergesort right)
   where
-    ipolidivisible _ 1 = True
-    ipolidivisible n l = ((mod n l) == 0) && (ipolidivisible (div n 10) (l-1))
-    long n
-      | n < 10 = 1
-      | otherwise = 1 + long(div n 10)
+    (left, right) = splitAt (length xs `div` 2) xs
+    merge [] ys = ys
+    merge xs [] = xs
+    merge (x:xs) (y:ys)
+      | x <= y = x : merge xs (y:ys)
+      | otherwise = y : merge (x:xs) ys
 
-main = putStrLn(show(polidivisible 10))
+main = putStrLn(show (mergesort [4,3,1,9,61]))
 #+end_src
 
 #+RESULTS:
+: [1,3,4,9,61]
+
+** Check all list elements are unique
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+uniques xs = iuniques (mergesort xs)
+  where
+    iuniques [x] = True
+    iuniques (x:y:xs) = x /= y && iuniques(y:xs)
+    mergesort :: Ord a => [a] -> [a]
+    mergesort [] = []
+    mergesort [x] = [x]
+    mergesort xs = merge (mergesort left) (mergesort right)
+      where
+        (left, right) = splitAt (length xs `div` 2) xs    -- `` infix form
+
+        merge [] ys = ys
+        merge xs [] = xs
+        merge (x:xs) (y:ys)
+          | x <= y = x : merge xs (y:ys)
+          | otherwise = y : merge (x:xs) ys
+  
+main = putStrLn(show(uniques [1,3,2,3,4]))
+#+end_src
+
+#+RESULTS:
+: False
+
+** List elements comparison
+
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+listcomp :: (Num a1, Ord a1, Ord a2) => [a2] -> [a1] -> Bool
+
+listcomp _ [] = True
+listcomp (x:y:xs) (c:cs)
+  | c < 0 = x < y && listcomp (y:xs) cs
+  | c > 0 = x > y && listcomp (y:xs) cs
+  | otherwise = listcomp (y:xs) cs
+
+main = putStrLn(show(listcomp [3,1,2] [1,-1]))
+#+end_src
+
+#+RESULTS:
+: True
+
+** Get matrix column as a list
+
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+arrcol [] _ = []
+arrcol (xl:xs) n = (checkl xl n) : arrcol xs n
+  where
+    checkl [] _ = -1
+    checkl (x:xs) n
+      | n == 0 = x
+      | otherwise = checkl xs (n-1)
+
+main = putStrLn(show(arrcol [[1,2,4],[8,4,0,0,2,4],[1,2,4]] 9))
+#+end_src
+
+#+RESULTS:
+: [-1,-1,-1]
+
+
+** Set Item in a list
+
+#+begin_src haskell :compile yes :results output
+main :: IO()
+  
+setitem [] _ _ = []
+setitem (x:xs) v n 
+  | n == 0 = v:xs
+  | otherwise = x : setitem xs v (n-1)
+
+main = putStrLn(show(setitem [1,2,3,4,5] (-1) 1))
+#+end_src
+
+#+RESULTS:
+: [1,-1,3,4,5]
+
+** Set item in Array
+# TODO
+
+* Sandbox
+
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+sorted [x] = True
+-- sorted (x..) = True  -- infinite structures ?
+sorted (x:y:xs) = x <= y && sorted (y:xs)
+
+main = putStrLn(show(sorted [1,2,3,4,5]))
+#+end_src
+
+#+RESULTS
+: True
+

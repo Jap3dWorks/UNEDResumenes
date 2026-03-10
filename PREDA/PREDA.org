@@ -1,5 +1,5 @@
 #+title: PREDA
-#+startup: latexpreview overview
+#+startup: latexpreview content
 
 * Estructuras de datos
 ** Grafos
@@ -846,7 +846,7 @@ typo Puntos=matriz[p1..pn] de puntos
 /**
  * @param puntos:Puntos, vector de puntos ordenados de forma ascendente respecto a la coordenada x
 */
-fun DistMásCercana(puntos:Puntos, l:entero, r:entero): float
+fun DistMasCercana(puntos:Puntos, l:entero, r:entero): float
     var
         dl:float
         dr:float
@@ -858,9 +858,9 @@ fun DistMásCercana(puntos:Puntos, l:entero, r:entero): float
     sino si r-l < 1 entonces
         dev infty                              // Caso trivial de un grupo con un solo vértice
     sino
-        dl <- DistMásCercana(l, r/2)
-        dr <- DistMásCercana(r/2 + 1, r)
-        dc <- DistMásCercana(r/2, r/2 + 1)     // Distancia entre los puntos más cercanos a la línea de corte.
+        dl <- DistMasCercana(l, r/2)
+        dr <- DistMasCercana(r/2 + 1, r)
+        dc <- DistMasCercana(r/2, r/2 + 1)     // Distancia entre los puntos más cercanos a la línea de corte.
 
         dev min(dl,dr,dc)
     fsi

@@ -512,10 +512,10 @@ data Semaforo = Rojo | Amarillo | Verde
 #+end_src
 
 - Clases más usadas como deriving.
-      - Eq, permite comparar elementos.
-      - Ord, establece una relación de orden entre los elementos.
-      - Show, permite que el intérprete pueda mostrar un valor de este tipo.
-      - Read, permite convertir cadenas de texto en elementos del tipo.
+      - *Eq* : permite comparar elementos.
+      - *Ord* : establece una relación de orden entre los elementos.
+      - *Show* : permite que el intérprete pueda mostrar un valor de este tipo.
+      - *Read* : permite convertir cadenas de texto en elementos del tipo.
             - read "Rojo"::Semaforo , crea el elemento rojo del tipo Semáforo.
 
 ***** Unión de tipos
@@ -1110,3 +1110,7 @@ ghci       # Open the haskell interpreter
 :EDITORIAL: Ramón Areces
 :AUTHOR: Fernando López Ostenero, Ana María García Serrano
 :END:
+
+** Webs de interés
+http://aprendehaskell.es/main.html
+https://learnyouahaskell.github.io/introduction.html
