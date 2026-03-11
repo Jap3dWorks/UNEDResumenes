@@ -89,6 +89,8 @@ expand (x:y:ys)
       | x /= y   = n:x:(expand (y:ys))
       |otherwise = iexpand ys (n+1) x
 #+end_src  
+
+#+RESULTS:
   
 ** Mergesort
 #+begin_src haskell :compile yes :results output
@@ -139,7 +141,7 @@ main = putStrLn(show(uniques [1,3,2,3,4]))
 #+RESULTS:
 : False
 
-** List elements comparison
+** List Elements Comparison
 
 #+begin_src haskell :compile yes :results output
 main :: IO()
@@ -177,25 +179,85 @@ main = putStrLn(show(arrcol [[1,2,4],[8,4,0,0,2,4],[1,2,4]] 9))
 #+RESULTS:
 : [-1,-1,-1]
 
-
 ** Set Item in a list
 
 #+begin_src haskell :compile yes :results output
 main :: IO()
   
-setitem [] _ _ = []
-setitem (x:xs) v n 
+setListItem [] _ _ = []
+setListItem (x:xs) v n 
   | n == 0 = v:xs
-  | otherwise = x : setitem xs v (n-1)
+  | otherwise = x : setListItem xs v (n-1)
 
-main = putStrLn(show(setitem [1,2,3,4,5] (-1) 1))
+main = putStrLn(show(setListItem [1,2,3,4,5] (-1) 1))
 #+end_src
 
 #+RESULTS:
 : [1,-1,3,4,5]
 
-** Set item in Array
-# TODO
+** Set Item in Array
+
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+setArrayItem [] _ _ _ = []
+setArrayItem (r:rs) v rw cl
+  | rw == 0 = setListItem r v cl : rs
+  | otherwise = r : setArrayItem rs v (rw-1) cl
+  where
+      setListItem [] _ _ = []
+      setListItem (x:xs) v n 
+        | n == 0 = v:xs
+        | otherwise = x : setListItem xs v (n-1)
+
+main = putStrLn(show(setArrayItem [[1,2,3],[4,5,6],[7,8,9]] (-1) 1 1))
+#+end_src
+
+#+RESULTS:
+: [[1,2,3],[4,-1,6],[7,8,9]]
+
+** Is Present in a unordered list
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+isPresent [] _ = False
+isPresent (x:xs) v
+  | x == v = True
+  | otherwise = isPresent xs v
+
+main = putStrLn(show(isPresent [1,2,3,4] 22))
+#+end_src
+
+#+RESULTS:
+: False
+
+** Get Matrix Coordinates
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+-- coordsFirstMatch :: forall a. [[a]] -> a -> [a]
+
+coordsFirstMatch m v = icoords m v 0
+  where
+    icoords [] _ _ = [-1,-1]
+    icoords (x:xs) v rw
+      | colIdx /= -1 = [rw, colIdx]
+      | otherwise = icoords xs v (rw + 1)
+      where
+        colIdx = getIndx x v 0
+
+    getIndx [] _ _ = -1
+    getIndx (x:xs) v cl
+      | x == v
+      = cl
+      | otherwise = getIndx xs v (cl+1)
+
+main = putStrLn(show(coordsFirstMatch [[1,2,3],[1,0,9],[7,8,9]] 0))
+
+#+end_src
+
+#+RESULTS:
+: [1,1]
 
 * Sandbox
 
@@ -209,6 +271,46 @@ sorted (x:y:xs) = x <= y && sorted (y:xs)
 main = putStrLn(show(sorted [1,2,3,4,5]))
 #+end_src
 
+#+RESULTS:
+: True
+
 #+RESULTS
 : True
+
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+successors [] = []
+successors c = map (isuccessors c) [1..9]
+  where
+    isuccessors (x:xs) v
+      | contains x 0 = (replace x 0 v):xs
+      | otherwise = x : isuccessors xs v
+
+    contains [] _ = False
+    contains (x:xs) v
+      | x == v = True
+      | otherwise = contains xs v
+
+    replace [] _ _ = []
+    replace (x:xs) v r
+      | x == v = r:xs
+      | otherwise = x : replace xs v r
+
+main = putStrLn(show(successors [[1,2,3],[0,0,0],[0,0,0]]))
+#+end_src
+
+#+RESULTS:
+: [[[1,2,3],[1,0,0],[0,0,0]],[[1,2,3],[2,0,0],[0,0,0]],[[1,2,3],[3,0,0],[0,0,0]],[[1,2,3],[4,0,0],[0,0,0]],[[1,2,3],[5,0,0],[0,0,0]],[[1,2,3],[6,0,0],[0,0,0]],[[1,2,3],[7,0,0],[0,0,0]],[[1,2,3],[8,0,0],[0,0,0]],[[1,2,3],[9,0,0],[0,0,0]]]
+
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+tfn a b = a+b
+
+main = putStrLn(show(map (tfn 3) [1..9]))
+#+end_src
+
+#+RESULTS:
+: [4,5,6,7,8,9,10,11,12]
 

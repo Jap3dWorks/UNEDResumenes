@@ -1,6 +1,7 @@
 #+title: Fundamentos de inteligencia artificial
 #+startup: latexpreview
 #+author: Jordi Amposta Perez
+#+startup: latexpreview content
 
 * Aspectos conceptuales de la Inteligencia Artificial y la ingeniería del conocimiento
 - Propósito general de la IA es desarrollar
@@ -365,22 +366,25 @@ ffun
 - A $f(x)$ se le denomina *función heurística de evaluación*.
 
 ** El algoritmo A*
+- [[id:IntArt]] pag 344
 - Especialización de *BF*.
 - Sea $n$ un nodo cualquiera del espacio de búsqueda.
-      - $g^*(n)$, es el *coste del camino de menor coste* desde el nodo inicial hasta $n$.
-      - $h^*(n)$, *coste del camino más corto desde* $n$ al objetivo más cercano a $n$ (objetivo = solución).
+      - $g^*(n)$ : Es el *coste del camino de menor coste* desde el nodo inicial hasta $n$.
+      - $h^*(n)$ : *Coste del camino más corto desde* $n$ al objetivo más cercano a $n$ (objetivo = solución).
       - $f^*(n)=g^*(n) + h^*(n)$. Es decir es el coste del camino más corto desde el inicial a los objetivos condicionado a pasar por el nodo $n$.
       - $C^* = f^*(inicial) = h^*(inicial)$, es el coste de la solución óptima.
 - Se trabaja con aproximaciones de las anteriores funciones.
-      - $g(n)$, es el coste del mejor camino desde el inicial a $n$ obtenido hasta el momento durante la búsqueda.
+      - $g(n)$ : Es el coste del mejor camino desde el inicial a $n$ obtenido hasta el momento durante la búsqueda.
             - $g(n) \geq g^*(n)$.
-      - $h(n)$, estimación positiva de $h^*(n)$, tal que $h(n)=0$ si $n$ es un objetivo.
+            - Se almacena en *TABLA_A*, se va rectificando a lo largo del recorrido.
+      - $h(n)$ : Estimación positiva de $h^*(n)$, tal que $h(n)=0$ si $n$ es un objetivo.
             - $h(n) \geq 0$.
             - Es la *función heurística* o *heurístico*.
             - Definir $h(n)$ es un problema no trivial.
-            - Es admisible si $h(n) \leq h^*(n)\ \forall n$
+            - Es *admisible* si $h(n) \leq h^*(n)\ \forall n$
+            - Se almacena en *TABLA_A*, se supone que no varía con el tiempo.
       - $f(n) = g(n) + h(n)$
-- Se ordenan los nodos candidatos según el valor $f(n)$ de forma ascendente.
+- Se ordenan los nodos candidatos en *ABIERTA* según el valor $f(n)$ de forma ascendente.
 
 *** Descripción del algoritmo A*
 - Basado en [[id:c2bbf2c1-f380-4078-93f6-8b52f0e78859][AGBG]]
@@ -406,14 +410,14 @@ mientras NoVacia(ABIERTA) hacer
                 Anterior(q) <- n
                 g(q)        <- g(n) + Coste(n,q)
                 h(q)        <- Heurístico(q)
-            ABIERTA = Mezclar(q, ABIERTA)
+            ABIERTA <- Mezclar(q, ABIERTA)
         fsi
     fpara
 fmientras
 dev "No Solución"
 #+end_src
 
-- Función Rectificar
+- Función de Rectificación de nodos ya expandidos.
 
 #+begin_src pseudocode
 fun Rectificar(n,p,costepn)
@@ -668,7 +672,9 @@ dev S
 #+end_src        
 
 *** Algoritmo de escalada o máximo gradiente
-- El criterio de aceptación es que $S_1$ sea mejor o igual a $S$.
+- [[id:IntArt]] pag 371
+
+- El criterio de aceptación es que $S_1$ (*solución vecina*) sea mejor o igual a $S$ (*solución actual*).
 - Problemas de estancamiento.
       - *Óptimos locales*, en estos puntos todos los vecinos son peores.
       - *Regiones planas*, todos los vecinos tienen el mismo valor que la solución actual y la búsqueda es aleatoria.
@@ -742,3 +748,15 @@ dev S
       - Tanto en el uso como en el entrenamiento.
 
 - *Expandir un nodo* : En un grafo obtener los nodos descendientes (que derivan del nodo) y añadirlo a la lista de pendientes por visitar.
+
+
+* Bibliografía
+
+** Inteligencia Artificial
+:PROPERTIES:
+:TYPE: book
+:TITLE: Inteligencia Artificial, técnicas métodos y aplicaciones
+:AUTHOR: José T.Palma Méndez, Roque Marín Morales
+:ID: IntArt
+:EDITORIAL: Mc Graw Hill
+:END:
