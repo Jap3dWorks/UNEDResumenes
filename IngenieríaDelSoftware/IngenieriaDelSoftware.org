@@ -1209,7 +1209,57 @@ FIN-PARA
 - El código o número de referencia sirve perfectamente como clave primaria.
 
 *** Tratamiento de las relaciones de asociación
+- [[id:AprIngSft]] pag 207
+- La manera de establecer la relación depende de la cardinalidad de la relación.
+      - N-N : Se crea una tabla de relación con ambas claves primarias como columnas.
+            - Resulta un poco confuso.
+            - Entiendo que quiere decir que una tupla de A puese apuntar a N tuplas de B.
+            - Y que 1 tupla de B puede ser apuntada por N tuplas de A.
+      - 1-N : Puede usarse un atributo de referencia para asociar a la otra tabla.
+            - Si N tuplas de A relacionan a 1 tupla de B, la referencia a B puede ser una columna en A.
+      - 1-1 : Pueden fusionarse ambas tablas.
 
+*** Tratamiento de las relaciones de composición
+- Se tratan igual que las relaciones de asociación.
+
+*** Tratamiento de herencia
+- Tres formas de almacenar en tablas:
+      - Una tabla para la superclase más una tabla por cada subclase.
+      - Repetir los atributos de la superclase en cada tabla de cada subclase.
+      - Se amplía la tabla superclase con todos los atributos de las subclases.
+
+*** Diseño de Índices
+- Permiten acceder rápidamente a un dato concreto, reduciendo el tiempo de acceso.
+      - indexar. Propio de las bases de datos.
+
+** Diseño de bases de datos de objetos
+- [[id:AprIngSft]] pag 212
+- No hay aún un conjunto de estructuras de información fundamentales.
+- Dos enfoques:
+      - Usar las estructuras de la base de datos de objetos.
+            - La base de datos relacional aporta persistencia.
+      - Usar un diseno análogo a la base de datos relacional.
+
+** Diseño de software con patrones
+- [[id:AprIngSft]] pag 218
+- Solución probada a un problema recurrente.
+- Los patrones deben documentarse debidamente, un ejemplo de plantilla.
+      - Nombre del patrón
+      - Propósito
+      - Motivación
+      - Aplicabilidad
+      - Desarrollo del patrón
+      - Usos conocidos
+      - Ejemplos
+- Algunas aplicaciones de patrones son:
+      - Interfaces de usuario y hombre-computadora.
+      - Patrones de diseño en programación orientada a objetos.
+      - Patrones para la integración de sistemas heterogéneos que deben cominicarse y sincronizarse.
+      - Patrones de flujo de datos dentro de la gestión de procesos empresariales.
+- Tipos de patrones de la programación orientada a objetos:
+      - Patrones creacionales : Resuelven la creación de instancias.
+      - Patrones estructurales : Resuelven problemas de composición de clases u objetos.
+      - Patrones de comportamiento : Resuelven problemas de interacción y comunicación entre clases u objetos.
 
 * Glosario
 - *Cardinalidad* : Matemáticamente número de objetos únicos en un conjunto.
