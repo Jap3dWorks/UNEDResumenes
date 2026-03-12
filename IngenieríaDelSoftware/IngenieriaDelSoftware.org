@@ -1,7 +1,7 @@
 #+title: Introducción a la ingenería del software
 #+author: Jordi Amposta Perez
 
-#+startup: latexpreview overview
+#+startup: latexpreview content
 
 * Introducción. UD 1
 ** Tipos de software
@@ -575,7 +575,7 @@ FIN-PARA
 4. *APÉNDICES*
    Elementos que completen el contenido del documento. Se les suele hacer referencia en el documento.
 
-* Fundamentos del Diseño de Software. UD 2
+* Fundamentos del Diseño de Software. (UD 2)
 - pag 121, Empieza Unidad didáctica 2
 - *Diseño* : Descripción o Bosquejo del sistema a desarrollar.
       - Se realiza mediante notaciones formales.
@@ -846,8 +846,6 @@ FIN-PARA
       - *DDD* : Detailed Design Document.
             - Detalle de las partes.
 
-
-
 *** Documento ADD
 **** Introducción
 - Debe darse una visión general del documento *ADD*.
@@ -951,8 +949,279 @@ FIN-PARA
 - Apéndice A. Listados Fuente
 - Apéndice B. Matriz Requisitos/Componentes
 
+* Técnicas Generales de Diseño de Software
+- [[id:AprIngSft]] pag 165.
+
+** Descomposición Modular
+- *Módulo* : Fragmento software que se puede desarrollar con relativa independencia.
+      - Se valora la mantenibilidad salvo casos excepcionales.
+            - Se busca un débil acoplamiento entre los módulos y una alta cohesión dentro de cada uno de ellos.
+- Aspectos a concretar:
+      - Identificar módulos.
+      - Describir cada módulo.
+      - Describir relaciones entre módulos.
+- Tipos posibles de módulo:
+      - *Código fuente* : Texto fuente escrito en el lenguaje de programación.
+      - *Tablas de datos* : Se utiliza para tabular ciertos datos de inicialización, experimentales o de difícil obtención.
+            - Esta tabla puede ser un módulo específico que puede ser intercambiado.
+      - *Configuración* : Un mismo módulo que agrupa todas las opciones de configuración del sistema.
+            - Un ejemplo también puede ser el módulo que guarda los mensajes de todos los idiomas.
+      - *Otros* : Cualquier módulo para agrupar ciertos elementos del sistema relacionados entre sí.
+
+*** Independecia funcional
+- *Independencia funcional* : Un módulo debe realizar una función o conjunto de funciones afines sin apenas ninguna relació ncon el resto de módulos del sistema.
+      - Estas relaciones pueden existir pero se trata de reducirlas al mínimo.
+      - Se mide con el *acoplamiento* y la *cohesión*.
+- Como primer paso cada requisito del *SRD* puede descomponerse en un módulo distinto.
+      - En cada iteración sucesiva se pueden fusionar o dividir estos módulos.
+
+*** Acoplamiento
+- *Acoplamiento* : mide el grado de interrelación que existe entre módulos.
+- Escala del acoplamiento:
+      | Fuerte   | Acoplamiento por Contenido |
+      |          | Acoplamiento Común         |
+      |          | Acoplamiento Externo       |
+      | Moderado | Acoplamiento de Control    |
+      |          | Acoplamiento por Etiqueta  |
+      | Débil    | Acoplamiento de Datos      |
+      |          | Sin Acoplamiento Directo   |
+
+**** Acoplamiento por Contenido
+- Se produce cuando desde un módulo se pueden cambiar los datos locales o incluso el código de otro módulo.
+- Solo se puede lograr utilizando un lenguaje ensamblador o de muy bajo nivel.
+- Se debe evitar, depuración y mantenimiendo infernal.
+
+**** Acoplamiento Común
+- Una zona común de datos a la que tienen acceso varios o todos los módulos del sistema.
+      - Cada módulo puede modificar la zona común sin restricciones.
+- Exige que todos los módulos estén deacuerdo con la zona común.
+- Se usaba cuando la memoria disponible era escasa.
+- Se debe evitar siempre que se pueda, depuración y mantenimiento muy difícil.
+
+**** Acoplamiento Externo
+- La *zona común* está constituida por algún dispositivo externo.
+- La estructura de la zona común la impone el formato de los datos que maneja el dispositivo.
+      - Cualquier cambio exige la modificación de todos los módulos.
+- Deben buscarse descomposiciones en las que los dispositivos externos afecten al mínimo número de módulos posibles.
+
+**** Acoplamiento de Control
+- Un módulo A dirige el flujo de un módulo B mediante una señal externa a B.
+- En este caso B podría ser un módulo con componentes muy dispares y por tanto con baja cohesión.
+
+**** Acoplamiento por etiqueta
+- Acoplamiento solo a través de intercambio de datos con una referencia que facilita el acceso a la estructura completa de datos.
+
+**** Acoplamiento de Datos
+- Acoplamiento solo a través de intercambio de datos y solo con los datos que se necesitan.
+
+*** Cohesión
+- Concepto complementario al acoplamiento.
+- El contenido de cada módulo tenga coherencia.
+      - Objetivo específico de cada módulo.
+- El número de módulos no debe crecer de forma desmesurada.
+- Escala de la cohesión:
+  | Alta  | Cohesión abstraccional   |
+  |       | Cohesión funcional       |
+  | Media | Cohesión secuencial      |
+  |       | Cohesión de comunicación |
+  | Baja  | Cohesión temporal        |
+  |       | Cohesión lógica          |
+  |       | Cohesión coincidental    |
+
+- Para conocer y mejorar la cohesión de un módulo se puede hacer una descripción de su comportamiento.
+      - Si la descripción es una frase compuesta que contiene comas o más de un verbo, puede que se esté incluyendo más de una función.
+            - Es probable que sea cohesión Media (secuencial o ce comunicación).
+      - Si la descripción contiene palabras relaconadas con el tiempo, puede que sea del tipo secuencial o temporal.
+      - Si la frase no se refiere a algo específico a continuación del verbo, es posible que sea una cohesión lógica.
+      - Palabras tipo "Inicializar", "Preparar", "condigurar", es posible que sea una cohesión temporal.
+
+**** Cohesión Coincidental
+- La peor posible, cualquier relación entre los elementos del módulo es pura coincidencia.
+
+**** Cohesión Lógica
+- Un mismo módulo agrupa elementos que realizan funciones similares desde el punto de vista del usuario.
+- Ejemplo un módulo math que realiza operaciones tipo seno, coseno, raiz cuadrada, etc.
+- Salvo excepciones como el ejemplo indicado debe evitarse.
+
+**** Cohesión Temporal
+- El módulo agrupa los elementos que se ejecutarán en un mismo momento.
+- Por ejemplo fase de iniciación o finalización de un sistema.
+- Salvo excepciones el ejemplo indicado debe evitarse.
+
+**** Cohesión de Comunicación
+- Los elementos del módulo operan con el mismo conjunto de datos de entrada o producen el mismo conjunto de datos de salida.
+
+**** Cohesión Secuencial
+- Todos los elementos del módulo trabajan de forma secuencial.
+- La salida de un elemento del módulo es la entrada del siguiente.
+
+**** Cohesión Funcional
+- Cada elemento está encargado de una función concreta y específica.
+
+**** Cohesión Abstraccional
+- Se diseña un módulo como tipo abstracto de datos con la técnica basada en abstracciones.
+- Se asocian datos (atributos) con operaciones (métodos).
+- Se facilita en gran medida el mantenimientoy la posible reutilización de los módulos así diseñados.
+
+*** Comprensibilidad
+- Los módulos comprensibles de forma aislada facilitan (incluso a veces posibilitan) las modificaciones y el mantenimiento.
+- La independencia funcional facilita la comprensión.
+- Factores tener en cuenta para una mejor comprensibilidad:
+      - *Identificación* : Elección adecuada del nombre del módulo y de los nombres de sus elementos.
+      - *Documentación* : La documentación de cada módulo y del sistema en general debe facilitar la conprensión.
+            - El DDD indica las pautas de documentación.
+      - *Simplicidad* : Simplificar al máximo las soluciones propuestas.
+            - Salvo casos como el rendimiento o memoria escasa.
+
+*** Adaptabilidad
+- La Independencia funcional y la comprensibilidad posibilitan la adaptabilidad.
+      - Por ejemplo modificaciones del cliente.
+- Otros factores que facilitan la adaptabilidad:
+      - *Previsión* : partes más susceptibles a lo cambios deben agruparse en módulos de acoplamiento débil.
+      - *Accesibilidad* : accesibilidad sencilla a todos los documentos de especificación, diseño e implementación.
+            - Permite conocer mejor el sistema a modificar.
+      - *Consistencia* : El adecuado mantenimiento de los documentos de especificación, diseño e implementación.
+
+** Técnicas de diseño funcional descendente
+- Descomposición del sistema desde un punto de vista funcional.
+- Los módulos corresponden a funciones concretas que se han de reaizar en el sistema.
+
+*** Desarrollo por refinamiento progresivo
+- [[id:AprIngSft]] pag 177
+- Aplicación en la fase de diseño de la metodología de programación estructurada.
+- la *programación estructurada* recomienda emplear solo estructuras de control claras y sencillas.
+      - Un único punto inicial y un único punto final de ejecución.
+            - Secuencia, selección entre alternativas y la iteración.
+- Se plantea el programa como una operación global, y se va descomponiendo en otras operaciones más sencillas.
+      - Cada paso de descomposición refina o detalla las operación considerada, cuyos elementos serán a su vez operaciones.
+- Aplicable a los primeros niveles de diseño
+
+**** Programación estructudara de Jackson
+- [[id:AprIngSft]] pag 178
+- Sigue las ideas de la *programación estructurada* para las estructuras de control y el refinamiento sucesivo.
+- Se emplean diagramas ara representar la estructura del programa y los datos con lo que opera.
+- Se caracteriza por los siguientes pasos.
+      - Analizar el entorno del problema y describir las estructuras de datos a procesar.
+      - Construir la estructura del programa basada en las estructuras de datos.
+      - Definir las tareas a realziar en términos de las operaciones elementales disponibles.
+            - Situar las tareas en los módulos apropiados de la estructura del programa.
+
+*** Diseño Estructurado
+- [[id:AprIngSft]] pag 182
+- Complemento del *análisis estructurado*.
+      - Usan diagramas de flujo de datos (DFD) para describir datos.
+      - Se usan diagramas de estructura para el diseño.
+- Consiste en pasar de los DFD a los diagramas de estructura.
+      - Hay que establecer una jerarquía o estructura de control entre los diferentes módulos.
+- Se recomienda hacer ciertos análisis del flujo de los datos:
+      - *Flujo de transformación* : Identificar un flujo global desde los elementos de entrada a los elemento de salida.
+            - 3 regiones: flujo de entrada, transformación y salida.
+            - Se añade un módulo por cada elemento identificado más módulos de coordinación.
+            - Se puede refinar cada submódulo de la misma forma.
+      - *Flujo de transacción* : Aplicable cuando el flujo se puede descomponer en líneas separadas.
+            - Ante la entrada de un tipo concreto solo se activa un flujo de datos.
+            - *centro de transacción* : punto a partir del cual se ramifican los flujos, hay que identificar este punto.
+                  - Cada flujo separado sería un módulo que a su vez se puede refinar.
+
+** Técnicas de diseño basao en abstracciones
+- Surgen cuando se identifican con precisión los conceptos de abstracción de datos de ocultación.
+- Los módulos se corresponden bien con funciones o bien con tipos de datos abstractos.
+
+*** Descomposición modular basada en abstracciones
+- Consiste en ampliar el lenguaje existente con nuevas operaciones y tipos de datos.
+- Consiste en dedicar módulos separados a cada tipo abstracto de datos y cada función importante.
+- Puede aplicarse de forma ascendente y/o descendente.
+      - De forma descendente es una ampliación del refinamiento progresivo.
+      - De forma ascendente se trata de ir ampliando las primitivas existentes en el lenguaje de programación.
+
+*** Método de Abbot
+- [[id:AprIngSft]] pag 188
+- Sugiere una forma metódica de identificar las abstracciones.
+- Identificar en la descripción aquellas palabras o términos que puedan corresponder a elementos significativos.
+      - Tipos de datos : Aparecen como sustantivos genéricos.
+      - atributos : Aparecen como sustantivos en general.
+      - operaciones : Aparecen como verbos o nombre de acciones.
+- Se empieza extrayendo dos listas, una de sustantivos y otra de verbos.
+      - Se eliminan sinónimos y elementos superfluos.
+      - Se extraen los elementos significativos.
+- Podemos asignar a un módulo cada abstracción de datos o grupo de abstracciones relacionadas entre sí.
+- El módulo puede corresponder a un dato encapsulado si solo se maneja un dato de este tipo en todo el programa.
+- Hay que tratar de expresar cada operación en función de las otras.
+      - Se detectan omisiones y se refleja las relaciones entre módulos.
+
+** Técnicas de diseño orientadas a objetos
+- Muy similar al basado en abstracciones.
+- Los objetos añaden algunas características como el polimorfismo y la herencia.
+- La idea es que cada módulo contenga la descripción de un objeto o un grupo de objetos relacionados entre sí.
+
+*** Diseño orientado a objetos
+- [[id:AprIngSft]] pag 194
+- De forma general se aplican los siguientes pasos.
+      - Los elementos poco claros o demasiado complejos se vuelven a refinar.
+
+**** Estudiar y comprender el problema
+- Debe haberse realizado ya en la fase de análisis de requisitos.
+- Pero puede ser conveniente repetirlo en parte para el diseño.
+
+**** Desarrollar una posible solución
+- Conviene considerar varias alternativas.
+- La solución elegida debe expresarse con suficiente detalle.
+
+**** Formalizar la estratégia
+- *Identificar las clases y objetos* : Puede hacer con la técnica Abbot.
+      - Se atiende a identificar las clases de objetos y sus atributos.
+      - Si un objeto contiene a otro objeto se trata como una relación de *composición*.
+- *Identificar las operaciones sobre los objetos* : Puede hacerse con la técnica de Abbot.
+      - Se identifican las operaciones y con que objeto o clase se asocian.
+- *Aplicar Herencia* : Se detectan las analogías entre los objetos identificados.
+      - Si las hay se establecen las relaciones apropiadas de herencia.
+            - Reformulando las descripciones si es necesario.
+      - Se incluye en el diagrama de modelo de objetos a desarrollar.
+- *Describir las operaciones* : Es una manera de verificar que el modelo es consistente.
+      - Cada operación se describe de manera informa o en pseudocódigo.
+      - Puede provocar la inclusión de nuevas clases y/o operaciones.
+- *Establecer la estructura modular* : Asignar clases, objetos y operaciones a módulas separados.
+      - Se obtiene el diagrama de estructura del sistema.
+    
+** Técnicas de diseño de datos
+- Una base de datos para almacenar datos de forma permanente.
+- El diseño de la estructura de las bases de datos es una disciplina independiente.
+- Los diseños de las bases de datos pueden aplicarse a los datos en memoria.
+- Puede hacerse en 3 niveles:
+      - *Nivel externo* : visión de usuario.
+      - *Nivel conceptual* : Esquémas lógicos. por ejemplo E-R.
+      - *Nivel interno* : Organiza los datos según esquemas admisibles en el sistema de bases de datos.
+
+** Diseño de bases de datos relacionales
+- Formas de esquematizar en bases de datos E-R relaciones de composición y herencia.
+
+*** Formas Normales
+- [[id:AprIngSft]] pag 205
+- Criterios para establecer esquemas de tablas claros y no redundantes.
+- Los criterios se separan por niveles, si cumple la 3a forma normal cumple la 1a y la 2a.
+- *1a forma normal* : La información a cada una de las columnas es un valor único.
+- *2a forma normal* : Si además hay clave primaria y los datos dependen del completo de la clave primaria y no de una parte.
+- *3a forma normal* : Cada valor no primario depende directamente de la clave primaria.
+
+*** Diseño de las entidades
+- Cada modelo E-R se traduce en una tabla por cada clase de entidad.
+- Se relacionan las tablas con códigos o números de referencia.
+- El código o número de referencia sirve perfectamente como clave primaria.
+
+*** Tratamiento de las relaciones de asociación
+
+
 * Glosario
 - *Cardinalidad* : Matemáticamente número de objetos únicos en un conjunto.
       - Valores máximos y mínimos de la relación entre entidades (0,1), (1,M), (1,1).
 - *SDD* : Software Design Document.
 - *ESA* : Agencia espacia europea.
+
+* Bibliografía
+** Aprocimación a la ingeniería del software
+:PROPERTIES:
+:ID: AprIngSft
+:AUTHOR: Sebastián Rubén Gómez Palomo, Eduardo Antonio Moraleda Gil
+:TITLE: Aprocimación a la ingeniería del software, Second edition
+:EDITORIAL: Editorial Universitaria Ramón Areces
+:END:

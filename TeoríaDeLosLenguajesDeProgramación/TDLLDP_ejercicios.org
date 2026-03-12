@@ -253,7 +253,6 @@ coordsFirstMatch m v = icoords m v 0
       | otherwise = getIndx xs v (cl+1)
 
 main = putStrLn(show(coordsFirstMatch [[1,2,3],[1,0,9],[7,8,9]] 0))
-
 #+end_src
 
 #+RESULTS:
