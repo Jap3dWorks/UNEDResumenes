@@ -443,15 +443,17 @@ ffun
 - $\Gamma^* \subseteq \Gamma$  conjunto de objetivos óptimos.
 - $P_{n-n'}$ denota un camino simple desde el nodo $n$ al nodo $n'$.
 - $P_{n-n'}$ camino óptimo desde $n$ a $n'$.
+- *Nodos encontrados* : Aquellos que ya tienen entrada en *TABLA_A*.
+- *Nodos expandidos* : Ya tienen registrados sus sucesores en el campo correspondiente de *TABLA_A*.
 - $NodosEnAbierta\ \cup \ NodosExpandidos = NodosEncontrados$
       - La unión es disjunta.
 
 **** Terminación y completitud
 - $A^*$ es completo en grafos *localmente finitos* (teorema pag 346).
-      - localmente finito, grafo infinito con un número finito de sucesores por nodo.
+      - *localmente finito*, grafo infinito con un número finito de sucesores por nodo.
 
 **** Admisibilidad del algoritmo A*
-- Una función heurística $h$ es adimisble si $h(n) \leq h^*(n)\ \forall n$.
+- Una función heurística $h$ es *adimisble* si $h(n) \leq h^*(n)\ \forall n$.
 - Antes de que $A^*$ termine, existe un nodo $n'$ en ABIERTA tal que $f(n') \leq C^*$ (lema 9.1).
 - $A^*$ es admisible (teorema 9.2).
 
@@ -599,10 +601,10 @@ dev "No encontrado", NuevaLongitudLimite
 #+end_src
 
 *** Algoritmo SMA*
-- pag 364
+- [[id:IntArt]] pag 364
 - IDA* tiene el problema de que se vuelven a expandir muchos nodos.
 - Cuando necesita expandir un nodo y no tiene espacio en TABLA_A, elimina un nodo de esta tabla y de ABIERTA.
-      - Son llamados nodos olvidados, y son los menos prometedores (mayor valor de $f$ en ABIERTA).
+      - Son llamados *nodos olvidados*, y son los menos prometedores (mayor valor de $f$ en ABIERTA).
 - El algoritmo recuerda en cada nodo el mejor $f$ de los hijos de ese nodo que han sido olvidados.
       - Para no volver a explorar subárboles que han sido eliminados.
 - SMA* mantiene en los nodos ancestros información acerca de la calidad del mejor camino en cada subárbol descartado.
@@ -635,7 +637,7 @@ mientras NoVacia(ABIERTA) hacer
     Inserta s en ABIERTA y en la TABLA_A
 fmientras
 dev "No solución"
-#+end_src  
+#+end_src
         
 - Propiedades principales
       - Es capaz de evolucionar utilizando la memoria que tenga disponible.
@@ -646,10 +648,10 @@ dev "No solución"
 - No está resuelta la cuestión de si SMA* tiene una eficiencia mejor o igual que otro algoritmo dada la misma información heurística y la misma cantidad de memoria.
 
 ** Algoritmo Voraces
-- pag 366
+- [[id:IntArt]] pag 366
 
 ** Algoritmos de ramificación y poda
-- pag 366
+- [[id:IntArt]] pag 366
 
 ** Algoritmos de mejora iterativa o búsqueda local
 - Para algunos problemas el nodo solución contiene toda la información necesaria.

@@ -1,6 +1,6 @@
 #+title: Bases De Datos
 #+author: Jordi Amposta Pérez
-#+startup: latexpreview overview
+#+startup: latexpreview content
 
 * Introducción
 - *SGBD*, Sistema gestor de bases de datos, colección de datos interrelacionados y un conjunto de programas par acceder a dichos datos.
@@ -1383,6 +1383,420 @@ grant select on departamento to Amit with grant option;
 revoke select on departamento from Amit, Satoshi restrict;
 #+end_src
 
+* SQL Avanzado
+
+** Acceso a SQL desde lenguajes de programación
+- [[id:FBDatos]] pag 71
+- Acceso a la base de datos por parte de los programadores, razones:
+      - Hay consultas que no se pueden expresar en SQL.
+      - Acciones no declarativas, por ejemplo imprimir un informe.
+- Enfoques:
+      - *SQL dinámico* : Construir una consulta como una cadena de carácteres.
+            - Se obtiene la consulta en variables del lenguaje tupla a tupla.
+      - *SQL embebido* : Las sentencias SQL se identifican en tiempo de precompilación.
+            - Se sustituyen en el programa por código adecuado.
+- El desafio es manejar la diferencia de tratamiento de datos.
+
+*** JDBC
+- API para java para conectarse a bases de datos.
+
+#+begin_src java
+public static void JDBCejemplo(String usuarioid, String contra) {
+    try {
+        Class.forName("oracle.jdbc.driver.OracleDriver");  // Cargar el controlador de forma dinámica.
+                                                           //  implementa la interfaz.
+        Connection conn = DriverManager.getConnection(
+                                                      "jdbc:oracle:thin@db.yale.edu:1521:univdb", // protocolo y url
+                                                      usuarioid, contra
+                                                      );
+
+        Statement stmt = conn.createStatement();
+        try {
+            stmt.executeUpdate(
+                               "insert into profesor values('77987', 'Kim', 'Física', 98000)"
+                               );
+        } catch (SQLException sqle) {
+            System.out.println("No se udo insertar la tupla");
+        }
+        ResultSet rset = stmt.executeQuery(
+                                           "select nombre_dept, avg(sueldo)" +
+                                           "from profesor" +
+                                           "group by nombre_dept");
+        while (rset.next()) {
+            System.out.println(rset.getString("nombre_set") + " " + rset.getFloat(2));
+        }
+
+        stmt.close();
+        conn.close();
+    } catch (Exception sqle) {
+        System.out.println("Exception:" + sqle);
+    }
+}
+#+end_src
+
+**** Conexión a la base de datos
+- [[id:FBDatos]] pag 72
+- hay que especificar el protocolo de la base de datos.
+- Primer paso es abrir una conexión a la base de datos.
+- getConnection para conectarse
+  
+**** Envío de sentencias de SQL al sistema de base de datos
+- Mediante la clase Stetement.
+      - Permite invocar métodos que envía una sentencia de SQL como argumento.
+      - executeQuery : invoca una secuencia de consultas.
+      - executeUpdate : invoca una secuencia que no son consultas.
+
+**** Obtención del resultado de una consulta
+- Los resultados llegan como ResultSet.
+      - next compruebasi hay almenos una tupla en el resultado.
+            - Devuelve booleano
+      - métodos get... (getString, getFloat, ...)
+            - Obtiene el valor de d un atributo de la tupla actual.
+- Al final se cierra la conexión, porque puede haber un límite a las conexiones posibles.
+
+**** Sentencias preparadas
+- Se usa el token "?" para poner placeholders en sentencias precompiladas.
+- Más tarde se reemplazan los "?" por los valores variables de la consulta preparada.
+- Connection::prepareStatement envía una sentencia de SQL para su compilación.
+      - devuelve un PreparedStatement.
+            - métodos set(String, Int, etc) configura los valores de los placeholders "?".
+            - se usan executeQuery y executeUpdate.
+- Permiten una ejecución más eficiente.
+- Más seguro que montar la consulta al vuelto.
+      - Entre algunas razones está el escape de carácteres especiales como el ";".
+      - Evita el ataque de inyección SQL.
+- Sistemas antiguos permitían encadenar sentencias preparadas SQL separadas por ";".
+      - Se está eliminando porque era un riesgo ante la inyección SQL.
+
+#+begin_src java
+PreparedStatement pStmt = conn.prepareStatement(
+                                                "insert into profesor values(?,?,?,?)"
+                                                );
+pStmt.setString(1,"88877");
+// ...
+pStmt.setInt(4, 125000);
+pStmt.executeUpdate();
+
+pStmt.setString(1, "88878");
+pStmt.executeUpdate();
+#+end_src
+
+**** Sentencias que se pueden invocar
+- CallableStatement, permite invocar procedimientos y funciones almacenadas en SQL.
+- Creación mediante *prepareCall* que devuelve un *CallStatement*.
+
+**** Metadatos
+- [[id:FBDatos]] pag 74
+- Número y nombre de columnas, tipos de datos, etc.
+- ResultSet tiene el método getMetaData().
+      - Se obtiene un ResultSetMetadata. 
+
+#+begin_src java
+DatabaseMetaData dbmd = conn.getMetaData();
+
+// Devuelve una fila por columna
+ResultSet rs = dbmd.getColumns(null, "univdb", "departamento", "%");
+
+while(rs.next()) {
+    System.out.println(rs.getString("COLUMN_NAME"), rs.getString("TYPE_NAME"));
+}
+#+end_src
+
+**** Otras Características
+- Actualización de una tupla de una consulta.
+      - Permite acutalizar en el programa y en la base de datos.
+
+
+*** ODBC
+- open database connectivity
+- Cada sistema de base de datos proporciona una librería que debe enlazarse en el programa.
+- De forma predeterminada cada sentencia SQL se trata como una transacción.
+      - SQLSetConnectOption(conn, SQL_AUTOCOMMIT,0); desactiva el comprosimo automático.
+            - deben comprometerse con SQLTransaction(conn,SQL_COMMIT);
+            - o retrocederse con SQLTransaction(conn, SQL_ROLLBACK);
+
+#+begin_src c
+void ODBCejemplo()
+{
+    RETCODE error;
+    HENV env;
+    HDBC conn;
+
+    SQLAllocEnv(&env);
+    SQLAllocConnect(env, &conn);
+    SQLConnect(conn, "db.yale.edu", SQL_NTS, "avi", SQL_NTS, "avicontraseña", SQL_NTS);
+
+    {
+        char nombredept[80];
+        float sueldo;
+        int lenOut1, lenOut2;
+        HSTMT stmt;
+
+        const char * sqlquery = "select nombre_dept, sum(sueldo) from profesor group by nombre_dept";
+        SQLAllocStmt(conn,&stmt);
+        error = SQLExecDirect(stmt, sqlquery, SQL_NTS);
+        if (error == SQL_SUCCESS) {
+            SQLBindCol(stmt, 1, SQL_C_CHAR, nombredept, 80, &lenOut1);
+            SQLBindCol(stmt, 2, SQL_C_FLOAT, &sueldo, 0, &lenOut2);
+            while (SQLFetch(stmt) == SQL_SUCCESS) {
+                printf(" %s %g\n", nombredept, sueldo);
+            }
+        }
+        SQLFreeStmt(stmt, SQL_DROP);
+    }
+    SQLDisconnect(conn);
+    SQLFreeConnect(conn);
+    SQLFreeEnv(env);
+}
+#+end_src 
+ 
+*** SQL incorporado
+- La norma sql define la incorporación en varios lenguajes como c++.
+      - *Lenguaje anfitrion* : Lenguaje que incorpora las consultas SQL.
+      - *SQL incorporado* : Estructuras SQL que se admiten en el lenguaje anfitrión.
+      - Un preprocesador sustituye el SQL incorporado por llamadas y procedimientos del lenguaje anfitrion.
+            - Principal diferencia con JDBC y ODBC.
+
+- Ejemplo de conexión.
+#+begin_example
+EXEC SQL connect to <servidor> user <user> using <contra>;
+#+end_example
+
+- Pueden usarse variables del lenguaje anfitrion.
+      - Deben estar precedidasde ":"
+      - Declararse variables previamente tal que.
+#+begin_example
+EXEC SQL BEGIN DECLARE SECTION;
+  int cantidad_créditos;
+EXEC SQL END DECLARE SECTION;  
+#+end_example
+
+- Declarar y evaluar las consultas
+#+begin_src c
+EXEC SQL declare c cursor for
+    select ID,nombre
+    from estudiante
+    where tot_créditos > :cantidad_créditos;
+#+end_src  
+
+#+begin_src c
+EXEC SQL open c;  // evaluación de la consulta
+                  //  Se almacena el resultado en una relación temporal
+#+end_src
+
+- Fetch de la consulta, cada fetch avanza una posición el puntero de tuplas.
+      - Para recorrerlas todas se usa una sentencia while y SQLSTATE y SQLCA (el código del resultado de la operación).
+#+begin_src c
+EXEC SQL fetch c into :vi, :vn;  // Cada fetch devuelve 1 sola tupla
+#+end_src
+
+- Al acabar se debe borrar la relación temporal.
+
+#+begin_src c
+EXEC SQL close c;
+#+end_src  
+
+- Para hacer modificaciones usamos un cursor y luego se itera haciendo fetch sobre cada tupla.
+
+#+begin_src c
+EXEC SQL declare c cursor for select *
+    from profesor
+    where nombre_dept = 'música'
+    for update;
+#+end_src
+
+#+begin_src c
+EXEC SQL
+    update profesor
+    set sueldo = sueldo + 100
+    where current of c;
+#+end_src
+
+- Las transacciones se comprometen con EXEC SQL COMMIT y se retroceden con EXEC SQL ROLLBACK.
+
+** Funciones y procedimientos
+- Los desarrolladores pueden escribir sus propias funciones y procedimientos.
+- Permiten almacenar la *lógica de negocio*.
+- Almacenar alguna lógica en la base de datos permite que sea independiente de las aplicaciones que la usan.
+
+*** Declaración e invocación de funcines y procedimientos de SQL
+#+begin_src sql
+create function cuenta_dept(carchar(20))
+  returns integer
+  begin
+  declare cuenta integer;
+    select count(*) into cuenta
+    from profesor
+    where profesor.nombre_dept = nombre_dept
+  return cuenta;
+end
+#+end_src
+
+- Puede usarse luego.
+
+#+begin_src sql
+select nombre_dept, presupuesto
+from profesor
+where cuenta_dept(nombre_dept) > 12;
+#+end_src
+
+- *funciones table* : devuelven una tabla como resultado.
+
+#+begin_src sql
+create function profesor_de(nombre_dept varchar(20))
+  returns table(
+    ID varhcar(5),
+    nombre varchar(20),
+    nombre_dept vachar(20),
+    sueldo numeric(8,2))
+  return table
+    (select ID, nombre, nombre_dept, sueldo
+     from profesor
+     where profesor.nombre_dept = profesor_de.nombre_dept);
+#+end_src
+
+#+begin_src sql
+select * from table(profesor_de('Finanzas'));
+#+end_src
+
+- Puede considerarse una *vista parametrizada*.
+- Pueden invocarse en la forma de procedimientos (parámetros in out).
+
+#+begin_src sql
+create procedure cuenta_dept_proc
+  (in nombre_dept varchar(20), out cuenta integer)
+  begin
+    select count(*) into cuenta
+    from profesor
+    where profesor.nombre_dept = cuenta_dept_proc.nombre_dept
+end    
+#+end_src
+
+- Se usa tal que.
+
+#+begin_src sql
+declare cuenta_de integer;
+call cuenta_dept_proc('Física', cuenta_de);
+#+end_src  
+
+*** Construcciones del lenguaje para procedimeintos y funciones
+- [[id:FBDatos]] pag 79
+- PSM : módulo de almacenamiento persistente : Parte de la norma SQL que trata estas construcciones.
+- *declare* : declara variables.
+- *set* : asigna valores a variables.
+- *begin... end* : sentencias compuestas, contienen varias sentencias.
+- *begin atomic...end* : Sentencia compuesta como una sola transacción.
+- *while <expression> do ... end while* : sentencia while.
+- *repeat ... until <expression> end repeat* : sentencia repeat.
+- *bucle for* :
+#+begin_src sql
+declare n integer default 0;
+for r as
+  select presupuesto from departamento
+  where nombre_dept = 'Música'
+do
+  set n = n - r.presupuesto
+end for
+#+end_src
+
+- *if-then-else* :
+#+begin_src sql
+if expression
+  then sentencia o sentencias compuestas
+elseif expression
+  then sentencia o sentencias compuestas
+else sentencia o sentencias compuestas
+end if
+#+end_src  
+
+- Condiciones de expceptión y declaración de manjadores.
+
+#+begin_src sql
+declare sin_sitio_en_aula condition
+declare exit handler for sin_sitio_en_aula
+begin
+secuencia de sentencias
+end
+#+end_src  
+
+*** Rutinas en otros lenguajes
+- Las extensiones procedimentales a SQL no se soportan de forma estándar.
+- Una alternativa es definir procedimentos en lenguaje imperativo que se puedan llamar desde consultas SQL.
+- Declarar un procedimiento/función externo.
+#+begin_src sql
+create procedure cuenta_dept_proc(in nombre_dept varchar(20), out count integer)
+language C
+external name '/usr/avi/bin/cuenta_dept_proc'
+create function cuenta_dept(nombre_dept varchar(20))
+returns integer
+language C
+external name '/usr/avi/bin/cuenta_dept'
+#+end_src  
+- Puede comprometer la seguridad y la consistencia de la base de datos ante un error en el código cargado dinámicamente.
+- Este método es más eficiente que la comunicación entre procesos.
+  
+** Disparadores
+- Sentencia automática que se ejecuta ante la modificación de la base de datos
+- Se debe:
+      - Definir la condiciones de disparo.
+            - Un evento y una condición.
+      - Definir las acciones a realizar.
+
+*** Necesidad de los disparadores
+- Restricciones de integridad.
+- Tareas automáticas.
+
+*** Los disparadores en SQL
+- [[id:FBDatos]] pag 81
+- Son ampliamente usados por los sistemas de bases de datos
+- *after* o *before*
+- *insert*, *delete* o *update*
+- *for each statement* o *for each row* : una acción por cada fila afectada o para toda la sentencia sql.
+- *referencing org table as* : referencia a la tabla previa
+- *referencing new table as* : referencia a la nueva tabla
+- *alter trigger <nombre> disable* : para deshabilitar el trigger.
+
+#+begin_src sql
+create trigger franja_horaria_comprobacion1 after insert on sección
+referencing new row as fila_nueva
+for each row
+when (fila_nueva.franja_horaria_id not in (
+  select franja_horaria_id
+  from franja_horaria))
+begin
+  rollback
+end;
+
+create trigger franja_horaria_comprobacion2 after delete on franja_horaria
+referencing old row as fila_ant
+for each row
+when (fila_ant.franja_horaria_id not in (
+  select franja_horaria_id
+  from franja_horaria)
+and fila_ant.franja_horaria in (
+  select franja_horaria_id
+  from sección))
+begin
+  rollback
+end;
+#+end_src
+
+- más ejemplos en [[id:FBDatos]] pag 82
+
+*** Cuando no emplear disparadores
+- Es mejor usar los procedimientos ya definidos en el lenguaje SQL como el *on delte cascade*.
+- Es preferible usar *vistas materializadas*.
+- Problema al dispararse ante la carga de datos de una copia de seguridad.
+      - Se precisa de desabilitar los disparadores y habilitarlos al acabar con la copia.
+      - Algunas implementaciones permiten especificar los disparadores como *not for replication*.
+- Cuidado con las posibles cadenas infinitas de disparadores.
+- Usarlos solo si no hay una alternativa ya construida.
+
+** Consultas Recursivas **
+- *Cierre transitivo* : Por ejemplo para resolver una cadena de dependencias.
+
+*** Cierre transitivo mediante iteración
+
 
 * Notes
 ** mysql Service
@@ -1395,3 +1809,14 @@ revoke select on departamento from Amit, Satoshi restrict;
 #+begin_src sh
 podman pull docker.io/library/mysql:8.0
 #+end_src
+
+* Bibliografía
+
+** Fundamendos de Bases de Datos
+:PROPERTIES:
+:ID: FBDatos
+:EDITION: 6a
+:TITLE: Fundamentos de bases de datos
+:EDITORIAL: Mc Graw Hill education
+:AUTHOR: Silberschatz, Korth, Sudarshan
+:END:
