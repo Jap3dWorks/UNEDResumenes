@@ -1796,14 +1796,133 @@ end;
 - *Cierre transitivo* : Por ejemplo para resolver una cadena de dependencias.
 
 *** Cierre transitivo mediante iteración
+- Iterar hasta que no se añaden más dependencias
 
+#+begin_src sql
+create function buscarTodosReq(aid varchar(8))
+-- Encuantra todos los requisitos de la asignatura aid
+returns table(asignatura_id varchar(8))
+begin
+  create temporary table a_perreq(asignatura_id varchar(8));
+  -- almacena el conjunto a devolver
+  create temporary table nueva_a_perreq(asignatura_id varchar(8));
+  -- asignaturas encontradas en la iteración anterior
+  create temporary table temp(asignatura_id varchar(8));
+  -- guarda resultados intermedios
+  insert into nueva_a_perreq
+    select prereq_id
+    from prereq where asignatura_id = aid;
+  repeat
+    insert into a_prerreq
+      select asignatura_id
+      from nueva_a_prerreq;
+    insert into temp
+      (select prereq.asignatura_id
+      from nueva_a_prerreqm prereq
+      where nueva_a_prerreq.asignatura_id = prereq.prereq_id) except (
+      select asignatura_id from a_prerreq);
+    delete from nueva_a_prereq;
+    insert into nueva_a_prereq select * from temp;
+    delete from temp;
+  until not exists (select * from nueva_a_prerreq)
+  end repeat;
+  return table a_prerreq;
+end  
+#+end_src
+
+*** Recursión en SQL
+- [[id:FBDatos]] pag 85
+- Enfoque recursivo mediante vistas es más fácil de usar.
+- *with recursive* : Cláusula que permite una recursión moderada.
+- Se entienden como la unión de una vista no recursiva con una vista recursiva.
+- *punto fijo* : Tabla resultante del proceso recursivo.
+- La consulta debe ser *monótona*.
+      - La subconsulta de cada iteración es superconjunto de la anterior iteración.
+            - $V_i \subset V_{i+1}$
+      - Por ello no deben incluir.
+            - agregaciones
+            - *not exists*
+            - *except* : diferencia de conjuntos
+- *create recursive view* : Crea una vista recursiva permanente.
+      - Sustituye a la instrucción *with recursive*.
+
+#+begin_src sql
+with recursive a_prerreq(aisgnatura_id,prerreq_id) as (
+    select asignatura_id, prerreq_id                       -- Consulta base
+    from prerreq
+  union
+    select prerreq.prerreq_id, a_prerreq.asignatura_id     -- Consulta recursiva
+    from prerreq, a_prerreq
+    where prerreq.asignatura_id = a_prereq.prereq_id
+)
+select * from a_prerreq;
+#+end_src
+
+** Características de agregación avanzadas **
+
+*** Clasificación
+- [[id:FBDatos]] pag 86
+- por ejemplo numerar de 1 hasta $n$, $n$ tuplas según un valor.
+      - Hay que tener el conjunto en cuenta.
+
+- Cláusula *rank*.
+#+begin_src sql
+select ID, rank () over(order by (NM) desc) as e_pos
+from estudiante_nota
+order by e_pos;  -- Asegura que queden ordenados en la tabla resultado
+#+end_src
+
+- Con particiones, cada partición tiene su propio orden y numeración.
+      - Una contribuye a una sola partición.
+
+#+begin_src sql
+select ID,nombre_dept, rank () over (partition by nombre_dept order by NM desc) as dept_pos
+from dept_nota
+order by nombre_dept,dept_pos;   -- Ordena por departamento y dentro de cada departamento por dept_pos
+#+end_src
+
+*** Ventanas
+- Un tupla puede influir en más de una tupla resultante.
+- Es similar a tener una convolution matrix o kernel.
+
+#+begin_src sql
+select año, avg(núm_créditos) over(order by año rows 3 preceding) as med_total_créditos
+from total_créditos;
+#+end_src  
+
+- range para determinar el rango de la ventana
+
+#+begin_src sql
+select año, avg(núm_créditos) over( order by año range between año - 4 and año) as med_total_créditos
+from total_créditos
+#+end_src  
+
+- ventana junto con particiones.
+
+#+begin_src sql
+select nombre_dept, año, avg(núm_créditos) over
+  (partition by nombre_dept order by year rows between 3 preceding and current row)
+   as med_total_créditos
+from total_créditos_dept;
+#+end_src
+
+** OLAP**
+- [[id:FBDatos]] pag88
+- Online analytic processing.
+- Existen extensiones SQL para estas tareas.
+
+*** Procesamiento anatítico en línea
+# TODO
+*** Tablas cruzadas y tablas relacionales
+# TODO
+*** OLAP en SQL
+# TODO
 
 * Notes
 ** mysql Service
 - Done using podman, documented in ORG ROAM.
 - password de la base de datos en el libro de la asignatura.
   
-
 * Tools
 ** Create podman container
 #+begin_src sh
