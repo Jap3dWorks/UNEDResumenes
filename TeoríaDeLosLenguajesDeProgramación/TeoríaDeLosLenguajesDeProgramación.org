@@ -228,6 +228,7 @@ funCuadrado suma3 5
 #+RESULTS:
 
 ** Evaluación Perezosa
+- pag 38
 - Se evalua el valor de un parámetro solo cuando se usa.
 - función *no estricta*, no necesita conocer el valor de todos sus parámetros para devolver un resultado.
 - *memoización*, permite guardar el valor de un parámetro la primera vez que se evaluó.

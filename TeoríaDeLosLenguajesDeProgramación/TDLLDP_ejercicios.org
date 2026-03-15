@@ -305,11 +305,279 @@ main = putStrLn(show(successors [[1,2,3],[0,0,0],[0,0,0]]))
 #+begin_src haskell :compile yes :results output
 main :: IO()
 
-tfn a b = a+b
+data Coords = Coords {
+  row :: Int,
+  col :: Int
+  }
 
-main = putStrLn(show(map (tfn 3) [1..9]))
+main = putStrLn(show((row Coords{row=10,col=2})))
 #+end_src
 
 #+RESULTS:
-: [4,5,6,7,8,9,10,11,12]
+: 10
 
+** Test Futoshiki algorithm
+
+#+begin_src haskell :compile yes :results output
+main :: IO()
+
+-- Bidimensional Matrix --
+type Matrix a = [[a]]
+
+-- Relation between cells --
+data Relation = Ind | RGT | RLT
+  deriving (Eq, Read, Show)
+
+-- Futoshiki definition --
+data Futoshiki = Futoshiki {
+  size  :: Int,
+  cells :: Matrix Int,
+  hRel  :: Matrix Relation,
+  vRel  :: Matrix Relation
+}
+  deriving (Eq, Read, Show)
+
+data Coords = Coords {
+  row :: Int,
+  col :: Int
+}
+
+-- Función de backtracking genérica --
+bt :: (a -> Bool) -> (a -> [a]) -> a -> [a]
+bt    esSol          succ          n
+  | esSol n                           = [n]
+  | otherwise                         = concat (map (bt esSol succ) (succ n))
+
+-- Returns True if all elements of a list are unique.
+uniques :: [Int] -> Bool
+
+uniques xs = iuniques (mergesort xs)
+  where
+    iuniques [x] = True
+    iuniques (x:y:xs) = x /= y && iuniques(y:xs)
+    
+    mergesort :: Ord a => [a] -> [a]
+    mergesort [] = []
+    mergesort [x] = [x]
+    mergesort xs = merge (mergesort left) (mergesort right)
+      where
+        (left, right) = splitAt (length xs `div` 2) xs
+
+        merge [] ys = ys
+        merge xs [] = xs
+        merge (x:xs) (y:ys)
+          | x <= y = x : merge xs (y:ys)
+          | otherwise = y : merge (x:xs) ys
+
+-- Returns True if the first list meets the requirements list (second list).
+meetsListRequirements :: [Int] -> [Relation] -> Bool
+
+meetsListRequirements _ [] = True
+meetsListRequirements (x:y:xs) (c:cs)
+  | c == RLT = x < y && meetsListRequirements (y:xs) cs
+  | c == RGT = x > y && meetsListRequirements (y:xs) cs
+  | otherwise = meetsListRequirements (y:xs) cs
+
+meetsRequirements :: (Ord a) => a -> a -> Relation -> Bool
+
+meetsRequirements l r req
+  | req == RLT = l < r
+  | req == RGT = l > r
+  | otherwise = True
+
+-- Returns n array row as a list. First row has index 0.
+arrayRow :: [[a]] -> Int -> [a]
+arrayRow [] _ = []
+arrayRow (x:xs) n
+  | n == 0 = x
+  | otherwise = arrayRow xs (n-1)
+
+-- Returns n array column as a list. First column is index 0.
+arrayCol :: [[a]] -> Int -> a -> [a]
+arrayCol [] _ _ = []
+arrayCol (xl:xs) n def = (getItem xl n def) : arrayCol xs n def
+  where
+    getItem :: [a] -> Int -> a -> a
+    getItem [] _ d = d
+    getItem (x:xs) n d
+      | n == 0 = x
+      | otherwise = getItem xs (n-1) d
+
+-- Set an item in a list by position, 0 is the first position.
+setListItem [] _ _ = []
+setListItem (x:xs) n val
+  | n == 0 = val:xs
+  | otherwise = x : setListItem xs (n-1) val
+
+-- Set an item in a matrix by position, row 0 column 0 is the first position.
+--  Expected array has each row in a 1 dimension list.
+setArrayItem [] _ _ _ = []
+setArrayItem (r:rs) rw cl val
+  | rw == 0 = setListItem r cl val : rs
+  | otherwise = r : setArrayItem rs (rw-1) cl val
+
+-- Returns true if an item with value v is present in the list.
+isPresent :: (Eq a) => [a] -> a -> Bool
+isPresent [] _ = False
+isPresent (x:xs) val
+  | x == val = True
+  | otherwise = isPresent xs val
+
+-- Returns row:col of the first match value
+coordsFirstMatch :: (Num a, Eq a) => [[a]] -> a -> Coords
+coordsFirstMatch m v = icoords m v 0
+  where
+    icoords [] _ _ = Coords{row=(-1), col=(-1)}
+    icoords (x:xs) v rw
+      | colIdx /= (-1) = Coords{row=rw, col=colIdx}
+      | otherwise = icoords xs v (rw + 1)
+      where
+        colIdx = getIndx x v 0
+
+    getIndx [] _ _ = -1
+    getIndx (x:xs) v cl
+      | x == v = cl
+      | otherwise = getIndx xs v (cl+1)
+
+-- Returns True if the Futoshiki is a valid solution
+isSol :: Futoshiki -> Bool
+
+isSol ft = allCellsDone (cells ft) (size ft) &&
+           -- uniqueRows (cells ft) &&
+           -- uniqueColumns (cells ft) (size ft) &&
+           meetsRowRequirements (cells ft) (hRel ft) &&
+           meetsColRequirements (cells ft) (vRel ft) (size ft)
+  where
+    allCellsDone [] _ = True
+    allCellsDone (r:rs) n
+      | n > 1 = allCellsDone rs (n-1)
+      | otherwise = not (isPresent r 0)
+
+    uniqueRows [] = True
+    uniqueRows (r:rs) = uniques r && uniqueRows rs
+
+    uniqueColumns :: [[Int]] -> Int -> Bool
+    uniqueColumns clls sze
+      | sze > 0 = (uniques ( arrayCol clls (sze - 1) (-1) )) && (uniqueColumns clls (sze - 1))
+      | otherwise = True
+
+    meetsRowRequirements _ [] = True
+    meetsRowRequirements (r:rs) (hr:hrs) =
+      (meetsListRequirements r hr) &&
+      (meetsRowRequirements rs hrs)
+
+    meetsColRequirements :: [[Int]] -> [[Relation]] -> Int -> Bool
+    meetsColRequirements clls hrs sze
+      | sze > 0 = meetsListRequirements ( arrayCol clls (sze - 1) (-1) ) (arrayCol hrs (sze - 1) Ind) &&
+                  meetsColRequirements clls hrs (sze - 1)
+      | otherwise = True
+
+-- Returns all possible futoshiki successors
+  
+
+
+successors :: Futoshiki -> [Futoshiki]
+
+successors ft = map (\x -> Futoshiki{size = size ft,
+                                     cells= (setSuccessorItem (cells ft) (row rowcol) (col rowcol) x),
+                                     hRel = (hRel ft),
+                                     vRel= (vRel ft)})
+                     -- [1.. (size ft)]
+                     (genCandidates
+                       (cells ft)
+                       (row rowcol)
+                       (col rowcol)
+                       [1..(size ft)]
+                       (arrayRow (cells ft) (row rowcol))
+                       (arrayCol (cells ft) (col rowcol) (-1))
+                       (arrayRow (hRel ft) (row rowcol))
+                       (arrayCol (vRel ft) (col rowcol) (Ind))
+                     )
+  where
+
+    rowcol :: Coords
+    rowcol = coordsFirstMatch (cells ft) 0
+
+    setSuccessorItem clls rw cl val = setArrayItem clls rw cl val
+
+    checkListReq :: [Int] -> [Relation] -> Int -> Int -> Bool
+    checkListReq _ [] _ _ = True
+    checkListReq (x:y:xs) (c:cs) v n
+      | n < 0 = True
+      | n > 0 = checkListReq (y:xs) cs v (n-1)
+      | otherwise = meetsRequirements x v c
+
+    genCandidates :: [[Int]] -> Int -> Int -> [Int] -> [Int]->[Int]->[Relation]->[Relation]->[Int]
+
+    genCandidates _ _ _ [] _ _ _ _ = []
+    genCandidates clls rw cl (x:xs) rowl coll hreql vreql
+      | rw ==(-1) || cl ==(-1) = []         -- No more 0's in the matrix
+      | not ((isPresent (arrayRow clls rw) x ) ||
+             (isPresent ( arrayCol clls cl (-1) ) x)) &&
+        (checkListReq rowl hreql x (cl-1)) &&
+        (checkListReq coll vreql x (rw-1)) = x : genCandidates clls rw cl xs rowl coll hreql vreql
+      | otherwise = genCandidates clls rw cl xs rowl coll hreql vreql
+
+-- Main function: solves a Futoshiki --
+solve :: Futoshiki -> [Matrix Int]
+
+solve ft = map (\x -> cells x) (bt isSol successors ft)
+
+-- main = putStrLn(show(
+--                    successors Futoshiki{size=5,
+--                                 cells=[[3,5,0,0,0],
+--                                        [0,0,0,0,0],
+--                                        [0,0,0,0,0],
+--                                        [0,0,0,0,0],
+--                                        [0,0,0,0,0]],
+--                                 hRel=[[Ind,RGT,RGT,RLT],
+--                                       [RGT,Ind,RLT,RLT],
+--                                       [RLT,RGT,Ind,RLT],
+--                                       [Ind,Ind,Ind,Ind],
+--                                       [RLT,Ind,Ind,Ind]],
+--                                 vRel=[[RLT,Ind,RGT,Ind,Ind],
+--                                       [Ind,RLT,RLT,Ind,RLT],
+--                                       [Ind,Ind,RLT,RGT,RGT],
+--                                       [RGT,RLT,RGT,RLT,Ind]]}
+--                    ))
+
+main =  putStrLn(show(
+  bt isSol successors Futoshiki{size=5,
+                                cells=[[0,0,0,0,0],
+                                       [0,0,0,0,0],
+                                       [0,0,0,0,0],
+                                       [0,0,0,0,0],
+                                       [0,0,0,0,0]],
+                                hRel=[[Ind,RGT,RGT,RLT],
+                                      [RGT,Ind,RLT,RLT],
+                                      [RLT,RGT,Ind,RLT],
+                                      [Ind,Ind,Ind,Ind],
+                                      [RLT,Ind,Ind,Ind]],
+                                vRel=[[RLT,Ind,RGT,Ind,Ind],
+                                      [Ind,RLT,RLT,Ind,RLT],
+                                      [Ind,Ind,RLT,RGT,RGT],
+                                      [RGT,RLT,RGT,RLT,Ind]]}
+  ))
+
+-- main = putStrLn(show(
+--                    isSol Futoshiki{size=5,
+--                                 cells=[[3,5,4,1,2],
+--                                        [5,2,1,3,4],
+--                                        [1,3,2,4,5],
+--                                        [4,1,5,2,3],
+--                                        [2,4,3,5,1]],
+--                                 hRel=[[Ind,RGT,RGT,RLT],
+--                                       [RGT,Ind,RLT,RLT],
+--                                       [RLT,RGT,Ind,RLT],
+--                                       [Ind,Ind,Ind,Ind],
+--                                       [RLT,Ind,Ind,Ind]],
+--                                 vRel=[[RLT,Ind,RGT,Ind,Ind],
+--                                       [Ind,RLT,RLT,Ind,RLT],
+--                                       [Ind,Ind,RLT,RGT,RGT],
+--                                       [RGT,RLT,RGT,RLT,Ind]]}
+--                     ))
+
+#+end_src
+
+#+RESULTS:
+: [Futoshiki {size = 5, cells = [[3,5,4,1,2],[5,2,1,3,4],[1,3,2,4,5],[4,1,5,2,3],[2,4,3,5,1]], hRel = [[Ind,RGT,RGT,RLT],[RGT,Ind,RLT,RLT],[RLT,RGT,Ind,RLT],[Ind,Ind,Ind,Ind],[RLT,Ind,Ind,Ind]], vRel = [[RLT,Ind,RGT,Ind,Ind],[Ind,RLT,RLT,Ind,RLT],[Ind,Ind,RLT,RGT,RGT],[RGT,RLT,RGT,RLT,Ind]]}]
