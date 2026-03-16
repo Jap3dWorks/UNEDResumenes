@@ -44,7 +44,6 @@
 
 [[file:images/C4E5.png]]
 
-
 * Aplicaciones Lineales
 
 ** Endomorfismos
@@ -116,21 +115,35 @@ J = \left(\begin{array}{cc|cc}
 - Se denomina *Subespacio propio generalizado* i-ésimo asociado a un autovalor $\lambda$ de un endomorfismo $f$ al subespacio vectorial:
       - $K^i(\lambda) = Ker(f-\lambda Id)^{i}$ para $i = 1,2,\dots$
       - El subespacio propio generalizado $K^1(\lambda) = V_{\lambda}$
+      - $M(\lambda)$ es el subespacio $K^i(\lambda)$ máximo.
+            - $dim M(\lambda) = a_{\lambda}$.
 - Propiedades de *Subespacio propio generalizaods* ([[id:AlgbLin]] pag 218)
       - Los subespacios propios generalizados son f-invariantes.
       - ...
 - *Base asociada a un bloque de Jordan* de orden n: ([[id:AlgbLin]] pag 215)
       - $B=\{v_1, (f-\lambda Id)(v_1), \dots, (f-\lambda Id)^{n-1}(v_1)\}$
             - $v_1 \in Ker(f-\lambda Id)^n - Ker(f - \lambda Id)^{n-1}$
+            - $v_i \in ker(f - \lambda Id)^r - ker(f-\lambda Id)^{r-1}$
+                  - generalizando, siendo $v_i$ un vector del subpespacio $k^r$ no presente en $k^{r-1}$.
+                  - $v_i$ forma parte de la base asociada a un blque Jordan.
+                  - El conjunto de bases forman la matriz $P$ tal que $P^{-1}AP=J$.
+
+- Construcción de la base $P$ tal que $P^{-1}AP = J$
+  | dim | dim k^1             |         | ... |         | dim k^n = a_{\lambda}     |   | dimensión de cada subespacio k^i(\lambda)                        |
+  |-----+---------------------+---------+-----+---------+---------------------------+---+------------------------------------------------------------------|
+  |     | K^1(\lambda)        | \subset | ... | \subset | k^n(\lambda) = M(\lambda) |   | De cada subespacio K^n se cogen (dim k^n - dim k^{n-1}) vectores |
+  |-----+---------------------+---------+-----+---------+---------------------------+---+------------------------------------------------------------------|
+  |     | v_n                 |         | ... |         | v_1                       |   | Cada fila Está asociada a un bloque Jordan de la matriz J        |
+  |     | (posible) v_{n+1+m} |         | ... |         | (posible) v_{n+1}         |   | g_{\lambda} es igual al número de filas de vectores              |
+              
 - *Espacio r-cíclico*.
       - Sea $\lambda$ un autovalor del endomorfismo $f$ de $V$.
       - Y $v \in Ker(f-\lambda Id)^r - Ker(f-\lambda Id)^{r-1}$ con $r \geq 1$.
       - Entonces $L(v, (f-\lambda Id)(v), \dots, (f-\lambda Id)^{r-1}(v))$ es el espacio r-cícliclo.
 
 - si $B=\{v_1, \dots, v_n\}$ tal que $\mathfrak{M}_B(f)=B_n(\lambda)$
-      - Entonces si $B' = \{v_n, \dots, v_1\}$ $\mathfrak{M}_{B'}(f) = B_n(f)^t$
+      - Entonces si $B' = \{v_n, \dots, v_1\}$ $\mathfrak{M}_{B'}(f) = B_n(\lambda)^t$
       - $\left(\begin{array}{cc} 0 & 1 \\ 1 & 0 \end{array}\right) \left(\begin{array}{cc} \lambda & 0 \\ 1 & \lambda \end{array}\right) \left(\begin{array}{cc}0 & 1 \\ 1 & 0\end{array}\right) = \left(\begin{array}{cc}\lambda & 1 \\ 0 & \lambda \end{array}\right)$
-
 
 * Bibliografía
 ** Algebra Lineal y Geometría Vectorial
