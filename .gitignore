@@ -1,3 +1,8 @@
 ltximg
 *.rnote
 temp.s
+*.o
+*.vcd
+*.cf
+bp_codificador_4_2
+

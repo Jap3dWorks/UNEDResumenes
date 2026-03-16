@@ -1770,6 +1770,529 @@ end architecture drivers2;
 *** Ejemplo Simulación con retardo inercial
 - [[id:DACircDig]] pag 222
 
+* Diseño de lógica combinacional
+- El diseno de un circuito combinacional debe ser sin memoria y sin estado.
+- Se intenta evitar incluir retardos en la descripción VHDL.
+
+** Empleo de sentencias concurrentes
+- [[id:DACircDig]] pag 278
+- El empleo de asignación de señales.
+- Se pueden sintetizar puertas lógicas a partir de operaciones lógicas primitivas de VHDL.
+
+#+begin_src vhdl
+-- puerta NAND
+nand_out <= i0 nand i1;
+-- Or exclusivo
+xor_out <= i0 xor i1;
+#+end_src 
+
+- También arrays de puertas lógicas.
+
+#+begin_src vhdl
+-- array de inversores de std_logic_vector
+inv_vec <= i0_vec; -- i0_vec es std_logic_vector
+#+end_src  
+
+- Puertas triestato para std_logic y std_logic_vector.
+
+#+begin_src vhdl
+tri_out <= i0 when (sel='1') else 'Z';
+tri_vec <= i0_vec when (sel='1') else (others => 'Z'); -- asignación de Z a las salidas del vector
+#+end_src
+
+- Multiplexor y Demultiplexor con sentencias condicionales concurrentes.
+
+#+begin_src vhdl
+dev_vec <= "0001" when (sel_vec="00")
+           else "0010" when (sel_vec="01")
+           else "0100" when (sel_vec="10")
+           else "1000";
+
+-- multiplexor con sentencias concurrentes de selección
+--  Es aconsejable el uso de sentencias de selección para
+--  Demultiplexores y multiplexores.
+with sel_vec select
+  mux41_out <= i0 when "00",
+               i1 when "01",
+               i2 when "10",
+               i3 when others;
+#+end_src
+
+- Operaciones aritméticas pueden ser descritos usando los operadores de los tipos de datos adecuados.
+
+#+begin_src vhdl
+add_uvec <= unsigned(i0_vec) + i1_uvec;
+mult_uvec <= unsigned(i0_vec) * i1_uvec;
+#+end_src
+
+*** Empleo de Bloques process
+- Para crear tipos específicos de unidades aritméticas se usan bloques *process*.
+      - Circuitos más complejos.
+- Deben respetarse las siguientes reglas:
+      - Todas las entradas del circuito deben estar incluidas en la lista de sensibilidad.
+      - Ninguna otra señal debe estar incluida en la lista de sensibilidad.
+      - Ninguna sentencia del bloque *process* debe ser sensible al flanco de subida o bajada de ninguna señal.
+
+** Funciones lógicas
+*** Diseño del circuito
+- Debe usarse paréntesis para indicar el orden de operaciones.
+
+#+begin_src vhdl
+F = (a and b) or not c
+#+end_src
+
+- Diseño mediante la descripción de funciones lógicas.
+
+#+begin_src vhdl
+library IEEE; use IEEE.std_logic_1164.all;
+
+entity funcLog_F_G is port
+       (F,G : out std_logic;
+        a,b,c : in std_logic);
+end entity funcLog_F_G;
+
+architecture funcLog_F_G of funcLog_F_G is
+begin
+  F <= (a and b) or not c;
+  G <= (a and b) or (not b and c);
+end architecture funcLog_F_G;
+#+end_src
+
+*** Programación del Banco de Pruebas
+- [[id:DACircDig]] pag 281
+- El *banco de pruebas* no va a ser sintetizado.
+      - Permite el uso de cualquier instrucción (incluso aquellas no sintetizables).
+- Se comprueba por ejemplo que las salidas sean las esperadas.
+      - Comprobando con la tabla de verdad.
+- La entity del banco de pruebas puede no contener ningún puerto.
+- Se instancia el UUT como un componente.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity bp_funcLog_F_G is
+end entity bp_funcLog_F_G;
+
+architecture bp_funcLog_F_G of bp_funcLog_F_G is
+  signal y0, y1   : std_logic;
+  signal x0,x1,x2 : std_logic;
+
+  component funcLog_F_G is port
+            (F,G   : out std_logic;
+             a,b,c : in  std_logic);
+  end component funcLog_F_G;
+
+begin
+  uut : component funcLog_F_G port map
+    (F => y0, G => y1,
+     a => x0, b=> x1, c=> x2);
+  
+  gen_vec_test : process
+    variable test_in : unsigned (2 downto 0);  -- vector de test
+  begin
+    test_in := B"000";
+    for count in o to 7 loop
+      x2 <= test_in(2);  -- asignar valores a las señales de entrada
+      x1 <= test_in(1);
+      x0 <= test_in(0);
+      wait for 10 ns;    -- Debe ser para esperar la propagación
+      test_in := test_in + 1;
+    end loop;
+    wait;                -- Suspensión indefinida del bloque process
+  end process gen_vec_test;
+end architecture bp_funcLog_F_G;
+#+end_src
+
+** Multiplexor de 4 entradas
+- [[id:DACircDig]] pag 285
+
+*** Diseño usando sentencias secuenciales
+- [[id:DACircDig]] pag 285
+- Diseño de un MUX 4:1 mediante una sentencia if.
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity mux_4x1 is port
+  (d              : out std_logic;
+   i3, i2, i1, i0 : in  std_logic;
+   s1, s0         : in std_logic);
+end entity mux_4x1;
+
+architecture mux_4x1 of mux_4x1 is
+begin
+  process (i3, i2, i1, i0, s1, s0)
+  begin
+    if (s1='0' and s0='0') then
+      d <= i0;
+    elsif (s1='0' and s0='1') then
+      d <= i1;
+    elsif (s1='1' and s0='0') then
+      d <= i2;
+    else
+      d <= i3;
+    end if;
+  end process;
+end architecture mux_4x1;
+#+end_src
+
+- Descripción MUX 4:1 mediante sentencias if case.
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity mux_4x1 is port
+       (d           : out std_logic;
+        i3,i2,i1,i0 : in  std_logic;
+        s1,s0       : in  std_logic);
+end entity mux_4x1;
+
+architecture mux_4x1 of mux_4x1 is
+begin
+  process (i3,i2,i1,i0,s1,s0)
+    variable sel : integer;
+  begin
+    if (s1='0' and s0='0') then
+      sel := 0;
+    elsif (s1='0' and s0='1') then
+      sel := 1;
+    elsif (s1='1' and s0='0') then
+      sel := 2;
+    else
+      sel := 3;
+    end if;
+    case sel is
+      when 0 =>
+        d <= i0;
+      when 1 =>
+        d <= i1;
+      when 2 =>
+        d <= i2;
+      when others =>
+        d <= i3;
+    end case;
+  end process;
+end architecture mux_4x1;
+#+end_src
+
+- Banco de pruebas
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity bp_mux_4x1 is
+end end bp_mux_4x1;
+
+architecture bp_mux_4x1 of bp_mux_4x1 is
+  signal s                 : std_logic;  -- señales internas
+  signal i0,i1,i2,i3,s0,s1 : std_logic;
+
+  component mux_4x1 is port
+            (d                 : out std_logic;
+             i0,i1,i2,i3,s0,s1 : in std_logic);
+  end component mux_4x1;
+begin
+  -- instancia del componente
+  uut : component mux_4x1 port map (
+    d => d,
+    i0 => i0, i1 => i1, i2 => i2, i3 => i3,
+    s0 => s0, s1 => s1);
+
+  gen_vec_test : process
+  begin
+    i0 <= '1'; i1 <= '0'; i2 <= '1'; i3 <= '0';
+    s0 <= '0'; s1 <= '0';
+    wait for 5 ns;  -- proceso secuencial de cambio de señales.
+    i0 <= '1';
+    wait for 5 ns;
+    s0 <= '1'; s1 <= '1';
+    wait for 10 ns;
+    s0 <= '1';
+    wait;
+  end process gen_vec_test;
+end architecture bp_mux_4x1;
+#+end_src
+  
+*** Diseño usando sentencias concurrentes
+- Diseño de un MUX 4:1 mediante una sentencia concurrente.
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity mux_4x1 is
+  port (d              : out std_logic;
+        i3, i2, i1, i0 : in  std_logic;
+        s1, s0         : in  std_logic);
+end entity mux_4x1;
+
+architecture mux_4x1_concurrente of mux_4x1 is
+begin
+  d  <= i0 when (s1='0' and s0='0') else
+        i1 when (s1='0' and s0='1') else
+        i2 when (s1='1' and s0='0') else
+        i3;
+end architecture mux_4x1_concurrente;
+#+end_src
+
+- Diseño de un MUX 4:1 mediante dos sentencias concurrentes.
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity mux_4x1 is port
+                   (d           : out std_logic;
+                    i3,i2,i1,i0 : in  std_logic;
+                    s1,s0       : in  std_logic);
+end entity mux_4x1;
+
+architecture mux_4x1_concurrente of mux_4x1 is
+  signal sel : integer;
+begin
+  sel <= 0 when (s1='0' and s0='0') else
+         1 when (s1='0' and s0='1') else
+         2 when (s1='1' and s0='0') else
+         3;
+  d <= i0 when sel=0 else
+       i1 when sel=1 else
+       i2 when sel=2 else
+       i3;
+end architecture mux_4x1_concurrente;
+#+end_src
+
+** Restador completo de 1 Bit
+*** Descripción del comportamiento
+- [[id:DACircDig]] pag 291
+- Tabla de verdad de un restador
+| a | b | res | acarreo |
+|---+---+-----+---------|
+| 0 | 0 |   0 |       0 |
+| 0 | 1 |   1 |       1 |
+| 1 | 0 |   1 |       0 |
+| 1 | 1 |   0 |       0 |
+
+- Descripción del comportamiento del restador completo
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity rest_completo is
+  port
+    (res, acarreo_out : out std_logic;
+     a, b, acarreo_in : in  std_logic);
+end entity rest_completo;
+
+architecture rest_completo_comport of rest_completo is
+  signal result : unsigned (1 downto 0);
+begin
+  result <= ('0' & a) - ('0' & b) - ('0' & acarreo_in);  -- &  = operador concatenación
+  accarreo_out <= result(1);
+  res <= result(0);
+end architecture rest_completo_comport;
+#+end_src  
+
+*** Descripción de la estructura
+- [[id:DACircDig]] pag 293
+      - Diseño de las puertas xor not and y or.
+  
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.and;
+
+entity rest_completo is
+port
+(res, acarreo_out : out std_logic;
+ a,b,acarreo_in   : in  std_logic);
+end entity rest_completo;
+
+architecture rest_completo_estruc of rest_completo is
+  signal not_a, c, d, e, f : std_logic;
+
+component xor2 is
+port
+(y0             : out std_logic;
+x0,x1           : in  std_logic);
+end component xor2;
+
+component not1 is
+port
+(y0             : out std_logic;
+x0              : in  std_logic);
+end component not1;
+
+component and2 is
+port
+(y0             : out std_logic;
+x0,x1           : in  std_logic);
+end component and2;
+
+component or3 is
+port
+(y0             : out std_logic;
+x0,x1           : in  std_logic);
+end component or3;
+
+begin
+-- TODO preguntar en tutoria esta forma de instanciación
+g0 : component xor2 port map (c,a,b);            -- forma simplificada de (y0=>c, ...)
+g1 : component xor2 port map (res,c,acarreo_in);
+g2 : component not1 port map (y0 => not_a, x0 => a);
+g3 : component and2 port map (d, not_a, acarreo_in);
+g4 : component and2 port map (e, not_a, b);
+g5 : component and2 port map (f,b,acarreo_in);
+g6 : component or3 port map (acarreo_out,d,e,f);
+
+end architecture rest_completo_estruc;
+#+end_src
+
+*** Programación del banco de pruebas
+- [[id:DACircDig]] pag 296
+      - pag 299 ejemplo usando un procedure.
+      - pag 300 ejemplo usando una función.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity bp_rest_completo is
+end entity bp_rest_completo;
+
+architecture bp_rest_completo of bp_rest_completo is
+  signal res, acarreo_out : std_logic;
+  signal a,b,acarreo_in   : std_logic;
+
+  component rest_completo is
+    port (
+      res, acarreo_out : out std_logic;
+      a,b,acarreo_in   : in  std_logic);
+  end component rest_completo;
+  
+begin
+  uut : component rest_completo
+    port map (res, acarreo_out, a, b, acarreo_in);
+
+  gen_vec_test : process
+    variable test_in     : unsigned (2 downto 0);
+    variable esperado    : unsigned (1 downto 0);
+    variable num_errores : integer := 0;
+  begin
+    test_in := B"000";
+    for count in 0 to 7 loop
+      a <= test_in(2);
+      b <= test_in(1);
+      acarreo_in <= test_in(0);
+      wait for 10 ns;
+      esperado := ('0' & a) - ('0' & b) - ('0' & acarreo_in);
+      if (esperado /= (acarreo_out & res)) then
+        report "ERROR : Esperado ("    &
+          std_logic'image(esperado(1)) &
+          std_logic'image(esperado(0)) &
+          ") /= actual ("              &
+          std_logic'image(acarreo_out) &
+          std_logic'image(res)         &
+          ") en el instante "          &
+          time'image(now);
+        num_errores := num_errores + 1;
+      end if;
+      test_in := test_in + 1;
+    end loop;
+    report "Test completo. Hay"  &      -- report escribe en consola.
+      integer'image(num_errores) &
+      " errores.";
+    wait;
+  end process gen_vec_test;
+end architecture bp_rest_completo;
+#+end_src
+
+** Sumador completo de 1 BIT
+- [[id:DACircDig]] pag 301
+
+** Unidad Aritmético Lógica
+- [[id:DACircDig]] pag 306
+      - pag 309 se encuentra un banco de pruebas muy extenso.
+- Creamos un package para contener las constantes.
+
+#+begin_src vhdl
+-- Fichero ALU_CONSTANTS.vhd
+package ALU_CONSTANTS is
+  constant WIDTH     : integer := 16;
+  constant SEL_BITS : integer := 3;
+end package ALU_CONSTANTS;
+#+end_src  
+
+- ALU diseñada con sentencia concurrente.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use work.ALU_CONSTANTS.all;
+
+entity ALU is
+  port(C    : out std_logic_vector(WIDTH-1 downto 0);
+       A,B  : in  std_logic_vector(WIDTH-1 downto 0);
+       mode : in std_logic_vector(SEL_BITS-1 downto 0));
+end entity ALU;
+
+architecture ALU_concurrente of ALU is
+begin
+  C <= std_logic_vector(signed(A) + signed(A))      when (mode="000") -- A*2 equivale a desplazamiento a la izquierda
+       else std_logic_vector(signed(A) + signed(B)) when (mode="001")
+       else std_logic_vector(signed(A) - signed(B)) when (mode="010")
+       else std_logic_vector(-signed(A))            when (mode="011") -- Complemento a 2
+       else A and B                                 when (mode="100")
+       else A or B                                  when (mode="101")
+       else A xor B                                 when (mode="110")
+       else not A;
+end architecture ALU_concurrente;
+#+end_src
+
+- ALU diseñada con un bloque process.
+      - La versión concurrente y la process dan lugar a circuitos equivalentes.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use work.ALU_CONSTANTS.all;
+
+architecture ALU_bloqueProcess of ALU is
+begin
+  process(A,B,mode) is
+  begin
+    case mode is
+      when "000" =>
+        C <= std_logic_vector(signed(A) + signed(A));
+      when "001" =>
+        C <= std_logic_vector(signed(A) + signed(B));
+      when "010" =>
+        C <= std_logic_vector(signed(A) - signed(B));
+      when "011" =>
+        C <= std_logic_vector(-signed(A));
+      when "100" =>
+        C <= A and B;
+      when "101" =>
+        C <= A or B;
+      when "110" =>
+        C <= A xor B;
+      when others =>
+        C <= not A;
+    end case;
+  end process;
+end architecture ALU_bloqueProcess;
+#+end_src
+
+- Al hacer el banco de pruebas, comprobar todos los posibles resultados resulta inviable para una ALU.
+      - Por eso se escogen algunos valores estratégicos
+            - Valores entorno a 0.
+                  - -2,-1,-,1,2
+            - Valores de los operandos en el límite inferior.
+                  - MIN_NEG_DATA, ..., MIN_NEG_DATA + 4.
+            - Valores de los operandos en el límite superior.
+                  - MAX_POS_DATA - 4, ..., MAX_POS_DATA.
+            - Algunos valores aleatorios extra.
 * Glosario
 - *flip-flop*, circuito biestable.
   # creo que era un Biestable-T (toggle)
