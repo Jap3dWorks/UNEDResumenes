@@ -949,7 +949,7 @@ fmientras
 - Una regla o cláusula permite deducir un objetivo si existe una unificación (umg) que.
       - identifique este objetivo con la conclusión de la regla
       - o si existe una instancia de la regla del programa que infiere exactamente al objetivo.
-
+        
 *** Resolución
 - Algoritmo de resolución controlada.
 - *Inicio* : La lista de objetivos es la que forma la consulta.
@@ -1282,10 +1282,10 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
       - Además de las reglas se puede ajustar la gramática para eliminar las ambigüedades.
 
 *** Diagramas sintácticos
-- EBNF es una ampliación de la [[id:ec41e456-bcc4-497e-b93c-8cb549c25a31][Notación BNF]].
+- *EBNF* es una ampliación de la [[id:ec41e456-bcc4-497e-b93c-8cb549c25a31][Notación BNF]].
       - Se añaden más metasímbolos.
       - No añade expresividad.
-- Metasímbolos EBNF
+- Metasímbolos *EBNF*
       - ::= Separación entre parte izquierda y parte derecha.
       - |   Alternativa
       - {}  Los elementos que se incluyen se pueden repetir 0 o más veces.
@@ -1300,7 +1300,7 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
       - Que emplee *análisis sintáctico descendente*.
 
 ** La semántica de los lenguajes de programación
-
+# TODO
 
 * Glosario
 - *Evaluación impaciente* : /factorial(4*5)/ primero evalua el resultado de 4*5.
