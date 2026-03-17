@@ -1,5 +1,6 @@
 #+title: Teoría de los lenguajes de Programación
 #+author: Jordi Amposta Pérez
+#+LATEX_HEADER: \usepackage{tikz}
 
 #+startup: latexpreview content
 
@@ -1089,6 +1090,217 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
 - [[id:TeLenProg]] pag 138
 - En prolog se describe el programa y el meta-programa con reglas prolog.
 
+* Sintaxis y Semántica Básica
+** Sintaxis de los lenguajes de Programación
+- Se describe con gramáticas libre de contexto en notación BNF.
+
+*** Estructura léxica de los lenguajes de Programación
+- *Análisis léxico* : Se encarga de identificar secuencias de *tokens*.
+- *Análisis sintáctico* : Forma las estructuras sintácticas de un programa.
+      - Combinaciones correctas de *tokens*.
+- Tipos de Tokens:
+      - *palabras reservadas* y *palabras clave*:
+            - Las palabras reservadas no pueden redefinirse como identificadores.
+            - Palabras clave tienen un significado especial en el lenguaje y forman parte de su sintaxis.
+      - *literales* : números o una cadena de letras (variable1, 33, etc).
+      - *símbolos* : ";" "+" y otros símbolos especiales.
+      - *identificadores* : Cadenas definidas por el programador que no pueden ser palabras reservadas.
+            - Su Longitud puede estar prefinida en algunos lenguajes.
+            - *subcadena de mayor longitud* : Otra forma es que exista un símbolo de delimitador de nuevo *token* como un espacio en blanco.
+- La forma habitual de identificar los tokens es mediante *expresiones regulares*
+
+**** Formalización de las expresiones regulares
+- El objetivo es representar a los lenguajes sobre un *alfabeto* $\Sigma$ basándose en lenguajes primitivos y operaciones de composición.
+- Dado un alfabeto $\Sigma$.
+      - Expresiones regulares primitivas:
+            - $\emptyset$ : lenguaje vacío.
+            - $\lambda$   : palabra vacía.
+            - $a$, $a \in \Sigma$
+      - Sean $\alpha$ y $\beta$ dos expresiones regulares, son expresiones regulares derivadas:
+            - $\alpha + \beta$ : unión (como un or)
+            - $\alpha \cdot \beta$ o $\alpha \beta$ : concatenación
+            - $\alpha^*$ : cierre (cualquier cantidad), clausula de Kleene.
+            - $(\alpha)$ : expresión regular entre paréntesis (agrupaciones)
+- Precedencia de operadores:
+      1. ()
+      2. $*$
+      3. $\cdot$
+      4. $+$
+- Sea *exp* una expresion regular sobre $\Sigma$.
+      - $L(exp)$ es el lenguaje descrito por *exp*.
+- Definidión recursiva de $L(exp)$:
+      - Si exp = $\emptyset$ entonces $L(\emptyset) := \emptyset$
+      - Si exp = $\lambda$ entonces $L(\lambda) := \{\lambda\}$
+      - Si exp = $a$, con $a \in \Sigma$ entonces $L(a) := \{a\}$
+      - Si exp = $\alpha + \beta$ entonces $L(\alpha  + \beta) := L(\alpha) \cup L(\beta)$
+            - $\alpha$ y $\beta$ son expresiones regulares sobre $\Sigma$.
+      - Si exp = $\alpha \cdot \beta$ entonces $L(\alpha \cdot \beta) := L(\aplha)L(\beta)$
+      - Si exp = $\alpha^*$ entonces $L(\alpha^*) := L(\alpha)^*$
+      - Si exp = $(\alpha)$ entonces $L((\alpha)) := L(\alpha)$
+- Equivalencias en expresiones regulares (Dos expresiones regulares diferentes pueden definir el mismo lenguaje):
+      1. $\alpha + (\beta + \gamma) = (\alpha + \beta) + \gamma$
+      2. $\alpha \centerdot (\beta \centerdot \gamma) = (\alpha \centerdot \beta) \centerdot \gamma$
+      3. $\alpha + \beta$ = \beta + \gamma$
+      4. $\alpha \centerdot (\beta + \gamma) = \alpha \centerdot \beta + \alpha \centerdot \gamma$
+      5. $(\alpha + \beta) \centerdot \gamma = \alpha \centerdot \gamma + \beta \centerdot \gamma$
+      6. $\alpha \centerdot \lambda = \alpha$ y $\alpha + \emptyset = \alpha$
+      7. $\alpha \centerdot \emptyset = \emptyset$
+      8. Si $\lambda \in L(\alpha)$ entonces $\alpha + \lambda = \alpha$
+      9. $\alpha^* = \lambda + \alpha \centerdot \alpha^*$
+      10. $\lambda^* = \lambda$
+      11. $\emptyset^* = \lambda$
+      12. $\alpha^*\alpha^*=\alpha^*$
+      13. $\alpha\alpha^*=\alpha^*\alpha$
+      14. $(\alpha^*)^* = \alpha^*$
+      15. $(\alpha^* + \beta^*)^* = (\alpha^*\beta^*)^* = (\alpha+\beta)^* = (\alpha^*\beta)^*\alpha^*$
+      16. $(\alpha\beta)^*\alpha = \alpha(\beta\alpha)^*$
+- Las expresiones regulares pueden representar *lenguajes regulares*.
+
+**** Las expresiones regulares en la programación
+- Patrones que permiten encontrar combinaciones de carácteres dentro de cadenas de texto.
+- [[id:TeLenProg]] pag 166 tabla con símbolos de expresiones regulares (regex).
+
+*** Gramáticas libres de contexto
+- Formada por:
+      - *V_NT* : símbolos no terminales.
+      - *VY* : símbolos terminales o tokens.
+      - *S* : *Símbolo Inicial* no terminal.
+      - Un conjunto de *reglas*.
+            - <símbolo no termibal> -> <símbolos terminales y no terminales>
+            - | : puede agrupar reglas A -> C|B es igual a A->C A->B
+- *Derivación* : Secuencia que empieza desde el *Símbolo inicial* y en la que cada paso se sustituye un símbolo no terminal por la parte derecha de una regla.
+- *Derivación de una cadena* : todos los símbolos de la cadena en curso son terminales.
+- $\Rightarrow$ : Se usa para indicar el paso de una derivación.
+- Puede hacerse la derivación *marcha atras*.
+      - Se dice que la cadena es *reconocida por la gramatica*.
+      - Desde una cadena de *símbolos terminales* hasta el *símbolo inicial*.
+
+*** Notación BNF
+:PROPERTIES:
+:ID: ec41e456-bcc4-497e-b93c-8cb549c25a31
+:END:
+- Permite definir las reglas sintácticas de las estructuras de un lenguaje de programación.
+      - Se definen con el uso de *símbolos* y *metasímbolos*.
+- *Metasímbolos*:
+      - ::= separación entre la parte de la izquierda y derecha de una regla.
+      - |   Alternativa (Se puede elegir uno de los elementos).
+- *Símbolos*:
+      - *terminales* y *no terminales*
+            - Se diferencian por el estilo de letra.
+            - los terminales se escriben entre "<>", por ejemplo <no_terminal>
+
+- El siguiente ejemplo representa las reglas de los número enteros:
+#+begin_example
+<valor_entero> ::= <secuencia_dígitos> | - <secuencia_dígitos>
+<secuencia_dígitos> ::= <dígito> | <dígito> <secuencia_dígitos>
+<dígito> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 
+#+end_example
+
+*** Estructura sintáctica : árboles sintácticos
+- *Semántica dirigida por sintaxis* : A cada estructura sintáctica se le puede asociar una semántica o significado.
+      - Es necesario disponer de una representación de cada estructura sintáctica derivada por una gramática.
+      - Y una forma de asociación de su semántica.
+- *árbol sintáctico* : estándar de estructura sintáctica.
+      - Se genera durante el *análisis sintáctico*
+            - Representa el resultado de una derivación.
+            - Hojas son los *símbolos terminales*.
+            - Nodos interiores son los *símbolos no terminales*.
+
+\begin{tikzpicture}[level distance=10mm,level/.style={sibling distance=20mm/#1}]
+\node [PL] {F(R1)}
+    child
+    {
+        node [PL] {GN(R3)} 
+        child
+        {
+            node [PL] {NPROP(R10)} 
+            child
+            {
+                node [PL] {Aránzazu}
+            }
+        }
+     }
+     child
+     {
+         node [PL] {GV(R4)}
+         child {
+             node [PL] {es}
+         }
+         child {
+             node [PL] {ATR(R5)}
+             child {
+                 node [PL] {ADJ(R12)}
+                 child {
+                     node [PL] {buena}
+                 } 
+              }
+         }
+     };
+\end{tikzpicture}    
+
+- notación BNF que abstrae 1 + 2 * 3
+      - Tiene implícito el orden de los operadores.
+
+#+begin_example
+<expresión> ::= <término> | <término> <op_aditivo> <expresión>
+<término> ::= <factor> | <factor> <op_multiplicativo> <término>
+<factor> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+<op_aditivo> ::= + | -
+<op_multiplicativo> ::= * | /
+#+end_example
+
+\begin{tikzpicture}[
+  level distance=15mm,
+  every node/.style={draw, rectangle, rounded corners, align=center},
+  level 1/.style={sibling distance=45mm},
+  level 2/.style={sibling distance=30mm},
+  level 3/.style={sibling distance=25mm}
+]
+\node {expresion}
+    child { node {termino} 
+        child { node {factor} child { node {1} } }
+    }
+    child { node {op\_aditivo} child { node {+} }
+    }
+    child { node {expresion} 
+        child { node {termino} 
+            child { node {factor} child { node {2} } }
+            child { node {op\_multiplicativo} child { node {*} } }
+            child { node {termino} child { node {factor} child { node {3} } } }
+        }
+    };
+\end{tikzpicture}
+
+*** Ambigüedad, sociatividad y precedencia
+- [[id:TeLenProg]] pag 173
+- *Ambigüedad* : Dos derivaciones diferentes llevan a árboles sintácticos diferentes para una misma palabra.
+      - Se pueden establecer *reglas* para el orden de las derivaciones.
+      - *derivación por la izquierda* : se derivan primero los símbolos más a la izquierda.
+            - Se consideraría ambigüa si aún así encontramos más de 1 derivación para una misma cadena.
+- *Criterio para eliminar ambigüedades*:
+      - Aportar reglas de derivación (derivación por la izquierda).
+      - Además de las reglas se puede ajustar la gramática para eliminar las ambigüedades.
+
+*** Diagramas sintácticos
+- EBNF es una ampliación de la [[id:ec41e456-bcc4-497e-b93c-8cb549c25a31][Notación BNF]].
+      - Se añaden más metasímbolos.
+      - No añade expresividad.
+- Metasímbolos EBNF
+      - ::= Separación entre parte izquierda y parte derecha.
+      - |   Alternativa
+      - {}  Los elementos que se incluyen se pueden repetir 0 o más veces.
+      - []  opción (pueden usarse o no)
+      - ()  Agrupación
+- No permite la recursión.
+- *diagrama sintáctico* : forma estándar de representar las notaciones EBNF.
+      - Terminales círculos.
+      - No Terminales cuadrados.
+      - [[id:TeLenProg]] pag 176 hay ejemplos.
+- Los diagramas sintácticos y la notación EBNF son de especial utilidad a la hora de escribir un *analizador sintáctico*.
+      - Que emplee *análisis sintáctico descendente*.
+
+** La semántica de los lenguajes de programación
+
 
 * Glosario
 - *Evaluación impaciente* : /factorial(4*5)/ primero evalua el resultado de 4*5.
@@ -1099,7 +1311,6 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
 #+begin_src sh
 ghci       # Open the haskell interpreter
 #+end_src
-
 
 * Bibliografía
 
