@@ -724,6 +724,306 @@ dev S
       - Memoria del histórico.
       - Información que se registra.
 
+* Lógica y representación del conocimiento
+- [[id:IntArt]] pag 33, capítulo 2
+
+** Lógica proposicional (LP)
+- El más sencillo (orden 0)
+  
+*** Sintaxis y semántica
+- Notación :
+      - $(x,y,z,\dots)$ o $(x_1,y_3,z_2,\dots)$ : variables del dominio.
+      - $(p,q,r,\dots)$ : variables proposicionales de orden-0.
+      - $p(x), q(x,y)$ : predicados.
+            - $p^1,q^2$ : aridad del predicado.
+      - $(\phi, \psi, \varphi)$ o $(\phi_1, \psi_3, \varphi_2)$ : fórmulas lógicas.
+            - con subíndices si es necesario.
+      - $(\Delta, \Gamma)$ : Conjunto de fórmulas.
+      - $\models$ : Relación de satisfacibilidad o verdad.
+            - $\Vdash$ en el caso de fórmulas modales
+      - $(M,N,O,\dots)$ : Representan tanto modelos proposicionales y de primer orden clásicos como modales o temporales.
+      - *Gramática abstracta* : para representar el conjunto de fórmulas de un lenguaje bien formado.
+            - Por ejemplo $\phi ::= A | B | \phi \circ \psi$
+- $\mathcal{AP}$ : Atomic propositions.
+      - Una proposición solo puede ser falsa o verdadera.
+- *LP* : *lógica proposicional clásica*. Basada en un conjunto numerable de proposiciones $\mathcal{AP}$.
+- gramática abstracta de la lógica proposicional.
+      - $\phi ::= p | \lnot \phi | \phi \land \psi | \phi \lor \psi |\phi \to \psi | \phi \leftrightarrow \psi$
+      - $p \in \mathcal{AP}$
+      - Reconocer las proposiciones y la conectivas en una frase verdadera permite obtener una formulación sin pérdida de información.
+- Un problema importante es distinguir entre una fórmula bien construida para una gramática o mal construida.
+- $M=\{p=V, q=F, r=F\}$ es un modelo.
+      - $M \models \phi$  significa que el modelo satisface $\phi$.
+- $\phi$ es satisfacible si existe almenos un modelo que la satisface.
+      - Insatisfacible en caso contrario.
+- Reglas para conocer la satisfacibilidad.
+      - $M \models p$  si y sólo si $p=V$ en $M$.
+      - $M \models \lnot \psi$ si y solo si no es verdad que $M \models \psi$.
+      - $M \models \psi \land \varphi$ si y sólo si $M \models \psi$ y $M \models \varphi$.
+- $\phi$ y $\psi$ son equivalentes si tienen la misma tabla de verdad.
+- *Tautología* : o fórmula válida, es una fórmula que intemendientemente del modelo siempre es verdadera.
+- *contradicción* : siempre falso.
+- La negación de una *tautología* es una *contradicción*.
+- *Razonamiento* : Conjunto de fórmulas $\Gamma = \{\phi_1, \dots, \phi_n\}$ del cual se puede sacar una *conclusión* $\phi$.
+      - $\phi_1 \land \dots \land \phi_n \to \phi$.
+- *Métodos deductivos*:
+      - *Métodos sintácticos* : Demostración formal a través de reglas de deducción.
+      - *Metodos semánticos* : Busca un contraejemplo que demuestre que no es satisfacible.
+
+*** Poder expresivo y límites de la Lógica Proposicional
+- Necesita conocer con antelación el número de variables.
+- No tiene componente temporal.
+
+*** Métodos deductivos semánticos y coste computacional
+**** Método del árbol semántico
+- [[id:IntArt]] pag 41 y apuntes de lógica [[file:~/.emacs.d/orgroam/20241018185521-uned_logica.org][Logica y Estructuras Discretas]].
+- Se usa el *tableau*. también conocido como árbol semántico o tablero semántico.
+      - Es un método no determinista. Se elige de forma casual entre varias posibilidades.
+      - Si se cierran todas las rammas la fórmula no es satisfacible.
+
+- Algoritmo basado en árboles semánticos
+#+begin_src pseudocode
+Entrada: phi_1 && ... && phi_n -> phi
+Transforma entrada en la fórmula phi_1 && ... && phi_n && !phi
+bucle
+    si Existe una rama abierta y
+       una regla que se puede aplicar a una fórmula phi en esa rama entonces
+        Aplica la regla correspondiente a phi y convierte phi en NO ACTIVA
+    fsi
+    si Existe una rama que contiene una contradicción entonces
+        Cierra la rama
+    fsi
+fbucle
+si Existe por lo smenos una rama abierta entonces
+    Devuelve SATISFACIBLE
+fsi
+si Todas las ramas están cerradas entonces
+    Devuelve NO SATISFACIBLE
+fsi
+#+end_src
+
+**** El método de resolución
+- método basado en el reconocimiento de pares de (formula, negación).
+- $(\phi_1 \lor \dots \lor \phi_n)$ se denomina *cláusula*.
+- *forma normal conjuntiva* : fórmula expresada como conjunción de cláusulas.
+- Se busca poner $\lnot$ delate de cada símbolo proposicional.
+- Se busca que $\land$ sea la conectiva dominante.
+- El resto son disyunción de literales separados por $\lor$.
+- Se eliminan las clásulas con tautologías.
+- Por último se aplica la regla de resolución a dos cláusulas de forma iterativa hasta que obtenermos la cláusula vacía.
+      - por ejemplo si $(p \lor q \lor \lnot r)\land (p \lor \lnot q \lor \lnot s)$ entonces se añade (o reemplaza)
+      - $(q \lor \lnot r \lor \lnot s)$, $q$ no aporta nada al resultado.
+      - Si hay una cláusula vacía significa que hemos encontrado una contradicción.
+            - tipo $p\land \lnot p$
+            - Entiendo que la entrada es una consecuencia.
+- Dos fórmulas pueden tener formas muy distintas y significados iguales o opuestos.
+      - Puede ser necesario transformarlas en una forma común.
+- Reglas de expansión de fórmulas.
+      - $\phi \leftrightarrow \psi$ = $\phi \to \psi \land \psi \to \phi$
+      - $\phi \to \psi$ = $\lnot \phi \lor \psi$
+      - $\lnot(\phi \land \psi)$ = $\lnot \phi \lor \lnot \psi$ (ley de De Morgan)
+      - $\lnot(\phi \lor \psi)$ = $\lnot \phi \land \lnot \psi$ (ley de De Morgan)
+      - $\lnot \lnot \phi$ = $\phi$
+      - $\phi \land (\psi \lor \varphi)$ = $(\phi \land \psi) \lor (\phi \land \varphi)$
+      - $\phi \lor (\psi \land \varphi)$ = $(\phi \lor \psi) \land (\phi \lor \varphi)$
+
+#+begin_src pseudocode
+Entrada phi_1 && ... && phi_n -> phi
+Transforma la entrada en phi_1 && ... && phi_n && !phi
+Transforma la fórmula obtenida en el conjunto de cláusulas Gamma_1,..., Gamma_k y elimina las
+  cláusulas que contienen p y !p
+bucle
+    si Existen dos cláusulas Gamma_i, Gamma_j que
+      pueden ser utilizadas para aplicar la regla de resolución entonces
+        Aplica la regla de resolución obteniendo Gamma' y añade Gamma' al conjunto
+    fsi
+fbucle
+si Si aparece la cláusula vacía en el conjunto entonces
+    dev NO SATISFACIBLE
+fsi
+si Si no aparece la cláusula vacía entonces
+    dev SATISFACIBLE
+fsi
+#+end_src
+
+**** Optimizar la resolución: Cláusulas de Horn
+- Si en un conjunto de cláusulas todas tienen una forma llamada de Horn, entonces el problema de la satisfacibilidad tiene una complejidad inferior.
+- Cláusula Horn es:
+      - un átomo.
+      - Una implicación tal que el antecedente es una conjunción de litarales positivos, ye el consecuente es un solo literal positivo.
+      - Una implicación tal que el antecedente es una conjunción de litarales negativos, y el consecuente es vacío.
+- Ejemplos
+      - $p \land q \land r \to s$
+      - $p_1 \land \dots \land p_{k-1} \to p_k$
+- Tiene un tiempo de evaluación $O(n)$
+
+** Lógica de primer orden (LPO)
+- Lógica de predicados.
+- [[id:IntArt]] pag 46
+
+*** Sintaxis y semántica
+- Se introducen *variables* *cuantificadores* y *predicados* (como propiedades hombre(socrates)).
+- Gramática abstracta
+      - $t::= a | x | f(t_1, \dots , t_k)$,
+      - $\phi ::= p(t_1, \dots, t_n) | \lnot \phi | \phi \land \psi | \exists x \phi (x)$
+      - el predicado $p$ es de aridad $n$.
+      - $\phi(x_1, \dots , x_n)$ denota una fórmula de $n$ variables libres.
+      - $\forall$ es quivalente a $\lnot \exists \lnot$
+- Todas las conectivas del LP forman parte del LPO.
+- Se interpreta a partir de un dominio $D$, que son los posibles valores de las variables $x$ $y$.
+      - $M\models p^n(t_1,\dots,t_n)$ si y solo si $(I(t_1), \dots ,I(t_n)) \in \hat{p}^{n}$
+            - $I$ interpretación
+                  - relación n aria subconjunto de $D_1\times \dots \times D_n$
+            - $\hat{p}^{n}$ interpretación de $p^n$
+      - $M \models \not \psi$ si y sólo si no es verdad $M\models \psi$
+      - $M\models \psi \land \varphi$ si y sólo si $M\models \psi$ y $M\models \varphi$
+      - $M \models \exists x \psi(x)$ si y solo si existe un elemento $d \in D$ tal que $M \models \psi [x/d]$
+            - $\psi [x/d]$ : todas las ocurrencias libres de $x$ se han sustituido por $d$.
+- El dominio $D$ puede ser infinito.
+- [[id:IntArt]] pag 48, ejemplo con dimensión temporal.
+
+*** Poder expresivo y límites de la lógica de primer orden
+- La complejidad de las fórmulas es un problema.
+- Más poder expresivo = más complejidad computacional = métodos dductivos más complicados
+
+*** Métodos deductivos y coste computacional
+**** Método del árbol semántico
+- [[id:IntArt]] pag 50, ejemplo de un árbol semántico infinito.
+- El problema de satisfactibilidad es indecidible en LPO.
+      - No existe ningún algoritmo que cumpla las condiciones:
+            1. *Es correcto* : nunca devuelve respuestas equivocadas.
+            2. *Es completo* : devuelve todas las respuestas correctas.
+            3. *Es terminante* : nunca entra en un bucle infinito.
+- Mismas reglas que en el paso de LP más las siguentes.
+      - Cuantificador *universal*, $\forall x \phi(x)$ : para todas las constantes $a$ que han sido evaluadas en la rama evaluaremos $\phi(a)$. Además permanece activa.
+      - Cuantificador *existencial*, $\exists x \phi(x)$ : es preciso introducir una nueva constante $a$ que no haya sido introducida en ninguna rama abierta, y evaluamos $\phi(a)$
+
+**** El método de resolución
+- Más complicado que en el caso de LP, problemas nuevos:
+      - Los cuantificadores en la fase de transformación de la fórmula de salida en forma clausal.
+      - El reconocimiento de las fórmulas atómicas contradictorias, cuando éstas contengan variables o términos.
+- Transformación de $\phi$ en forma clausual.
+      - Debemos poner todos los cuantificadores en la parte izquierda de la fórmula.
+            - *forma prenexa* : los cuantificadores en la parte izquierda.
+            - Siempre existe una equivalencia a *forma prenexa*.
+      - Reglas para la *forma prenexa*:
+            - $\psi \circ Qx\varphi(x) = Qx(\psi \circ \varphi(x))$, donde $x$ no aparece libre en $\psi$.
+            - $\psi \circ Qx\varphi(x) = Qy(\psi \circ \varphi(y))$, donde $x$ aparece libre en $\psi$ y la variable y es nueva.
+            - donde $\circ \in \{\land, \lor\}$ y $Q\in\{\forall, \exists\}$.
+- Se demuestra que la formula no es satisfacible sobre el dominio *Herbrand*.
+- Una vez en forma prenexa se deben aplicar los cuantificadores y pasar a la forma *normal Skolem*.
+      - Es satisfacible si y solo sí lo es la fórmula original.
+      - Pero no coincide con el mismo conjunto de modelos.
+- Forma normal skolem se aplican las siguientes reglas de forma recursiva.
+      - Transformar $\forall x \phi(x)$ en $\phi(x)$
+      - Transformar $\exists x \phi(x)$ en $\phi(a)$ si no hay cuantificadores $\forall$ a la izquierda.
+            - sino en $\phi(f(x_1, \dots, x_n))$ por cada cuantificador $\forall_1, \dots, \forall_n$ a la izquierda del $\exists$
+- *problema de la unificación* : en una fórmula en forma normal skolem puede aparecer $p(x)$ y $\lnot p(a)$.
+      - Que es una contradición porque $p(x)$ viene de un $\forall$.
+
+- Algorirmo de unificación de términos.
+#+begin_src pseudocode
+Entrada: dos cláusulas Gamma_1 y Gamma_2, y dos fórmulas atómicas p(t_1,...,t_n) in Gamma_1,
+  !p(s_1,...,s_m) in Gamma_2
+
+si n != m entonces
+  dev NO y terminal
+fsi
+Introduce las ecuaciones t_1  = s_1,...t_n=s_n
+bucle
+    si Existe una ecuación t_i = s_i que no ha sido utilizada todavía entonces
+        si (t_i = f(u_1,...,u_k) y s_i = g(v_1,...,v_h) y ((f!=g) o (k!=h))) o (t_i=x y s_i es un término donde aparece x y(s_i != x)) entonces
+            dev NO y terminal
+        fsi
+        si t_i = f(u_1,...,u_k) y s_j = f(v_1,...,v_h) y k=h entonces
+            Introduce las equaciones u_1 = v_1, u_k=v_k
+        fsi
+        si t_i=x u s_i=x, o t_i=a y s_i=a entonces
+            Elimina la equación
+        fsi
+        si t_i = x y s_i es un término donde no aparece x entonces
+            Aplica la sustitución x=s_i en la cláusula Gamma, en cualquier literal donde aparece el término t_i
+        fsi
+        si t_i=x es un término y s_i=y entonces
+            Elimina la ecuación y añade el término x=y al conjunto
+        fsi
+    fsi
+fbucle
+si hemos considerado todas las ecuaciones, aplicado todas las sustituciones y no hemos contestado negativamente entonces
+    Devuelve SI
+fsi
+#+end_src
+
+- El algoritmo de resolución
+#+begin_src pseudocode
+Entrada: phi_1 && ... ** phi_n -> phi
+Transforma la fórmula de salida en forma prenexa.
+Transforma la fórmula en forma Skolem y represéntala en forma clausual. Eliminando las fórmulas que contienen tautologias.
+bucle
+    si Existen dos cláusulas Gamma_i, Gamma_j tales que contienen dos predicados p(t_1,...,t_n) y !p(t_1,...,t_n), y t_1 y s_1 son términos unificables entonces
+        Aplica sustitución correspondiente a Gamma_i Gamma_j
+        Obten la nueva cláusula resultante Gamma y añádela al conjunto de cláusulas
+    fsi
+fbucle
+si Una de las cláusulas es vacía entonces
+    dev NO SATISFACIBLE
+fsi
+#+end_src
+
+*** Lógicas de orden superior al primero
+- Mucho poder expresivo.
+- lógicas de segundo orden permiten aplicar cuantificadores sobre elementos del dominio como sobre conjuntos de elementos.
+      - $\forall x \phi(x)$ y $\forall X \phi(X)$
+- Permiten comparar los tamaños de conjuntos.
+- *lógica no recursivamente enumerable* : las lógicas superiores al 1er orden son tan complejas que en casos no existen algoritmos para averiguar si una fórmula es válida (tautología) o es satisfacible.
+
+*** Fragmentos de LPO
+- [[id:IntArt]] pag 56
+- $L$ es un subconjunto (fragmento) de $L'$, permite mejorar la computabilidad.
+      - Lógicas con un número limitado de variables.
+      - Fragmentos con guardia.
+      - Fragmentos con aridad máxima.
+
+** Extensiones de las lógicas clásicas
+- lógicas modales están entre LP y LPO.
+
+*** Lógicas no monotónicas, razonamiento del sentido común y otras consideraciones
+- [[id:IntArt]] pag 58. diferencias lógica monótona (clásica) y no monótona.
+      - Interesante que en la lógica clásica una nueva verdad no puede eliminar una verdad anterior.
+- *lógica difusa o borrosa* : lógica multievaludada, donde las proposiciones tienen un grado de verdad.
+
+*** Lógicas modales (LM) y mundos posibles
+- [[id:IntArt]] pag 59
+- Lógica con características del cuantificador de existencia $\exists$.
+- Gramática forma extendida de la LP.
+      - $\phi ::= p | \lnot \phi | \phi \land \psi | \lozenge \psi$
+      - $\Diamond$ : cuantificador existencial $\exists$ que permite desplazarse entre los mundos.
+            - $\Diamond \phi$ se lee como $\phi$ es posible.
+      - $\square$ expresa que una propiedad es cierta en todos los mundos alcanzables.
+            - $\square = \lnot \Diamond \lnot$
+            - $\square \phi$ se lee como $\phi$ es necesaria.
+- un modelo de lenguaje modal es una terna $M=(W,R,V)$
+      - $W$ : es un conjunto de mundos.
+      - $R$ : relación binaria $R \subseteq W \times W$
+      - $V$ : función de evaluación por cada uno de los mundos, nos dice que símbolos proposicionales se satisfacen.
+      - Píensalo como una máquina de estados.
+- Ejemplos de lenguajes modales en el [[id:IntArt]] pag 60.
+- La satisfacibilidad depende de:
+      - Las propiedades de $R$.
+      - El mundo en el que evaluamos la fórmula.
+      - Una fórmula $phi$ es satisfacible si y solo si existe un un modelo $M$ y un mundo $w_i$ tal que.
+            - $M,w_i \Vdash \phi$
+      - $\phi$ válida en un modelo $M$ : $M$ se satisface en todos los mundos $w_i$.
+      - $\phi$ válida : si y solo si es válida en todos los modelos modales posibles.
+
+*** Métodos deductivos y coste computacional de la Lógica Modal
+**** Árboles semánticos para K
+- Reglas de resolución de LP más:
+      - $\lnot \Diamon \phi = \square \lnot \phi$
+      - $\lnot \square \phi = \Diamond \lnot \phi$
+# TODO
+# TODO copiar algoritmo
+
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
       - *Inferencia deductiva*, A implica B, C implica B, etc.
@@ -750,7 +1050,6 @@ dev S
       - Tanto en el uso como en el entrenamiento.
 
 - *Expandir un nodo* : En un grafo obtener los nodos descendientes (que derivan del nodo) y añadirlo a la lista de pendientes por visitar.
-
 
 * Bibliografía
 
