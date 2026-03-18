@@ -145,6 +145,19 @@ J = \left(\begin{array}{cc|cc}
       - Entonces si $B' = \{v_n, \dots, v_1\}$ $\mathfrak{M}_{B'}(f) = B_n(\lambda)^t$
       - $\left(\begin{array}{cc} 0 & 1 \\ 1 & 0 \end{array}\right) \left(\begin{array}{cc} \lambda & 0 \\ 1 & \lambda \end{array}\right) \left(\begin{array}{cc}0 & 1 \\ 1 & 0\end{array}\right) = \left(\begin{array}{cc}\lambda & 1 \\ 0 & \lambda \end{array}\right)$
 
+** Forma Real de Jordan
+[[id:AlgbLin]] pag 231
+- Si $\lambda=a+bi$ es una raiz compleja de $p_f(\lambda)$ el conjugado también lo es.
+      - $\lambda-a+bi$ el conjugado es $\bar{\lambda}=a-bi$
+- $\hat{V}$ es la *extensión compleja* de $V$.
+      - $\hat{V}$ es un espacio vectorial complejo de la misma dimensión que $V$.
+      - $\hat{V} = \{u + wi\ :\ u,w \in V\}$
+      - $V \subset \hat{V}$
+- Si $B$ es una base de $V$ también es una base de $\hat{V}$
+
+
+
+
 * Bibliografía
 ** Algebra Lineal y Geometría Vectorial
 :PROPERTIES:
