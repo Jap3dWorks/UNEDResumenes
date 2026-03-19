@@ -1261,6 +1261,186 @@ FIN-PARA
       - Patrones estructurales : Resuelven problemas de composición de clases u objetos.
       - Patrones de comportamiento : Resuelven problemas de interacción y comunicación entre clases u objetos.
 
+
+* UML, Lenguaje Unificado de Modelado
+- [[id:AprIngSft]] pag 243
+- Unified modeling language, lenguaje de modelado de software más conocido y extendido.
+- No se considera programación.
+
+** Objetivos de UML
+- Objetivos durante el desarrollo:
+      - Conseguir la capacidad de modelar sistemas, desde el concepto hasta los artefactos ejecutables, utilizando técnicas orientadas a objetos.
+      - Cubrir las cuestiones relacionadas con el tamaño inherentes a los sistemas complejos y críticos.
+      - Crear un lenguaje de modelado utilizable tanto por las personas como por las máquinas.
+- La OMG pretende alcanzar los siguientes objetivos con el fomento de UML:
+      - Proporcionar un lenguaje visual expresivo y utilizable para el desarrollo e intercambio de modelos significativos.
+      - Proporcionar mecanismos de extensión y especialización.
+      - Ser independiente del proceso de desarrollo y de los lenguajes de programación.
+      - Proporcionar una base formal para entender el lenguaje de modelado.
+      - Fomentar el crecimiento de herramientas OO (no sé lo que es).
+      - Soportar conceptos de desarrollo de alto nivel como pueden ser colaboraciones, frameworks, patterns y componentes.
+      - Integrar las mejores prácticas utilizadas hasta el momento.
+- Estándar para el modelado no como un estándar de proceso de software.
+- También se puede usar en otros campos.
+      - Sistemas de información de la empresa.
+      - Bancos y servicios financieros.
+      - Telecomunicaciones.
+      - Transporte.
+      - Defensa/Industria aerospacial.
+      - Comercio.
+      - Electrónica médica.
+      - Ámbito científico.
+      - Servicios distribuidos en la Web.
+
+** Estructura de UML
+- [[id:AprIngSft]] pag 249
+- Los diferentes conceptos y modelos de UML pueden agruparse en las siguientes áreas:
+      1. Estructura estática:
+             - Definir el universo, los conceptos clave de la aplicación. Propiedades internas y las relaciones entre ellas.
+             - Los conceptos son modelados como clases. Cada clase describe un conjunto de objetos.
+             - Información modelada como atributos. Diagramas de clases.
+      2. Comportamiento dinámico:
+             - Puede modelarse la historia de la vida de un objeto aislado.
+                   - Es una máquina de estados.
+                   - Muestra como responde el objeto en función de su estado.
+             - o patrones de comunicación de un conjunto de objetos conectados.
+                   - Se representa con los enlaces entre objetos junto con el flujo de mensajes, control de flujo y flujo de datos.
+      3. Construcciones de implementación:
+             - Significado para el análisis lógico y para la implementación física.
+      4. Mecanismos de extensión:
+             - Puede extenderse con capacidad limitada.
+             - Los Estereotipos es una nueva clase de elemento de modelado basándose en una existente con ciertas restricciones adicionales.
+      5. Organización del modelo:
+             - Los paquetes son unidades organizativas, jerárquicas y de propósito general.
+                   - Organización del modelo en piezas coherentes manejables.
+      6. Elementos de anotación:
+             - Partes explicativas de los modelos UML.
+      7. Relaciones, existen seis tipos:
+             - *Dependencia* : Relación semántica entre dos elementos. Un cambio en elemento independiente puede afectar al elemento dependiente.
+                   - Línea discontinua dirigida que puede incluir una etiqueta.
+             - *Asociación* : Relación estructural que describe un conjunto de enlaces (conexiones entre objetos).
+                   - Línea continua dirigida que puede incluir una etiqueta.
+                   - Puede representar la multiplicidad de una relación.
+                         - Número de instancias de una clase que se relacionan con una instancia de la otra.
+                         - se indica la multiplicidad mínima y máxima
+             - *Generalización* : Los objetos del elemento especializado pueden sustituir a los objetos del elemento general. El hijo comparte la estructura y el comportamiento del padre.
+                   - Línea con punta de flecha vacía.
+             - *Realización* : Relación semántica entre clases. Una clase garantiza un contrato que otra clase cumplirá.
+                   - Línea discontinua con flecha vacía.
+             - *Agregación* : Similar a la *asociación*. La multiplicidad es de *uno a muchos*.
+                   - Flecha con un rombo blanco en la base.
+             - *Composición* : Similar a la *agregación*. Relación de vida.
+                   - El tiempo de vida del objeto agregado está condicionado por el tiempo de vida del objeto agregador.
+                   - Flecha con un rombo negro enla base.
+             - *Diagramas* : Representan diferentes perspectivas de un sistema.
+
+** Diagramas UML
+
+*** Diagramas de casos de uso
+- [[id:AprIngSft]] pag 254
+- Ilustran la funcionalidad proporcionada por una unidad del sistema.
+- Describen qué es lo que debe hacer el sistema pero no cómo.
+- Sirven para facilitar la comunicación con los futuros usuarios del sistema.
+
+**** Actor
+- Entidad externa que interactura con el sistema.
+- Pueden ser gente real, otros sistemas o eventos.
+      - Representan el rol.
+
+**** Caso de uso
+- Describe un grupo de actividades de un sistema que produce un resultado concreto y tangible.
+- Descriptores de las interaccines típicas entre los usuarios de un sistema y ese mismo sitema.
+- Reglas a tener en cuenta:
+      - Cada caso de uso está relaionado como mínimo con un Actor.
+      - Cada caso de uso es un iniciador.
+      - Cada caso de uso lleva a un resultado relevante con "valor intrínseco".
+- Tipos de relaciones más comunes en casos de uso.
+      - *include* : Un caso de uso tiene lugar dentro de otro caso de uso.
+      - *extends* : En ciertas ocasiones un caso de uso será extendido por otro.
+      - *Generalización* : un caso de uso hereda las caracterísitcas de otro caso de uso.
+            - y puede especificar algunas de ellas.
+
+*** Diagramas de clases
+- Muestra las clases que componen un sistema y como se relacionan.
+- Son diagramas estáticos.
+
+**** Clase
+- [[id:AprIngSft]] pag 257
+- Define los atributos y métodos de una serie de objetos.
+      - Ojo el término tipo tiene un significado más general.
+- *Atributos* : Muestra el nombre del atributo y pueden mostrar el tipo.
+      - + : Indica atributos públicos.
+      - # : Indica atributos protegidos.
+      - - : Indica atributos privados.
+- *Operaciones* : Muestran el nombre y pueden mostrar los parámetros y el valor de retorno.
+      - + : Operación pública.
+      - # : Operación protegida.
+      - - : Operación privada.
+- *Plantillas* : /templates/ como los templates de c++.
+
+**** Acciones de clases
+- Se relacionan de las siguientes posibles formas:
+      - *Generalización*.
+      - *Asociación*.
+      - *Realización*.
+      - *Agregación*.
+      - *Composición*.
+- Otros componentes de los diagramas de clases aparte de las clases.
+      - *Interfaces* : Clases abstractas, no contienen atributos.
+      - *Tipo de datos* : Primitivas incluidas en los lenguajes de programación.
+      - *Enumeraciones* : Listas de valores.
+      - *Paquetes* : Espacio de nombres en un diagrama.
+
+*** Diagrama de secuencia
+- [[id:AprIngSft]] pag 261
+- Muestra el flujo de mensajes.
+- Especial énfasis en el orden y el momento en que se envían los mensajes a los objetos.
+- *En vertical* muestra la secuencia de llamadas en el tiempo.
+- *En horizontal* muestra las instancias de objetos que intervienen.
+- Los mensajes pueden ser síncronos o asíncronos.
+
+*** Diagrama de colaboración
+- [[id:AprIngSft]] pag261
+- Muestra las interacciones que ocurren entre los objetos que participan en una situación determinada.
+- Centra el interés en las relaciones entre los objetos y su topología.
+- Los mensajes se representa mediante flechas.
+      - Nombre del mensaje
+      - Parámetros
+      - Secuencia del mensaje
+
+*** Diagrama de estado
+- Muestra diferentes estados de un objeto durante su vida y los estímulos que provocan cambios en el estado.
+      - Como autómatas finitos.
+- Se modelan los objetos que tienen estados interesantes.
+- Elementos de los diagramas de estados:
+      - Punto de inicio : círculo relleno.
+      - Transición entre estados : línea terminada con punta de flecha abierta.
+      - Estado : Rectángulo con los vértices redondeados.
+      - Punto de decisión : Círculo no relleno.
+      - Puntos de terminación : Círculo con otro relleno en su interior.
+
+*** Diagrama de actividad
+- [[id:AprIngSft]] pag 265
+- Describen la secuencia de las actividades en un sistema.
+      - Forma especial de los diagramas de estados que unicamente contiene actividades.
+- Están asociados a una clase, a una operación o a un caso de uso.
+- Indicados para modelar procesos de alto nivel.
+
+**** Actividad
+- Una actividad es un único paso de un proceso.
+      - Tiene actividad interna y almenos una transición saliente.
+- Pueden formar jerarquías.
+- Elementos similares a los del diagrama de secuencia.
+
+*** Diagramas de componentes
+- Muestra los componentes del software y los artilugios de los que está compuesto.
+- Los componentes pueden tener interfaces que permiten asociaciones ente componentes.
+- Tienen un nivel de abstracción mayor a un diagrama de clases.
+- Un componente se suele implementar por una o varias clases.
+
+*** Diagrama de despliegue  
+- Muestra como el sistema se asentará físicamente en el entorno hardware que lo acompaña.
+
 * Glosario
 - *Cardinalidad* : Matemáticamente número de objetos únicos en un conjunto.
       - Valores máximos y mínimos de la relación entre entidades (0,1), (1,M), (1,1).

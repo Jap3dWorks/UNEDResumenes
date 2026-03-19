@@ -1006,7 +1006,7 @@ fsi
       - $W$ : es un conjunto de mundos.
       - $R$ : relación binaria $R \subseteq W \times W$
       - $V$ : función de evaluación por cada uno de los mundos, nos dice que símbolos proposicionales se satisfacen.
-      - Píensalo como una máquina de estados.
+      - Piénsalo como una máquina de estados.
 - Ejemplos de lenguajes modales en el [[id:IntArt]] pag 60.
 - La satisfacibilidad depende de:
       - Las propiedades de $R$.
@@ -1018,9 +1018,10 @@ fsi
 
 *** Métodos deductivos y coste computacional de la Lógica Modal
 **** Árboles semánticos para K
-- Reglas de resolución de LP más:
+- Reglas de resolución como las de LP más:
       - $\lnot \Diamon \phi = \square \lnot \phi$
       - $\lnot \square \phi = \Diamond \lnot \phi$
+
 # TODO
 # TODO copiar algoritmo
 
