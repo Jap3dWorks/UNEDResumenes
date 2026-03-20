@@ -1394,7 +1394,8 @@ revoke select on departamento from Amit, Satoshi restrict;
       - *SQL dinámico* : Construir una consulta como una cadena de carácteres.
             - Se obtiene la consulta en variables del lenguaje tupla a tupla.
       - *SQL embebido* : Las sentencias SQL se identifican en tiempo de precompilación.
-            - Se sustituyen en el programa por código adecuado.
+            - El preprocesador envía las sentencias SQL al sistema de base de datos para su precompilación y optimización.
+            - Se sustituyen en el programa por código apropiado antes de iniciar la compilación.
 - El desafio es manejar la diferencia de tratamiento de datos.
 
 *** JDBC
@@ -1550,6 +1551,7 @@ void ODBCejemplo()
 #+end_src 
  
 *** SQL incorporado
+- [[id:FBDatos]] pag 76
 - La norma sql define la incorporación en varios lenguajes como c++.
       - *Lenguaje anfitrion* : Lenguaje que incorpora las consultas SQL.
       - *SQL incorporado* : Estructuras SQL que se admiten en el lenguaje anfitrión.
@@ -1614,11 +1616,14 @@ EXEC SQL
 - Las transacciones se comprometen con EXEC SQL COMMIT y se retroceden con EXEC SQL ROLLBACK.
 
 ** Funciones y procedimientos
+- [[id:FBDatos]] pag 77
 - Los desarrolladores pueden escribir sus propias funciones y procedimientos.
 - Permiten almacenar la *lógica de negocio*.
 - Almacenar alguna lógica en la base de datos permite que sea independiente de las aplicaciones que la usan.
 
 *** Declaración e invocación de funcines y procedimientos de SQL
+- Se permite que hayan dos procedimientos con el mismo nombre siempre que el número de parámetros entre procedimientos con el mismo nombre sea diferente.
+
 #+begin_src sql
 create function cuenta_dept(carchar(20))
   returns integer
@@ -1671,7 +1676,8 @@ create procedure cuenta_dept_proc
 end    
 #+end_src
 
-- Se usa tal que.
+- Se invocan los procedimientos con la sentencia *call*.
+      - Desde otro procedimiento de SQL o desde SQL incorporado.
 
 #+begin_src sql
 declare cuenta_de integer;
@@ -1681,6 +1687,7 @@ call cuenta_dept_proc('Física', cuenta_de);
 *** Construcciones del lenguaje para procedimeintos y funciones
 - [[id:FBDatos]] pag 79
 - PSM : módulo de almacenamiento persistente : Parte de la norma SQL que trata estas construcciones.
+      - Proporciona casi toda la potencia de los lenguajes de propósito general.
 - *declare* : declara variables.
 - *set* : asigna valores a variables.
 - *begin... end* : sentencias compuestas, contienen varias sentencias.
@@ -1719,6 +1726,7 @@ end
 #+end_src  
 
 *** Rutinas en otros lenguajes
+- [[id:FBDatos]] pag 79
 - Las extensiones procedimentales a SQL no se soportan de forma estándar.
 - Una alternativa es definir procedimentos en lenguaje imperativo que se puedan llamar desde consultas SQL.
 - Declarar un procedimiento/función externo.
@@ -1735,7 +1743,8 @@ external name '/usr/avi/bin/cuenta_dept'
 - Este método es más eficiente que la comunicación entre procesos.
   
 ** Disparadores
-- Sentencia automática que se ejecuta ante la modificación de la base de datos
+- [[id:FBDatos]] pag 80
+- Un *disparador* es una sentencia que el sistema ejecuta de manera automática como efecto secundario de la modificación de la base de datos.
 - Se debe:
       - Definir la condiciones de disparo.
             - Un evento y una condición.
@@ -1831,7 +1840,7 @@ end
 
 *** Recursión en SQL
 - [[id:FBDatos]] pag 85
-- Enfoque recursivo mediante vistas es más fácil de usar.
+- Enfoque recursivo mediante *vistas* es más fácil de usar.
 - *with recursive* : Cláusula que permite una recursión moderada.
 - Se entienden como la unión de una vista no recursiva con una vista recursiva.
 - *punto fijo* : Tabla resultante del proceso recursivo.
@@ -1846,13 +1855,14 @@ end
       - Sustituye a la instrucción *with recursive*.
 
 #+begin_src sql
-with recursive a_prerreq(aisgnatura_id,prerreq_id) as (
+with recursive a_prerreq(asignatura_id,prerreq_id) as (
     select asignatura_id, prerreq_id                       -- Consulta base
     from prerreq
   union
-    select prerreq.prerreq_id, a_prerreq.asignatura_id     -- Consulta recursiva
+    select a_prerreq.asignatura_id, prerreq.prerreq_id     -- Consulta recursiva (ojo en el libro
+                                                           --  parece estar al revés).
     from prerreq, a_prerreq
-    where prerreq.asignatura_id = a_prereq.prereq_id
+    where prerreq.asignatura_id = a_prerreq.prerreq_id
 )
 select * from a_prerreq;
 #+end_src
@@ -2127,8 +2137,8 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
                   - DeMorgan y todo eso.
 
 *** Seguridad de las expresiones
-- $\{t|P(t)\}$ se dice segura si todos los valores que aparecen en el resultado son valores de $dom P$.
-      - $dom P$: conjunto de valores a los que P hace referencia.
+- $\{t|P(t)\}$ se dice segura si todos los valores que aparecen en el resultado son valores de $dom(P)$.
+      - $dom(P)$: conjunto de valores a los que P hace referencia.
 
 *** Potencia expresiva de los lenguajes
 - Equivalente al algebra relacional básica.
@@ -2159,9 +2169,9 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - [[id:FBDatos]] pag 110
 - $\{<i,n,d,s> | \lnot(<i,n,d,s> \in profesor)\}$ : permite valores del resultado que no está en el dominio.
 - Restricciones.
-      1. Todos los valores que aparecen en las tuplas de expresión son de $dom P$.
-      2. Para cada subfórmula $\exists$ del tipo $\exists x(P(x))$, solo es cierta si existe un valor de $dom P$ tal que $p(x)$ sea cierto.
-      3. $\forall x (P(x))$ es verdadera si y solo sí se cumple para todos los valores de $x$ de $dom P$.
+      1. Todos los valores que aparecen en las tuplas de expresión son de $dom(P)$.
+      2. Para cada subfórmula $\exists$ del tipo $\exists x(P(x))$, solo es cierta si existe un valor de $dom(P)$ tal que $p(x)$ sea cierto.
+      3. $\forall x (P(x))$ es verdadera si y solo sí se cumple para todos los valores de $x$ de $dom(P)$.
 
 * Notes
 ** mysql Service
@@ -2184,3 +2194,4 @@ podman pull docker.io/library/mysql:8.0
 :EDITORIAL: Mc Graw Hill education
 :AUTHOR: Silberschatz, Korth, Sudarshan
 :END:
+
