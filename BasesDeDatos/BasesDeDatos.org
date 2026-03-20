@@ -1506,7 +1506,6 @@ while(rs.next()) {
 - Actualización de una tupla de una consulta.
       - Permite acutalizar en el programa y en la base de datos.
 
-
 *** ODBC
 - open database connectivity
 - Cada sistema de base de datos proporciona una librería que debe enlazarse en el programa.
@@ -1917,6 +1916,252 @@ from total_créditos_dept;
 # TODO
 *** OLAP en SQL
 # TODO
+
+
+* Lenguajes formales de consulta relacional
+
+** El álgebra relacional
+- [[id:FBDatos]] pag 97
+- Es un lenguaje de consulta procedimental.
+- Operaciones fundamentales:
+      - selección
+      - Proyección
+      - unión
+      - diferencia de conjuntos
+      - producto cartesiano
+      - renombramiento
+- Operaciones No fundamentales:
+      - Intersección de conjuntos
+      - reunicón natural
+      - asignación
+
+*** Operaciones fundamentales
+- Devuelven relaciones
+
+**** Operación selección
+- Operación unaria.
+- Seleccionan tuplas que satisfacen un predicado.
+- $\sigma$ denota la selección.
+      - $\sigma_{nombre\_dept = \ll Física \gg}(profesor)$
+      - $\sigma_{sueldo > 90000}(profesor)$
+- Permite el uso de conectivas ($\land$, $\lor$ y $\lnot$)
+      - $\sigma_{nombre\_dept = \ll Física \gg\ \land\ sueldo > 90000} (profesor)$
+
+**** Operaciones proyección
+- Devuelve su relación de atributos excluyendo los no declarados.
+- $\Pi$ denota proyección
+      - $\Pi_{ID, nombre, sueldo}(profesor)$
+
+**** Composición de operaciones relacionales
+- El resultado de una operación relacional es una relación.
+- $\Pi_{name}(\sigma_{nombre\_dept=\ll Física \gg}(profesor))$
+
+**** Operación unión
+- $\cup$ denota unión
+ 
+\begin{align*}
+&\Pi_{asignaruta\_id}(\sigma_{semestre=\ll Otoño \gg \land año=2009}(sección))\ \cup \\ &\Pi_{asignatura\_id}(\sigma_{semestra=\ll Primavera \gg \land año=2019}(sección))
+\end{align*}
+
+**** Operaciones Diferencia de conjuntos
+- - denota diferencia.
+- r-s denota las tuplas que están en r pero no en s.
+
+\begin{align*}
+&\Pi_{asignaruta\_id}(\sigma_{semestre=\ll Otoño \gg \land año=2009}(sección))\ - \\ &\Pi_{asignatura\_id}(\sigma_{semestra=\ll Primavera \gg \land año=2019}(sección))
+\end{align*}
+
+**** Operación producto cartesiano
+- $\times$ denota producto cartesiano.
+- Las relaciones se definen como subconjuntos del producto cartesiano de un conjunto de dominios.
+
+\begin{align*}
+& \Pi_{nombre,\ asignatura\_id}(\sigma_{profesor.ID = enseña.ID} \\
+& (\sigma_{nombre\_dept = \ll Física \gg}(profesor \times enseña)))
+\end{align*}
+
+**** Operación renombramiento
+- Permite dar nombre a los resultados de las consultas.
+- $\rho_x(E)$
+- $\rho_{x(A_1,\dots,A_n)}(E)$ : devuelve la relación de la expresión $E$ renombrada como $x$ y los atributos renombrados como $A_1,\dots,A_n$.
+
+- Ejemplo encontrar el sueldo más alto de la unversidad
+      - Permite hacer consultas comparando una relación consigo misma.
+
+\begin{align*}
+& \Pi_{sueldo}(profesor)\ - \\
+& \Pi_{profesor.sueldo} (\sigma_{profesor.sueldo < d.sueldo}(profesor \times \rho_d(profesor)))
+\end{align*}
+
+- También puede usarse la notación posicional de atributos $.
+
+\begin{align*}
+\Pi_{\$4} (\sigma_{\$4 < \$8}(profesor \times profesor))
+\end{align*}
+
+*** Definición formal del álgebra relacional
+- [[id:FBDatos]] pag 102
+- Una relación constante se escriben las tuplas entre {...}
+      - {(2222, Einstein, Física, 95000),...}
+- $E_i$ es una expresión formada de operaciones.
+- Cada expresión puede volverse a tratar con operaciones.
+      - Las expresiones devuelven relaciones.
+
+*** Otras operaciones del algebra relacional
+- Operaciones que no añaden potencia pero sí facilitan las consultas.
+
+**** Operación intersección de conjuntos
+- $\cap$ denota intersección.
+      - $r \cap s = r - (r - s)$
+
+\begin{align*}
+& \Pi_{asignatura\_id}(\sigma_{semestre = \ll Otono \gg \land ano = 2009}(seccion))\ \cap \\
+& \Pi_{asignatura\_id}(\sigma_{semestre = \ll Primavera \gg \land ano=2019}(seccion))
+\end{align*}
+
+**** Operación reunión natural
+- [[id:FBDatos]] pag 103
+- Simplifica ciertas consultas que exijan un producto cartesiano.
+- $\Join$ denota reunión natural.
+- La reunión natural es un producto cartesiano y una selección de aquellas tuplas que tienen el mismo valor para los atributos nombrados igual.
+- Es una operación asociativa.
+
+\begin{align*}
+\Pi_{nombre,asignatura\_id}(profesor \Join ensena)
+\end{align*}
+
+- $r \Join s = \Pi_{R \cup S}(\sigma_{r.A1=s.A1 \land \dots \land r.An=s.An}(r \times s))
+      - $R$ atributos de r
+      - $S$ atributos de s
+      - $R \cap S = {A_1, \dots, A_n}$
+
+- *reunión zeta* : extensión de la reunión natural.
+      - $r \Join_\theta s = \sigma_\theta (r \times s)$
+
+**** Operación asignación
+- $\leftarrow$ : denota asignación.
+
+\begin{align*}
+var \leftarrow R \times S
+\end{align*}
+
+**** Reunión externa
+- [[id:FBDatos]] pag 104
+- Extensión de la operación reunión para trabajar con información ausente.
+- Se usa para casos en el que una de la tuplas de una relación no tiene presencia en la otra relación.
+      - Con una reunión natural ese profesor no aparecería nunca.
+- *reunión externa por la izquierda* : toma las tuplas de la relación de la izquierda sin coincidencias con ningua de la derecha, y las añade al resultado natural con valores null.
+- *reunión externa por la derecha* : Simétroca a la reunión por la izquierda.
+- *reunión externa compelta* : Rellena con valores null tanto las tuplas de la izquierda que no coinciden como las de la derecha que no coinciden.
+
+*** Operaciones del álgebra relacional extendida
+**** Proyección generalizada
+- Extiende la proyección, permite el uso de operaciones aritméticas.
+      - Y de concatenación de carácteres.
+
+\begin{align*}
+\Pi_{F_1, \dots , F_n}(E)
+\end{align*}
+
+- $F_1,\dots,F_n$ : expresiones con constantes y atributos del esquema $E$.
+- operaciones : + - * /
+
+**** Agregación
+- [[id:FBDatos]] pag 105.
+- $\mathcal{G}$ denota agregación.
+- Toman una colección de valores y devuelven como resultado un único valor.
+- Operaciones comunes.
+      - sum
+      - count
+      - avg
+      - min
+      - max
+
+\begin{equation*}
+\mathcal{G}_{sum(sueldo)}(profesor)
+\end{equation*}
+
+- *-distinct* : para eliminar valores repetidos.
+
+\begin{equation*}
+\mathcal{G}_{count-distinct(ID)}(\sigma_{semestre=\ll Primavera \gg \land ano = 2019}(ensena))
+\end{equation*}
+
+- Se puede aplicar a grupos de conjuntos de tuplas
+      - En el caso de abajo se agrupa por /nombre_dept/.
+
+\begin{equation*}
+_{nombre\_dept}\mathcal{G}_{average(sueldo)}(profesor)
+\end{equation*}
+
+- Forma general
+
+\begin{equation*}
+_{G_1,\dots,G_n}\mathcal{G}_{F_1(A_1), \dots, F_m(A_m)}(E)
+\end{equation*}
+
+Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
+
+** Cálculo relacional de tuplas
+- [[id:FBDatos]] pag 107, hay ejemplos.
+- Lenguaje de consultas no procedimental.
+      - Describe la información deseada, pero no como obternerla.
+
+- $\{t|P(t)\}$ conjunto de tuplas $t$ tales que $P$ es cierto.
+
+*** Definición formal
+- $\{t|P(t)\}$
+- Hay variables libres y variables ligadas (precedidas por $\forall$ o $\exists$)
+- Las fórmulas se construyen con átomos.
+      - $s \in r$ : $s$ es una tupla y $r$ una relación.
+            - No se permite $\notin$
+      - $s[x] \Theta u[y]$ : $s$ y $us$ son tuplas, $x$ e $y$ son atributos.
+            - $\Theta$ es una operación de comparación.
+      - $s[x] \Theta c$ donde $c$ es una constante en el dominio del atributo $x$.
+      - Las fórmulas se construyen a partir de átomos.
+            - Un átomo es una fórmula
+            - Si $P$ es una fórmula, también lo es $\lnot P$ y $(P)$
+            - $P_1 \Diamond P_2$, también son fórmulas.
+                  - $\Diamond$ puede ser $\land \lor \to$
+            - $\land \lor \to$ Se les aplica las transformaciones de la lógica.
+                  - DeMorgan y todo eso.
+
+*** Seguridad de las expresiones
+- $\{t|P(t)\}$ se dice segura si todos los valores que aparecen en el resultado son valores de $dom P$.
+      - $dom P$: conjunto de valores a los que P hace referencia.
+
+*** Potencia expresiva de los lenguajes
+- Equivalente al algebra relacional básica.
+
+** El cálcula relacional de dominios
+- Usa variables de dominio.
+      - Toma los valores del dominio de un atributo.
+- Es la base del lenguaje *QBE*.
+
+*** Definición formal
+- $\{<x_1,\dots,x_n> | P(x_1,\dots,x_n)\}$
+- $x_1,\dots,x_n$ representan las variables de dominio.
+- $P$ es una fórmula compuesta por átomos.
+- Formas de los átomos:
+      - $<x_1,\dots,x_n> \in r$ : $r$ es una relación con $n$ atributos.
+      - $x \Theta y$ : $x\ y$ son variables del dominio y $\Theta$ un operador de comparación.
+      - $x \Theta c$ : ahora $c$ es una constante del dominio.
+- Las fórmulas se construyen a partir de los átomos.
+      - los átomos son fórmulas.
+      - si $P$ es una fórmula también lo es $\lnot P$ y $(P)$.
+      - si $P_1\ P_2$ són fórmulas también lo son $P_1 \Diamond P_2$
+            - $\Diamond$ puede ser $\land \lor \to$
+      - Si $P(x)$ es una fórmula y $x$ una variable libre del dominio.
+            - $\exists x (P(x))$ y $\forall x (P(x))$ són fórmulas.
+- [[id:FBDatos]] pag 109 hay ejemplos de consultas.
+
+*** Seguridad de las expresiones
+- [[id:FBDatos]] pag 110
+- $\{<i,n,d,s> | \lnot(<i,n,d,s> \in profesor)\}$ : permite valores del resultado que no está en el dominio.
+- Restricciones.
+      1. Todos los valores que aparecen en las tuplas de expresión son de $dom P$.
+      2. Para cada subfórmula $\exists$ del tipo $\exists x(P(x))$, solo es cierta si existe un valor de $dom P$ tal que $p(x)$ sea cierto.
+      3. $\forall x (P(x))$ es verdadera si y solo sí se cumple para todos los valores de $x$ de $dom P$.
 
 * Notes
 ** mysql Service
