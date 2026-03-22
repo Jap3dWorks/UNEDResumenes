@@ -848,18 +848,18 @@ FIN-PARA
             - Detalle de las partes.
 
 *** Documento ADD
-**** Introducción
+**** [1] Introducción
 - Debe darse una visión general del documento *ADD*.
 - Es conveniente hacer referencia a los correspondientes apartados del *SRD*
 
-**** Panorámica del sistema
+**** [2] Panorámica del sistema
 - Visión general de los requisitos funcionales, haciendo referencia al *SRD*.
 
-**** Contexto del sistema
+**** [3] Contexto del sistema
 - Se indicará si este sistema tiene conexión con otros.
 - En cada apartado se especifica la interfaz que se debe usar para comunicarse con otros sistemas.
 
-**** Diseño del Sistema
+**** [4] Diseño del Sistema
 - Se describe el nivel superior de diseño.
 - Se hace la primera estructuración de los componentes.
 
