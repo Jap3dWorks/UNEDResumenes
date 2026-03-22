@@ -852,6 +852,16 @@ FIN-PARA
 - Debe darse una visión general del documento *ADD*.
 - Es conveniente hacer referencia a los correspondientes apartados del *SRD*
 
+***** [1.1] Objetivo
+
+***** [1.2] Ámbito
+
+***** [1.3] Definiciones, siglas y abreviaturas
+
+***** [1.4] Referencias
+
+***** [1.5] Panorámica del documento
+
 **** [2] Panorámica del sistema
 - Visión general de los requisitos funcionales, haciendo referencia al *SRD*.
 
@@ -920,35 +930,36 @@ FIN-PARA
 *** Documento DDD
 - Este documento crece con el desarrollo del proyecto.
       - Puede ser conveniente organizarlos en varios volúmenes.
+- Mayor nivel de detalle comparado con el ADD.
 
-- Parte 1. Descripción General
-      1. Introducción
-             1. Objetivo
-             2. Ámbito
-             3. Definiciones, diglas y abreviaturas
-             4. Referencias
-             5. Panorámica del documento
-      2. Normas, Convenios y Procedimientos (Especialmente importante)
-             1. Normas de diseño de bajo nivel
-             2. Normas y convenios de documentación
-             3. Convenios de nombres
-             4. Normas de programación
-             5. Herramientas de desarrollo de software
-- Parte 2. Especificaciones de diseño detallado
-      - n. Identificador del componente
-            1. Identificador
-            2. Tipo
-            3. Objetivo
-            4. Función
-            5. Subordinados
-            6. Dependencias
-            7. Interfaces
-            8. Recursos
-            9. Referencias
-            10. Proceso
-            11. Datos
-- Apéndice A. Listados Fuente
-- Apéndice B. Matriz Requisitos/Componentes
+**** Parte 1. Descripción General
+***** [1] Introducción
+****** [1.1] Objetivo
+****** [1.2] Ámbito
+****** [1.3] Definiciones, diglas y abreviaturas
+****** [1.4] Referencias
+****** [1.5] Panorámica del documento
+***** [2] Normas, Convenios y Procedimientos (Especialmente importante)
+****** [2.1] Normas de diseño de bajo nivel
+****** [2.2] Normas y convenios de documentación
+****** [2.3] Convenios de nombres
+****** [2.4] Normas de programación
+****** [2.5] Herramientas de desarrollo de software
+**** Parte 2. Especificaciones de diseño detallado
+***** [n.] Identificador del componente
+****** [n.1] Identificador
+****** [n.2] Tipo
+****** [n.3] Objetivo
+****** [n.4] Función
+****** [n.5] Subordinados
+****** [n.6] Dependencias
+****** [n.7] Interfaces
+****** [n.8] Recursos
+****** [n.9] Referencias
+****** [n.10] Proceso
+****** [n.11] Datos
+**** Apéndice A. Listados Fuente
+**** Apéndice B. Matriz Requisitos/Componentes
 
 * Técnicas Generales de Diseño de Software
 - [[id:AprIngSft]] pag 165.
