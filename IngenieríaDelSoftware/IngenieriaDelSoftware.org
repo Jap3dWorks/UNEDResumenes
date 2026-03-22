@@ -492,7 +492,7 @@ FIN-PARA
 :PROPERTIES:
 :ID:       7a471046-d69d-4505-8c31-75139d1fd285
 :END:
-- pag 86
+- [[id:AprIngSft]] pag 86
 - Organización que facilite las operaciones sobre los datos que se manejan.
 - Relación entre los datos.
 - Es fundamental que en la especificación se establezca el modelo de datos que se considera más adecuado.
@@ -518,13 +518,13 @@ FIN-PARA
 [[attachment:clipboard-20260226T112053.png]]
 
 ** Documento de especificación de requisitos (SRD)
-- pag 91
+- [[id:AprIngSft]] pag 91
 - Software requirements document
 - Debe cubrir los objetivos indicados en [[id:980e8981-dd69-4a38-a58b-3a5dc562cace][Análisis de requisitos de software]].
 - Documento en forma de contrato
       - Debe ser fácil de modificar.
 
-*** Estructura SRD de la agencia espacial europea
+*** Estructura SRD de la agencia espacial europea [ESA91]
 1. *INTRODUCCIÓN*
        1. *Objetivo*
        2. *Ámbito*
@@ -794,6 +794,9 @@ FIN-PARA
 - Abstracciones
       - *Funcionales*: Operación sin la parte de contenido.
       - *TAD o tipos abstractos de datos* : Hay cierta analogía con las clases.
+            - Representan las posibles *operaciones* sobre una entidad lógica de datos.
+            - Contiene una parte del *contenido* (genéricos por ejemplo).
+            - Permite crear nuevos tipos de datos.
       - *Datos encapsulados* : Solo existe una variable del tipo indicado.
 - Partes de una abstracción
       - *Nombre* : Identificador de la abstracción.
@@ -802,8 +805,6 @@ FIN-PARA
 
 [[attachment:clipboard-20260305T134546.png]]
 
-- *Dato abstracto* : dato concreto de un TAD.
-      - Debe aparecer como constante o variable.
 - Los diagramas de estructura basado en abstracciones tienen un orden jerárquico.
       - El módulo superior usa al módulo inferior.
 
@@ -837,7 +838,7 @@ FIN-PARA
                   - (1, $\pitchfork$) : almenos uno
 
 ** Documento de diseño
-- pag 158
+- [[id:AprIngSft]] pag 158
 - La labor de diseño se recoje en el *SDD* (software design document).
 - Es habitual usar dos o más documentos organizados de forma jerárquica.
 - La *ESA* recomienda:
@@ -849,10 +850,10 @@ FIN-PARA
 *** Documento ADD
 **** Introducción
 - Debe darse una visión general del documento *ADD*.
-- Es conveniente hacer referencia a los correspondientes apartados del *SDR*
+- Es conveniente hacer referencia a los correspondientes apartados del *SRD*
 
 **** Panorámica del sistema
-- Visión general de los requisitos funcionales, haciendo referencia al *SDR*.
+- Visión general de los requisitos funcionales, haciendo referencia al *SRD*.
 
 **** Contexto del sistema
 - Se indicará si este sistema tiene conexión con otros.
@@ -1445,7 +1446,8 @@ FIN-PARA
 - *Cardinalidad* : Matemáticamente número de objetos únicos en un conjunto.
       - Valores máximos y mínimos de la relación entre entidades (0,1), (1,M), (1,1).
 - *SDD* : Software Design Document.
-- *ESA* : Agencia espacia europea.
+- *ESA* : Agencia espacia europea
+- *Tipo abstracto de datos (TAD)* : Tipo de datos vaciado de implementación (Interfaz).
 
 * Bibliografía
 ** Aprocimación a la ingeniería del software

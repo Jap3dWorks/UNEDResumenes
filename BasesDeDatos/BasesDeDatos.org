@@ -1927,7 +1927,6 @@ from total_créditos_dept;
 *** OLAP en SQL
 # TODO
 
-
 * Lenguajes formales de consulta relacional
 
 ** El álgebra relacional
