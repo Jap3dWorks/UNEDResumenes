@@ -96,15 +96,15 @@
 ** Propiedades de los circuitos digitales
 *** Retardo de los dispositivos
 - *glitch*, cambio temporal, pico de subida o bajada, en el voltaje.
-- *Retardo inercial*, Si el tiempo de propagación es mayor que el glitch, este no afecta al funcionamiento.
+- *Retardo inercial* (por defecto), Si el tiempo de propagación es mayor que el glitch, este no afecta al funcionamiento.
       - hay que mantener el estado en un dispositivo para que el cambio se propague.
 - *Retardo de transporte o retardo puro*. Los glitches de entrada se manifiestan en los pines de salida.
       - adecuado para modelar dispositivos de poca inercia.
 - La síntesis determina el retardo de un circuito.
 
 #+begin_src vhdl
-y1 <= x after 100 ns;
-y2 <= transport x after 100 ns;
+y1 <= x after 100 ns;            -- retardo inercial
+y2 <= transport x after 100 ns;  -- retardo de transporte
 #+end_src
 
 *** Ejecución Concurrente
@@ -425,7 +425,8 @@ end entity bp;
 - Se incluyen después de la asignación de puertos.
 
 ** Architecture
-- Define el comportamiento y la estructura de la entidad de diseno.
+- [[id:DACircDig]] pag 102
+- Define el comportamiento y la estructura de la entidad de diseño.
       - *Descripción estructural*, conexión de componentes de más bajo nivel.
       - *Descripción de su comportamiento*.
       - *Descripción mixta*, estructural y de comportamiento.
@@ -455,6 +456,8 @@ señal <= forma_de_onda;
 
 - La ejecución de una señal de asignación concurrente simple se produce en el instante en que cambia el valor de alguna de las señales que aparecen en la expresión a la derecha de <=.
 - Se puede especificar el valor de retardo.
+      - Por defecto el retardo es inercial.
+      - Si se especifica *transport* el retardo es de transporte.
 
 #+begin_src vhdl
 y0 <= x1 + x2 after 10 ns;               -- 10 ns de retardo inercial
@@ -918,6 +921,8 @@ end component nombre_componnete;
 #+end_src  
 
 *** Instancias los componentes e indicar su conexión
+- [[id:DACircDig]] pag 136
+
 #+begin_src vhdl
 nombre_instancia : component nombre_componente  -- {component} es opcional
                    port map (asociación_puertos_señales);
@@ -929,6 +934,8 @@ nombre_instancia : component nombre_componente  -- {component} es opcional
       - *Asociación nominal*, tipo puerto => señal.
 
 *** Ejemplos declaración e instanciación de componentes
+- [[id:DACircDig]] pag 137
+
 #+caption: MUX 2:1 de 1 bit
 #+begin_src vhdl
 -- diagrama en página 137
@@ -956,10 +963,10 @@ architecture Mux2_1bit of Mux2_1bit is
   end component and2;
   signal n1, n2, n3 : std_logic;                         -- señales intermedias
 begin
-  Inv_1  : not1 port map (x0 => s0, y0 => n1);           -- asociación nominal
-  And2_1 : and2 port map (x0 => i0, x1 => n1, y0 => n2);
-  And2_2 : and2 port map (x0 => i1, x1 => s0, y0 => n3);
-  Or_1   : or2  port map (x0 => n2, x1 => n3, y0 => d);
+  Inv_1  : component not1 port map (x0 => s0, y0 => n1);           -- asociación nominal
+  And2_1 : component and2 port map (x0 => i0, x1 => n1, y0 => n2);
+  And2_2 : component and2 port map (x0 => i1, x1 => s0, y0 => n3);
+  Or_1   : component or2  port map (x0 => n2, x1 => n3, y0 => d);
 end architecture Mux2_1bit;
 #+end_src
 
@@ -991,7 +998,7 @@ end architecture Mux2_4bit;
 #+end_src
 
 *** Diseños con estructura regular
-- pag 140
+- [[id:DACircDig]] pag 140
 - La sentencia generate puede usarse para describir circuitos con estructura regular (estructura repetitiva).
 
 #+caption: Array de puertas AND usando GENERATE  
@@ -1148,7 +1155,7 @@ constant nombre_constante : tipo_dato := expresión;
       - "1111_1111_1111", por defecto binario
 
 **** Operadores
-- pag 148
+- [[id:DACircDig]] pag 148
       - Tabla de operadores
       - Tabla de precedencias
 - Ante misma precedencia se evalua primero el de la izquierda.
@@ -1312,10 +1319,11 @@ código <= "11" when std_match(x, "1---") else
 #+end_src        
 
 **** Conversión entre tipos
-- pag 160
+- [[id:DACircDig]] pag 160
 - *to_unsigned*, *to_signed*, *to_integer*.
       - Conversiones hacia integer.
-- *std_logic_vector*, *unsigned* y *signed* tienen casting directo.
+- *std_logic_vector*, *unsigned* y *signed* tienen casting.
+      - unsigned(std_logic_vector_variable)
 
 #+begin_src vhdl
 signal u1, u2 : unsigned         (7 downto 0);
@@ -1771,6 +1779,7 @@ end architecture drivers2;
 - [[id:DACircDig]] pag 222
 
 * Diseño de lógica combinacional
+- [[id:DACircDig]] pag 277
 - El diseno de un circuito combinacional debe ser sin memoria y sin estado.
 - Se intenta evitar incluir retardos en la descripción VHDL.
 
@@ -1893,7 +1902,7 @@ begin
     variable test_in : unsigned (2 downto 0);  -- vector de test
   begin
     test_in := B"000";
-    for count in o to 7 loop
+    for count in 0 to 7 loop
       x2 <= test_in(2);  -- asignar valores a las señales de entrada
       x1 <= test_in(1);
       x0 <= test_in(0);
@@ -2090,7 +2099,7 @@ begin
   accarreo_out <= result(1);
   res <= result(0);
 end architecture rest_completo_comport;
-#+end_src  
+#+end_src
 
 *** Descripción de la estructura
 - [[id:DACircDig]] pag 293
@@ -2109,29 +2118,29 @@ end entity rest_completo;
 architecture rest_completo_estruc of rest_completo is
   signal not_a, c, d, e, f : std_logic;
 
-component xor2 is
-port
-(y0             : out std_logic;
-x0,x1           : in  std_logic);
-end component xor2;
+  component xor2 is
+  port
+  (y0             : out std_logic;
+  x0,x1           : in  std_logic);
+  end component xor2;
 
-component not1 is
-port
-(y0             : out std_logic;
-x0              : in  std_logic);
-end component not1;
+  component not1 is
+  port
+  (y0             : out std_logic;
+  x0              : in  std_logic);
+  end component not1;
 
-component and2 is
-port
-(y0             : out std_logic;
-x0,x1           : in  std_logic);
-end component and2;
+  component and2 is
+  port
+  (y0             : out std_logic;
+  x0,x1           : in  std_logic);
+  end component and2;
 
-component or3 is
-port
-(y0             : out std_logic;
-x0,x1           : in  std_logic);
-end component or3;
+  component or3 is
+  port
+  (y0             : out std_logic;
+  x0,x1           : in  std_logic);
+  end component or3;
 
 begin
 -- TODO preguntar en tutoria esta forma de instanciación

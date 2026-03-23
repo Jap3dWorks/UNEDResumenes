@@ -7,9 +7,9 @@ GHDLFLAGS = --std=08  # Use VHDL-2008 (adjust based on your needs)
 all: run
 
 # Analyze all VHDL files
-analyze: codificador_4_2_prioridad.vhd bp_codificador_4_2.vhd
-	$(GHDL) -a $(GHDLFLAGS) codificador_4_2_prioridad.vhd
-	$(GHDL) -a $(GHDLFLAGS) bp_codificador_4_2.vhd
+analyze: codificador_4_2_prioridad.vhdl bp_codificador_4_2.vhdl
+	$(GHDL) -a $(GHDLFLAGS) codificador_4_2_prioridad.vhdl
+	$(GHDL) -a $(GHDLFLAGS) bp_codificador_4_2.vhdl
 
 # Elaborate the testbench
 elaborate: analyze
