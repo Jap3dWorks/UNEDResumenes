@@ -199,7 +199,7 @@ Busca el valor de X que hace cierta la siguiente pregunta.
 
 Ejemplo función factorial en C y en Haskell  
 
-#+begin_src c
+#+begin_src C
 int factorial(int n) {
     int f = 1;
     for (int x=1; x <=n; x++) {
@@ -750,9 +750,9 @@ concat = foldr (++) []
 #+end_src
 
 * Programación lógica (ProLog)
-- pag 85
+- [id:TeLenProg] pag 85
 - Se usa *ProLog*
-      - El Programados se orienta en describir el problema.
+      - El Programador se orienta en describir el problema.
       - Los programas y datos se presentan bediante *cláusulas* definidas.
       - *Unificación* : equiparación incluida en el sistema (operaciones de sustitución lógica).
       - Incluye un mecanismo de inferencia automática basado en vualta atrás y búsqueda en profundidad.
@@ -915,6 +915,7 @@ factorial(N,M) :- I is N-1, factorial(I,A), M is N*A.
 #+end_src  
 
 ** Computación lógica
+- [id:TeLenProg] pag 101
 - Proceso que resuelve la consulta.
   
 *** Unificación
@@ -926,6 +927,7 @@ factorial(N,M) :- I is N-1, factorial(I,A), M is N*A.
       4. Dos términos compuestos se unifican si tienen igual símbolo de función, igual número de argumentos y éstos son unificables.
 
 **** Unificación General
+- [id:TeLenProg] pag 103
 - *Entrada* : A,B literales a unificar.
 - *Algoritmo* :
 #+begin_src pseudocode
@@ -951,6 +953,7 @@ fmientras
       - o si existe una instancia de la regla del programa que infiere exactamente al objetivo.
         
 *** Resolución
+- [id:TeLenProg] pag 105
 - Algoritmo de resolución controlada.
 - *Inicio* : La lista de objetivos es la que forma la consulta.
 - *Selección* ...
@@ -969,15 +972,19 @@ fmientras
 *** Control de la ejecución
 # TODO: repasar y dibujar los espacios de búsqueda.
 **** Corte
-- [[id:TeLenProg]] pag 112
+- [id:TeLenProg] pag 112
 - En Prolog el control de la ejecución es interno y no modificable.
 - Existen algunos mecanismos no lógicos que permiten la variación de la forma de ejecución.
 - *corte* : ! : permite reducir el espacio de búsqueda de un objetivo.
       - Elimina todas las opciones de la rama en que se encuentra a partir del nodo anterior al de su aparición (Solo se sigue una de las ramas).
+      - Parecido a una excepción.
+      - Depende de si se llega a ejecutar el corte durante la resolución, por tanto depende de la situación del token corte.
+            - !,q (siempre corta) es diferente a q,!
 
 #+begin_src prolog
+% las reglas se resuelven en orden
 p :- q,t.
-p :- m, !.                      % ! indica el corte
+p :- m,!.                      % ! indica el corte
 p :- r.
 q :- s,!.
 s.
@@ -1005,6 +1012,8 @@ no(X).
 #+end_src  
 
 - *Corte rojo* : Corte que modifica el significado del programa.
+      - Quita soluciones.
+      - No tiene porque ser malo, a veces solo se quiere una solución.
 - *Corte verde* : Corte que no modifica el significado del programa.
 
 *** Estructura de datos: la lista
@@ -1315,7 +1324,7 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
       - *valores* : Representan cualquier cantidad almacenada.
       - *localizaciones* : Lugares donde se almacenan los valores (direcciones en memoria).
 
-#+begin_src c
+#+begin_src C
 const int n=5;     // Asocia a n el atributo /tipo de datos/ constante entera
                    //  y el atributo /valor/ 5
 int x;             // Asocia a x el atributo /variable/, atributo /tipo de datos/ entero
@@ -1328,7 +1337,7 @@ double f(int n) {  // Asocia el atributo /función/ a f.
 
 - *vínculo* : Es el proceso de asignación de un atributo a un identificador.
 
-#+begin_src c
+#+begin_src C
 x=2;  // También es un vínculo,
       //  Se asocia el atributo /valor/ 2 al identificador x.
 #+end_src
@@ -1389,7 +1398,7 @@ x=2;  // También es un vínculo,
 - *operador de resolución de alcance* :  En el caso de C podemos usar el operador "::" para acceder a la variable ocultada.
       - También se usa en los *namespace* y *clases* de C++ por ejemplo
 
-#+begin_src c
+#+begin_src C
 int x;
 
 void p (void) {
