@@ -1300,7 +1300,314 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
       - Que emplee *análisis sintáctico descendente*.
 
 ** La semántica de los lenguajes de programación
-# TODO
+- [[id:TeLenProg]] pag 177
+- La semántica no está estandarizada ni consensuada como en el caso de la sintaxis.
+- *Métodos informales* de especificar la semántica.
+      - Mediante un manual de referencia del lenguaje, aunque puede ser impreciso.
+      - Mediante el uso de un traductor para definir la semántica. Habrá preguntas que no puedan ser contestadas hasta la ejecución del programa.
+- Con los métodos informales es dificil depurar los errores del traductor.
+- *Semántica denotacional* : Método formal de especificación de la semántica.
+
+*** Atributos, vínculos y funciones semánticas
+- La descripción semántica de un lenguaje tienen que estar incluidas las reglas que determinan el significado de cada uno  de los nombres o *identificadores* utilizados para las variables, procedimientos y constantes.
+- El significado de un identificador queda determinado por las propiedades o atributos asociados al mismo.
+- Atributos especialmente importantes:
+      - *valores* : Representan cualquier cantidad almacenada.
+      - *localizaciones* : Lugares donde se almacenan los valores (direcciones en memoria).
+
+#+begin_src c
+const int n=5;     // Asocia a n el atributo /tipo de datos/ constante entera
+                   //  y el atributo /valor/ 5
+int x;             // Asocia a x el atributo /variable/, atributo /tipo de datos/ entero
+double f(int n) {  // Asocia el atributo /función/ a f.
+                   //  Además de identificadores de los parámetros, tipos devueltos,
+                   //  Y el cuerpo de código que devuelve la función.
+    // ...
+}
+#+end_src
+
+- *vínculo* : Es el proceso de asignación de un atributo a un identificador.
+
+#+begin_src c
+x=2;  // También es un vínculo,
+      //  Se asocia el atributo /valor/ 2 al identificador x.
+#+end_src
+
+- *Tiempo de vinculación* : Tiempo que en el que se está calculando o vinculando un identificador.
+- *Vínculo estático* : La vinculación se hace en tiempo de traducción.
+- *Vínculo dinámico* : La vinculación se hace en tiempo de ejecución.
+      - *atributo dinámico* : Atributo vinculado de forma dinámica.
+- Los compiladores generan muchos más vínculos estáticos (más eficiente).
+- Por convenio el tiempo de vinculación de un atributo es el tiempo más corto de los que las reglas del lenguaje permiten.
+- Un atributo estático puede vincularse:
+      - En tiempo de traducción (o compilación).
+      - En tiempo de linkado, encadenamiento del programa con la bibliotecas.
+      - En tiempo de carga, Durante la carga del programa para la ejecución.
+      - En tiempo de definición del lenguaje.
+            - Como por ejemplo los tipos de datos.
+      - En tiempo de implementación del lenguaje.
+            - Como por ejemplo tipos de datos cuyo tamaño depende de la implementación.
+                  - int, valor de maxint, etc
+- *Tabla de símbolos* : mecanismo para mantener la consistencia de los vínculos y los identificadores.
+- Los compiladores generan código para conservar durante la ejecución del programa ciertos atributos.
+      - La asignación de memoria para almacenar el vínculo de los identificadores con localizaciones de almacenamiento, se realiza por separado, en el *ambiente* o *entorno*.
+      - *Estado del cómputo* : vínculos entre las localizaciones de almacenamiento y los valores.
+- En un *compilador* se encuentran las siguientes funciones semánticas para relacionar identificadores con sus atributos:
+      - *Tabla de símbolos*, almacena la asignación de identificadores a atributos estáticos.
+      - El *ambiente* asigna identificadores a localizaciones de almacenamiento.
+      - El *estado del computo* asigna localizaciones de almacenamiento a valores.
+- En un *intérprete* se procesan tanto los atributos estáticos como los dinámicos.
+      - Se combina la tabla de símbolos y el ambiente.
+
+*** Declaraciones, bloques y alcance
+- Las *declaraciones* pueden establecer vínculos de forma implícita o explícita.
+      - vínculo implícito : no declarada literalmente.
+      - vínculo explícito : declarada literalmente.
+      - int x vincula explicitamente el tipo de datos, e implícitamente la localización de memoria exacta.
+- en C y C++.
+      - *Definición* : vincula todos los atributos potenciales.
+      - *Declaración* : vinculo sólo algunos atributos.
+- *bloque* : constructor específico de un lenguaje.
+      - Las declaraciones suelen estar asociadas a los bloques.
+      - Secuencia de declaraciones junto a secuencia de de sentencias rodeadas por *marcadores*.
+      - En C los bloques se denominan *sentencias compuestas*.
+- *registros* : constructores del lenguaje diferente a los bloques.
+      - structs de C.
+- *clase* : constructor básico.
+      - como en Java, que no necesita estar dentro de otra declaración.
+- En algunos lenguajes las declaraciones pueden elgobarse en grupos más grandes.
+      - paquetes, módulos, espacios de nombres, etc...
+- *alcance* o *ámbito* del vínculo : región del programa en la que se conserva dicho vínculo.
+      - Debe evitarse el uso del concepto *alcance* referido a los identificadores.
+            - Pueden haber varias variables i en diferentes puntos del programa.
+- *Alcance léxico* : En la mayoría de lenguajes estructurados por bloques, el alcánce de un vínculo queda limitado al bloque en que aparece su declaración.
+      - *Declaración antes de uso* : el alcance de una declaración comienza en la propia declaración.
+            - Como en C
+- En lenguajes por bloques las declaraciones en bloques anidados toman preferencia sobre declaraciones anteriores.
+      - *visibilidad de una declaración* : como en el caso siguiente de C, algunos vínculos quedan ocultos.
+            - *ocultamiento del alcance* o *agujeros* o *hucos* : Es el proceso de ocultar un vínculo.
+- *operador de resolución de alcance* :  En el caso de C podemos usar el operador "::" para acceder a la variable ocultada.
+      - También se usa en los *namespace* y *clases* de C++ por ejemplo
+
+#+begin_src c
+int x;
+
+void p (void) {
+    char x;  // ocultamiento por alcance
+    //...
+    ::x = 7; // operador de resolución de alcance
+}
+
+main() {
+    x = 2;
+}
+#+end_src
+
+- En C la palabra *extern* permite acceder a la declaración de otro archivo ".c".
+      - Permite compilar por separado e identificarse en la vinculación.
+- *static* en un archivo ".c" o ".cpp" es solo visible desde el interior.
+      - Una restricción del alcance.
+- Las reglas de alcance deben tener en cuenta la recursividad.
+      - En Haskell es a tope.
+- Generalmente las declaraciones locales en el interior de una clase tienen a toda la clase como alcance.
+
+*** Tabla de símbolos
+- [[id:TeLenProg]] pag 188
+- La tabla de símbolos contiene un conjunto de identificadores y para cada uno de ellos una pila con las declaraciones asociadas a él.
+      - Las declaraciones en la cima de la pila son las visibles en cada momento.
+      - Así se asegura que al salir de bloque el anterior vínculo se restrablezca.
+- Ejemplos de la tabla de símbolos (en el libro hay más).
+
+| Identificador | Pila (cima)                               |             |
+|---------------+-------------------------------------------+-------------|
+| x             | double local de p                         | int global  |
+| y             | int array local de un bloque anidado en p | char global |
+| p             | void función                              |             |
+
+- Tabla de símbolos según aparece durante la ejecución, *alcande dinámico*.
+      - [[id:TeLenProg]] pag 191 un ejemplo
+      - Es dificil de implementar y produce problemas.
+            - La semántica de una función puede cambiar según avanza la ejecución.
+            - No pueden definirse el tipo de datos de las variables.
+      - Puede ser válido para lenguajes muy dinámicos en los que no se hagan programas grandes.
+- Ejemplo del alcance dinámico en elisp.
+
+#+begin_src elisp
+(defun A ()
+  (setq-local a "soy a"))
+
+(defun B ()
+  (A)
+  (message "Desde B : %s" a))
+
+(B)
+#+end_src
+
+#+RESULTS:
+: Desde B : soy a
+
+- Mantener una sola tabla única para todo el programa con inserciones es propia de lenguajes simpres como C o Pascal.
+      - Aún así existen excepciones en C.
+      - los estructs contienen subtablas con las declaraciones de sus miembros.
+      - Estas subtablas no pueden eliminarse hasta que que la "variable" struct sea eliminada.
+            - Esto es al final del programa.
+
+#+begin_src C
+struct {
+    int a;
+    char b;
+    double c;
+} x = {1, 'a', 2.2};
+
+void p () {
+    struct {  // aunque no accesible esta definición queda almacenada
+                //  hasta el final del programa.
+        double a;
+        int b;
+        char c;
+    } y={1.2, 3, 'b'};
+}
+
+void q () {
+    /* struct B var = {0.0, 3, 'q'}; */
+    /* struct A var = {0, 'q', 0.2}; */
+}
+
+void main() {
+}
+#+end_src
+
+*** Asignación, tiempo de vida y ambiente
+- [id:TeLenProg] pag 196
+- El ambiente se encarga de mantener los vínculos de los identificadores con las localizaciones de memoria.
+- En general en un lenguaje con estructura de bloques:
+      - Los identificadores de las variables globales se asignan estáticamente porque su significado es fijo en el programa.
+      - Los identificadores de las variables locales se asignan dinámicamente cuando la ejecución llega al bloque.
+- En el ambiente se mantiene una estructura de pila para vincular las localizaciones a las variables.
+      - Cada posición en la pila es una dirección en memoria para el bloque.
+            - Contigua dentro del bloque no contigua con otros bloques.
+- *objeto* : área de almacenamiento asignada en el ambiente tras el procesamiento de una declaración.
+      - El *tiempo de vida* o *extensión* de un objeto es la duración de su asignación en el ambiente.
+- Lenguajes con *punteros* es necesaria una extensión del ambiente.
+      - Y mecanismos para la asginación de memoria.
+
+#+begin_src C
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(void) {
+    int * x = NULL;
+
+    x = (int*) malloc(sizeof(int));
+    
+    free(x);
+
+    printf("end example");
+
+    return 0;
+}
+#+end_src
+
+#+RESULTS:
+: end example
+
+- Para permitir la asignación arbitraria de memoria el ambiente debe tener un área enla memoria para ello (*montículo*, heap), se conoce como *asignación dinámica*.
+      - *Asignación automática* cuando no es en el heap (stack).
+- *clases de almacenamiento* : en un lenguaje con estructura por bloques ser refiere a la correspondencia con los tipos de asignación de localizaciones en el ambiente.
+      - Estático (variables globales), automático (variables locales), dinámico (para asignación de montículos).
+
+#+begin_src C :results output
+#include <stdlib.h>
+#include <stdio.h>
+
+int p(void) {
+    static int p_count=0; // Se inicia una sola vez, aunque el alcanze es local.
+    p_count +=1;
+    int x=0;
+
+    // cuidado con las asignaciones en bloques if
+    if (x=p_count) {
+        printf("Destruction, x=%d\n", x);
+    }
+
+    return p_count;
+}
+
+int q(int a) {
+
+    const int b = 7 + 2 * 2;
+    const int c = a+b;
+
+    int arr[a];
+
+    printf("Value b : %d\n", b);
+    printf("Value c : %d\n", c);
+    
+}
+
+int main(void) {
+    p();
+    q(10);
+    q(20);
+    return 0;
+}
+#+end_src
+
+#+RESULTS:
+: Destruction, x=1
+: Value b : 11
+: Value c : 21
+: Value b : 11
+: Value c : 31
+
+*** Variables y constantes
+- [id:TeLenProg] pag 201
+- atributos de una variable
+      - identificador
+      - localización
+      - valor
+      - otros
+- *valor r* : Valor almacenado (esto en c++ es muy usado para las operaciones de std::move)
+- *valor l* : Localización de una variable
+- *Asignación por compartición* : copia las localizaciones no los valores.
+- *Asignación por clonación* : Copia el valor en una localización nueva.
+- *Semántica de puntero* : no la entiendo muy bien
+      - Dice que lo usa Lisp e imagino que se refiere a la de C.
+- *Semántica de almacenamiento* : La más habitual
+- Las *constantes* tienen semántica de valor, porque nunca cambian.
+      - 77 o "a" se reconocen como constantes pero se denominal *literales*.
+            - Para distinguirlas de las constantes declaradas en el programa.
+- Clasificiación de las constantes:
+      - *Constantes estáticas* : Cuyo valor se puede calcular antes de la ejecución (constexpr en C++).
+            - *Constantes en tiempo de compilación*.
+                  - Mejoran la eficiencia y no consumen memoria.
+            - *Constatnes estáticas* : se calculan en la carga del programa.
+      - *Constantes dinámicas* : Cuyo valor solo se puede computar en tiempo de ejecución.
+- En java *final* es la palabra clave para definir constantes.
+- En casi todos los lenguajes las definiciones de *funciones* son definiciones de constantes, cuyos valores son funciones.
+
+#+begin_src C :results output
+#include <stdlib.h>
+#include <stdio.h>
+
+int gcd (int u, int v) {
+    if (v==0) return u;
+    else return gcd(v, u % v);
+}
+
+typedef int(*FuncType)(int,int);
+
+int main(void) {
+    // asignación de una función a una variable.
+    FuncType fun_var = gcd;
+
+    printf("gcd %d\n", fun_var(15,10));
+    return 0;
+}
+#+end_src
+
+#+RESULTS:
+: gcd 5
 
 * Glosario
 - *Evaluación impaciente* : /factorial(4*5)/ primero evalua el resultado de 4*5.
