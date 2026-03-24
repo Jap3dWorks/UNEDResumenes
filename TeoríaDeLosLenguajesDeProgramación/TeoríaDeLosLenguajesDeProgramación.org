@@ -1339,13 +1339,13 @@ x=2;  // También es un vínculo,
       - *atributo dinámico* : Atributo vinculado de forma dinámica.
 - Los compiladores generan muchos más vínculos estáticos (más eficiente).
 - Por convenio el tiempo de vinculación de un atributo es el tiempo más corto de los que las reglas del lenguaje permiten.
-- Un atributo estático puede vincularse:
-      - En tiempo de traducción (o compilación).
-      - En tiempo de linkado, encadenamiento del programa con la bibliotecas.
-      - En tiempo de carga, Durante la carga del programa para la ejecución.
-      - En tiempo de definición del lenguaje.
+- Un *atributo estático* puede vincularse:
+      - *En tiempo de traducción* (o compilación).
+      - *En tiempo de linkado*, encadenamiento del programa con la bibliotecas.
+      - *En tiempo de carga*, Durante la carga del programa para la ejecución.
+      - *En tiempo de definición del lenguaje*.
             - Como por ejemplo los tipos de datos.
-      - En tiempo de implementación del lenguaje.
+      - *En tiempo de implementación del lenguaje*.
             - Como por ejemplo tipos de datos cuyo tamaño depende de la implementación.
                   - int, valor de maxint, etc
 - *Tabla de símbolos* : mecanismo para mantener la consistencia de los vínculos y los identificadores.
@@ -1353,11 +1353,11 @@ x=2;  // También es un vínculo,
       - La asignación de memoria para almacenar el vínculo de los identificadores con localizaciones de almacenamiento, se realiza por separado, en el *ambiente* o *entorno*.
       - *Estado del cómputo* : vínculos entre las localizaciones de almacenamiento y los valores.
 - En un *compilador* se encuentran las siguientes funciones semánticas para relacionar identificadores con sus atributos:
-      - *Tabla de símbolos*, almacena la asignación de identificadores a atributos estáticos.
-      - El *ambiente* asigna identificadores a localizaciones de almacenamiento.
+      - *Tabla de símbolos* : la [[id:c05d9849-2e4d-45ad-a766-71109e308b53][Tabla De Símbolos]] almacena la asignación de identificadores a atributos estáticos.
+      - El [[id:bccb71cd-1ae0-46a9-8f52-1989b118ae06][ambiente]] asigna identificadores a localizaciones de almacenamiento.
       - El *estado del computo* asigna localizaciones de almacenamiento a valores.
 - En un *intérprete* se procesan tanto los atributos estáticos como los dinámicos.
-      - Se combina la tabla de símbolos y el ambiente.
+      - Se combina la *tabla de símbolos* y el *ambiente*.
 
 *** Declaraciones, bloques y alcance
 - Las *declaraciones* pueden establecer vínculos de forma implícita o explícita.
@@ -1412,6 +1412,9 @@ main() {
 - Generalmente las declaraciones locales en el interior de una clase tienen a toda la clase como alcance.
 
 *** Tabla de símbolos
+:PROPERTIES:
+:ID:       c05d9849-2e4d-45ad-a766-71109e308b53
+:END:
 - [[id:TeLenProg]] pag 188
 - La tabla de símbolos contiene un conjunto de identificadores y para cada uno de ellos una pila con las declaraciones asociadas a él.
       - Las declaraciones en la cima de la pila son las visibles en cada momento.
@@ -1478,15 +1481,18 @@ void main() {
 #+end_src
 
 *** Asignación, tiempo de vida y ambiente
+:PROPERTIES:
+:ID:       bccb71cd-1ae0-46a9-8f52-1989b118ae06
+:END:
 - [id:TeLenProg] pag 196
-- El ambiente se encarga de mantener los vínculos de los identificadores con las localizaciones de memoria.
+- *El ambiente* se encarga de mantener los vínculos de los identificadores con las localizaciones de memoria.
 - En general en un lenguaje con estructura de bloques:
       - Los identificadores de las variables globales se asignan estáticamente porque su significado es fijo en el programa.
       - Los identificadores de las variables locales se asignan dinámicamente cuando la ejecución llega al bloque.
-- En el ambiente se mantiene una estructura de pila para vincular las localizaciones a las variables.
+- _En el ambiente se mantiene una estructura de pila para vincular las localizaciones a las variables_.
       - Cada posición en la pila es una dirección en memoria para el bloque.
-            - Contigua dentro del bloque no contigua con otros bloques.
-- *objeto* : área de almacenamiento asignada en el ambiente tras el procesamiento de una declaración.
+            - Memoria contigua dentro del bloque no contigua con otros bloques.
+- *objeto* : Área de almacenamiento asignada en el ambiente tras el procesamiento de una declaración.
       - El *tiempo de vida* o *extensión* de un objeto es la duración de su asignación en el ambiente.
 - Lenguajes con *punteros* es necesaria una extensión del ambiente.
       - Y mecanismos para la asginación de memoria.
