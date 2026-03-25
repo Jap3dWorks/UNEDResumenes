@@ -1019,11 +1019,197 @@ fsi
 *** Métodos deductivos y coste computacional de la Lógica Modal
 **** Árboles semánticos para K
 - Reglas de resolución como las de LP más:
-      - $\lnot \Diamon \phi = \square \lnot \phi$
+      - $\lnot \Diamond \phi = \square \lnot \phi$
       - $\lnot \square \phi = \Diamond \lnot \phi$
 
-# TODO
-# TODO copiar algoritmo
+#+begin_src pseudocode
+Input: phi_1 && ... && phi_n -> phi
+Transforma el input en phi_1 && ... && phi_n && !phi
+
+Elimina todo los símbolos de implicación utilizando la correspondiente regla de LP
+
+Transforma la fórmula obtenida en NNF
+
+bucle
+    si Hay por lo menos un mundo en el que aparece una fórmula activa phi no expandida aun entonces
+        si phi es una fórmula proposicional del Tipo psi || tau entonces
+            cambia psi a no activa y pon en el mundo actual psi o tau en estado activo eligiendo de forma no determinista*
+        fsi
+        si phi es una fórmula proposicional de cualquier otro Tipo entonces
+            cambia phi a no activa, aplica la regla correspondiente y expande la fórmula en el mundo actual, poniendo las fórmulas resultantes en estado activo
+        fsi
+        si hay un mundo en el que aparece una contradicción entonces
+            vuelve atrás a la última elección no determinista*, Si hay, o devuelve NO STAISFACIBLE en caso contrario
+        fsi
+    fsi
+fbucle
+dev SATISFACIBLE
+#+end_src
+
+** Aplicaciones: el ejemplo de las lógicas temporales
+- [id:IntArt] pag 64
+- lógicas temporales son una variante peculiar de la lógica $k$.
+
+*** Tipos de lógicas temporales
+- El tiempo puede verse como un conjunto de *puntos ordenados* o como un *conjunto de intérvalos*.
+- *puntos ordenados* puede verse como mundos modales.
+- Las estructuras temporales no lineales permiten modelar diferentes futuros o pasados.
+
+*** Lógicas temporales basadas en puntos
+- $F$ denota la modalidad unaria sobre puntos para el futuro.
+- $P$ su correspondiente para el pasado.
+- *LTL*[F,P] : linear time logic, uno de los lenguajes temporales más sencillos.
+      - gramática abstracta de LTL[F,P]
+            - $\phi ::= p | \lnot \phi | phi \land \psi | F \phi | P \phi$
+            - $F$ y $P$ son iversas una de la otra.
+      - Semántica, En LTL[F,P] un modelo $M$ y un mundo $w_i$ satisface $\phi$ si y solo si:
+            - $M,w_i \Vdash F\phi$ si y solo si existe un mundo $w_j$ en el futuro de $w_i$ tal que $M,w_j \Vdash \phi$.
+            - $M,w_i \Vdash P\phi$ si y solo si existe un mundo $w_j$ en el pasado de $w_i$ tal que $M,w_j \Vdash \phi$.
+      - $\lnot F \lnot$ se denota como $G$. "en su futuro".
+            - $F(p \land \lnot F \lnot q)$ : en el futuro valdrá $p$ y en el futuro de ese momento valdrá $q$.
+      - $\lnot P \lnot$ se denota como $H$. "en su pasado$."
+- *LTL* : otra lógica temporal, operadores sinze $S$ y until $U$.
+      - Gramática abstracta de LTL
+            - $\phi ::= p | \lnot \phi | \phi \land \psi | \phi S \psi | \phi U \psi$
+      - Semántica:
+            - $M,w_i \Vdash \phi U \psi$ si y solo si existe un mundo $w_j$ en el *futuro* tal que $M,w_j \Vdash \psi$, Y en todos los mundos entre $w_i$ y $w_j$ $M,w \Vdash \phi$
+            - $M,w_i \Vdash \phi S \psi$ si y solo si existe un mundo $w_j$ en el *pasado* tal que $M,w_j \Vdash \psi$, Y en todos los mundos entre $w_i$ y $w_j$ $M,w \Vdash \phi$
+      - Más expresivo que LTL[F,P]
+            - $F\phi$ equivale a $\top S \phi$
+- *CTL** Tiene en cuenta los diferentes futuros posibles.
+      - $A$ operador modal de todos los futuros posibles [cuantificador sobre caminos].
+      - $E$ operador modal de que permite elegir un futuro posible [cuantificador sobre caminos].
+      - Gramática abstracta
+            - $\phi ::= p | \lnot \phi | \phi \land \psi | \phi S \psi | \phi U \psi | A \phi | E \phi$
+      - Muy expresiva y con complejidad computacional muy alta.
+- *CTL* es una restricción de CTL* para ser usada en el problema de /control de modelo/.
+      - Se obliga a los cuantificadores sobre caminos a ser usados al mismo tiempo que los operadores de tiempo  de LTL.
+      - Gramática abstracta
+            - $\phi ::= p | \lnot \phi | \phi \land \psi | A(\phi U \psi) | E(\phi U \psi)$
+      - *model checking* permite automatizar la tarea de verificación de los requisitos de un proyecto.
+
+*** Lógicas temporales basadas en intérvalos
+- [id:IntArt] pag 68
+- Cuando las propiedades en las que espamos interesados tienen una duración.
+      - Ya no es tan importante el punto preciso en el tiempo.
+- Las relaciones entre intérvalos son complicadas.
+- Relaciones entre intérvalos:
+      - ends
+      - during
+      - begins
+      - overlaps
+      - meets
+      - before
+- HS, lógica proposicional de las relaciones Allen.
+      - Sintaxis abstracta
+            - $\phi ::= p | \lnot \phi | \phi \land \psi | \langle B \rangle \phi | \langle E \rangle\phi | \langle\bar{B}\rangle\phi | \langle\bar{E}\rangle\phi$
+      - Viene determinada por un modelo $M$ y un mundo que se suele denotar como un par ordenado de puntos.
+            - $M,[d_0,d_1] \Vdash \langle B \rangle \phi$ si $M,[d_0, d_2] \Vdash \phi$ para algún $d_2$ tal que $d_0 \leq d_2 <d_1$;
+            - $M,[d_0,d_1] \Vdash \langle E \rangle \phi$ si $M,[d_2, d_1] \Vdash \phi$ para algún $d_2$ tal que $d_0 < d_2 \leq d_1$;
+            - $M,[d_0,d_1] \Vdash \langle \bar{B} \rangle \phi$ si $M,[d_0, d_2] \Vdash \phi$ para algún $d_2$ tal que $d_1 < d_2$;
+            - $M,[d_0,d_1] \Vdash \langle B \rangle \phi$ si $M,[d_2, d_1] \Vdash \phi$ para algún $d_2$ tal que $d_2 < d_0$;
+
+* Conjuntos Borrosos
+- [id:IntArt] pag 264
+- predicados precisos: impar o par
+- predicados vagos: alto o bajo
+      - Protagonizan el lenguaje natural y constituyen un elemento fundamenta de la capacidad de abstracción.
+- Teoría de conjuntos borrosos,herramientas formales para el análisis de predicados vagos.
+      - Ciencia del razonamiento aproximado.
+
+** Conjuntos borrosos
+- [id:IntArt] pag 264
+- En un predicado preciso $P$ sobre un conjunto $U$ podemos escribir la siguiente función $\mu_P(u)$
+
+\begin{equation*}
+\mu_P(u) = \left\{\begin{array}{lc}{0 & si\ u \notin} P \\ 1 & si\ u\in P}
+\end{equation*}
+
+- En un conjunto borroso en cambio un predicado $V$, $V \in U$ mediante la función $\mu_V(u)$.
+
+\begin{equation*}
+\mu_V : U \to [0,1]
+\end{equation*}
+
+- Algunos elementos son ciertos en un determinado grado $0 < \mu_V(u) < 1$.
+- La función de pertenencia $\mu_V$ proporciona una ordenación del conjunto de individuos.
+      - Nos permite decir si $u$ es más o menos alto qe $w$.
+- La elección de la función de pertenencia es una cuestión de diseño.
+- Conjuntos asociados a $\mu_V$
+      - *Soporte* : $\{u \in U : \mu_V(u) > 0\}$
+      - *Núcleo* : $\{u \in U : \mu_V(u)=1 \}$
+            - Los elementos del núcleo se denominan /prototipos/ de V
+- Un conjunto $V$ es *convexo* si $\forall u, u', u'' \in U,\ u' \in [u,u''], \mu_V(u') \geq \min\{\mu_V(u), \mu_V(u'')\}$
+- Un conjunto $V$ está normalizado si $\exists u \in U$, tal que $\mu_V(u)=1$.
+- $\alpha-corte$ , $V_{\alpha}$ se define como $\{u \in U : \mu_V(u) \geq \alpha\}$
+      - Son como subconjuntos anidados.
+- $A$ está embebido en $B$ ($A \subseteq B$) si $\forall u \in U$ sucede que $\mu_A(u) \leq \mu_B(u)$.
+
+** Semántica de los conjuntos Borrosos
+- [id:IntArt] pag 266
+- Semánticas:
+      - *Similitud* : Sea $V$ un conjunto borroso.
+            - $\mu_V(u)$ es el grado de proximidad a los /prototipos/ de $V$
+            - De interés para la abstracción de un conjunto de datos mediante alguna medida de proximidad.
+            - También caracteriza a los sistemas de control donde la diferencia entre la situación acutal y la deseada (prototipo), determina la realización de acciones de corrección.
+      - *Preferencia* : Supongamos que $V$ reúne a un conjunto de elementos entre los cuales existe alguna preferencia.
+            - $\mu_V(u)$ representa el grado de preferencia entre dichos elementos.
+            - Propio de problemas de decisión,
+      - *Incertidumbre* : Dada una variable que toma valores en $U$, el predicado "x toma un valor pequeño" se modela mediante un conjunto borroso $V \in U$.
+            - Función de pertenencia $\mu_{V=pequenio}$
+            - Si el valor exacto es desconocido entonces $\mu_{V=pequenio}$ funciona como una medida de posibilidad de que $x$ sea $u \in U$.
+            - se representa como $\pi_x(u) = \mu_{V=pequenio}(u),\ \forallu \in U$
+            - Cuando la reunión de pertenencia modela una distribución de posibilidad.
+                  - Los elementos que perteneven al soporte son mutuamente excluyentes.
+- Las semánticas no son excluyentes.
+
+** Teoría de conjuntos borrosos
+- [id:IntArt] pag 268
+- Se quiere dar una representación del significado de sentencias que aparecen en el lenguaje natural.
+- Con predicado precisos resulta muy sencillo realizar operaciones sobre conjuntos.
+      - unión, intersección, negación
+- tabla 7.1 contiene las propiedad de la álgebra de boole. pag 268.
+- Operaciones de composición de predicados precisos utilizando funciones de pertenencia.
+      - $\mu_{\bar{A}} = 1 - \mu_A(u)$  (complemento a 1)
+      - $\mu_{A \cap B} (u) = \min\{\mu_A(u), \mu_B(u)\}$
+      - $\mu_{A \cup B} (u) = \max\{\mu_A(u), \mu_B(u)\}$
+- $\{0,1\}^U$ es el conjunto de funciones $\mu : U \to \{0,1\}$
+      - $(\mathcal{P}(U), \cup, \cap, \bar{ }\ )$ y $(\{0,1\}^u, \max, \min, 1-x)$ son isomorfos.
+- Aplicado a conjuntos Borrosos
+      - Tanto $A$ como $B$ son conjuntos borrosos de $U$.
+      - $n:[0,1] \to [0,1]$ tal que $\mu_{\bar{A}}(u) = n(\mu_A(u))$
+            - Debe satisfacer $n(1)=0$ y $n(0)=1$.
+            - Debe satisfacer $\forall x,y \in [0,1],\ x \leq y \Rightarrow n(x) \geq n(y)$
+            - Se denomina función /negación/.
+            - $n(x) = 1-x$ es común y además verifica que $n(n(x))=x$
+      - $T:[0,1]^2 \to [0,1]$ tal que $\mu_{A \cap_T B}(u) = T(\mu_a(u), \mu_b(u))$
+      - $S:[0,1]^2 \to [0,1]$ tal que $\mu_{A \cup_S B}(u) = S(\mu_A(u), \mu_b(u))$
+      - Propiedades de $T$ y $S$.
+            1. Ley de identidad: $\forall x \in [0,1]$
+                   - $T(x,1) = x\ \ (A \cap U = A)$
+                   - $S(x,0) = x\ \ (A \cup \emptyset = A)$
+            2. Ley conmutativa: $\forall x,y \in [0,1]$
+                   - $T(x,y)=T(y,x)$\ \ (A \cap B = B \cap A)$
+                   - $S(x,y)=S(y,x)$\ \ (A \cup B = B \cup A)$
+            3. Ley asociativa: $\forall x,y,z \in [0,1]$
+                   - $T(x,T(y,z)) = T(T(x,y),z)\ \ (A\cap(B \cap C) = (A \cap B) \cap C)$
+                   - $S(x,S(y,z)) = S(S(x,y),z)\ \ (A\cup(B \cup C) = (A \cup B) \cup C)$
+            4. Ley de monotonía: $\forall x,y,u,v \in [0,1],\ x \leq u,y\leq v$
+                   - $T(x,y) \leq T(u,v)$
+                   - $S(x,y) \leq S(u,v)$
+      - Funciones *normas triangulares* o *t-normas* : que satisfacen las propiedades de $T$.
+      - Funciones *conormas triangulares* o *t-conormas* : que satisfacen las propiedades de $S$.
+      - De la ley de identidad y monotonía se deduce.
+            - $T(0,x)=0$ y $S(1,x)=1$
+- Propuestas para pares t-norma y t-conorma.
+      - *Máxima y mínimo*
+            - $T_Z(x,y) = \min(x,y)\ \ S_z(x,y) = \max(x,y)$
+      - *producto y suma*
+            - $T_G(x,y)=xy \ \ S_G(x,y)= x+y-xy$
+      - *t-norma y t-conorma de Lukasiewicz*
+            - $T_L(x,y) = \max(x+y-1,0)\ \ S_L(x,y)=\min(x+y,i)$
+      - Se pueden escoger según sus propiedades.
+
 
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
@@ -1051,6 +1237,7 @@ fsi
       - Tanto en el uso como en el entrenamiento.
 
 - *Expandir un nodo* : En un grafo obtener los nodos descendientes (que derivan del nodo) y añadirlo a la lista de pendientes por visitar.
+- *conjunto* : reunión de elementos que comparten alguna propiedad.
 
 * Bibliografía
 
