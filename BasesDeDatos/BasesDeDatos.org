@@ -2268,10 +2268,15 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - En el libro aparece numerosas imágenes de ejemplo.
 
 *** Correspondencia de cardinalidades
+- [id:FBDatos] pag 124
 - Con la dirección de la flecha indica las relaciones uno a uno, uno a varios y varios a varios.
 - *Uno a uno* : línea dirigida con dos cabezas, A<-<R>->B. 
 - *Uno a varios* : línea dirigida,  A<-<R>-B indica que A puede estar relacionado con varios B, pero B puede estar relacionado con un único A.
 - *Varios a varios* : Línea sin dirección, A-<R>-B
+- Notación con números. l..h
+      - A -0..1--<R>--l..h- B
+            - A participa de 0 a 1 vez en la relación (A se relaciona con 0 o 1 elementos de B).
+            - al contrario que en UML y en Ing De Software.
 
 *** Atributos compuestos
 - [id:FBDatos] pag 125
@@ -2375,8 +2380,86 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - *Subclase* el subconjunto especializado
 
 *** Herencia de los atributos
+- [id:FBDatos] pag 134
 - una vez más hablas de la herencia de atributos.
+- La *herencia múltiple* se conoce como retículo.
+- Hay un diagrama en el libro, Puede verse la ramificación en clases especializadas.
+      - Cada especialización amplia los atributos del conjunto.
 
+*** Restricciones a las generalizaciones
+- Restricción de pertenencia.
+      - *Definida por la condición* : La pertenencia se evalua en función de una condición.
+            - por ejemplo /estudiante/ y /estudiante_aprovado/.
+      - *Definida por el usuario* : Es usuario toma la decisión de pertenencia.
+- Restricción de pertenencia múltiple.
+      - *Disjunto* : Cada entidad no pertenece a más de un conjunto de entidades de nivel inferior.
+      - *Solapados* : La misma entidad puede pertenecer a más de un conjunto de entidades de nivel inferior.
+- *Restricción de completitud* : Especifica si una entidad de nivel superior debe pertenecer almenos a un conjunto de entidades de nivel inferior. tipos:
+      - *Generalización* o *especialización total* : Cada entidad debe pertencer a un conjunto de entidades de nivel inferior.
+      - *Generalización* o *especialización parcial* : Alguna entidad puede no pertenecer a un conjunto de entidades de nivel inferior.
+            - Es la predeterminada.
+
+*** Agregación
+- [id:FBDatos] pag 135
+- No es posible expresar relaciones entre relaciones.
+- La *agregación* es una abstracción que permite el uso de una relación como una entidad superior.
+      - Así se puede usar una relación (agregada) con una relación.
+
+*** Reducción a esquemas relacionales
+**** Representación de la generalización
+- pasos:
+      1. Un esquema para el conjunto de entidades de nivel superior.
+             - Cada conjunto de entidades de nivel inferior se le añade un atributo adicional que referencia a la clave del esquema de nivel superior.
+      2. Si la generalización es disjunta y completa.
+             - Se aplanan los atributos sobre las clases inferiores (desaparece el nivel superior).
+             - Pueda dar problemas con referencias a las claves primarias.
+             - Para ello puede ser necesario crear un esquema de la clase superior. Con tan solo la clave primaria.
+
+**** Representación de la agregación
+- [id:FBDatos] pag 137
+- Se usa como clave primaria la clave primaria del conjunto de relaciones que la define.
+
+** Notaciones alternativas para el modelado de datos
+- [id:FBDatos] pag 137
+- Diagramas E-R y UML los más utilizados.
+- Se describen versiones de E-R.
+      - Describen lo mismo a veces con más claridad (la notación pata de gallo).
+            - Puede que también esté invertida.
+- UML con diagramas de clases
+- La cardinalidad en UML se indica en el otro lado de la relación.
+      - Como en Ing de Software
+      - A -i..j--<R>--0..*- B
+            - A se relaciona con 0 o varios B's.
+
+** Otros Aspectos del diseño de bases de datos
+*** Restricciones de datos y diseño de bases de datos relacionales
+- [id:FBDatos] pag 140
+- Restricciones usando SQL son más dignas de confianza que dejarlas a cada programa que se conecta con la base de datos.
+- Buena elección de una clave (como dni) nos puede servir para vincular tablas y relaciones.
+      - Aunque no exista una relación en sí, pero sí que representa una entidad más abtracta.
+- Una restricción de datos limite el alcanze físico de la base de datos.
+
+*** Requisitos de uso: consultas y rendimiento
+- Es un aspecto crítico.
+- métricas
+      - *Productividad* : número de consultas y actualizaciones que pueden procesarse por unidad de tiempo.
+      - *Tiempo de respuesta* : Tiempo que tarda una sola transacción en completarse.
+            - Promedio y peor de los casos.
+- No tienen porque ir relacionadas.
+- Los índicies pueden facilitar la evaluación de reuniones y cláusulas where.
+
+*** Requisitos de autorización
+- Puede suponer la separación en dos o más esquemas de relación para facilitar la configuración de la autorización a los datos.
+
+*** Flujos de datos y flujos de trabajo
+- Puede influir en el diseño el software que se usa para el flujo de trabajo de una empresa.
+- Muchos clientes diferentes pueden hacer uso de la base de datos para su funcionamiento.
+
+*** Otros elementos del diseño de bases de datos
+- Un buen diseño minimiza las consecuencias de los cambios en la base de datos.
+      - Los cambios son muchas veces necesarios.
+- También la interactuación con otras bases de datos puede ser un problema.
+      - El diseño debe facilitar la traducción de los datos.
 
 * Notes
 ** mysql Service
