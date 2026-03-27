@@ -2172,6 +2172,212 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
       2. Para cada subfórmula $\exists$ del tipo $\exists x(P(x))$, solo es cierta si existe un valor de $dom(P)$ tal que $p(x)$ sea cierto.
       3. $\forall x (P(x))$ es verdadera si y solo sí se cumple para todos los valores de $x$ de $dom(P)$.
 
+* Diseño de las bases de datos y el modelo E-R
+- [id:FBDatos] pag 117
+
+** Visión general del proceso de diseño
+- Es una tarea compleja que involucra varias fases.
+
+*** Fases del diseño
+- Para aplicaciones complejas no se puede aplicar un proceso de diseño directo.
+      - Se requieren representaciones de alto nivel.
+- Fases:
+      - Caracterización completa de las necesidades (*requisitos*) de datos de los posibles usuarios de la base de datos.
+            - Interactuación con los expertos y usuarios del dominio.
+      - Elección del modelo de datos. Se desarrolla el *diseño conceptual*.
+      - *Especificación de requisitos funcionales* : Revisión del esquema conceptual y de que satisface los requisitos.
+      - Paso a la implementación
+            - *Fase de diseño lógico* : traduce el esquema conceptual de alto nivel al modelo de datos de la implementación.
+                  - Suele ser un modelo relacional.
+                  - Es más dificil de modificar.
+            - *Fase de diseño físico* : Características físicas de la base de datos.
+
+*** Alternativas de diseño
+- *Entidad* : Cualquier elemento identificable.
+- *Relaciones* : asociaciones entre entidades.
+- Peligros a evitar en el diseño de una base de datos.
+      - *Redundancia* : Peligro de inconsistencia entre datos repetidos.
+      - *Incompletitud* : Aspectos difíciles o imposibles de modelar.
+- Normalmente hay que elegir entre varios buenos diseños.
+
+** El modelo entidad-relación
+- [id:FBDatos] pag 118
+- Muy usado
+- Conjunto de entidades, conjunto de relaciones y conjunto de atributos.
+
+*** Conjunto de entidades
+- *entidad* : cosa y objeto distinguible de los demás.
+      - El conjunto de sus propiedades hace que se le pueda identificar de forma unívoca.
+- *conjunto de entidades* : Agrupa entidades del mismo tipo que comparte propiedades o atributos.
+      - No tienen porque se conjuntos disjuntos.
+- *extensión* de un conjunto de entidades se refiere a la colección real de entidades.
+
+*** Conjuntos de relaciones
+- *relación* : Asociación entre varias entidades.
+- *conjunto de relaciones* : conjunto de relaciones del mismo tipo.
+      - normalmente relaciona $n \geq 2$ relaciones.
+- *Participación* : conjunto de entidades participa con un conjunto de relaciones.
+- *Rol* : función que desempeña una entidad en una relación.
+- *Atributos descriptivos* : Una relación puede tener atributos.
+- *grado* : número de conjuntos de entidades que participan en un conjunto de relaciónes.
+- *relación binaria* : Relación que implica dos conjuntos de entidades.
+      - Tiene grado 2.
+
+*** Atributos
+- [id:FBDatos] pag 120
+- *Dominio* o *conjunto de valores* : Valores permitidos.
+- Una entidad puede estribirse como un conjunto de pares atributo-valor.
+- Tipos de atributo.
+      - *Atributos Simples* : No se dividen en subpartes.
+      - *Atributos Compuestos* : Se dividen en subpartes.
+            - Nombre puede ser nombre, primer apellido y segundo apellido.
+            - Pueden estructurarse como una jerarquía.
+      - *Atributos monovalorados* : Un único valor para cada entidad concreta.
+      - *Atributos multivalorados* : Conjunto de valores para una entidad concreta.
+            - Se pueden establecer límites a los multivalores.
+            - Números de teléfono por ejemplo, y puede haber un máximo de 3.
+            - *{nombre_atributo}*  así se indica que es multivalorado.
+      - *Atributos derivados* : El valor se puede obtener a partir del valor de otros atributos.
+
+*** Correspondencia de cardinalidades
+- [id:FBDatos] pag 121
+- Número de entidades a las que otra entidad se puede asociar mediante un conjunto de relaciones.
+- Cardinalidades
+      - *Uno a uno* : Cada entidad A se asocia a lo sumo con una entidad B y cada B a lo sumo con una A.
+      - *Uno a varios* : Cada entidad A se asocia a cualquier número de entidades B. Sin embargo B se asocia a una sola entidad A.
+      - *Varios a uno* : Cada entidad A se asocia como mucho a una entidad B. Cada entidad B se puede asociar a multiples entidades A.
+      - *Varios a varios* : Cada entidad A se asocia a cualquier número de entidades B. Y cada entidad B se asocia a cualquier número de entidades A.
+
+*** Restricciones de participación
+- Participación *total* : Cada entidad de E (un conjunto de entidades) participa en almenos una relación de R (un conjunto de relaciones).
+- Participación *parcial* : Solo algunas entidades de E participan en relaciones de R.
+
+*** Claves
+- Distinción entre entidades de un conjunto.
+- En relaciones.
+      - Si la relación R no tiene atributos asociados.
+            - $clave\_primaria(E_1) \cup \dots \cup \clave\_primaria(E_n)$ describe una relación individual.
+      - Si la relación R tiene atributos asociados.
+            - $clave\_primaria(E_1) \cup \dots \cup \clave\_primaria(E_n) \cup \{a_1, \dots , a_m\}$ describe una relación.
+
+** Eliminar atributos redundantes de un conjunto de entidades
+- [id:FBDatos] pag 123
+
+** Diagramas entidad Relación
+- [id:FBDatos] pag 124
+- En el libro aparece numerosas imágenes de ejemplo.
+
+*** Correspondencia de cardinalidades
+- Con la dirección de la flecha indica las relaciones uno a uno, uno a varios y varios a varios.
+- *Uno a uno* : línea dirigida con dos cabezas, A<-<R>->B. 
+- *Uno a varios* : línea dirigida,  A<-<R>-B indica que A puede estar relacionado con varios B, pero B puede estar relacionado con un único A.
+- *Varios a varios* : Línea sin dirección, A-<R>-B
+
+*** Atributos compuestos
+- [id:FBDatos] pag 125
+- Se añade indentación para indicar la jeraquía de los atributos.
+
+*** Roles
+- [id:FBDatos] pag 125
+
+*** Conjunto de relaciones no binarias
+- Se unen más entidades a una relación mediante líneas.
+- Tan solo se permite una flecha en este tipo de relaciones.
+      - Para evitar confusiones.
+
+*** Conjnto de entidades débiles
+- [id:FBDatos] pag 126
+- *Conjunto de entidades débiles* : Conjunto de entidades que no tienen suficientes atributos para formar una clave primaria.
+      - Debe estar asociado a otro conjunto de entidades (*entidades identificatorias*).
+      - Se usa un *discriminador* para identificar las entidades de forma unívoca.
+            - un id vamos, una clave
+- *Conjunto de entidades fuertes* : Sí que pueden formar una clave primaria.
+- Hay ciertos cambios en la notación de entidades débiles.
+      - El discriminador se subraya con línea discontinua.
+      - Se usa rombo doble para las relaciones que conectan a la *entidad débil* con su *entidad fuerte*.
+
+** Reducción a esquemas relacionales
+- [id:FBDatos] pag 128
+- Cada conjunto de entidades y de relaciones se traduce en un esquema de relación.
+
+*** Representación de los conjuntos de entidades fuertes con atributos simples
+- Cada tupla corresponde con una entidad del conjunto.
+
+*** Representación de los conjuntos de entidades fuertes con atributos complejos
+- Los atributos *compuestos* se aplanan en sus subatributos.
+- Los atributos *derivados* se representan como métodos (objeto-relacional).
+- Para *multivalorados* se crea un esquema de relación
+      - números de teléfono: prof_telefono(_id_prof_, _num_tlf_)
+      - Con restricción a que id_prof sea a un id de un profesor.
+
+*** Representación de los conjuntos de entidades débiles
+- Se crea el esquema de relación del conjunto de entidades débiles.
+- Se añade una clave externa hacia la clave primaria de su *entidad fuerte* (hacia el esquma de relación).
+      - sección(_asignatura_id_, _secc_id_, _semestre_, _año_)
+      - Se añade una restricción a asignatura_id, debe ser un valor válido existente del esquema de relación correspondinte a la entidad fuerte.
+
+*** Representación de conjuntos de relaciones
+- [id:FBDatos] pag 129
+- Forma de escoger la clave primaria
+      - Relaciones binarias varios a varios : la unión de claves primarias de los participantes.
+            - La propia tupla
+      - Relaciones binarias uno a uno : La clave primaria de cualquiera de los conjuntos de los participantes (elegir uno).
+      - Relaciones binarias varios a uno : La clave primaria del conjunto de entidades de la parte "varios".
+      - Relaciones n-arias sin flecha : Unión de los atributos de las claves primarias.
+      - Relaciones n-arias con flecha : Unión de las claves primarias de los conjuntos de entidades donde NO apunta la flecha.
+- Se crear las correspondientes restricciones de clave externa.
+
+**** Redundancia de esquemas
+- [id:FBDatos] pag 130
+
+**** Combinación de esquemas
+- La relación Varios a uno se puede combinar en un solo esquema.
+      - La clave primaria es la clave primaria del conjunto de entidades en cuyo esquema se combinó el conjunto de relaciones.
+- Por ejemplo las relaciones uno a uno pueden combinarse en un esquema.
+- No entiendo muy bien que quiere decir el libro.
+
+** Aspectos del diseño entidad-relación
+
+*** Uso de conjuntos de entidades en ligar de atributos
+- Entender la distinción entre un atributo o usar relaciones entre dos esquemas de relación.
+      - Ejemplo de los números de teléfono.
+      - Si teléfono es una entidad propia permite almacenar mayor información (tipo de teléfono).
+
+*** Uso de conjuntos de entidades en lugar de conjuntos de relaciones
+- No siempre está claro.
+
+*** Conjuntos de relaciones binarias y n-arias
+- En una base de datos suelen ser binarias.
+- Siempre es posible sustituir una relación n-aria por relaciones binarias.
+
+*** Ubicación de los atributos de las relaciones
+ - [id:FBDatos] pag 133
+ - Es muy vago el contenido del texto.
+ - Dice que según donde se ponga un atributo puede dar un significado o otro.
+       - Y que se ve afectado por la cardinalidad.
+
+** Características del modelo E-R extendido
+- Extensiones del modelo E-R para representar mejor ciertas características.
+
+*** Especialización
+- Subgrupos de entidades dentro del conjunto de una entidad.
+      - por ejemplo persona: estudiante o trabajador.
+- Muy similar al concepto herencia.
+- En un diagrama E-R Se representa con una flecha hueca hacia el supergrupo.
+- *Especialización solapada* : Una entidad puede pertenecer a varias especialidades
+- *Especialización disjunta* : Solo puede pertenecer a una sola especialización
+
+*** Generalización
+- [id:FBDatos] pag 134
+- Una vez más habla de una relación de herencia.
+- Ahora desde la homogeneización de entidades con atributos semánticamente iguales.
+- *Superclase* el conjunto superior.
+- *Subclase* el subconjunto especializado
+
+*** Herencia de los atributos
+- una vez más hablas de la herencia de atributos.
+
+
 * Notes
 ** mysql Service
 - Done using podman, documented in ORG ROAM.
