@@ -811,7 +811,7 @@ fsi
 - El resto son disyunción de literales separados por $\lor$.
 - Se eliminan las clásulas con tautologías.
 - Por último se aplica la regla de resolución a dos cláusulas de forma iterativa hasta que obtenermos la cláusula vacía.
-      - por ejemplo si $(p \lor q \lor \lnot r)\land (p \lor \lnot q \lor \lnot s)$ entonces se añade (o reemplaza)
+      - por ejemplo si $(p \lor q \lor \lnot r)\land (p \lor \lnot q \lor \lnot s)$ entonces se añade.
       - $(q \lor \lnot r \lor \lnot s)$, $q$ no aporta nada al resultado.
       - Si hay una cláusula vacía significa que hemos encontrado una contradicción.
             - tipo $p\land \lnot p$
@@ -1209,7 +1209,6 @@ dev SATISFACIBLE
       - *t-norma y t-conorma de Lukasiewicz*
             - $T_L(x,y) = \max(x+y-1,0)\ \ S_L(x,y)=\min(x+y,i)$
       - Se pueden escoger según sus propiedades.
-
 
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.

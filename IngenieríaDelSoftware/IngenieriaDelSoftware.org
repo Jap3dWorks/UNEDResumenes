@@ -470,7 +470,7 @@ FIN-PARA
 *** Descripción de datos
 - pag 84
 - Detallar la estructura interna de los datos que maneja el sistema.
-- Diccionario de datos, notación adoptada en el análisis estructurado.
+- *Diccionario de datos* : notación adoptada en el análisis estructurado.
 - Los formatos de descripción de datos deben porder describir la siguiente información.
 
 **** Nombre o nombres
