@@ -394,7 +394,7 @@ end architecture arch_correcta
 
 *** Cláusula generic
 - Se declara en la *entity*
-- Declara constantes que necesitan ser modificadas para adaptar el diseño a diferentes aplicaciones.
+- Declara constantes que pueden ser modificadas para adaptar el diseño a diferentes aplicaciones.
 - Valores típicos son los bits de un bus o el valor de los retardos.
 
 #+begin_src vhdl
@@ -2303,7 +2303,6 @@ end architecture ALU_bloqueProcess;
                   - MAX_POS_DATA - 4, ..., MAX_POS_DATA.
             - Algunos valores aleatorios extra.
 
-
 * Registros y memorias
 - Diseño de hardware secuencial
 
@@ -2733,6 +2732,234 @@ begin
     end if;
   end process outputProc;
 end architecture Reg32_OE;  
+#+end_src
+
+*** Descripción estructural del register file
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity RegFile4x32 is
+  port(R_data : out std_logic_vector(31 downto 0);
+       W_data : in std_logic_vector(31 downto 0);
+       R_addr, W_addr : in std_logic_vector(1 downto 0);
+       R_en, W_en : in std_logic;
+       clk, rst : in std_logic);
+end entity RegFile4x32;
+
+architecture RegFile4x32_estruct of RegFile4x32 is
+  component Dcd2x4 is
+    port (d3,d2,d1,d0 : out std_logic;
+          i1,i0 : in std_logic;
+          en : in std_logic);
+  end component Dcd2x4;
+
+  component Reg32_OE is
+    port (Q : out std_logic_vector(31 downto 0);
+          I : in std_logic_vector(31 downto 0);
+          Ld, OE : in std_logic;
+          clk, rst : in std_logic);
+  end component Reg32_OE;
+
+  signal W_d3, W_d2, W_d1, W_d0 : std_logic;
+  signal R_d3, R_d2, R_d1, R_d0 : std_logic;
+
+begin
+  
+  R_Dcd : Dcd2x4 port map (R_d3, R_d2, R_d1, R_d0, R_addr(1), R_addr(0), R_en);
+  W_Dcd : Dcd2x4 port map (W_d3, W_d2, W_d1, W_d0, W_addr(1), W_addr(0), W_en);
+  Reg0 : Reg32_OE port map (R_data, W_data, W_d0, R_d0, clk, rst);
+  Reg1 : Reg32_OE port map (R_data, W_data, W_d1, R_d1, clk, rst);
+  Reg2 : Reg32_OE port map (R_data, W_data, W_d2, R_d2, clk, rst);
+  Reg3 : Reg32_OE port map (R_data, W_data, W_d3, R_d3, clk, rst);
+
+end architecture RegFile4x32_estruct;
+#+end_src
+
+*** Banco de pruebas del register file
+- [id:DACircDig] pag 380
+- Es interesante ver la carga de las líneas en vectores usando bucles for loop.
+
+*** Descripción del comportamiento del register file
+- [id:DACircDig] pag 385
+
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_unsigned.all;
+
+entity RegFile4x32 is
+  port (
+    R_data : out std_logic_vector(31 downto 0);
+    W_data : in std_logic_vector(31 sownto 0);
+    W_addr, W_addr : in std_logic_vector(1 downto 0);
+    R_en, W_en : in std_logic;
+    clk, rst : in std_logic);
+end entity RegFile4x32;
+
+architecture RegFile4x32_comp of RegFile4x32 is
+  type regfile_type is
+    array (0 to 3) of std_logic_vector(31 downto 0);
+
+  signal regfile : regfile_type;
+  
+begin
+
+  W_process : process(clk)
+  begin
+    if rising_edge(clk) then
+      if (rst = '1') then
+        regfile(0) <= X"00000000";
+        regfile(1) <= X"00000000";
+        regfile(2) <= X"00000000";
+        regfile(3) <= X"00000000";
+      elsif (W_en = '1') then
+        regfile(conv_integer(W_addr)) <= W_data;  -- std_logic_vector a integer
+      end if;
+    end if;
+  end process W_process;
+
+  R_process : process ( R_addr, R_en, regfile)
+  begin
+    if(R_en = '1') then
+      R_data <= regfile(conv_integer(R_addr));
+    else
+      R_data <= (others => 'Z');
+    end if;
+  end process R_process;
+end architecture RegFile4x32_comp;
+#+end_src
+
+** Bus Bidireccional y Memorias
+- Dos unidades de memoria y un bus conectando ambas.
+      - Una memoria con lectura y escritura.
+      - La otra solo lectura.
+
+*** Memoria de sólo lectura
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity fuenteUnidireccional is
+  generic(WORD_SIZE : integer := 0;                        -- Bits por palabra
+          READ_DELAY : time := 10 ns);
+  port (data : out std_logic_vector(WORD_SIZE - 1 downto 0);
+        OE_n : in  std_logic);
+end entity fuenteUnidireccional;
+
+architecture fuenteUnidireccional of fuenteUnidireccional is
+begin
+  rom : process(OE_n)
+  begin
+    if (OE_n = '0') then
+      data <= (0 => '1', others => '0') after READ_DELAY;  -- Dato almacenado en la rom
+    else
+      data <= (others => 'Z');
+    end if;
+  end process rom;
+end architecture fuenteUnidireccional;
+#+end_src
+
+*** Memoria de lectura y escritura
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity fuenteBidireccional is
+  generic ( WORD_SIZE : integer := 8;
+            READ_DELAY : time := 10 ns;
+            WRITE_DELAY : time := 10 ns);
+  port (data : inout std_logic_vector(WORD_SIZE - 1 downto 0);
+        OE_n : in std_logic;  -- habilita lectura
+        WE_n : in std_logic); -- habilita escritura
+end entity fuenteBidireccional;
+
+architecture fuenteBidireccional of fuenteBidireccional is
+  signal data_stored : std_logic_vector(WORD_SIZE - 1 downto 0);
+
+begin
+  ram : process(OE_n, WE_n, data)
+  begin
+    if (OE_n = '0') then
+      data <= data_stored after READ_DELAY;
+    elsif (WE_n = '0') then
+      data_stored <= data after WRITE_DELAY;
+    else
+      data <= (others => 'Z');
+    end if;
+  end process ram;
+end architecture fuenteBidireccional;
+#+end_src
+
+*** Bus bidireccional
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity tb_bus is
+  constant WORD_SZ : integer :=16;
+  constant PERIOD  : time := 100 ns;  -- periodo ciclo de reloj
+end entity tb_bus;
+
+architecture tb_bus of tb_bus is
+  signal data : std_logic_vector(WORD_SZ-1 downto 0);  -- datos en el bus
+  signal OE1_n : std_logic;                            -- lectura en memoria w/r
+  signal OE2_n : std_logic;                            -- lectura en rom
+  signal WE_n : std_logic;                             -- habilita escritura
+  signal writeData : std_logic_vector(WORD_SZ-1 downto 0); -- Datos a escribir
+
+  component fuenteBidireccional is
+    generic (WORD_SIZE : integer := 8;
+             READ_DELAY : time := 10 ns;
+             WRITE_DELAY : time := 10 ns);
+    port (data : inout std_logic_vector(WORD_SIZE-1 downto 0);
+          OE_n : in std_logic;
+          WE_n : in std_logic);
+  end component fuenteBidireccional;
+
+  component fuenteUnidireccional is
+    generic (WORD_SIZE : integer := 8;
+             READ_DELAY : time := 10 ns);
+    port (data : out std_logic_vector(WORD_DELAY-1 downto 0);
+          OE_n : in std_logic);
+  end component fuenteUnidireccional;
+
+begin
+  U1 : component fuenteBidireccional
+    generic map (WORD_SZ, 30 ns, 40ns)
+    port map (data, OE1_n, WE_n);
+
+  U2 : component fuenteUnidireccional
+    generic map (WORD_SZ, 20 ns)
+    port map (data, OE2_nz);
+
+  data <= writeData when (WE_n = '0') else (others => 'Z');
+
+  vectoresTest : process is
+  begin
+    OE1_n <= '1';
+    OE2_n <= '1';
+    WE_n <= '1';
+    writeData <= B"0000_1111_110_0011)";
+    wait for PERIOD;
+    WE_n <= '0';
+    wait for PERIOD;
+    WE_n <= '1';
+    OE_n <= '0';
+
+    wait for PERIOD;
+    OE2_n <= '1';
+    OE1_n <= '1';
+
+    wait for PERIOD;
+    wait;
+  end process vectoresTest;
+end architecture tb_bus;  
 #+end_src
 
 * Glosario
