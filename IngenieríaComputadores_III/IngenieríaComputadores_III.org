@@ -2302,6 +2302,439 @@ end architecture ALU_bloqueProcess;
             - Valores de los operandos en el límite superior.
                   - MAX_POS_DATA - 4, ..., MAX_POS_DATA.
             - Algunos valores aleatorios extra.
+
+
+* Registros y memorias
+- Diseño de hardware secuencial
+
+** Registro de 4 Bits
+- [id:DACircDig] pag 357
+- Puertos
+      - $Q_3, \dots, Q_0$ : Salida del componente.
+      - $I_3, \dots, I_0$ : Entrada de valores.
+      - $rst$: 1 el valor almacenado es "0000" 0 el valor almzcenado depende de $I_i$.
+      - $clk$: Entrada del reloj del sistema.
+- Actualiza sobre flancos de subida
+
+*** Descripción del comportamiento
+- Puede describirse la estructura (4 flipflop).
+- O puede describirse el comportamiento.
+
+#+begin_src vhdl
+-- Descripción del comportamiento
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity Reg4 is
+  port (Q : out std_logic_vector(3 downto 0);
+        I : in std_logic_vector(3 downto 0);
+        clk, rst : std_logic);
+end entity Reg4;
+
+architecture Reg4 of Reg4 is
+begin
+  process(clk)                 -- Sensible al cambio del reloj
+  begin
+    if rising_edge(clk) then   -- Check del flanco de subida.
+      if (rst='1') then        -- Reset síncrono, depende del reloj.
+        Q <= "0000";
+      else
+        Q <= I;
+      end if;
+    end process;
+end architecture Reg4;
+#+end_src
+
+*** Banco de pruebas
+- [id:DACircDig] pag 359
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity bp_Reg4 is
+end entity bp_Reg4;
+
+architecture bp_Reg4 of bp_Reg4 is
+  constant PERIODO : time := 10 ns;         -- Definición de una constante
+  signal Q : std_logic_vector(3 downto 0);
+  signal clk : std_logic := '0';
+  signal I : std_logic_vector(3 downto 0);
+  signal rst : std_logic;
+
+  component Reg4 is
+    port(Q : out std_logic_vector(3 downto 0);
+         I : in  std_logic_vector(3 downto 0);
+         clk, rst : std_logic);
+  end component Reg4;
+
+begin
+
+  uut : component Reg4 port map (Q,I,clk,rst);
+
+  clk <= not clk after (PERIODO/2);        -- se invierte cada medio periodo
+                                           --  Recuerda que se crea un driver con esta señal.
+
+  gen_vec_test : process is
+  begin
+    report "Comienza la simulación";
+
+    I <= "1111";
+    rst <= '1';
+    wait until rising_edge(clk);
+    wait for (PERIODO/2);
+    
+    I <= "1111";
+    rst <= '0';
+    wait until rising_edge(clk);
+    wait for (PERIODO/2);
+
+    I <= "1010";
+    rst <= '0';
+    wait until rising_edge(clk);
+    wait for (PERIODO/2);
+
+    I <= "0000";
+    rst <= '0';
+    wait until rising_edge(clk);
+    wait for (PERIODO/2);
+
+    report "Finaliza la simulación";
+    wait;
+  end process gen_vec_test;
+end architecture bp_Reg4;
+#+end_src
+
+- Para evitar que esté constantemente simulando en ghdl añadimos la flag /--stop-time=100ns/
+
+** Registro Multifunción
+- [id:DACircDig] pag 360
+- Registro más general
+- incluye desplazamientos y cargas en paralelo
+
+*** Descripción del comportamiento
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity Reg4mf is
+  port (Q : out std_logic_vector(3 downto 0);
+        I : in std_logic_vector(3 downto 0);
+        Shr_In, Shl_In : in std_logic;  -- shift, desplazamientos
+        Ld, Shr, Shl : in std_logic;
+        clkm rst : in std_logic;);
+end entity Reg4mf;
+
+architecture Reg4mf of Reg4mf is
+  signal R : std_logic_vector(3 downto 0);
+
+begin
+
+  Q <= R;   -- La asignación de la señal debe estar aquí para
+            --  garantizar la correcta actualización de valores
+            --  en el tiempo correcto.
+
+  -- Recuerda que dentro de un bloque process leemos el valor actual,
+  --  No el asignado.
+
+  process(clk)
+    if rising_edge(clk) then
+      if(rst='1') then
+        R <= "0000";
+      elsif (Ld = '1') then
+        R <= I;
+      elsif (Shr = '1') then
+        R(3) <= Shr_In;   -- Recuerda que se asigna tras un \delta
+        for index in 0 to 2 loop
+          R(index) <= R(index+1);
+        end loop;
+      elsif (Shl = '1') then
+        R(0) <= Shl_in;
+        for index in 0 to 2 loop
+          R(index+1) <= R(index);
+        end loop;
+      end if;
+    end if;
+  end process;
+end architecture Reg4mf;
+#+end_src
+
+*** Banco de Pruebas
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity bp_Reg4mf is
+end bp_Reg4mf;
+
+architecture bp_Reg4mf of bp_Reg4mf is
+  constant PERIODO  : time := 10 ns;
+  signal Q : std_logic_vector(3 downto 0);
+  signal clk : std_logic := '0';
+  signal I : std_logic_vector(3 downto 0);
+  signal rst : std_logic;
+  signal Shr_In, Shl_In : std_logic;
+  signal Ld, Shr, Shl : std_logic;
+
+  component Reg4mf is
+    port (Q : out std_logic_vector(3 downto 0);
+          Shr_In, Shl_In : in std_logic_vector(3 downto 0);
+          Ld, Shr, Shl : in std_logic;
+          clk,rst : in std_logic);
+  end component Reg4mf;
+
+begin
+
+  uut : component Reg4mf port map
+    (Q, I, Shr_In, Shl_In, Ld, Shr, Shl, clk, rst);
+
+  clk <= not clk after (PERIODO/2);
+
+  gen_vec_test : process is
+    variable numTest : integer := 0;
+  begin
+    report "Comienza la simulación";
+    
+    I <= "1111"; Shr_In <= '1'; Shl_In <= '1';
+    rst <= '1'; Ld <= '1'; Shr <= '1'; Shl <= '1';
+    wait until rising_edge(clk);
+    wait for (PERIODO/2);
+    numTest := numTest + 1;
+    assert (Q = "0000")
+      report "Error vector" & integer'image(numTest);
+    
+    -- Más en la página 365
+    -- ...
+    
+    report "Finaliza la simulación";
+    wait;
+  end process gen_vec_test;
+end architecture bp_Reg4mf;
+#+end_src
+
+** Registro de desplazamiento
+- [id:DACircDig] pag 368
+- Registro de desplazamiento sencillo
+
+*** Descripción del comportamiento
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity RegDesp32 is
+port (Q : out std_logic_vector(31 downto 0);
+      Shr, Shr_in : in std_logic;
+      clk,rst : in std_logic);
+end entity RegDesp32;
+
+architecture RegDesp32 of RegDesp32 is
+  signal R : std_logic_vector(31 downto 0);
+begin
+  process(clk)  -- Se evalua a cada cambio de clk
+  begin
+    if rising_edge(clk) then
+      if (rst = '1') then
+        R <= X"00000000";
+      elsif (Shr = '1') then
+        R(31) <= Shr_in;
+        for index in o to 30 loop
+          R(index) <= R(index+1);
+        end loop;
+      end if;
+    end if;
+  end process;
+  Q <= R;
+end architecture RegDesp32;
+#+end_src
+
+*** Banco de pruebas
+- [id:DACircDig] pag 370
+- Es interesante ver el método de inclusión de valores en el banco de pruebas.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity bp_RegDesp32 is
+end entity bp_RegDesp32;
+
+architecture bp_RegDesp32 of bp_RegDesp32 is
+  constant PERIODO : time := 10 ns;
+  signal Q : std_logic_vector(31 downto 0);
+  signal Shr, Shr_in : std_logic;
+  signal clk,rst : std_logic
+
+  component RegDesp32 is
+  port (Q : out std_logic_vector(31 downto 0);
+        Shr, Shr_in : in std_logic;
+        clk,rst : in std_logic);
+  end component RegDesp32;
+
+begin
+  uut : component RegDesp32 port map (Q, Shr, Shr_in, clk, rst);
+
+  clk <= not clk after (PERIODO/2);
+
+  gen_vec_test : process is
+  begin
+    -- Reset
+    report "Start simulación";
+    rst <= '1';
+    Shr <= '1';
+    Shr_in <= '1';
+    wait until rising_edge(clk);
+    wait for (PERIODO/2);
+
+    -- Carga serie 16 bit
+    rst <='0';
+    Shr <= '1';
+    Shr_in <= '1';
+    for index in 0 to 15 loop
+      -- 16 desplazamientos
+      wait until rising_edge(clk);
+    end loop;
+    wait for (PERIODO/2);
+    assert (Q = X"FFFF0000") report "Fallado!";
+
+    -- Carga serie 16 0s
+    rst <= '0';
+    Shr <= '1';
+    Shr_in <= '0';
+    for index in 0 to 15 loop
+      -- 16 desplazamientos
+      wait until rising_edge(clk);
+    end loop;
+    wait for (PERIODO/2);
+    assert (Q = X"0000FFFF") report "Fallado!";
+
+    Shr <= '0';
+    report "Finaliza la simulación";
+    wait;
+  end process gen_vec_test;
+end architecture bp_RegDesp32;
+#+end_src
+
+*** Banco de pruebas con acceso a fichero
+- [id:DACircDig] pag 371
+- Fichero de vectores
+      - Solución para bancos de pruebas muy muy grandes.
+      - Además permite no tener que recompilar al añadir nuevos vectores de test. 
+
+- std.textio.all : incluye los tipo y subprogramas para leer archivos del disco del systema.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164;
+use std.textio.all;
+
+entity bp_RegDesp32 is
+end entity bp_RegDesp32;
+
+architecture bp_RegDesp32fich of bp_RegDesp32 is
+  constant PERIODO : time := 10 ns;
+  signal Q : std_logic_vector(31 downto 0);
+  signal Shr, Shr_in : std_logic;
+  signal clk,rst : std_logic
+
+  component RegDesp32 is
+  port (Q : out std_logic_vector(31 downto 0);
+        Shr, Shr_in : in std_logic;
+        clk,rst : in std_logic);
+  end component RegDesp32;
+
+begin
+  uut : component RegDesp32 port map (Q, Shr, Shr_in, clk, rst);
+  clk : not clk after (PERIODO/2);
+
+  gen_vec_test : process is
+    file fichVectores : text;
+    variable inputLinea : line;
+    variable inputBit : bit;
+  begin
+    report "Comienza la simulación";
+
+    -- Reset
+    rst <= '1'; Shr <= '1'; Shr_in <= '1';
+    wait until rising_edge(clk);
+    wait for (PERIODO/2);
+
+    -- Carga de vectores desde el fichero
+    rst <= '0';
+    file_open(fichVectores, "Vectores.txt", read_mode);
+    while not endfile(fichVectores) loop
+      readline(fichVectores, inputLinea);
+      for i in inputLinea'range loop
+        read(inputLinea, inputBit);
+        if inputBit = '1' then
+          Shr_in <= '1';
+        else
+          Shr_in <= '0';
+        end if;
+        wait until rising_edge(clk);
+      end loop;
+    end loop;
+    file_close(fichVectores);
+
+    Shr <= '0';
+    wait unitl rising_edge(clk);
+    report "FIN!";
+    wait;
+  end process gen_vec_test;
+end architecture bp_RegDesp32fich;  
+#+end_src
+
+** Register File
+- [id:DACircDig] pag 376
+- Módulo compuesto de varios registros.
+- Los componentes triestato evitan tener que usar un multiplexor.
+
+*** Registro triestato
+
+- Nótese el uso de *others*.
+      - (others => 'X') solo es válido en sentencias de asignación.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity Reg32_OE is
+  port (Q : out std_logic_vector(31 downto 0);
+        I : in std_logic_vector(31 downto 0);
+        Ld, OE : in std_logic;
+        clk, rst : in std_logic);
+end entity Reg32_OE;
+
+architecture Reg32_OE of Reg32_OE is
+  signal R : std_logic_vector(31 downto 0);
+begin
+  
+  regProc: process(clk)
+  begin
+    if rising_edge(clk) then
+      if (rst = '1') then
+        R <= (others => '0');  -- Asigna 0 a todos los bits del vector
+                               --  No es necesario conocer el tamaño.
+      elsif (Ld = '1') then
+        R <= I;
+      end if;
+    end if;
+  end process regProc;
+
+  -- lógica de buffer triestato (Según cambie la señal intermedia R).
+  outputProc : process(R, OE)
+  begin
+    if (OE='1') then
+      Q <= R;
+    else
+      Q <= (others => 'Z');
+    end if;
+  end process outputProc;
+end architecture Reg32_OE;  
+#+end_src
+
 * Glosario
 - *flip-flop*, circuito biestable.
   # creo que era un Biestable-T (toggle)
