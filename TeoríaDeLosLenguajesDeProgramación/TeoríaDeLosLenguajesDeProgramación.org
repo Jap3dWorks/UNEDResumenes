@@ -1624,6 +1624,294 @@ int main(void) {
 #+RESULTS:
 : gcd 5
 
+* Tipos de Datos
+- [id:TeLenProg] pag 215
+- *Tipos de datos* : Clases diferentes de información que el ordenador puede almacenar.
+- La información que maneja un programa representa una abstracción de la realidad.
+- *Lenguajes fuertemente tipados* : lenguajes donde es necesario expresar de forma explícita los datos y además realiza una estricta verificación de los tipos en tiempo de traducción.
+      - Los compiladores puede optimizar la gestión de memoria. *Mejora la eficiencia de ejecución*.
+      - Se puede reducir el código que necesita ser compilado. *Mejora la eficiencia de traducción*.
+      - Evita errores debidos al mal uso de los datos.
+            - Mejora capacidad de escritura.
+            - Mejora la seguridad y la confiabilidad.
+            - Elimina ambigüedades.
+      - Mejora la legibilidad.
+
+** Tipos de datos
+- Conceptos necesarios:
+      - *Tipo abstracto de datos* : Comportamiento semántico que se puede realizar sobre los datos que representa. Sin llegar a la implementación.
+      - *Estructura de datos* : Representación computacional concreta de la organización de los datos del tipo abstracto. En términos de los *tipos de datos primitivos* del lenguaje.
+      - *Tipo de datos* : Dotar a una *estructura de datos* de la operaciones definidas en el *tipo de datos abstracto*.
+
+- Elementos susceptibles de ser tipados llevan una declaración de tipo.
+
+#+begin_src java
+int x;    // int es el identificador del tipo.
+int x=66; // lo mismo con una asociación del valor inicial.
+#+end_src
+
+- El *tipo abstracto de dato* permite discernir el tipo real de unos bytes.
+      - Las operaciones que se pueden realizar sobre esos datos.
+- *Veridicación de tipos* : Llamada que comprueba que los tipos se están usando correctamente.
+      - Permite resolver la sobrecarga.
+- *Lenguajes débilmente tipados* : Se permiten operaciones que no pertenencen al *tipo abstracto de datos*. Ejemplo C sumando variables char.
+- *Lenguaje no tipado* : Lenguaje que no posee ninguna información sobre los tipos. Ejemplo Prolog.
+- *Inferencia de tipos* : deducir el tipo en función en función a la información de tipos que se haya indicado (como en la sobrecarga).
+      - Haskell presenta un complejo sistema de inferencia de tipos (además creo que es fuertemente tipado).
+
+#+begin_src C
+int x = 5 / 2;  // Se deduce la operación división sobre enteros.
+float y = 5/2;  // Se deduce la operación división sobre reales.
+#+end_src
+
+- *Tipos definidos por el usuario* : Tipos más complejos en base a los tipos básicos.
+      - *Constructores de tipos* : Permite la creación de tipos *definidos por el usuario*.
+      - Se complica el proceso de verificación de datos.
+            - *Equivalencia de tipos* : Comprobar si dos tipos provenientes de diferentes declaraciones de tipo son o no equivalentes.
+
+#+begin_src C
+int x[10];  // definición de una array de 10 elementos
+            //  Como no tiene nombre es un tipo anónimo.
+#+end_src
+
+- *Tipo anónimo* : Definición de un *tipo definido por el usuario* sin nombre.
+- *Definición de tipo* : Definir un nuevo *tipo definido por el usuario* con nombre.
+
+#+begin_src java
+public class ArrayEnteros {
+    private int[] x;
+
+    // con constructor
+    public ArrayEnteros(int tam) {
+        x = new int[tam];
+    }
+
+    public int getElemento(int idx) {
+        return x[idx];
+    }
+}
+#+end_src
+
+- *Programas peligrosos* : programas que contienen errores de tipos que pueden corromper los datos (accesos a componentes inexistentes o división por 0).
+- *Programas seguros* : No contienen los errores anteriores.
+- *Programas correctos* : Programas que pueden ser aceptados por un intérprete o compilador fuertemente tipado.
+      - Es un subconjunto de los *programas seguros*.
+
+- *Sistema de tipos* : Mecanismos para la creación de nuevos tipos más los algoritmos de verificación, inferencia y equivalencia.
+      - Los lenguajes fuertemente tipados poseen un sistema de tipos estático.
+            - Garantiza que los *programas peligrosos* son rechazados en tiempo de compilación.
+      - Pueden rechazar algunos *programas seguros* (programas no peligrosos).
+
+- *Lenguajes con tipado dinámico* : No usa el sistema de tipos estáticos.
+      - Una variable es tipada según el flujo del programa.
+      - El tipo depende del valor.
+
+#+begin_src scheme
+(define x valor)
+#+end_src
+
+*** Tipos de datos atómicos
+- [id:TeLenProg] pag 221
+- *Tipo atómico* : no es posible separarlo en elementos más sencillos.
+- *Tipos discretos* : Dado un valor es posible definir su sucesor o predecesor.
+      - Salvo los números reales.
+
+**** Enteros
+- java ofrece *byte* (1B), *short* (2B), *int* (4B) y *long* (8B). La diferencia es el tamaño de memoria.
+- Haskell ofrece *Int* acotados, *Integer* sin acotar (consume más memoria).
+- Operaciones comunes:
+      - suma
+      - resta
+      - producto
+      - división entera
+      - módulo
+
+**** Reales
+- Se suelen representar utilizando el estándar IEEE-754.
+      - mantisa * 10^{exponente}.
+- Java y Haskell ofrecen el float, Float y el double, Doueble.
+- Operaciones comunes :
+      - suma
+      - resta
+      - producto
+      - división
+      - módulo
+      - Raiz cuadrada
+      - Logaritmo neperiano
+      - Exponenciación
+
+**** Carácteres
+- En Java *char* ocupa 2 bytes.
+      - Estándar UNICODE^8
+- En Haskell *Char* sigue el estándar ASCII-7.
+- Operaciones en [id:TeLenProg] pag 223
+
+**** Booleanos
+- Java se denomina Boolean
+- Haskell se denomina bool
+- Operaciones comunes en el *Álgebra de Boole*.
+
+**** Tipos Enunerados
+- Atómicos definidos por el usuario junto con las operaciones que se definan.
+- Conjunto de posibles valores es finito.
+- Por ejemplo los días de la semana.
+
+**** Rangos
+- Tipos definidos por el usuario.
+- Toman valores de un subconjunto contiguo de un tipo discreto
+- Ada y Pascal lo permiten.
+
+*** Tipos de datos estructurados
+- Pueden descomponerse en otros más simples.
+
+**** Arrays
+- Estructura matricial de 1 o varias dimensiones.
+- Es posible acceder a uno de los elementos indicando los índices.
+- Normalmente los índices empiezan en 0.
+- En Haskell no existe el concepto array como tabla.
+
+**** Funciones
+- Muy útil en general.
+- Muy importante para lenguajes con funciones como *ciudadanos de primera clase* (haskell).
+- Se pueden considerar clases porque representan un *conjunto* de operaciones (cada operación es el valor). con su dominio y su codominio.
+
+**** Producto Cartesiano
+- Producto cartesiano de dos conjuntos, tuplas en Haskell (sin nombre).
+      - Haskell también puede hacer tipos con nombre.
+- registros o structs en C (con nombre).
+- record en Pascal.
+
+**** Tipos Recursivos
+- El tipo definido aparece en su propia definición.
+      - Por ejemplo un árbol.
+- En Java se implementa mediante clases.
+- En Haskell con *data* de una forma muy sencilla.
+
+**** Unión de tipos
+- Unión de dos conjuntos (Toma el valor de un conjunto o del otro).
+- Si todos los tipos participantes son *atómicos* la unión también es *atómica*.
+- *Unión Indiscriminada*
+#+begin_src C
+typedef union {
+    int i;      // Ambos valores residen en la misma dirección.
+    char c;
+} IntOrChar;
+IntOrChar x;
+#+end_src
+
+- *Unión Discriminada* : un discriminante indica al tipo al que pertenencen. 
+#+begin_src haskell
+data IntOrChar = Entero Int | Caracter Char
+#+end_src
+
+** Equivalencia de Tipos de Datos
+- [id:TeLenProg] pag 230.
+- *Equivalencia de tipos* : Responsable de decir si dos tipos son iguales o no (o compatibles).
+- *Equivalencia estructural* : Representan el mismo conjunto de valores.
+      - Se puede comprobar sustituyendo el nombre del tipo por su definición.
+      - Problemático con tipos recursivos.
+      - Problemático con tipos anónimos.
+- *Equivalencia en nombre* : Dos tipos son equivalentes si tienen el mismo nombre.
+      - Problemático con los alias de tipos.
+      - Problemático con tipos anónimos.
+
+
+** Conversión de Tipos de Datos
+- Por ejemplo la necesidad trabajar con *enteros* y *reales*.
+- *Conversión implícita de tipos* : Conversión automática cuando es posible.
+      - Puede dar lugar a comportamientos inesperados.
+      - Java permite.
+#+begin_src java
+byte b;
+short s;
+int i;
+long l;
+s=b; i=b; l=b;
+
+// b=i  // no es posible
+#+end_src
+
+- *Conversión explícita* (o forzada) : La conversión de tipo se delega al programador.
+      - Carga la tarea en el programador.
+      - Una variante son las *funciones específicas* como *truncate*.
+
+#+begin_src C
+double x = (double)(3+2);
+#+end_src
+
+- Algunas *funciones específicas* son:
+#+begin_src java
+// Convertir una cadena de carácteres que contiene un valor.
+String s = Integer.toString(34);    // "34"
+Integer i = Integer.parseInt("34"); // 34
+#+end_src
+
+* Control de la Ejecución
+- [id:TeLenProg] pag 241
+
+** Evaluación de expresiones
+- *Expresión* : estructura que representa un valor concreto de uno de los tipos de datos del lengueje.
+- Expresiones básicas:
+      - *constantes*
+      - *identificadores*
+- Expresiones complejas se elaboran mediante *funciones* y *operadores* a otras expresiones más símples.
+- Operadores:
+      - *unarios* : Se aplican a un único operando.
+      - *binarios* : Se aplican a 2 operandos.
+- *funciones* : reciben varios parámetros y devuelven un valor de salida.
+
+*** Notaciones infija, prefija y postfija
+- *Notación infija* : situa los operadores entros los operandos
+      - A * B
+      - La más común
+- *Notación prefija* : Situa el operando delante de los operadores
+      - * A B
+      - No existe ambigüedad.
+- *Notación postfija* : operandos preceden al operador.
+      - A B *
+      - No existe ambigüedad.
+      - Muy util para resolver las operaciones con una pila.
+            - operandos se apilan, operadores sacan de la pila y meten el resultado.
+            - Calculadora de emacs.
+
+*** Evaluación de una expresión
+- *Evaluación impaciente* o *Evaluación estricta* : operandos o parámetros han de ser evaluados antes de los operadores o funciones.
+- *Efecto colateral* : Problemas que surgen del orden de resolución de llamadas aparentemente no conectadas.
+
+#+begin_src java
+static int x;
+
+static int colateral () {
+    x++;
+    return x;
+}
+
+public static void main(String[] args) {
+    x=1;
+    int y = x + colateral();
+    System.out.println(y);
+
+    x=1;
+    int z = colateral() + x;
+    System.out.println(z);
+}
+
+#+end_src
+
+#+RESULTS:
+: 3
+: 4
+
+- Si el lenguaje establece el orden de resolución el programador puede tenerlo en cuenta para evitar efectos colaterales.
+
+- *Evaluación no estricta* o *evaluación diferida* : La evaluación de los parámetros de una función se difieren hasta que sea necesarios.
+- *Transparencia referencial* : El valor de una expresión o parámetro no varía según cuando sea resuelto.
+      - *Evaluación normal* : Si se cumple la transparencia referencial una función puede empezar a ser evaluada antes que sus operandos.
+- *Evaluación perezosa* : lo de Haskell. Se retrasa hasta tener toda la información suficiente par la evaluación de la función.
+- *Evaluación en cortocircuito* o *evalueción McCarthy* :
+      - false AND x : no es necesario evaluar x
+      - Permite proteger de realizar accesos a componentes inexistentes. 
+
 * Glosario
 - *Evaluación impaciente* : /factorial(4*5)/ primero evalua el resultado de 4*5.
 - *mónadas* : indivisibles
