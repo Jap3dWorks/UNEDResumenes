@@ -1408,7 +1408,7 @@ FIN-SI
       - Acciones del consecuente puede contener predicados.
       - Ejemplo:
             - SI (paciente ?p) $\land$ (edad ?p ?e) $\land$ (síntoma ?p fiebte) $\land$ (síntoma ?p manchas-rojas) ENTONCES Añadir(enfermedad ?p varicela)
-            - paciente menor de 10 años con manchas rojas y fiebre $\to$ Paciente con varicela
+            - Paciente menor de 10 años con manchas rojas y fiebre $\to$ Paciente con varicela
 
 ***** Equiparación de reglas utilizando variables con los contenidos de la BH
 - [id:IntArt] pag 106
@@ -1466,6 +1466,19 @@ FIN-SI
             - Ambas evaluadas sobre el mismo conjunto.
 
 ** Ventajas e inconvenientes
+- [id:IntArt] pag 116
+- Las reglas del BC deben ser independientes entre sí.
+- SBR con un BC muy grande incluir nuevas reglas puede provocar efector colaterales.
+- Representación declarativa del concocimiento.
+- Un SBR puede seguir el rastro facilmente del conjunto de reglas que aplicó.
+      - Proporciona poder de autoexplicación.
+- Un SBR puro no posee estructuras de control.
+
+** Dominios de aplicación
+- [id:IntArt] pag 118
+- Dos clases de problemas:
+      - Los que se pueden modelar como un conjunto de múltiples estados.
+      - Los que vienen descritos por medio de una teoría concisa y unificada.
 
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
