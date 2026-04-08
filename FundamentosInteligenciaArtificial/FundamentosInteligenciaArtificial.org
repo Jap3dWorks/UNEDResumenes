@@ -1210,6 +1210,263 @@ dev SATISFACIBLE
             - $T_L(x,y) = \max(x+y-1,0)\ \ S_L(x,y)=\min(x+y,i)$
       - Se pueden escoger según sus propiedades.
 
+* Sistemas basados en Reglas (SBR)
+- [id:IntArt] pag 83
+- *SBR* : son sistemas de deducción en lógica proposicional restringitos a clausulas de Horn.
+      - Permiten capturar la experiencia humana en la resolución de problemas, con el fin de alcanzar decisiones consistentes y repetibles.
+- Estructuras de representación declarativas.
+      - Conocimiento del dominio *Factual* : Conocimiento aceptado y consensuado.
+      - Conocimiento del dominio *heurístico* : Menos riguroso basado en experiencias propias.
+- *Motores de inferencias* : Mecanismos de deducción utilizados controlan las etapas que se deben llevar a cabo para resolver un problema.
+
+** Componentes básicos de los SBR
+- *BC* : base de conocimiento.
+- *MI* : mecanismo de inferencia.
+- *BH* : Base de hechos, como memoria de hechos establecidos.
+      - Pueden ser sensores por ejemplo.
+
+*** Base de Hechos (BH)
+- [id:IntArt] pag 84
+- Contiene la información actual del problema.
+      - Metas a alzanzar e hipótesis.
+      - Estado actual del problema en curso de solución.
+
+*** Base de Conocimiento (BC)
+- [id:IntArt] pag 85
+- Regla:
+      - Condición o antecedente -> acción o consecuente.
+      - Condición : lista de cláusulas a verificar.
+            - Algún tipo de test sobre el BH.
+      - Consecuente : lista de acciones a ejecutar.
+            - Puede cambiar el contenido del BH.
+- Se lée SI <condición> ENTONCES <consecuente>
+- El BH también contiene:
+      - Conjunto de hechos deducidos por el sistema en un encadenamiento hacia delante.
+      - Conjunto de metas que debe alzanzarse e hipótesis avanzadas durante el transcurso de una solución si el encadenamiento es hacia atrás (check de la verificación de las cláusulas).
+
+*** Motor de inferencias (MI)
+- [id:IntArt] pag 87
+- También estategia de control o intérprete de reglas.
+- Examina el BH y decide qué reglas se disparan.
+- Algoritmo independiente del BC.
+- Motor de inferencias genérico
+      - *Búsqueda informada* : Sin ningún conocimiento
+            - coste computacional más bajo.
+            - Pero mayor coste de aplicación de reglas (peor filtro).
+      - *Búsqueda informada* : Con algún conocimiento acerca del problema
+            - Mayor coste computacional.
+            - Pero menor coste al aplicar las reglas (mejor filtro).
+#+begin_src pseudocode
+BH <- HechosIniciales;
+MIENTRAS !VerificaCondiciónFin(BH) || NoSeEjecutaAcciónParada HACER
+    ConjuntoConflicto <- Equiparar(BC,BH);  // Seleccionar reglas compatibles
+    R <- Resolver(ConjuntoConflicto);       // Proceso de búsqueda (informada o desinformada)
+    NuevosHechos <- Aplicar(R,BH);
+    Actualizar(BH, NuevosHechos);
+FIN-MIENTRAS
+#+end_src
+
+** Inferencia
+- [id:IntArt] pag 88
+- Red de inferencia : red de notos.
+      - antecedente > (nodo) > consecuente
+      - Se encadenan varios nodos : antecedente > (nodo) > consec/ante > (nodo) > consecuente2.
+      - *Punto de partida* : Antecedente que no es consecuente de otras reglas.
+      - *Meta* : Consecuente que no es antecendente de ninguna otra regla.
+- *Encadenamiento hacia delante* : Colección de hechos o afirmaciones de partida.
+      - Aplica reglas de la BC repetidas veces hasta que no se generen nuevos hechos.
+      - Una regla se puede aplicar si las cláusulas del antecedente se verifican.
+      - Cada vez que se aplica una regla se almacena el consecuente en el BH.
+      - Se recorre la red de inferencia hacia delante (izquierda - derecha).
+- *Encadenamiento hacia atrás* : Parte de un conjunto de hipótesis que intenta verificar usando datos de la BH.
+      - Se recorre la red de inferencia hacia detrás (derecha - izquierda).
+
+*** Encadenamiento hacia delante
+#+begin_src pseudocode
+BH <- HechosIniciales;
+ConjuntoConflicto <- ExtraeCualquierRegla(BC);
+
+MIENTRAS NoContenida(Meta, BH) && NoVacío(ConjuntoConflicto) HACER
+    ConjuntoConflicto <- Equiparar(Antecedente(BC), BH);
+    SI NoVacío(ConjuntoConflicto) ENTONCES
+        R <- Resolver(ConjuntoConflicto);  // Selección de las reglas
+                                           //  Depende de la estratégia de selección.
+        NuevosHechos <- Aplicar(R, BH);
+        Actualizar(BH, NuevosHechos);
+    FIN-SI
+FIN-MIENTRAS
+SI Contenida(Meta,BH) ENTONCES
+    DEV "Éxito";
+FIN-SI
+#+end_src
+
+- *Principio de refracción* : Solo se permite aplicar una regla una sola vez.
+
+- Ejemplo en [id:IntArt] pag 90.
+
+**** Ciclo de reconocimiento-acción
+- Proceso iterativo de aplicación del encadenamiento hacia delante.
+- Los inconvenientes vienen de la falta de focalización en la meta.
+      - La fase de resolución de conflictos es crítica.
+      - El disparo de reglas elegidas favorece la explosión combinatoria.
+      - Se necesitar cargar todas las afirmaciones que se poseen en la BH.
+
+*** Encadenamiento hacia atrás
+- [id:IntArt] pag 97
+- Se trata de determinar si el objetivo se verifica o no.
+- Teniendo en cuenta el contenido del BH.
+- Tranta de encontrar reglas cuyo consecuente contenga el objetivo a verificar.
+
+#+begin_src pseudocode
+BH <- HechosIniciales;
+SI Verificar (META,BH) ENTONCES
+    DEV "éxito";
+SINO
+    DEV "fracaso";
+FIN-SI
+#+end_src
+
+- Procedimiento *Verificar*
+
+#+begin_src pseudocode
+Verificado <- Falso;
+SI Contenida(Meta, BH) ENTONCES
+    DEV true;
+SINO
+    ConjuntoConflicto <- Equiparar(Consecuentes(BC), Meta);
+    MIENTRAS NoVacío(ConjuntoConflicto) && !Verificado HACER
+        R <- Resolver(ConjuntoConflicto);
+        Eliminar(R, ConjuntoConflicto);
+        NuevasMetas <- ExtraerAntecedentes(R);
+        Verificado <- true;
+        MIENTRAS NoVacío(NuevasMetas) && Verificado HACER
+            Meta <- SeleccionarMeta(NuevasMetas);
+            Eliminar(Meta,NuevasMetas);
+            Verificado <- Verificar(Meta,BH);
+            SI Verificado ENTONCES
+                Añadir(Meta, BH);
+            FIN-SI
+        FIN-MIENTRAS
+    FIN-MIENTRAS
+    DEV Verificado;
+FIN-SI
+#+end_src
+
+- Ejemplo en [id:IntArt] pag 98
+
+**** Ciclo de encadenamiento hacia atrás
+- Ciclo de inferencias
+      1. *Etapa de equiparación* : Búsqueda de las reglas cuya conclusión se corresponda con la meta M en curso.
+      2. *Etapa de resolución de conflictos* : Selección de una regla entre las dadas en el conjunto conflicto.
+      3. *Etapa de acción* : Reemplazamiento de la meta M por la conjunción de las condiciones del antecedente de la regla seleccionada.
+
+- Problemas con bucles infinitos.
+- Ventajas:
+      - Solo plantea cuestriones al usuario cuando tiene necesidad de hacerlo.
+      - Reduce el cúmero de equiparaciones de reglas.
+      - Disminuye la dimensión del árbol de búsqueda.
+
+*** Reversibilidad
+- Usar encadenamiento hacia delante o hacia atrás depende del problema
+- Estrategias basadas en la red de inferencia:
+      - Número elevado de reglas con muchas condiciones mejor encadenamiento hacia delante.
+      - Muchas reglas cuyo consecuente forma parte del antecedente de otras mejor encadenamiento hacia atrás
+      - Claros los datos de entrada pero no tan claros los objetivos mejor hacia delante.
+            - *Razonamiento conducido por los datos*.
+            - Apropiado para tareas reactivas.
+      - Si los objetivos y subojetivos están bien definidos pero no así las estructuras de los datos mejor encadenamiento hacia atrás.
+            - *Razonamiento conducido por objetivos*.
+            - Apropiado para tareas anaíticas.
+      - Los SBR que deban justificar su razonamiento deben adaptar la dirección que mejor se adapte a la forma de pensar del usuario del sistema.
+- *Búsqueda bidireccional* : Seguir ambas direcciones hasta que los dos caminos de búsqueda se encuentran.
+      - Requiere:
+            - Incorporar en BH datos iniciales y metas a alcanzar. 
+            - Distinguir entre reglas a aplicar hacia delante (tipo A) y reglas aplicables hacia atrás (tipo B).
+            - Diseñar la condición de terminación para que considere tanto la parte de descripción de los datos inferidos como de las metas a alcanzar.
+            - Modelar el mecanismo de control para que decida en cada etapa si aplica una regla tipo A o tipo B
+      - Adecuada si el número de nodos en cada paso crece exponencialmente.
+      - Para búsquedas totalmente desinformadas basadas en divide y vencerás es efectiva.
+      - Corre el peligro que la búsqueda hacia delante explore una rama diferente a la de la solución.
+            - Hay que diseñar el sistema cuidadosamente.
+
+** Técnicas de equiparación
+- [id:IntArt] pag 104
+
+*** Equiparación con variables
+- El antecedente de la regla contiene variables.
+
+**** Sintaxis de reglas con variables
+- Sintaxis:
+      - Cada elemento de condición en el antecedente debe ir entre parénesis y empezar por una constante.
+      - Todos los elementos de condición del antecedente deben ir unidor por Y.
+      - Elementos de condición formador por átomos.
+            - Constante o variable.
+            - Variables con un prefijo ?, por ejemplo ?p.
+      - Elementos de condición pueden expresar alguna prueba.
+            - Por ejemplo (test (< ?e 10)) es comprobar que e tienen menos de 10 años.
+      - El consecuente también puede contener variables.
+      - Acciones del consecuente puede contener predicados.
+      - Ejemplo:
+            - SI (paciente ?p) $\land$ (edad ?p ?e) $\land$ (síntoma ?p fiebte) $\land$ (síntoma ?p manchas-rojas) ENTONCES Añadir(enfermedad ?p varicela)
+            - paciente menor de 10 años con manchas rojas y fiebre $\to$ Paciente con varicela
+
+***** Equiparación de reglas utilizando variables con los contenidos de la BH
+- [id:IntArt] pag 106
+- Un ejemplo de regla para que se entienda, es muy prolog
+      - SI (caballo ?x) $\land$ (rápido ?x) ENTONCES (candidato-competición ?x)
+- Variables distintas pueden tener el mismo valor.
+      - SI (caballo ?x) $\land$ (padre ?x ?y) $\land$ (rápido ?y) ENTONCES ...
+- Pueden haber condiciones negadas en una regla.
+      - SI (caballo ?x) $\land$ $\lnot$(rápido ?x) ENTONCES (candidato-reserva ?x)
+
+- *Instanciación* : par formado por una regla y los elementos del BH que equiparan dicha regla.
+      - En la fase de acción se ejecuta una instanciación de la regla.
+            - Añade nuevos hechos al BH.
+
+**** El algoritmo RETE
+- [id:IntArt] pag 109
+- Evita examinar todas las reglas del BC con los datos del BH.
+- Aprovecha dos propiedades
+      - Agrupa las reglas según los patrones en sus condiciones.
+            - *Red RETE* : Realizado por un compilador.
+                  - Clasificación estructurada en forma de árbol.
+                  - Cada nodo indica operaciones durante la equiparación.
+                  - Cada arco indica el camino por donde fluyen los datos.
+                  - Elimina reglas redundantes.
+      - Guarda el resultado de la equiparación durante 1 ciclo.
+            - Guarda *instanciaciones*, resultado de equiparaciones, de ciclo a ciclo.
+            - Actualiza esta información con los cambios que se producen en la BH después de la ejecución de cada ciclo.
+                  - Almacena las instanciaciones de ciclos anteriores que generaron nuevos datos en la BH.
+                  - Para cada dato que se borra de la BH se eliminan las instanciaciones almacenadas a las que dio lugar ese dato.
+
+** Técnicas de resolución de conflictos
+- [id:IntArt] pag 111
+- Selecciona a partir del conjunto de conflictos la instanciación a aplicar.
+- Principales técnicas:
+      1. Seleccionar la primera regla que se equipara con los condenidos de la BH.
+             - Bajo coste de control.
+             - Mayor coste de aplicación (Se prueban más reglas).
+             - Se puede ordenar con técnicas de ordenación del BC:
+                   - Ordenar las reglas en la BC, sin más misterio.
+                         - Primero la que deba probarse antes.
+                   - Ordenación de las condiciones dentro de cada regla.
+                         - Primero las condiciones menor probables.
+      2. Seleccionar la regla de prioridad más alta.
+      3. Seleccionar las instancias más específicas.
+      4. Seleccionar arbitrariamente una regla.
+      5. Seleccionar las instanciaciones que tienen elementos más recientemente añadidos a la BH.
+      6. Seleccionar una instanciación que no se haya ejecutado previamente.
+             - Principio de refracción.
+             - Dos instanciaciones de la misma regla con los mismos elementos se consideran diferentes si.
+                   1. Una de ellas está en el conjunto conflicto algunos ciclos,
+                   2. Desaparece del conjunto conflicto.
+                   3. Vuelve a aparecer en el conjunto conflicto.
+- Se suelen combinar las principales técnicas estableciendo una prioridad.
+      - Ante la misma prioridad se hace la intersección de las dos técnicas.
+            - Ambas evaluadas sobre el mismo conjunto.
+
+** Ventajas e inconvenientes
+
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
       - *Inferencia deductiva*, A implica B, C implica B, etc.
