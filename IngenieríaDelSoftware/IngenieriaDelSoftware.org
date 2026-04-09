@@ -1455,6 +1455,404 @@ FIN-PARA
 *** Diagrama de despliegue  
 - Muestra como el sistema se asentará físicamente en el entorno hardware que lo acompaña.
 
+* La codificación del software
+** Objetivos
+- Construir un prorgama Implica tareas de codificación, verificación, depuración y pruebas.
+
+** Los lenguajes de programación
+- Lenguajes de configuración.
+- Lenguajes de caja de herramientas o "toolkits".
+- Lenguajes "script".
+- Lenguajes de programación propiamente dichos.
+
+*** Primera generación de lenguajes
+- Lenguajes ensamblador.
+- Son un nemotécnico sobre cada instrucción.
+- Existe un ensamblador por computador distinto.
+
+*** Segunda generación
+- No dependen de la estructura concreta del computador.
+- Aparencen los primeros elementos abstractos.
+      - tipos de datos, variables, estructuras de control.
+
+**** Fortran
+- Pensado para aplicaciones científicas.
+- Manejo casi directo de la memoria.
+- Se sigue utilizando.
+
+**** Cobol
+- Procesamiento de información empresarial.
+- Muy usado.
+
+**** Algol
+- Precursor de muchos lenguajes de 3a generación.
+- Da importancia a la tipificación de datos.
+
+**** Basic
+- Pensado para la enseñanza.
+- Muy extendido a nivel computador doméstico.
+
+*** Tercera Generación
+- Se consolidan las bases teóricas de la programación estructurada.
+
+**** Pascal
+- Diseñado para la enseñanza de la programación estructurada.
+- Permite procedimientos o funciones recursivas.
+      - Tipificación de datos rígida.
+      - No contempla la compilación separada.
+
+**** MODULA-2
+- Descendiente de Pascal que trata de paliar las deficiencias de este.
+      - Más pensado para el desarrollo a gran escala.
+- Concepto módulo
+- Permite la ocultación de detalles de la implementación.
+- Aplicación inmediara de modularidad, abstracción y ocultación.
+- Implementa mecanismos de concurrencia.
+
+**** C
+- Desarrollado para codificar UNIX.
+- Enormemente usado para todo.
+- Capaz de llegar a optimizaciones casi nivel ensamblador.
+- Puede ser peligroso
+
+**** ADA
+- Patrocinado por el Departamento de Defensa de los EEUU.
+- Descendiente de Pascal más potente y complejo.
+- Tiene packages
+      - Proporciona Modularidad y ocultación
+- Mecanismos de concurrencia.
+
+**** Smalltalk
+- Precursor de los lenguajes orientados a objetos.
+
+**** C++
+- C con programación orientada a objetos.
+
+**** Java
+- Deriva de C y C++ con menos facilidades a bajo nivel.
+- Se compilan para ser ejecutadas en una máquina virtual.
+
+**** Eiffel
+- Intento más serio de diseño de un lenguaje complemtamente nuevo orientado a objetos.
+
+**** Lisp
+- Precursor de muchos lenguajes funcionales.
+- Muy usado en inteligencia artificial y sistemas expertos.
+- Manipulación de símbolos, demostración de teoremas y resolución de problemas teóricos.
+
+**** Prolog
+- Representante de lenguajes lógicos.
+- Punto de arranque de la 5a generación.
+
+*** Cuarta generación
+- Tratan de permitir que usuarios sin grandes conocimientos en programación puedan construir aplicaciones sencillas.
+
+**** Bases de datos
+- Permiten acceder y manipular información en una base de datos.
+- Dotan de una gran versatilidad a la base de datos.
+
+**** Generadores de programas
+- Generan el código en lenguajes de 3a generación.
+- Puede ir mejorándose si el resultado no es satisfactorio.
+
+**** Cálculo
+- Hojas de cálculo, herramientas de cálculo matemático, herramientas de simulación.
+
+** Criterios de selección del lenguaje
+- Imposición del cliente:
+- Tipo de aplicación:
+      - Para gestión lo habitual es COBOL.
+      - FORTRAN en el área científico-técnica.
+            - Pascal y C también
+      - Sistemas y tiempo real se usa mucho C, Modula-2 y Ada.
+      - LISP y Prolog en inteligencia artificial.
+      - Aplicaciones con diseño orientado a objetos Java, C++ o Eiffel.
+- Disponibilidad y entorno
+      - Que compiladores existen para el computador elegido.
+      - Herramientas que acompañal al compilador.
+            - Editor, enlazador, depurador, etc.
+- Experiencia previa
+      - Aprovechar la experiencia previa.
+- Reusabilidad
+      - Dejar software aprovechable para otros desarrollos.
+- Transportabilidad
+      - Que el lenguaje permita ejecutar el programa en nuevos computadores.
+- Uso de varios lenguajes
+      - Si facilita el desarrollo de ciertas partes se puede hacer con mucho cuidado.
+      - Hay que estudiar la compaibilidad entre los compiladores y ese tipo de aspectos.
+
+** Aspectos metodológicos
+*** Normas y estilo de codificación
+- Normas que tratan de conseguir un resultado homogéneo entre varios programadores.
+- Es habitual un conjunto de normas generales.
+- El formato del texto del programa puede resultar significativo desde el punto de vista humano.
+- Esencial para el mantenimiento.
+
+- Puntos a concretar en un estilo de programación:
+      - Formato y contenido de las cabeceras de cada módulo
+            - Identificación del módulo
+            - Descripción del módulo
+            - Auto y fecha
+            - Revisiones y fechas
+            - ...
+      - Formato y contenido para cada tipo de comentario
+            - Sección
+            - Orden
+            - Al margen
+            - ...
+      - Utilización de encolumnado
+            - Tabulador = N' espacio
+            - Máximo indentado
+            - Formato selección
+            - Formato iteración
+            - ...
+      - Elección de nombres
+            - Convenio para el uso de mayúsculas y minúsculas
+            - Nombres de ficheros
+            - Identificadores de elementso del programa
+            - ...
+- También se pueden incluir restricciones
+      - Tamaño máximo de las páginas.
+      - Máximo de argumentos por subrutina.
+      - Cadenas de texto en un fichero separado.
+      - Evitar el anidamiento excesivo de sentencias IF.
+
+*** Manejo de errores
+- Algunos orígenes de los errores
+      - Datos incorrector o inesperados.
+      - Anomalías en el hardware.
+      - Defectos en el software.
+- *Defecto* : Errata de software.
+      - Puede permanecer oculto un tiempo.
+- *Fallo* : Un elemento del programa no funciona correctamente.
+- *Error* : Estado inadmisible del programa al que se llega como resultado de un fallo.
+
+- Actitudes respecto al tratamiento de los fallos.
+      - No considerar los erroes:
+            - Se exige que todos los datos que se introduzcan sean correctos.
+            - No es muy realista.
+      - Prevención de errores
+            - programación a la defensiva.
+            - Se desconfía sistemáticamente de los datos que se introducen.
+            - Se devuelve una indicación precisa del fallo si los datos no son válidos.
+            - Evita la propagación de errores.
+      - Recuperación de errores.
+            - Tratamiento de error con objetivo de restaurar el programa a un estado correcto.
+            - Intervienen dos actividades complementarias.
+                  - Detección del error.
+                  - Recuperación del error.
+            - Existen dos esquemas generales
+                  - *Recuperación hacia delante* : Identificar el tipo del error.
+                        - Posteriormente tomar las acciones adecuadas.
+                        - Manejo de excepciones.
+                  - *Recuperación hacia atrás* : Corregir restaurando el programa previo al error.
+                        - Independiente a la naturaleza del error.
+                        - Se usa en sistemas basados en transacciones.
+
+*** Aspectos de eficiencia
+- La eficiencia ya no es tan importante como lo era en los primeros computadores.
+- Puntos de vista de la eficiencia.
+      - Eficiencia en memoria.
+      - Eficiencia en tiempo.
+            - Además del algoritmo correcto...
+            - Tabular cálculos complejos
+            - Expansión en línea (inline).
+            - Desplegado de bucles (Evitando evaluaciones).
+            - Simplificar las expresiones aritméticas y lógicas.
+            - Sacar de los bucles aquello que no sea necesario repetir.
+            - Utilizar estructuras de datos de acceso rápido.
+            - Evitar las operaciones en coma flotante, mejor en coma fija.
+            - Evitar conversiones innecesarias de tipos de datos.
+
+*** Transportabilidad de software
+- Permite usar el mismo software en distintos computadores actuales y futuros.
+- Factores esenciales de la transportabilidad.
+      - Utilización de estándares.
+      - Aislar las peculiaridades.
+            - Un módulo específico para cada una de ellas.
+            - Las peculiaridades fundamentales suelen ser.
+                  - Arquitectura del computador
+                        - Se suele resolver declarando tipos abstractos de datos.
+                  - Sistema operativo.
+                        - Entrada/salida.
+                        - Manejo de ficheros.
+                        - Manejo de librerías.
+
+
+* Pruebas de Software
+** Tipos de pruebas
+- *Verificación* : Comprueba que el producto se ha construido correctamente.
+- *Validación* : Comprueba que el producto se ha construido de acuerdo a los reequerimentos del cliente.
+
+** Pruebas de unidades
+- Las pruebas deben conseguir que el programa funciones incorrectamente.
+- A tener en cuenta cuando se crean pruebas:
+      - Una buena prueba es la que encuentra errores.
+      - Es necesario conocer el resultado correcto.
+      - Es bueno que no participen el diseñador ni el codificador.
+      - Siempre hay errores, si no aparecen deben diseñarse mejores pruebas.
+      - Corregir un error puede provocar nuevos errores.
+      - Es imposible demostrar la ausencia de defectos mediante puebas.
+- Se busca que se realize de la forma más automática posible.
+- Se aisla el entorno de pruebas del entorno de ejecución normal.
+- Debe salir un documento con el resumen de la prueba de la ejecución de las pruebas.
+      - que indique los errores y los valores esperados.
+      - Normalmente las pruebas es un programa preparado para ese fin.
+
+*** Pruebas de caja negra
+- Ignora la estructura interna del programa.
+- Se basa en comprobaciones de entrada/salida.
+- Se intenta descubrir de donde viene el defecto desde el exterior.
+
+**** Partición en clases de equivalencia
+- Dividir el espacio de ejecución del programa en varios subespacios.
+- Se deben proponer casos válidos e inválidos.
+- Pasos:
+      1. Determinar las clases de equivalencia apropiadas.
+      2. Definir una prueba que cubra tantos casos válidos como sea posible.
+      3. Marcar las clases de quivalencia cubiertas. Repetir hasta tenerlas todas cubiertas.
+      4. Definir una prueba específica para cada caso inválido.
+
+**** Análisis de valores límite
+- Muchos programas se codifican desde lo general a lo particular (casos especiales).
+- Hace incapié en hacer los tests en las zonas del espacio cercanas al borde del espacio de ejecución.
+- Directrices para la elaboración de pruebas.
+      1. Entradas : Valores límite y valores fuera del límite.
+      2. Salidas : Probar valores límite y fuera del límite.
+      3. Memoria : Probar tamaños nulos, límites y superiores al límite de las estructuras de información.
+      4. Recursos : Ningún recurso, Límite de recursos y superior al límite.
+      5. Otros : Pensar otras situaciones límite y establecer la prueba.
+- Es válido para la caja transparente.
+
+**** Comparación de versiones
+- Si una unidad es crítica se puede hacer un desarrollo multiversión.
+      - Cada versión para un programador.
+- Se elabora un juego de casos de prueba mediante los métodos habituales.
+- Todas las versiones se someten al juego de pruebas.
+- Las discrepancias se deben analizar.
+- Cuando todas las versiones realizen el mismo resultado, todas ellas serán válidas y corectas.
+
+**** Empleo de la intuición
+- Personas ajenas al desarrollo suelen aportar ideas frescas.
+- Importante la experiencia.
+
+*** Pruebas de caja transparente
+- Se intenta que el programa transite todos los caminos de ejecución.
+      - Todas las decisiones se ejecuten en ambos sentidos.
+      - Todos los bucles se ejecuten en los supuestos más diversos.
+      - Todas las estructuras de datos se modifiquen y consulten alguna vez.
+- Las pruebas de caja negra y caja transparente son complementarias.
+- Deben ser propuestas por alguien que conozca el programa.
+
+**** Cubrimiento lógico
+- Cubrimiento de toda posibilidad lógica almenos una vez.
+- N Máximo de caminos : N predicados + 1 (ifs)
+- Niveles de recubrimiento:
+      - NIVEL I : Que se ejecute almenos una vez cada camino básico.
+      - NIVEL II : Todas las combinaciones de caminos básicos.
+      - NIVEL III : Un número significatico de las combinaciones de caminos.
+
+**** Pruebas de Bucles
+- Bucles con un número no acotado de repeticiones.
+      - 0 veces.
+      - 1 vez.
+      - 2 veces.
+      - Número moderado de veces.
+      - Número elevado de veces.
+- Bucles con un número M de repeticiones.
+      - 0 veces.
+      - 1 vez.
+      - 2 veces.
+      - Número intermedio de veces.
+      - M-1 veces.
+      - M veces.
+      - M+1 veces.
+- Bucles anidados.
+      1. Ejecutar los bucles externos el mínimo de veces
+             - Probar el bucle más interno con el algoritmo que corresponda.
+      2. Ejecutar bucles externos el mínimo de veces.
+             - Bucles internos un número típico de veces con el algoritmo que corresponda.
+      3. Repetir paso dos hasta completar todos los niveles.
+- Bucles concatenados.
+      - Independientes cada uno por separado.
+      - Si están relacionados un enfoque similar a los bucles anidados.
+
+**** Empleo de la intuición
+- Pensar pruebas que no queden cubiertas con el enfoque transparente.
+
+*** Estimación de erroes no detectados
+- Estimación estadística de las erratas que pueden existir todavía sin ser detectadas.
+- Estratégia:
+      - Anotar el número de errores que se producen inicialmente.
+      - Corregir el módulo hasta que no contenga ningún error en el juego de pruebas.
+      - Introducir aleatoriamente un número razonable de errores en el módulo.
+      - Someter el módulo nuevamente al juego de pruebas y anotar los errores expuestos.
+      - El número de erres sin detectar será la misma proporción de errores no detectados en los errores intencionales.
+- Si el software es muy crítico o el número de errores sin descubrir muy elevado deberá realizarse un nuevo juego de pruebas.
+
+** Pruebas de unidades en programación orientada a objetos
+- La unidad son las clases u objetos.
+- Métodos:
+      - Pruebas basadas en fallo, descubrir fallos que durante el diseño se hayan detectado o valorado como probables.
+      - Pruebas aleatorias, se prueban métodos aleatorios para probarlos y se diseñan secuencias de pruebas.
+      - Pruebas de partición: probas una clase de forma selectiva.
+            - Según la capacidad de las operaciones de cambiar el estado de la clase.
+            - Según los atributos que utiliza cada operación.
+
+** Estrategias de integración
+- Comprobar el sistema completo.
+
+*** Integración Big Bang
+- Integración de todas las unidades en un único paso.
+      - Válido para sistemas pequeños.
+
+*** Integración descendente
+- Se parte de un módulo principal y módulos de andamiaje.
+- Los módulos de andamiaje se van sustituyendo en diferentes iteraciones.
+- Soluciones para los módulos de andamiaje.
+      - No hacer nada y solo sirve para comprobar la interfaz.
+      - Imprimier un mensaje de seguimiento.
+      - Suministrar un valor fijo.
+      - Suministrar un resultado aleatorio.
+      - Suministrar un resultado tabulado o de algún algoritmo sencillo.
+- Permite mostrar muy pronto un prototipo al cliente.
+- Inconvenientes:
+      - Dificulta el trabajo en paralelo.
+      - Se tienen limitaciones para hacer pruebas especiales o dirijidas a un objetivo específico.
+
+*** Integración ascendente
+- Codificar por separado y en paralelo los módulos de más bajo nivel.
+- Se escriben drivers (gestores) para probarlos.
+- Ventajas:
+      - facilita el trabajo en paralelo.
+      - Facilita el ensayo de situaciones especiales.
+
+*** Integración en programación orientada a objetos
+- No existe una estructural de control jerárquica.
+- Estratégias:
+      - Prueba bassada en hebra : se integran todas las clases necesarias para responder a una determinada entrada o evento del sistema.
+      - Prueba basada en uso : Se comienza construyendo las clases independientes.
+            - A continuación se prueban las clases dependientes que usan clases independientes.
+                  - Se va construyendo el sistema así.
+
+** Pruebas de validación
+- Comprobar que el producto cumple la especificación.
+      - Funcionalidad, rendimiento, ergonomía y documentación.
+- Entran usuarios en las pruebas
+- Pruebas alpha : En entorno controlado con un miembro del equipo de desarrollo.
+- Pruebas beta : en un entorno normal.
+
+** Pruebas del sistema
+- Comprobar que el software se ha integrado correctamente en su entorno.
+- *Pruebas de recuperación* : 
+- *Pruebas de seguridad* : Comprobar la seguridad contra acceso o manipulación no autorizada.
+- *Pruebas de resistencia* : Comprobar el comportamiento del sistema ante situaciones excepcionales.
+- *Pruebas de sensibilidad* : Comprobar el tratamiento que da el sistema a cierta singularidades, normalmente relacionadas con algoritmos matemáticos.
+- *Pruebas de rensimiento* : 
+- *Pruebas de despliegue o de configuración* : Comprobar el funcionamiento del software en diferentes sistemas operativos.
+
+
+
 * Glosario
 - *Cardinalidad* : Matemáticamente número de objetos únicos en un conjunto.
       - Valores máximos y mínimos de la relación entre entidades (0,1), (1,M), (1,1).
