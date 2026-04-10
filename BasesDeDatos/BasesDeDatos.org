@@ -2603,6 +2603,92 @@ HASTA Fc ya no cambie
 
 *** Conservación de las dependencias
 - [id:FBDatos] pag 156
+- Comprobación de la conservación de las dependencias
+
+#+begin_src pseudocode
+calcular F+;
+PARA-CADA esquema Ri in D HACER
+    Fi <- la restricción de F+ a Ri;
+FIN-PARA-CADA
+F' <- {}
+PARA-CADA restricción Fi HACER
+    F' <- F' UNION Fi;
+FIN-PARA-CADA
+calcular F';
+SI (F+ = F+) ENTONCES
+    DEV true;
+SINO
+    DEV false;
+FIN-SI
+#+end_src
+
+** Algoritmos de descomposición 
+*** Descomposición en la FNBC
+**** Comprobación de la FNBC
+- [id:FBDatos] pag 157
+- Comprobar que un esquema de relación R satiface FNBC.
+      - Comprobar que la dependencia no trivial $\alpha \to \beta$ provoca alguna violación.
+            - Calcular $a^+$ y comprobar si incluye todos los atributos de R.
+      - Para comprobar que R se halla en FNBC.
+            - Comprobar que las dependencias del conjunto F no violan la FNBC.
+            - Al descomponer R en R1 y R2, puede que haga falta alguna regla de F+ para comprobar si cumple FNBC
+
+
+**** Algoritmo de descomposición de la FNBC
+- [id:FBDatos] pag 156
+- algoritmo de descomposición de la FNBC
+
+#+begin_src pseudocode
+resultado <- {R};
+hecho <- falso;
+calcular F+;
+MIENTRAS ! hecho HACER
+    SI (hay algún esquema de Ri en resultado que no se halle en la FNBC) ENTONCES
+        sea alpha -> beta una dependencia funcional no trivial que se cumpleen Ri tal que alpha -> R no se halla en F+, y alpha INTERSECT beta = {};
+        resultado <- (resultado - Ri) UNION (Ri - beta) UNION (alpha, beta);
+
+    SINO
+        hecho <- true;
+    FIN-SI
+FIN-MIENTRAS
+#+end_src
+
+*** Descomposición en la 3FN
+
+- Algoritmo comprobación de las conservación de las dependencias
+
+#+begin_src pseudocode
+Sea Fc un recubrimiento canónico de F;
+i <- 0
+PARA-CADA dependencia funcional alpha -> beta de Fc HACER
+    i <- i+1;
+    Ri <- alpha beta;
+SI ninguno de los esquemas Rj, j=1,2,...,i contiene una clave candidata de R ENTONCES
+    i <- i+1
+    Ri <- cualquier clave candidata de R;
+    // Opcionalmente borra relaciones redundantes
+REPETIR
+    SI algún esquema Rj se encuentra contenido en otro esquema Rk ENTONCES
+        Rj <- Ri;
+        i <- i-1;
+HASTA no se pueda eliminar más Rj
+DEV (R1,R2,...,Ri);
+#+end_src
+
+*** Comprobación entre FNBC y la 3FN
+
+** Descomposición mediante dependencias multivaloradas
+- Dependencia multivalorada : Atributos que pueden ser arrays
+- 4FN : Los atributos multivalorados en tablas independientes.
+      - La clave primaria de estas nuevas tablas es (clave_anterior, valor_multi_valorado)
+
+*** Dependencias multivaloradas
+- [id:FBDatos] pag 160
+- clave $\to \to$ atributo
+
+** Proceso de diseño de la base de datos
+
+** Modelado de datos temporales
 
 * Notes
 ** mysql Service
