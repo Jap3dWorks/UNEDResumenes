@@ -2461,6 +2461,149 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - También la interactuación con otras bases de datos puede ser un problema.
       - El diseño debe facilitar la traducción de los datos.
 
+
+* Diseño de bases de datos relacionales
+** Características de los buenos diseños relacionales
+*** Alternativa de diseño : esquemas grandes
+- Ojo con las inconsistencias que puedan aparecer de los valores duplicados.
+- En una tabla que es combinación de dos relaciones (como una reunión natural)
+      - Problema, para añadir información relacionada con solo una de las relaciones sería necesario añadir valores Nul.
+
+*** Alternativa de diseño : esquemas pequeños
+- [id:FBDatos] pag 148
+- *Dependencia funcional* : La clave primaria determina limita la multiplicidad de valores.
+      - Establece una regla, si aparece A en un esquema, A debe ser primaria.
+- La descomposición correcta de esquemas es complicada. Por ello se establecen reglas como la *dependencia funcional*.
+- *Descomposición con pérdidas* : Cuidado con no descomponer en exceso, Puede crear inconsistencias en las reuniones naturales.
+- *Descomposición sin pérdidas* : Cuando no hay pérdidas.
+
+** Dominios atómicos y la primera forma normal
+- *Dominio atómico* : Los elementos del dominio son indivisibles.
+- *Primera forma normal* : Los dominios de todos los atributos de un esquema son atómicos.
+
+** Descomposición mediante dependencias funcionales
+*** Claves y dependencias funcionales
+- *Ejemplar legal* : Un ejemplar que satisface todas las restricciones.
+- *superclave* : sea r(R) un esquema de relación, $K$ es una superclave de r(R).
+      - para cualquier ejemplar legal de r(R), para todo par de tuplas $t_1 \neq n_t$$
+      - $t_1[k] \neq t_2[k]$
+- ID, nombre_depth $\to$ nombre, sueldo, edificio, presupuesto
+      - ID, nombre_dept son las superclaves.
+- Las dependencias funcionales se emplean de dos maneras:
+      - Probar las relaciones y ver si satisfacen un conjunto F de dependencias funcionales.
+      - Especificar las restricciones del conjunto de relaciones legales.
+            - F se cumple en r(R).
+- *Dependencia funcional trivial* : las satisfacen todas las relaciones.
+- $F^+$ : cierre del conjunto $F$, contiene todas las dependencias funcionales de F.
+
+*** Forma normal de Boyce-Codd
+- De las formas normales más deseables.
+- Elimina todas las redundancias que se pueden descubrir a partir de las dependencias funcionales.
+- R está en FNBC si:
+      - para todas las dependencias funcionales $F^+$ de la forma $\alpha \to \beta$ se cumple alguna de las siguientes condiciones:
+            - $\alpha \to \beta$ es una dependencia funcional trivial.
+            - $\alpha$ es superclave del esquema $R$.
+- El diseño de la base de datos está en FNBC si cada miembro del conjunto de esquemas de relación que constituye el diseño está en FNBC.
+
+*** FNBC y la conservación de las dependencias
+- Diseñar las restricciones para que sea eficiente la comprobación de estas.
+- *preserva la dependencia* : diseño que no hace dificil computacionalemnte forzar la dependencia funcional.
+
+*** Tercera forma normal
+- Permite dependencias funcionales no triviales cuya parte izquierda no sea superclave.
+      - Superclaves mínimas.
+- R está en 3FN si para todas las dependencias funcionales de $F^+$ cumple almenos una:
+      - $\alpha \to \beta$ es una dependencia funcional trivial.
+      - $\alpha$ es suplerclave de R
+      - Cada atributo A de $\beta - \alpha$está contenido en alguna clave candidata de R.
+
+*** Formas normales superiores
+
+** Teoría de las dependencias funcionales
+*** Cierre de los conjuntos de dependencias funcionales
+- Dado un esquema relacional r(R):
+      - Una dependencia funcional $f$ de R está Implicada lógicamente por un conjunto de dependencias funcionales F de r si.
+      - Cada ejemplar de r(R) que satisface F satisface $f$.
+      - Como un cierre transitivo.
+- $F^+$ es el cierre de todas las dependencias funcionales lógicamente implicadas.
+- *Axiomas de Armstrong*:
+      - Axiomas:
+            - *Regla de reflexividad* : Si $\alpha$ es un conjunto de atributos y $\beta \subseteq \alpha$, entonces $\alpha \to \beta$.
+            - *Regla de la aumentatividad* : Si $\alpha \to \beta$ y $\gamma$es un conjunto de atributos, entonces se cumple que $\gamma \alpha \to \gamma \beta$.
+            - *Regla de la transitividad* : Si se cumple que $\alpha \to \beta$ y que $\beta \to \gamma$ entonces $\alpha \to \gamma$
+      - Son *Correctos* no generan dependencias funcionales incorrectas.
+      - Son *completos*, permiten generar todo $F^+$.
+      - Reglas adicionales demostrables con los axiomas:
+            - *Regla de la unión* : SI $\alpha \to \beta$ y $\alpha \to \gamma$ ENTONCES $\alpha \to \gamma \beta$
+            - *Regla de la descomposición* : SI $\alpha \to \gamma \beta$ ENTONCES $\alpha \to \gamma$ y $\alpha \to \beta$.
+            - *Regla de la pseudotransitividad* : SI $\alpha \to \beta$ y $\gamma \beta \to \delta$ ENTONCES $\alpha \gamma \to \delta$.
+
+*** Cierre del conjunto de atributos
+- Procedimiento para calcular $F^+$
+
+#+begin_src pseudocode
+F+ = F
+REPETIR
+    PARA-CADA dependencia funcional f de F+ HACER
+        aplicar las reglas de reflexividad y de aumentatividad a f
+        añadir las dependencias funcionales resultantes a F+
+    FIN-PARA-CADA
+    PARA-CADA par de dependencias funcionales f1 y f2 de F+ HACER
+        SI f1 y f2 se pueden combinar mediante la transitividad ENTONCES
+            añadir la dependencia funcional resultante a F+
+        FIN-SI
+    FIN-PARA-CADA
+HASTA F+ deje de cambiar
+#+end_src
+
+- Procedimiento para calcular $\alpha^+$ cierre de $\alpha$ bajo F.
+
+#+begin_src pseudocode
+resultado <- alpha;
+REPETIR
+    PARA-CADA dependencia funcional beta -> gamma en F HACER
+        SI beta subseteq resultando ENTONCES
+            resultado <- resultado union gamma;
+        FIN-SI
+HASTA ya no cambie resultado
+#+end_src
+
+*** Recubrimiento canónico
+- [id:FBDatos] pag 155
+- *Atributos raros* : Un atributo de una dependencia funcional es *raro* si se puede eliminar sin modificar el cierre del conjunto de dependencias funcionales.
+      - El atriburo A es raro en $\alpha$ si $A \in \alpha$ y F implica lógicamente a ...
+            - $(F - \{\alpha \to \beta\}) \cup \{(\alpha - A) \to \beta\}$
+      - El atributo A es raro eb $\beta$ si $A \in \beta$ y el conjunto de dependencias funcionales ...
+            - $(F - \{\alpha \to \beta\}) \cup \{\alpha \to (\beta - A)\}$ ...
+            - implica lógicamente a F.
+      - Ejemplo:
+            - $AB \to C$ y $A \to C$, $B$ es raro en $AB \to C$.
+            - $AB \to CD$ y $A \to C$, $C$ es raro en el lado derecho de $AB \to CD$.
+
+- *Recubrimiento canónico* $F_c$ : conjunto de dependencias tal que $F$ implica lógicamente todas las dependencias de $F_c$, $F_c$ implica lógicamente todas las dependencias de $F$.
+      - Ninguna dependencia funcional de $F_c$ contiene atributos raros.
+      - El lado izquierdo de cada dependencia funtional de $F_c$ es único.
+
+- Cálculo del recubrimiento canónico
+
+#+begin_src pseudocode
+Fc <- F
+REPETIR
+    Utilizar regla de unión para sustituir las dependencias de Fc de la forma alpha1 -> beta1 y alpha1 -> beta2 con alpha1 -> beta1 beta2.
+    Hallar una dependencia funcional alpha -> beta de Fc con un atributo raro en alpha o en beta.
+    Si se halla un algún atributo raro, hay que eliminarlo de alpha -> beta en Fc
+HASTA Fc ya no cambie
+#+end_src
+
+- Resulta más económico comprobar $F_c$ que $F$.
+
+*** Descomposición sin pérdidas
+- [id:FBDatos] pag 156
+- *Descomposición sin pérdidas* : no hay perdida de información al sustituir $R$ por $R_1$ y $R_2$.
+
+*** Conservación de las dependencias
+- [id:FBDatos] pag 156
+
 * Notes
 ** mysql Service
 - Done using podman, documented in ORG ROAM.
