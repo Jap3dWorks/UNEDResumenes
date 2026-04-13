@@ -2962,6 +2962,480 @@ begin
 end architecture tb_bus;  
 #+end_src
 
+* Diseño de lógica secuencial
+- Con un reloj.
+
+** Diseño de máquinas de estado finito
+- [id:DACircDig] pag 420
+- Pasos para el diseño de una máquina de Moore y Mealy:
+      1. Dibujar el diagrama de estados del circuito
+      2. Definir un conjunto de *variables de estado* y codificar los *estados* del diagrama usando estas variables.
+      3. Escribir la *tabla de transición del estado*.
+      4. Formular las funciones lógicas simplificadas para el nuevo estado.
+      5. Diseñar el circuito empleando un flip-flop (biestable) por cada *variable de estado*.
+
+** Circuito detector de secuencias
+- Circuito que Detecta la secuencia 101.
+- Diagrama en [id:DACircDig] pag 420.
+- Usan flip-flop D (delay)
+
+** Síntesis de lógica secuencial
+- *latches* : Circuitos cuyo estado cambia cuando su estrada enable está a un determinado nivel ('0' o '1').
+- Ejemplo de una parte del architecture de un latche.
+
+#+begin_src vhdl
+process(enable, D) is
+begin
+  if (enable = '1') then
+    q <= D;
+  end if;
+end process;
+#+end_src
+         
+# TODO : buscar flip flop D
+
+*** Sentencias condicionales incompletas
+- *Sentencia condicional incompleta* : if then sin el else.
+- Son sintentizadas mediante *latches* (La salida debe mantener el valor si ninguna condición se satisface).
+
+*** Sentencias condicionales completas
+- Si las sentencias condicionales completas son completamente excluyentes entre sí es preferible usar *case* o *with*.
+      - Se sintetiza con circuitos similares a los multiplexores.
+- *if-elsif-else* supone que las sentencias no son excluyentes e incluye circuitería innecesaria.
+  
+*** Retardos
+- En la descripción para síntesis de circuitos hay que evitar incluir retardos.
+- No es posible sintetizar la cláusula *wait for x ns*.
+- No es posible sintetizar las cáusulas *after*.
+- Si fuera necesario incluiríamos el retardo como una constante.
+
+*** Inicialización
+- Las inicializacines de señales no pueden ser sintetizadas.
+
+*** Bloques process
+- En circuitos secuenciales la descripción de la architecture se basa en bloques process.
+- Ojo con las señales in y out. las señales definidas dentro del bloque process no tienen estas limitaciones.
+- No se debe asignar valor a una señal desde más de un bloque process.
+      - Se crearían varios drivers y el circuito es dificil de depurar.
+- Asignar un valor a las señales de salida de flip-flops y latches puede usarse <= o :=
+      - Recuerda := se asigna inmediatamente.
+      - <= se asigna en un retardo $\delta$.
+- Es preferible usar la lista de sensibilidad.
+      - jamás combinar la lista de sensibilidad con el wait.
+
+** Flip-flop jk
+- [id:DACircDig] pag 425.
+- Reset asíncrono.
+
+| j | k | Nuevo Estado      |
+| 0 | 0 | Q_{t+1} = Q_t     |
+| 0 | 1 | Q_{t+1} = 0       |
+| 1 | 0 | Q_{t+1} = 1       |
+| 1 | 1 | Q_{t+1} = not Q_t |
+
+*** Diseño del flip-flop
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity flipflop_JK is
+  port (q, q_n : out std_logic;
+        clk, J, K, reset_n : in std_logic);
+end entity flipflop_JK;
+
+architecture flipflop_JK of flipflop_JK is
+  signal q_interna : std_logic;
+begin
+
+  q <= q_interna;       -- drivers para q y q_n
+  q_n <= not q_interna;
+
+  process (reset_n, clk) is
+    variable JK : std_logic_vector(1 downto 0);
+  begin
+    if (reset_n = '0') then
+      q_interna <= '0';
+    elsif rising_edge(clk) then
+      JK := J & K;
+      case (JK) is
+        when "01" =>
+          q_interna <= '0';
+        when "10" =>
+          q_interna <= '1';
+        when  "11" =>
+          q_interna <= not q_interna;
+        when others => null;
+      end case;
+    end if;
+  end process;  
+end architecture flipflop_JK;
+#+end_src
+
+*** Banco de pruebas
+- Se intentan comprobar todas las combinaciones posibles cuando se puede.
+- código en [id:DACircDig] pag 429.
+- La simulación no para por si sola, hay que establecer un tiempo de simulación (900 ns).
+  
+** Máquinas de estado finito de Moore
+- Suele ser preferible describir el comportamiento del circuito.
+
+*** Diseño de la máquina
+- [id:DACircDig] pag 431.
+- Las constantes se definen en un *package*.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+package STATE_CONSTANTS is
+  constant STATE_BITS : integer := 2;
+  constant S0 : std_logic_vector(1 downto 0) := "00";
+  constant S1 : std_logic_vector(1 downto 0) := "01";
+  constant S2 : std_logic_vector(1 downto 0) := "10";
+end package;
+#+end_src
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use work.STATE_CONSTANTS.all;
+
+entity maquinaMooreSimple is
+  port(z       : out std_logic;
+       state   : out std_logic_vector(STATE_BITS-1 downto 0);
+       reset_n : in std_logic;
+       clk     : in std_logic;
+       x       : in std_logic);
+end entity maquinaMooreSimple;
+
+architecture maquinaMooreSimple of maquinaMooreSimple is
+  signal internal_state : std_logic_vector(STATE_BITS - 1 downto 0);
+begin
+
+  state <= internal_state;
+  
+  salida : process(internal_state) is
+  begin
+    case internal_state is
+      when S0 => z <= '0';
+      when S1 => z <= '0';
+      when S2 => z <= '1';
+      when others => z <= 'X';
+    end case;
+  end process salida;
+
+  proximo_estado : process(reset_n, clk) is
+  begin
+    if (reset_n = '0') then
+      internal_state <= S0;
+    elsif rising_edge(clk) then
+      case internal_state is
+        when S0 =>
+          if (x='1') then
+            internal_state <= S1;
+          else
+            internal_state <= S2;
+          end if;
+        when S1 =>
+          if (x='0') then
+            internal_state <= S2;
+          end if;
+        when S2 =>
+          if (x = '0') then
+            internal_state <= S0;
+          end if;
+        when others =>
+          internal_state <= "XX"; -- buena práctica
+      end case;
+    end if;
+  end process proximo_estado;
+end architecture maquinaMooreSimple;
+#+end_src
+
+*** Banco de pruebas
+- [id:DACircDig] pag 435
+  
+*** Modelado estructural
+- [id:DACircDig] pag 437
+- Puede en ocasiones se más eficiente, pero se pueden cometer errores manuales.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+architecture maquinaMooreSimple_estruc of maquinaMooreSimple is
+  signal A, B : std_logic;
+  signal NA, NB : std_logic;
+
+  component flipflop_D is
+    port (q, q_n          : out std_logic;
+          d, clk, reset_n : in  std_logic);
+  end component flipflop_D;
+
+begin
+  state <= A & B;  -- estado actual;
+
+  diff_a : component flipflop_D port map
+    (q => A, d => NA, clk => clk, reset_n => reset_n);
+  diff_b : component flipflop_D port map
+    (q => B, d => NB, clk => clk, reset_n => reset_n);
+
+  NA <= ((not x) and (not A)) or (x and A);
+  NB <= x and (not A);
+  z <= A;
+end architecture maquinaMooreSimple_estruc;
+#+end_src
+
+** Máquina de estado finito de Mealy
+- Las salidas del circuito dependen del estado actual y del valor actual de enrtada.
+
+*** Diseno de la máquina
+- [id:DACircDig] pag 439
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+package seq0110_CONST is
+  constant STATE_BITS : integer := 2;
+  constant S0         : std_logic_vector(1 downto 0) := "00";
+  constant S1         : std_logic_vector(1 downto 0) := "01";
+  constant S2         : std_logic_vector(1 downto 0) := "10";
+  constant S3         : std_logic_vector(1 downto 0) := "11";
+end package seq0110_CONST;
+#+end_src
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use work.seq0110_CONST.all;
+
+entity seq0110 is
+  port (z       : out std_logic;
+        state   : out std_logic_vector(STATE_BITS - 1 downto 0);
+        reset_n : in std_logic;
+        clk     : in std_logic;
+        x       : in std_logic);
+end entity seq0110;
+
+architecture seq0110 of seq0110 is
+  signal inernal_state : std_logic_vector(STATE_BITS - 1 downto 0);
+begin
+  state <= internal_state;
+  calculo_salida : process(internal_state, x) is
+  begin
+    if ((internal_state = S3) and (x = '0')) then
+      z <= '1';
+    else
+      z <= '0';
+    end if;
+  end process calculo_salida;
+
+  proximo_estado : process(clk) is
+  begin
+    if ((reset_n = '0') and rising_edge(clk)) then -- reset síncrono.
+          internal_state <= S0;
+    elsif rising_edge(clk) then
+      case internal_state is
+        when S0 =>
+          if (x = '0') then
+            internal_state <= S1;
+          else
+            internal_state <= S0;
+          end if;
+        when S1 =>
+          if (x = '1') then
+            internal_state <= S2;
+          else
+            internal_state <= S1;
+          end if;
+        when S2 =>
+          if (x='1') then
+            internal_state <= S3;
+          else
+            internal_state <= S1;
+          end if;
+        when others =>
+          if (x='0') then
+            internal_state <= S1;
+          else
+            internal_state <= S0;
+          end if;
+      end case;
+    end process proximo_estado;
+end architecture seq0110;
+#+end_src
+
+- Usando flip-flop_D
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use work.seq0110_CONST.all;
+
+entity seq0110 is
+  port(z_long  : out std_logic;  -- salida
+       state   : out std_logic_vector(STATE_BITS-1 downto 0); -- estado actual
+       reset_n : in std_logic;
+       clk     : in std_logic;
+       x       : in std_logic);  -- entrada
+end entity seq0110;
+
+architecture seq0110 of seq0110 is
+  signal internal_state : std_logic_vector(STATE_BITS-1 downto 0);
+  signal z              : std_logic;
+begin
+  state <= internal_state;
+
+  z <= '1' when ((internal_state = S3) and (x='0')) else '0';
+  ffD_salida : process(clk) is
+  begin
+    if (rising_edge(clk)) then
+      z_long <= z;
+    end if;
+  end process ffD_salida;
+
+  proximo_estado : process(clk) is
+  begin
+    -- ... igual que anteriormente
+  end process proximo_estado;
+end architecture seq0110;
+#+end_src
+
+*** Banco de pruebas
+- [id:DACircDig] pag 445
+
+#+begin_src vhdl
+library IEEE:
+  use IEEE.std_logic_1164.all;
+use work.seq0110_CONST.all;
+
+entity bp_seq0110 is
+  constant PERIODO : time := 100 ns;
+end entity bp_seq0110;
+
+architecture bp_seq0110 of bp_seq0110 is
+  signal z_long  : std_logic;
+  signal state   : std_logic_vector(STATE_BITS-1 downto 0);
+  signal reset_n : std_logic;
+  signal clk     : std_logic := '0';
+  signal x       : std_logic;
+
+  component seq0110 is
+    port (z_long  : out std_logic;
+          state   : out std_logic_vector(STATE_BITS-1 downto 0);
+          reset_n : in std_logic;
+          clk     : in std_logic;
+          x       : in std_logic);
+  end component seq0110;
+
+  procedure comprueba_estado_salida
+    (esperado_state : std_logic_vector(STATE_BITS-1 downto 0);
+     esperado_z     : std_logic;
+     actual_state   : std_logic_vector(STATE_BITS-1 downto 0);
+     error_count    : inout integer) is
+  begin
+    assert(esperado_state = actual_state)
+      report "ERROR: Estado esperado (" &
+      std_logic'image(esperado_state(1)) & std_logic'image(esperado_state(0)) &
+      "), estado actual (" &
+      std_logic'image(actual_state(1)) & std_logic'image(actual_state(0)) &
+      "), instante: " & time'image(now);
+    if (esperado_state /= actual_state) then
+      error_count := error_count + 1;
+    end if;
+    assert(esperado_z = actual_z)
+      report "ERROR: Salida esperada (" &
+      std_logic'image(esperado_z)       &
+      "), salida actual ("              &
+      std_logic'image(actual_z)         &
+      "), instante: "                   & time'image(now);
+    if (esperado_z /= actual_z) then
+      error_count := error_count + 1;
+    end if;
+  end procedure comprueba_estado_salida;
+
+begin
+  UUT : component seq0110 port map (z_long, state, reset_n, clk, x);
+  reset_n <= '1',
+             '0' after (PERIODO/4),
+             '1' after (PERIODO + PERIODO/4);
+  clk <= not clk after (PERIODO/2);
+
+  main : process is
+    variable error_count : integer := 0;
+  begin
+    report "Comienza la simulación";
+    x <= '0'; wait for PERIODO;
+    comprueba_estado_salida(S0, '0', state, z_long, error_count);
+    x <= '1'; wait for PERIODO;
+    comprueba_estado_salida(S0, '0', state, z_long, error_count);
+    x <= '0'; wait for PERIODO;
+    comprueba_estado_salida(S1, '0', state, z_long, error_count);
+    -- ...
+    
+    if (error_count = 0) then
+      report "Simulación finaliza sin errores";
+    else
+      report "ERROR: Hay " & integer'image(error_count) & " errores.";
+    end if;
+    wait;
+  end process main;
+end architecture bp_seq0110;
+#+end_src
+
+** Máquinas de estado finito seguras
+- Existe la posibilidad de alcanzar un estado ilegal y se describe como debe realizarse la transición a un estado legal.
+- Los estados ilegales pueden provocarse por ruido eléctrico y otros sucesos de la naturaleza.
+- Se emplea la opción *others* en la cláusula *case*.
+
+#+begin_src vhdl
+architecture maquinaMooreSimple of maquinaMooreSimple is
+  signal internal_state : std_logic_vector(STATE_BITS-1 downto 0);
+begin
+  state <= internal_state;
+  salida : process(internal_state) is
+  begin
+    case internal_state is
+      when S0 =>
+        z <= '0';
+      when S1 =>
+        z <= '0';
+      when S2 =>
+        z <= '1';
+      when others =>
+        z <= '0';
+    end case;
+  end process salida;
+
+  proximo_estado : process(reset_n, clk) is
+  begin
+    if (reset_n = '0') then
+      internal_state <= S0;
+    elsif rising_edge(clk) then
+      case internal_state is
+        when S0 =>
+          if (x = '1') then
+            internal_state <= S1;
+          else
+            internal_state <= S2;
+          end if;
+        when S1 =>
+          if (x='0') then
+            internal_state <= S2;
+          end if;
+        when S2 =>
+          if (x='0') then
+            internal_state <= S0;
+          end if;
+        when others =>
+          internal_state <= "00";
+      end case;
+    end if;
+  end process proximo_estado;
+end architecture maquinaMooreSimple;
+#+end_src
+
 * Glosario
 - *flip-flop*, circuito biestable.
   # creo que era un Biestable-T (toggle)
