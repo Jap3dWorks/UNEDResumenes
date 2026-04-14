@@ -1815,7 +1815,6 @@ data IntOrChar = Entero Int | Caracter Char
       - Problemático con los alias de tipos.
       - Problemático con tipos anónimos.
 
-
 ** Conversión de Tipos de Datos
 - Por ejemplo la necesidad trabajar con *enteros* y *reales*.
 - *Conversión implícita de tipos* : Conversión automática cuando es posible.
@@ -1895,7 +1894,6 @@ public static void main(String[] args) {
     int z = colateral() + x;
     System.out.println(z);
 }
-
 #+end_src
 
 #+RESULTS:
@@ -1910,7 +1908,216 @@ public static void main(String[] args) {
 - *Evaluación perezosa* : lo de Haskell. Se retrasa hasta tener toda la información suficiente par la evaluación de la función.
 - *Evaluación en cortocircuito* o *evalueción McCarthy* :
       - false AND x : no es necesario evaluar x
+      - true or x : no es necesario evaluar x
       - Permite proteger de realizar accesos a componentes inexistentes. 
+- *Operadores ansiosos* : Lenguajes como Fortran sin evaluación en cortocircuito.
+- *if-then-else* : operador ternario también se puede evaluar en cortocircuito.
+      - c ? t : e
+- Expresiones *case* : extensión de las expresiones *if* con más de dos opciones posibles.
+      - Primero se evalue la expresión de control
+      - Luego se comprueba en que patrón encaja.
+
+** Sentencias Condicionales
+- Restringir la ejecución de una serie de sentencias si se cumple una serie de condiciones.
+- Forma general de una sentencia if (Dijkstra 1975)
+      - Semántica:
+            - Gi son guardas, todas se evaluan. Si secuencia de sentencias.
+            - Gi es verdadero se ejecuta Si
+            - Más de una guarda verdadera solo se ejecuta una de ellas.
+            - Ninguna guarda verdadera se produce un error.
+
+#+begin_example
+if G1 -> S1
+   ...
+   Gn -> Sn
+fi
+#+end_example
+
+- En su forma más pura no es determinista, pero en la realidad se evaluan en orden y se ejecuta la primera que tiene una guarda verdadera.
+
+*** Sentencias if-then-else
+- if (e) then s1 [else s2]
+- Muchos lenguajes omiten la palabra then.
+- Primero se evalua *e*
+      - Si resulta verdadero se ejecuta s1
+      - Sino si existe un bloque else se ejecutará s2.
+- *Problema del else ambiguo* : Aparece con anidamientos de ifs
+      - if (e1) then if (e2) then s1 else s2  // A que if pertenece el else?
+      - Algunos lenguajes optan por asociar el else al if más cercano.
+
+#+begin_src java :results output
+if (true) System.out.println("IF 1");
+    if (false) System.out.println( "IF 2");
+    else System.out.println("Sentencia Else");
+#+end_src
+
+#+RESULTS:
+: IF 1
+
+- *elseif* : Permite trabajar con múltiples alternativas al mismo nivel.
+      - Se evalua $e_i$, si resulta falsa se evalua $e_{i+1}$.
+      - Si ningún $e_i$ resulta verdadero se evalua el *else*.
+#+begin_example
+if (e1) {}
+elsif (e2) {}
+...
+else {}
+#+end_example
+
+- Una expresión siembre debe devolver un valor, una sentencia no es necesario.
+
+*** Sentencias case
+
+#+begin_src java
+switch (e) {
+    case valor1 : s1; break;
+    // ...
+    case valorn : sn; break;
+    default sd;
+}
+#+end_src
+
+- Semántica
+      - Se evalua e, que no tiene porque ser booleana.
+      - Se evalua la sentencia con valori coincidente con el valor de e.
+      - Si no coincide se evalue sd.
+
+- En el libro dice que azucar sintático, que es lo mismo que if elseif ... else.
+      - En casos de opciones densas (0,1,2,...) el compilador puede hacer optimizaciones mucho más agresivas.
+
+** Bucles
+- Dijkstra forma general de un bucle.
+
+#+begin_example
+do G1 -> S1
+   ...
+   Gn -> Sn
+od
+#+end_example  
+
+- Semántica
+      - Se evalúan las guardas y se selecciona una con resultado verdadero para evaluar el bloque Si (de forma no determinista).
+      - El proceso se repite hasta que todas las guardas se evalúan como falso.
+- La forma más común de bucle es el *while*, con solo una guarda.
+      - while (e) s
+      - *condición de terminación* o *condición de salida*: sentencia e.
+      - *cuerpo del bucle* : las sentencias s
+      - do s while (e); : Fuerza la ejecución del cuerpo almenos una vez.
+
+- el bucle *for* es similar.
+      - for (si; e; sa) s;
+      - Es equivalente a
+            - si;
+              while (e) {
+                s;
+                sa;
+              }
+      - Donde:
+            - si es la sentencia de iniciación.
+            - e es la condición de terminación.
+            - sa es la sentencia de actualización.
+            - s es el cuerpo del bucle.
+- Algunos lenguajes permiten interrumpir la ejecución del bucle (break), pero dificulta la semántica del bucle.
+
+** Excepciones
+- *Estructuras de control explícitas* : las estructuras de control anteriores.
+- *excepciones* : controlan aquellos eventos que violen las restricciones semánticas del lenguaje.
+      - Generando un error de ejecución.
+- *manejador de excepciones* : código del programa encargado de capturar las excepciones lanzadas.
+- Permite que el diseño de *confiabilidad* sea más fácil de alcanzar.
+      - Permite al programa recuperarse después de un error.
+- *Execepciones asíncronas* : hay errores más bajos que la propia ejecución del programa.
+      - Pueden suceder en cualquier punto de la ejecución del programa con independencia del código del mismo.
+- *Excepciones síncronas* : Pueden surgir como respuesta a la ejecución de los programas.
+
+*** Definición de excepciones
+- *Excepciones comprobadas* : Error del cual el programa puede recuperarse.
+      - Clase Excepción y subclases.
+- *Excepciones no comprobadas* : Errores de programación.
+      - Clase Error y subclases.
+- Se pueden crear nuevas clases de excepciones heredando de *Exception* (comprobada por el compilador).
+      - heredando de *RuntimeException* no es necesario que su captura sea comprobada por el compilador. 
+
+*** Definición de manejadores de excepciones y control de flujo
+- En java mediante bloques *try-catch-finally*
+      - Se elevan excepciones con *throw new ExceptionType();*
+      - Se indica que un subprograma puede elevar excepciones con:
+            - public static void sprograma(params...) *throws* (tiposExcepción,...)
+
+- *finally* se ejecuta siempre, haya o no excepción.
+- Tienen un impacto con la eficiencia respecto a la ejecución, no se recomienda abusar de estos bloques de control.
+
+** Subprogramas
+- *subrutina* : código autocontenido.
+- *procedimiento* : No devuelve valor.
+      - Podría producir un efecto colateral.
+      - Tipo sentencia.
+      - *métodos* : como en java (forman parte de una clase).
+- *funciones* : devuelve valor.
+      - No debería producir un efecto colateral.
+      - Tipo expresión.
+- *declaración* :
+      - *intefaz* : identificador del subprograma, parámetros de entrada, valor devuelto.
+      - *cuerpo* : Sentencias que ejecuta el subprograma cuando sea invocado.
+- Cuando se llama a un subprograma se le transmite el control de la ejecución.
+      - Cuando el subprograma finaliza devuelve el control de la ejecución al programa o subprograma que lo invocó.
+
+*** Semántica
+- El significado de los identificadores viene determinado por el ambiente (o entorno).
+- *Registro de activación* : Los subprogramas pueden contener identificadores locales.
+      - Memoria donde se almacenan los identificadores locales de un subprograma.
+- *forma cerrada* : subprogramas sin referencias no locales.
+
+*** Paso de parámetros
+**** Paso por valor
+- El más utilizado.
+- Las expresiones son evaluadas previo a la ejecución del subprograma.
+
+**** Paso por referencia
+- Requirere que los parámetros sean variables con un adirección dentro de la memoria.
+
+**** Paso por valor-resultado
+- *Paso por copia-restauración* o *paso por copia de entrada salida*.
+- Requiere que los parámetros sean variables.
+- El valor del parámetro es copiado en el parámetro, puede ser modificado en el cuerpo, y al acabar vuelve a ser copiado de vuelta en la dirección original de la variable.
+
+**** Paso por nombre
+- [id:TeLenProg] pag 268
+- No se evalua la expresión.
+- Evaluación no estricta.
+- Si un parámetro no se utiliza no se pierde tiempo evaluándolo.
+
+*** Ambientes de ejecución
+- El ambiente de cada subprograma en un Lenguaje con alcance léxico se puede gestionar con una pila.
+      - Registros de activación.
+
+**** Ambientes totalmente estáticos
+- [id:TeLenProg] pag 270
+- fortran77 no permite definiciones de subprogramas anidadas ni recursión.
+      - Referencias no locales son siempre variables globales.
+
+**** Ambientes basados en pilas I : lenguajes con recursión sin anidamiento
+- Si hay recursión no es posible asignar memoria estática para los registros de activación.
+      - Se almacenande forma dinámica.
+- *Pila de registros de activación* : Se estructura la pila de activación en registros de activación.
+      - Cada registro de activación tiene los datos estáticos de la llamada.
+            - *Enlace de control* : También la dirección del registro llamante.
+            - La dirección de cada subprograma está en la tabla de símbolos en tiempo de compilación.
+      - *Puntero de ambiente* : Almacena donde comienza el registro de ejecución del ambiente actual.
+
+**** Ambientes basados en pilas II : lenguajes con recursión y anidamiento
+- Lenguajes que además permiten definir subprogramas anidados.
+- *Enlace de acceso* : Un subprograma debe almacenar informaciónde cuál es su ambiente de definición.
+      - Para resolver el valor de variables no locales.
+- *Encadenamiento de accesos* : Proceso de resolver el valor de una variable no local dentro del anidamiento de funciones.
+      - *Profundidad de anidamiento* : número de accesos que se debe seguir hasta encontrar el valor de una variable.
+- La *pila de registros de activación* es similar a la anterior.
+      - Se añade el enlade de acceso.
+
+**** Ambientes totalmente dinámicos
+- Un subprograma puede ser capaz de devolver otro subprograma.
+- Se debe guardar en el ambiente el registro de activación del subprograma generador mientras haya referencias al subprograma generado.
+- Precisa de *conteos de referencias* y *recolección de basura*.
 
 * Glosario
 - *Evaluación impaciente* : /factorial(4*5)/ primero evalua el resultado de 4*5.
