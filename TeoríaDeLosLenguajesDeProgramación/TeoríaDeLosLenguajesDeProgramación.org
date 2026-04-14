@@ -1206,6 +1206,7 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
 #+end_example
 
 *** Estructura sintáctica : árboles sintácticos
+- [id:TeLenProg] pag 171
 - *Semántica dirigida por sintaxis* : A cada estructura sintáctica se le puede asociar una semántica o significado.
       - Es necesario disponer de una representación de cada estructura sintáctica derivada por una gramática.
       - Y una forma de asociación de su semántica.
@@ -2118,6 +2119,9 @@ od
 - Un subprograma puede ser capaz de devolver otro subprograma.
 - Se debe guardar en el ambiente el registro de activación del subprograma generador mientras haya referencias al subprograma generado.
 - Precisa de *conteos de referencias* y *recolección de basura*.
+
+
+
 
 * Glosario
 - *Evaluación impaciente* : /factorial(4*5)/ primero evalua el resultado de 4*5.
