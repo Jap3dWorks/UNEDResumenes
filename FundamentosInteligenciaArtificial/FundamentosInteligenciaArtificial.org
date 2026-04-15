@@ -1269,8 +1269,8 @@ FIN-MIENTRAS
 ** Inferencia
 - [id:IntArt] pag 88
 - Red de inferencia : red de notos.
-      - antecedente > (nodo) > consecuente
-      - Se encadenan varios nodos : antecedente > (nodo) > consec/ante > (nodo) > consecuente2.
+      - antecedente -> (nodo) -> consecuente
+      - Se encadenan varios nodos : antecedente -> (nodo) -> consec/ante -> (nodo) -> consecuente2.
       - *Punto de partida* : Antecedente que no es consecuente de otras reglas.
       - *Meta* : Consecuente que no es antecendente de ninguna otra regla.
 - *Encadenamiento hacia delante* : Colección de hechos o afirmaciones de partida.
@@ -1706,7 +1706,43 @@ FIN-SI
        - Si el tipo de la nueva entidad es conocido se puede seleccionar el marco clase del tipo.
              - Y todos los marcos clase especializados.
        - Si el tipo de la nueva entidad es desconocido se selecciona arbitrariamente la selección del marco clase o que almenos contenga algúna propiedad conocida en el marco pregunta.
-2. Calcular el valor de equiparación
+2. Calcular el valor de equiparación (VE) en cada una de las clases seleccionadas.
+3. Calculados los VE se decide con qué marcos clase se equiparará la nueva entidad.
+
+*** Herencia de propiedades
+- Permite compartir valores y definiciones de propiedades entre marcos de una BC.
+      - Usa relaciones de instancia y subclase-de.
+- *Herencia Simple* : Existe un único camino que une el marco instancia con el nodo raiz.
+      - Algoritmo para encontrar valores de una cierta propiedad.
+            - Se busca la propiedad en el marco instancia. Si se encuentra se devuelve.
+            - Se busca en el marco clase. Si se encuenra se devuelve.
+            - Recursivamente se busca la propiedad en el marco de clase raiz. Si se encuentra se devuelve.
+            - Si no se encuentra se responde que es imposible proporcionar una respuesta.
+- *Herencia Múltiple* : Varios caminos que unen los marcos instancia con el nodo raiz de la jerarquía
+      - Dificultad en determinar el orden de las clases a explorar.
+      - Existen conflictos si los padres tienen propiedades con los mismos nombres.
+      - Algoritmos que recorren el grafo de herencia.
+            - Profundidad:
+                  - Un procedimiento de ordenación topológica cumple:
+                        - Criterios de orden como de izquierda a derecha.
+                        - Evitar búsqueda reiterada.
+                        - Criterio de espificidad, En una propiedad unas clases tienen preferencia sobre otras.
+            - Anchura:
+                  - Longitud del camino
+                        - Recorre el grafo por niveles.
+            - Distancia Inferencial:
+                  - Condición necesaria y suficiente para que la clase1 esté más cercana a la clas2 que a la clase3.
+
+*** Valores activos
+- [id:IntArt] pag 161
+- Aspecto dinámico o procedimental.
+- demonios, valores activos o disparadores : Procedimientos que recuperan almacenan y borran información en los SBN.
+- Se definen en las facetas *Si Necesito*, *Si Añado*, *Si modifico* y *Si borro*.
+- Características de la ejecución:
+      - Procedimientos se definen en el marco clase y permanecen latentes.
+      - Se despiertan al recibir una solicitud de ejecución.
+      - Los procedimientos pueden simular encadenamiento hacia delante y encadenamiento hacia detrás.
+      - Los procedimientos se ejecutan en stack.
 
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
