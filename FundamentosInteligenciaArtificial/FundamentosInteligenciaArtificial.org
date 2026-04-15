@@ -1480,6 +1480,234 @@ FIN-SI
       - Los que se pueden modelar como un conjunto de múltiples estados.
       - Los que vienen descritos por medio de una teoría concisa y unificada.
 
+* Redes Semánticas y Marcos
+- [id:IntArt] pag 132
+
+** Introducción
+- Representación del conocimiento:
+      - Modelo conceptual : Representación del conocimiento de un dominio. Estructuras no computables modelizan el problema y la solución de un dominio concreto.
+      - Modelo formal : Representación semicomputable.
+      - Modelo computable : modelo formal totalmente operativo. formado por:
+            - Base de conocimientos.
+            - Motor de inferencias.
+            - Estrategias de control.
+- *formalizar* : representar simbólicamente el conocimiento.
+      - Organizar de acuerdo a algún modelo de diseño.
+      - Determinar métodos de inferencia.
+- *Clasificación de los formalismos*:
+      - *Formalismos bassados en conceptos* : Representan las principales entidades o clases del dominio.
+            - Objeto-Atributo_Valor
+            - Marcos
+      - *Formalismos basados en relaciones* : Centran la atención entre las relaciones que existen entre los conceptos.
+            - Lógica.
+            - Redes semánticas.
+            - Teoría de la dependencia conceptual.
+      - *Formalismos basados en acciones* : Describen en conocimiento como un conjunto de acciones básicas.
+            - Sistemas de producción
+            - Guiones
+- *Redes semánticas* : Grafo orientado por nodos y arcos unidireccionales, ambos etiquetados.
+      - Nodos son conceptos.
+      - Arcos son relaciones.
+- *Marcos* : Estructura de datos para representar estereotipos.
+      - Cada Marco : 1 nombre + conjunto de propiedades.
+      - Los Marcos se unen mediante relaciones.
+      - Hay herencia.
+
+** Redes semánticas
+- [id:IntArt] pag 133
+- Paradigma basaso en relaciones.
+- Grafo orientado:
+      - Nodos etiquetados son conceptos.
+      - Arcos unidireccionales etiquetados son relaciones.
+
+*** Representación del conocimiento
+- El signidicado de un cocepto de la red depende de la forma en la que se relaciona con otros conceptos.
+- Problemas:
+      - Falta de terminología adecuada.
+      - Falta de semántica uniforme y precisa.
+- En un grafo:
+      - Nodo origen es el objeto
+      - Arcos representan atributos
+      - Nodos destino valores
+- Tipos de arcos:
+      - *Arcos descriptivos* : Describen entidades y conceptos.
+            - Arcos que relacionan dos entidades independientes ya existentes.
+            - Arcos utilizados para definir una nueva entidad.
+      - *Arcos estructurales* : Enlazan las entidades o conceptos formando la arquitectura o estructura de la red.
+            - La semántica de los arcos estructurales es independiente de los conocimientos del dominio.
+            - Arcos estructurales básicos:
+                  - *generalización* : herencia
+                  - *instancia* : Liga un nodo genérico con un objeto concreto.
+                        - un objeto
+                  - *agregación* : Liga un objeto con sus componentes.
+- Los conocimientos en una red semántica pueden expresarse usando *lógica proposicional* y *cálculo de predicados*.
+      - predicados n-arios (superior a 2) no pueden ser representados en estas redes.
+
+*** Representación de predicados no binarios
+- [id:IntArt] pag 136
+- Un nuevo objeto representa al predicado con de aridad mayor que dos.
+      - Nuevos predicados binarios representan las relaciones binarias entre los atributos y los valores del nuevo objeto.
+
+*** Representación de acciones
+- [id:IntArt] pag 136
+- Toda proposición contenida en una sentencia tiene una estructura formada por un verbo.
+      - Y una o más frases nominales.
+      - Cada frase nominal se relaciona con el verbo mediante un conjunto de *casos*:
+            - Agente
+            - Contra-agente
+            - Objeto
+            - Resultado
+            - Instrumento
+            - Origen
+            - Propósito
+            - Lugar
+            - Tiempo
+            - Sujeto
+      - *modalidad* : Características del *verbo*
+            - Tiempo : presente pasado o futuro.
+            - voz : Activa o pasiva.
+- diagrama en [id:IntArt] pag 138
+
+*** Representación de conocimiento disjunto
+- Se usa la etiqueta *disjunto* [id:IntArt] pag 138 F4.5.
+- También existen unos arcos especiales para representar este tipo de conocimiento (Hendrix).
+  Las etiquetas que usan estos arcos son:
+      - S : Subconjunto
+      - SD : Subconjunto
+      - E : Elemento
+      - ED : Elemento disjunto
+
+** Inferencia de conocimiento en redes semánticas
+*** Equiparación
+- Una consulta, apunte o fragmento de red se quipara con una red, si el apunte se puede asociar con un fragmento de la red semántica.
+- Pasos del proceso de equiparación:
+      1. Se construye un apunte que responda a la pregunta
+             - Apunto formado por un conjunto de :
+                   - Nodos constantes : Nodos conocidos en la pregunta.
+                   - Nodos variables : Los valores que se requieren.
+                   - Arcos etiquetados : Unen nodos constantes y variables.
+      2. Se coteja el apunte sobre la red semántica en la base de conocimiento.
+      3. Los nodos variables se ligan a los nodos constantes de la red hasta encontrar una equiparación perfecta.
+      4. La respuesta a la consulta es el fragmento de red semántica con los valores con los que se rellenan los nodos variables.
+
+*** Herencia de propiedades
+- [id:IntArt] pag 140
+- Arcos *instancia* y *Subclase-de*.
+- Se puede usar en sistemas que razonan dirigidos por la meta o por los datos.
+- Pasos de consulta de propiedades
+      - Consulta arcos que salen del nodo
+      - Consulta arcos que salen del nodo conectado por la etiqueta instancia
+      - Recursivamente consulta arcos que salen del nodo conectado como Subclase-de 
+- Trabaja bien con propiedades que presentan excepciones en sus valores.
+
+- Principales errores que se suelen cometer en la herencia:
+      - No distinguir los nodos que son instancias de aquellos que son conceptos.
+      - La etiqueta que da nombre al nodo o al arco tiene una semántica diferente al conocimiento que se quiere expresar.
+      - Arco en sentido contrario.
+      - No se han representado situaciones o acciones utilizando nodos situación.
+
+** Marcos
+- Técnica de representación de conocimientos más utilizada en IA cuando los conocimientos están organizados sobre conceptos.
+- *Marcos* según Minsky : Estructura de datos que representa situaciones esteorotipadas construidas sobre situaciones similares ocurridas anteriormente.
+      - Permite aplicar a situaciones nuevas conocimiento previo.
+      - Se aplican conocimientos declarativos del dominio.
+      - Conocimientos Procedimentales : Como usar el marco.
+- Se organizan en árboles o grafos, llamados jerarquías.
+- Técnicas de inferencia:
+      - Equiparación
+      - Herencia simple y múltiple
+      - Valores activos y métodos : representan la conducta del sistema.
+
+*** Representación de conocimiento
+- *Marcos* : representar conceptos.
+- *Relaciones* : dependencias entre conceptos.
+- *Propiedades* : describir cada concepto.
+- *facetas* : para expreser de múltiples formas los valores con los que se puede rellenar cada propiedad.
+
+**** Representación de conceptos e instancias
+- *Marcos clase* : Representan conceptos, clases o situaciones genéricas.
+      - Descritos por propiedades con o sin valor.
+- *Marcos instancia* : Representación en el dominio real de una clase determinada.
+      - Deben estar relacionados como mínimo con un marco clase.
+      - Se debe rellenar la información concreta de cada objeto.
+
+**** Representación de relaciones entre conceptos
+- *SBM* : sistema basado en marcos.
+- Relaciones más usadas en el paradigma de marcos:
+      - *Subclase-de* y su inversa *superclase-de*
+      - *Instancia* y su inversa *representa*
+      - *Fraternal*
+      - *Disjunto*
+      - *No disjunto*
+      - *Ad-hoc* o "a medida"
+- *Relaciones estándar* : independientes del dominio (subclase-de o instancia).
+      - Permiten construir jerarquías de conocimientos estáticosdel dominio que se quiere modelar.
+- *Relaciones no estándar* : Representan dependencias entre conceptos (fraternal, disjunto y no-disjunto).
+      - *fraternal* : Marcos origen y destino son marcos clase, unidos mediante subclase-de a un mismo nodo padre.
+      - *disjunto* :
+      - *no disjunto* : pueden tener instancias comunes.
+      - *ad-hoc* : Hay que definirlas entre marcos clase. Son como atributos concretos de una clase.
+            - Los marcos instancia que se quieren conectar deben ser instancias de las clases con la relación ad-hoc.
+            - Una relación ad-hoc es una instancia de la relación ad-hoc definida a nivel clase.
+            - Muchas herramientas SBM no las implementan.
+
+**** Representación de las propiedades de los conceptos
+- *Propiedades de clase* : atributos genéricos de un concepto o clase.
+      - Toman siempre el mismo valor en todos los elementos o instancias de la clase.
+- *Propiedades de instancia* : Se rellenan en cada instancia.
+      - Las propiedades precedidas de "*" son propiedades de instancia.
+- Al definir propiedades de clase y propiedades de instancias hay que tener en cuenta:
+      - Se debe favorecer que unos marcos compartan datos con otros marcos.
+            - Evitar conocimiento redundante.
+      - Proporcionar la suficiente información como para determinar la entidad que el marco clase está representando.
+      - El nombre de cada propiedad refleja su semántica
+      - Propiedades tienen caracter local.
+      - Un marco clase rellena las propiedades de clase.
+      - Se puede definir una propiedad de instancia utilizando otros marcos clase.
+      - Un marco instancia puede rellenar o no todas las propiedades de instancia definidas en el marco clase.
+
+**** Representación de facetas de propiedades        
+- *facetas* : Permiten modelar características de las propiedades y relaciones en los marcos clase.
+      - Declarativamente se especifica un puntero o un tipo de datos.
+      - Procedimentalmente se define utilizando un procedimiento o una regla.
+- categorías:
+      - Facetas que definen Propiedades de clase, propiedades de instancia y relaciones.
+            - Tipo ranura : Tipo de datos con el que se rellena la propiedad o relación.
+                  - Si es de clase o de instancia se rellena con valores.
+            - Cardinalidad mínima
+            - Cardinalidad máxima
+            - Multivaluada
+      - Facetas que definen propiedades de clase y relaciones.
+      - Facetas que definen propiedades de instancia.
+            - valores permitidos
+            - Valores por omisión
+            - Si necesito : Procedimiento al solicitar el valor y ser desconocido dicho valor.
+            - Si modifico : Procedimiento ...
+            - Si añado : Procedimiento ...
+            - Si borro : Procedimiento ...
+- El motor de inferencias usa a las facetas para mantener la integridad semántica de los datos.
+
+*** Criterios de diseño
+- Se debe favorecer la compartición de propiedades de clase y de instancia entre marcos.
+- Se debe evitar representar conocimientos redundantes.
+- En cada marco de clase debe haber una propiedad de clase que identifique a los elementos de dicha clase.
+- Las propiedades deben tener o aportar significado a la representación.
+- Carácter local de las propiedades.
+- Si es necesario se puede redefinir las propiedades en marcos de clase más específicos.
+- Propiedades de las propiedades deben ser definidas como marcos.
+- No mezclar conceptos.
+- Tener en cuenta que en un marco instancia se puede rellenar o no todas las propiedades.
+- Recordar que las propiedades instancia se rellenan con valores concretos.
+- No se pueden usar propiedades no definidas en marcos clase.
+
+** Inferencia de conocimiento en SBM
+*** Equiparación
+1. Selección de marcos candidatos :
+       - Si el tipo de la nueva entidad es conocido se puede seleccionar el marco clase del tipo.
+             - Y todos los marcos clase especializados.
+       - Si el tipo de la nueva entidad es desconocido se selecciona arbitrariamente la selección del marco clase o que almenos contenga algúna propiedad conocida en el marco pregunta.
+2. Calcular el valor de equiparación
+
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
       - *Inferencia deductiva*, A implica B, C implica B, etc.
