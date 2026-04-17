@@ -2633,7 +2633,6 @@ FIN-SI
             - Comprobar que las dependencias del conjunto F no violan la FNBC.
             - Al descomponer R en R1 y R2, puede que haga falta alguna regla de F+ para comprobar si cumple FNBC
 
-
 **** Algoritmo de descomposición de la FNBC
 - [id:FBDatos] pag 156
 - algoritmo de descomposición de la FNBC
@@ -2689,6 +2688,221 @@ DEV (R1,R2,...,Ri);
 ** Proceso de diseño de la base de datos
 
 ** Modelado de datos temporales
+
+* Diseño y desarrollo de aplicaciones
+- pag [id:FBDatos] pag 169
+** Interfaces de usuario y programas de aplicación
+- La mayoría de usuarios interactuan con una base de datos usando un programa de aplicación con interfaz de usuario.
+- Un programa se puede dividir en dos partes:
+      - *front-end* : Parte que interactua con el usuario.
+      - *back-end* : Parte que se comunica con la base de datos y la lógica de negocio.
+- Actualmente las páginas web son el front-end universal.
+      - JavaScript permite hacer interfaces muy completas.
+
+** Fundamentos de la Web
+*** Localizadores uniformes de recursos
+- [id:FBDatos] pag 170
+- URL
+
+*** Lenguaje de marcas de hipertexto
+- html
+- HTML como lenguaje de etiquetas (cercano a xml)
+- Métodos de petición (get, post, ...).
+- CSS : hojas de estilo en cascada.
+      - Permite el aspecto uniforme.
+
+*** Los servidores web y las sesiones
+- CGI : norma de *interfaz de pasarela común*.
+      - Define como el servidor web se comunica con programas de aplicaciones.
+      - La mayoría usan una arquitectura de dos capas.
+- Las coockies permiten que el usuario interactue en forma de sesión con el servidor web.
+      - Hay que recordar que la conexión real con el servidor web se cierra después de cada petición.
+      - Cada dominio tiene sus propias coockies.
+      - Se almacenan en el equipo del cliente (y puede alacenarse en el servidor también).
+      - El cliente adjunta su coockie en sus peticiones (Bajo demanda del servidor).
+- Una sesión abierta es un identificador de sesión almacenado en el servidor web.
+
+** Servlets y jsp
+- servlet (java) permite la comunicación entre el servidor web y los programas de aplicaciones.
+      - Tipo flask, django.
+            - La diferencia es que no es propio java interpreter quien está en ejecución.
+            - Sino un servidor de aplicaciones.
+      - En java una clase un servlet.
+
+*** Sesiones de los servlets
+- La API Servlet permite el seguimiento de sesiones (usa coockies internamente).
+
+*** Ciclo de vida de los servlets
+- [id:FBDatos] pag 174
+- Si no existe ningún ejemplar la JVM crea un ejemplar de la clase del servlet.
+      - Puede intenarse reaprovechar un servlet.
+- Se puede configurar cuando se elimina el servlet.
+
+*** Soporte de los servlets
+- Muchos servidores de aplicaciones ofrecen soporte predeterminado para los servlets.
+- Algunos permiten que el servidor se ejecute en varias máquinas en paralelo.
+
+*** Secuencias de comandos en el lado del servidor
+- [id:FBDatos] pag 174
+- Lenguajes de guiones (paracen templates)
+      - Parece html con insertos en lenguajes de amplio propósito.
+      - Permite html dinámico.
+- JSP, ASP, PHP, ColdFusion, ...
+- A veces es más óptimo que escribirlo por servlet.
+
+*** Secuencias de comandos en el lado del cliente
+- Permite que las páginas web sean *activas* usando java, java-script.
+- Ojo con la seguridad.
+- En java se denominan applets
+- Java-script es muy muy usado, el que más para cliente.
+
+** Arquitecturas de aplicación
+- Capas:
+      - Interfaz de usuario.
+            - Modelo-vista-controlador.
+      - lógica de negocio.
+      - acceso a los datos.
+
+*** Capa lógica de negocio
+- Código que asegura que las reglas del negocio se satisfacen.
+- Incluye *flujos de trabajo*.
+
+*** Capa de acceso a los datos y a la correspondencia entre objetos y relaciones
+- [id:FBDatos] pag 177
+- Sistemas para la correspondencia entre objetos y relaciones.
+
+*** Servicios Web
+- *Servicio web* : se ejecuta en un servidor y recibe peticiones. Devuelve datos pero no interfaz gráfica.
+- *REST* : transferencia del estado de representación.
+- Se usa mucho json.
+
+*** Operación desconectado
+- Servicios cuando el usuario está desconectado.
+- Almacenamiento local preferiblemente en forma de base de datos.
+- *Gears* de google proporciona este tipo de servicio, en su navegador.
+      - Permite ejecución paralela de javascript en el cliente.
+
+** Desarrollo rápido de aplicaciones
+- Uso de bibliotecas para generar los elementos de la interfaz.
+- Uso de funciones de arrastrar en un entorno integrado (diseño visual).
+- Generar el código de interfaz de usuario a partir de especificación delcarativa.
+
+*** Herramientas para la construcción de interfaces de usuario
+- Funciones para generar menús con datos de la base de datos (datos variables)
+      - Se pueden hacer cachés para minimizar el impacto en la base de datos.
+- Para validaciones se usan funciones que generan código javascript para validar en el cliente.
+
+*** Frameworks para aplicaciones web
+- [id:FBDatos] pag 180
+
+*** Generadores de informes
+- Herramientas para generar informes legibles a partir de bases de datos.
+
+** Rendimiento de la aplicación
+- Importante en aplicaciones web ampliamente usadas.
+
+*** Reducir sobrecarga mediante cachés
+- *banco de conexiones* : Se reutilizan conexiones con la base de datos.
+      - Se ahorra el tiempo de conexión.
+      - Si hay muchas conexiones sin usarse el banco de conexiones puede cerrar algunas de ellas.
+      - Hay que devolver las conexiones al banco para que no se queden indefinidamente abiertas.
+- A veces se puede hacer cache de la propia página web (mismos parámetros y cosas así).
+
+*** Procesamiento en paralelo
+- Servidores de aplicaciones en paralelo.
+      - Cada uno de ellos maneja un conjunto de peticiones.
+
+** Seguridad de la aplicaciones
+*** Inyección SQL
+- [id:FBDatos] pag 182
+- La aplicación ejecute una consulta SQL creada por el atacante.
+- Mejor usar sentencias preparadas.
+
+*** Secuencias de comandos en sitios cruzados y falsificación de peticiones
+- *Secuencias de comandos en sitios cruzados (XXS)* : Ataque en sitios web que permiten introducir texto para mostrar a otros usuarios.
+      - Se introduce java-script o Flash.
+      - El navegador de otros usuario puede ejecutar el código malicioso.
+- *Falsificación de petición en sitios cruzados (XSRF)* : Introducir flasas peticiones (http) en por ejemplo imágenes.
+- Para evitar estos ataques:
+      - Validar el texto introducido por los usuarios.
+      - Restricciones por ip además de coockies.
+      - No usar Get para actualización de la página.
+
+*** Fuga de contraseñas
+- Se guardan cifradas.
+- Restricciones IP.
+
+*** Autenticación de las aplicaciones
+- *Autenticación en dos pasos* : Dos pasos que no comparten vulnerabilidad común.
+      - Contraseña y código temporal por ejemplo.
+- *Hombre en el medio* : El usuario es desviado a un sitio falso.
+      - Acepta las contraseñas y las usa inmediatamente.
+
+*** Autorización a nivel de aplicación
+- *Falta de información sobre el usuario final* : En las aplicaciones Web por ejemplo, el acceso a la base de datos lo realiza el servidor.
+      - No existen los usuarios finales en la base de datos como usuarios de la base de datos.
+            - Exite el usuario aplicación o lo que sea.
+- *Falta de autorización de grano fino* : Por ejemplo solo consultar las notas de un solo usuario.
+      - Se resuelve con las consultas como el *where*.
+- La autenticación normalmente selleva a cabo en el nivel aplicación.
+      - Más flexible pero el código de autenticación se mezcla con el de la aplicación
+            - En SQL es más seguro.
+- VPD, la base de datos privada virtual permite el grano fino incluyendo sentencias where a todas las consultas.
+
+*** Trazas de auditoría
+- Registro de todos los cambios.
+- Ayuda a descibrir posibles daños y a restaurarlos.
+- Los sistemas de bases de datos proporcionan maneras de generar las trazas.
+- La seguridad de la traza se puede reforzar haciendo copias de la propia traza en máquinas diferentes.
+
+*** Privacidad
+- Las aplicaciones que acceden a datos privados deben cumplir las leyes de los países.
+
+** Cifrado y sus aplicaciones
+- Transformar datospara que no sean legibles.
+      - el descifrado es el proceso inverso.
+- La información sensible se guarda cifrada en la base de datos.
+      - Sino se considera robo de datos
+
+*** Técnicas de cifrado
+- Una técnica buena posee las siguientes propiedades:
+      - Resulta más o menos sencillo cifrar y descrifrar para los usuarios autorizados.
+      - No depende del secreto del algoritmo, sino de una clave de cifrado.
+            - Clave simétrica : La misma clave sirve para cifrar y descifrar.
+            - Clave asimétrica : Clave pública y privada para cifrar y descrifrar.
+      - Es extremadamente dificil para un usuario determinar la clave de cifrado.
+            - En el caso asimétrico es extremadamente dificil deducir la clave privada aunque se disponga de la clave pública.
+
+*** Soporte del cifrado en las bases de datos
+- Muchos sistemas de bases de datos tienen sistemas de cifrado.
+- Un nivel es cifrar los bloques de datos que se almacenan en disco.
+- Siguiente nivel es cifrar los atributos de una relación.
+- Las claves de cifrado pueden guardarse en una cartera (wallet) que a su vez se encuentra cifrada.
+      - Es un archivo o relación.
+
+*** Cifrado y autenticación
+- Respuesta por desafio es más seguro.
+      - Se evita que las contraseñas viajen por la red.
+      - El servidor envía una cadena de desafío.
+      - El usuario cifra la cadena con su contraseña.
+      - La base de datos compara el resultado con su contraseña almacenada.
+- Las tarjetas inteligentes evitan tener que guardar la clave privada en un computador personal.
+      - Que también es peligroso si entra alguien.
+
+**** Firma digital
+- Para documentos públicos.
+- Se cifran con la clave privada y se descrifran con la clave pública.
+- No es posible firmar un documento sin la clave privada, por tanto es muy dificil usuarpar la identidad.
+
+**** Certificados digitales
+- Proceso de doble sentido.
+      - Cada miembro que interactúa se autentica.
+- El usuario tiene la clave pública del sitio.
+      - un sistema de *Certificados digitales* proporciona las claves públicas.
+- El certificado digital de una autoridad de certificación A consiste en una clave pública K y un texto cifrado E que se descifra con K.
+      - E contiene el nombre de la parte a la que se le ha emitido el certificado y su clave pública KC.
+      - E también contiene el certificado del propio A otorgado por un nivel superior del árbol de certificación.
+            - Valida la propia clave K.
 
 * Notes
 ** mysql Service
