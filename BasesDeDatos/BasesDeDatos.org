@@ -980,6 +980,7 @@ from estudiante join matricula on estudiante.ID = matricula.ID;  -- reune si est
 #+end_src
 
 *** Reunión externa (outer join)
+- [id:FBDatos] pag 52
 - Permite valores null en la reunión, y por tanto conserva más tuplas.
       - Por ejemplo que la tabla from no contenga una equivalencia con la tabla join.
 - Cuano no se conservan tuplas que no tienen coincidencias se llama *reunión interna*.
@@ -989,6 +990,7 @@ from estudiante join matricula on estudiante.ID = matricula.ID;  -- reune si est
       - *right outer join* : reunión externa derecha.
       - *full outer join* : reunión externa completa.
             - Efectua ambas reuniones.
+            - Creo que no está soportado por mysql.
 - Funcionamiento de la reunión externa, (reunión externa derecha y completa funcionan de forma análoga).
       - Para cada tupla de la parte izquierda $t$ que no casa con ninguna tupla de la parte derecha en una reunión interna.
       - Se añade una tupla $r$ que se construye de la siguiente forma.
@@ -1175,7 +1177,7 @@ create assertion <nombre_aserto> check <predicado>;
 ** Tipos de datos y esquemas de SQL
 
 *** Tipos fecha y hora en SQL
-- pag 61
+- [id:FBDatos] pag 61
 - *date* : '<YYYY>-<MM>-<DD>' : Fecha del calendario
 - *time* : '<hh>-<mm>-<ss>' : Hora del día en horas minutos y segundos.
 - *timestamp* : '<YYYY>-<MM>-<DD> <hh>-<mm>-<ss>' : Combinación de *date* y *time*
@@ -2903,6 +2905,175 @@ DEV (R1,R2,...,Ri);
       - E contiene el nombre de la parte a la que se le ha emitido el certificado y su clave pública KC.
       - E también contiene el certificado del propio A otorgado por un nivel superior del árbol de certificación.
             - Valida la propia clave K.
+
+
+* Almacenamiento y estructura de archivos
+** Visión general de los medios físicos de almacenamiento 
+- Tipos de almacenamiento habitual:
+      - *Caché* : Es el mecanismo más rápido y costoso.
+            - Gestionado por el hardware.
+            - Se presta atención a los efectos de la caché cuando se diseñan sistemas de bases de datos.
+      - *Memoria principal* : Suele ser demasiado pequeña y cara para almacenar toda la base de datos.
+            - Suele perderse en caso de fallo del suministro energético.
+      - *Memoria flash* : No se pierden los datos en caso de corte del suministro energético.
+            - Tipos de memoria flash NAND y NOR:
+                  - NAND Mayor capacidad y más caras.
+            - Sustituye a los discos magnéticos.
+      - *Almacenamiento en discos magnéticos* : Principal medio de almacenamiento persistente.
+            - Generalmente guarda toda la base de datos.
+            - Para acceder a los datos es necesario moverlos a memoria principal.
+      - *Almacenamiento óptico* : CD.
+      - *Almacenamiento en cinta* : Copias de seguridad y datos archivados.
+            - Acceso mucho más lento que un disco.
+            - Las cintas poseen una capacidad elevada.
+
+** Discos magnéticos y almacenamiento flash
+- Los avances en memoria flash las hacen competidoras de los discos magnéticos.
+
+*** Características físicas de los discos
+- Las dos superficies tienen material magnético.
+- Los platos están hechos de metal magnético o de vidrio.
+- El disco se divide en pistas.
+      - Las pistas en sectores.
+- La cabeza es de lectura y escritura.
+      - Cada cara del plato posee una cabeza.
+- Discos comunes actuales son de 3 pulgadas y media.
+- Conexión de los discos a los sistemas informáticos:
+      - SATA
+      - SATA II
+      - SCSI (small computer system interconnect)
+      - SAS : SCSI con serie
+      - Fibre Channel : USB o IEEE 1294 FireWire.
+- Pueden conectarse por Red.
+      - Red de área de almacenamiento (storage area network, SAN).
+            - Multiples discos en RAID (redundant arrays of independent disks).
+- *Almacenamiento conectado en red* (SAN) : Parecido al SAN.
+      - Proporciona una interfaz al sistema de archivos que utiliza protocolos de archivos en red como NFS o CIFS.
+
+*** Medidas del rendimiento de los discos
+- [id:FBDatos] pag 198
+- *Tiempo de acceso* : Tiempo desde que se formula una solucitud hasta que empieza la transferencia de datos.
+- *Tiempo de búsqueda* : Tiempo requerido para posicionar el brazo de lectura/escritura.
+- *Tiempo medio de búsqueda* : Promedio de los tiempo de búsqueda.
+- *Tiempo de latencia rotacional* : Tiempo hasta que el sector está debajo del cabezal.
+- *Tiempo de latencia medio* : Promedio del tiempo de latencia rotacional, la mitad del tiempo de una vuelta.
+- *Tiempo medio entre fallos* : Medida de fiabilidad del disco.
+      - Tiempo medio de que el sistema funcione entre dos fallos.
+
+*** Optimización del acceso a los bloques de disco
+- [id:FBDatos] pag 198
+- *Bloque* : número dijo de sectores continuos.
+- Las solicitudes al disco se expresan en bloques.
+- Cada bloque tiene una dirección.
+- Patrón Accesos:
+      - *Secuencial*: Peticiones número bloques consecutivos, Tiempo de búsqueda del primer bloque y seguidamente la transferencia es secuencial.
+      - *Aleatoria* : Las sucesivas peticiones de bloques se encuentrar en zonas diferentes.
+- Técnicas para mejorar el rendimiento de acceso a bloques.
+      - *Memoria intermedia Buffer* : Se almacenan los bloques en memoria intermedias para satisfacer futuras peticiones.
+      - *Lectura adelantada* : Se leen en una memoria intermedia bloques adyacentes al solicitado.
+      - *Planificación* : Planificar el recorrido del cabezal si hay diversas peticiones.
+            - Algoritmo del ascensor,
+      - *Organización de archivos* : Organizar los bloques en disco de manera fiel al acceso que se espera.
+      - *Memoria de escritura no volátil* : NV-RAM ram no volátil (por si se va la luz).
+            - Una forma habitual es utilizar RAM con baterías.
+            - La NV-RAM es un punto intermedio entre el equipo y el disco.
+                  - El os cree que al escribir en la NV-RAM ya ha escrito en disco.
+                  - La transferencia de la NV-RAM al disco se va haciendo.
+                  - Es común encontrarlo en controladores RAID.
+      - *Disco de registro histórico* : Punto intermedio como la NV-RAM.
+            - Escribe un registro secuencial.
+            - Esto accelera el acceso a los datos.
+            - Más adelante se transfieren los datos al disco secundario.
+            - *Sistemas de archovos de diario* : Sistemas que soportan los discos de registro histórico.
+
+*** Almacenamiento Flash
+- [id:FBDatos] pag 200
+- Puedenser memoria flash NAND o NOR.
+- NOR : permite acceso aleatorio a palabras.
+      - Tiempo de lectura comparable a memoria principal.
+- NAND : Permiten el acceso a páginas completas que se cargan en memoria principal.
+      - Las páginas de las memoria NAND son similares a los sectores de los discos magnéticos.
+      - Tienen mayor capacidad, son más baratas y son las más usadas.
+- Proporcionan la misma interfaz orientada a bloques.
+      - Pero más rápidas que los discos magnéticos.
+- Las páginas se escriben rápidas.
+      - Pero para sobreescribir hay que borrar y reescribir.
+- *Bloque de borrao* : Operación de borrar varias páginas.
+- Existe un límite de borrados, unos 1000000 borrados.
+      - Si se supera pueden empezar a aparecer errores.
+- Diferencia entre página lógica y página física.
+      - La memoria se organiza para minimzar tiempos y errores.
+      - *Tablas de traducción* : Correspondencia entre página lógica y física.
+- *Equilibrio de uso* : Las páginas que se han borrado muchas veces se marcan como datos frios.
+      - Y servirán para almacenar los datos más persistentes.
+- *Capa de traducción flash* : Capa software que gestion la memoria flash.
+      - y todas las acciones propias de este tipo de memoria.
+- *Unidades de disco híbridas* : Unidades de disco magnético con una memoria flash como cache para los datos de mayor acceso.
+
+** RAID
+- [id:FBDatos] pag 200
+- Tener muchos discos en un sistema permite accesos y escrituras simultáneas.
+- Además permite redundancia.
+      - RAID, disposición redundante de discos independientes.
+
+*** Mejora de la fiabilidad mediante la reduncancia
+- La redundancia aporta fiabilidad.
+- En caso de error de uno de los discos los datos están más seguros.
+- *Creación de imágenes* : Duplicar todos los datos.
+      - Enfoque más sencillo y más caro.
+- *Tiempo medio de reparación* : Tiempo medio que cuesta sustituir un disco averiado.
+
+*** Mejora del rendimiento mediante el paralelismo
+- Aumenta el número de accesos simultáneos a n si hay n discos.
+- *Distribución en bits*: $n$ discos, el disco $i$ almacena el bit $i$ de una palabra de $n$ bits.
+      - Aumenta el tamaño de los sectores por $n$ y el acceso es $n$ veces más rápido.
+- *Distribución nivel de bloques* : $n$ discos, el disco $i$ almacena el bloque $i$.
+      - $d = i\ mod\ n$
+            - $d$ es el número de disco
+            - $i$ es el número de bloque
+            - $n$ es el número de discos
+      - $b_d = i/n$
+            - $b_d$ es el bloque del disco $d$ que almacena la dirección del bloque $i$.
+      - Es la forma de distribución más usada.
+
+*** Niveles de RAID
+- [id:FBDatos] pag 202
+- *Nivel 0 de RAID* : Distribución a nivel de bloques, sin redundancia
+- *Nivel 1 de RAID* : Creación de imágenes de disco con distribución a nivel bloques.
+- *Nivel 2 de RAID* : Conocido como organización de códigos de corrección de errores tipo memoria.
+      - Emplea bits de paridad para corregir y detectar errores.
+      - Cada byte tiene asociado un bit de paridad.
+      - Se puede usar en discos con distribución de bits.
+- *Nivel 3 de RAID* : Organización de paridad con bits entrelazados.
+      - En un controlador de disco se puede saber si el sector se ha leído correctamente.
+      - Un solo bit de paridad puede detectar y corregir el error.
+      - Más barato que el nivel 2 de RAID.
+- *Nivel 4 de RAID* : Organización de paridad con bloques entrelazados.
+      - Distribución de nivel de bloques.
+      - Guarda un bloque de paridad en un disco independiente.
+            - Para los otros $n$ discos.
+      - Si un disco falla se puede detectar y restaurar con la paridad y el resto de discos.
+            - Paridad con el bit $i$ en cada bloque $j$ de cada uno de los discos.
+- *Nivel 5 de RAID* : Paridad distribuida con bloques entrelazados.
+      - Mejora respecto al nivel 4.
+      - Divide los datos y la paridad entre los $n+1$ discos.
+      - Todos los discos pueden atender a las solicitudes de lectura.
+      - En cada conjunto de $n$ bloques lógicos uno de los discos guarda la paridad y el resto de $n$ discos los bloques.
+- *Nivel 6 de RAID* : Llamado esquema de redundancia P+Q.
+      - Similar a nivel 5 pero guarda información redundante adicional.
+      - Utiliza los códigos Reed-Solomon para la corrección de errores.
+
+*** Elección del nivel RAID
+- [id:FBDatos] pag 203
+- Factores a tener en cuenta:
+      - Coste económico.
+      - Requisitos de rendimiento en términos de número de operaciones.
+      - El rendimiento cuando falla un disco.
+      - Rendimiento durante la reconstrucción.
+
+*** Aspectos del hardware
+- *RAID software* : implementado sin cambios de hardware.
+- *RAID hardware* : implementado a nivel hardware.
 
 * Notes
 ** mysql Service
