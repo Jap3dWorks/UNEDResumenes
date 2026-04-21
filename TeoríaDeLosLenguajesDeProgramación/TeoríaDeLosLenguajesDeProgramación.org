@@ -1319,6 +1319,7 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
 - *Semántica denotacional* : Método formal de especificación de la semántica.
 
 *** Atributos, vínculos y funciones semánticas
+- [id:TeLenProg] pag 178
 - La descripción semántica de un lenguaje tienen que estar incluidas las reglas que determinan el significado de cada uno  de los nombres o *identificadores* utilizados para las variables, procedimientos y constantes.
 - El significado de un identificador queda determinado por las propiedades o atributos asociados al mismo.
 - Atributos especialmente importantes:
