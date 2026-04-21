@@ -539,6 +539,7 @@ where semestre = 'Primavera' and año=2010);
 #+end_src
 
 *** Operación Intersección
+- [id:FBDatos] pag 37
 - *intersect* : intersección entre dos relaciones.
       - Elimina duplicados.
       - *intersect all* para mantener duplicados.
@@ -680,6 +681,7 @@ where (asignatura_id,secc_id,semestre,año)
 #+end_src
 
 *** Comparación de conjuntos
+- [id:FBDatos] pag 41
 - *some*, superar condición con almenos uno.
 - válido para >, >=, <, <=, =, y <>
   

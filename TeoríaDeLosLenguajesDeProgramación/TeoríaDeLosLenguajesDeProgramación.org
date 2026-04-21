@@ -1954,6 +1954,7 @@ if (true) System.out.println("IF 1");
 
 #+RESULTS:
 : IF 1
+: Sentencia Else
 
 - *elseif* : Permite trabajar con múltiples alternativas al mismo nivel.
       - Se evalua $e_i$, si resulta falsa se evalua $e_{i+1}$.
@@ -2073,14 +2074,19 @@ od
 **** Paso por valor
 - El más utilizado.
 - Las expresiones son evaluadas previo a la ejecución del subprograma.
+- Idealmente los pasos por valor no se modifican dentro del subprograma.
 
 **** Paso por referencia
 - Requirere que los parámetros sean variables con un adirección dentro de la memoria.
+- Las modificaciones sobre el parámetro se propagan.
+- Puede provocar efectos colaterales.
 
 **** Paso por valor-resultado
 - *Paso por copia-restauración* o *paso por copia de entrada salida*.
 - Requiere que los parámetros sean variables.
 - El valor del parámetro es copiado en el parámetro, puede ser modificado en el cuerpo, y al acabar vuelve a ser copiado de vuelta en la dirección original de la variable.
+- Muy útil en entornos distribuidos.
+      - Multiprocesador también.
 
 **** Paso por nombre
 - [id:TeLenProg] pag 268
