@@ -850,7 +850,7 @@ fsi
 - Si en un conjunto de cláusulas todas tienen una forma llamada de Horn, entonces el problema de la satisfacibilidad tiene una complejidad inferior.
 - Cláusula Horn es:
       - un átomo.
-      - Una implicación tal que el antecedente es una conjunción de litarales positivos, ye el consecuente es un solo literal positivo.
+      - Una implicación tal que el antecedente es una conjunción de literales positivos, y el consecuente es un solo literal positivo.
       - Una implicación tal que el antecedente es una conjunción de litarales negativos, y el consecuente es vacío.
 - Ejemplos
       - $p \land q \land r \to s$
