@@ -3777,7 +3777,183 @@ entity maquinaExpend is
 end entity maquinaExpend;
 
 architecture maquinaExpend of maquinaExpend is
+  signal total_int : unsigned(TOTAL_BITS-1 downto 0);
+  signal estado    : unsigned(ESTADO_BITS-1 downto 0);
+begin
+  total <= total_int;
+  algoritmo: process(reset_n, clk) is
+  begin
+    if (reset_n = '0') then
+      total_int <= (others => '0');  -- Inicializa el registro (todo a 0's)
+      ack <= '0';
+      beep <= '0';
+      devuelve_moneda <= '0';
+      despensa_refresco <= '0';
+      dispensa_agua <= '0';
+      devuelve_cambio <= '0';
+      estado <= "00";  -- Estado inicial
+    elsif rising_edge(clk) then
+      estado <= estado + 1;
+      case estado is
+        when "00" =>
+          if (req = '0') then  -- Espera hasta que (req='1')
+            estado <= "00";
+          end if;
+        when "01" =>
+          case (data) is
+            when DATA_m10 | DATA_m20 | DATA_m50 =>  -- | significa cada una de las opciones
+                                                    --  como un or para evitar escribir
+                                                    --  cada una de las guardas.
+              if ((total_int + data) > MAX) then
+                devuelve_moneda <= '1';
+              else
+                total_int <= total_int + data;
+              end if;
+            when DATA_selec_refresco =>
+              if (total_int < 6) then
+                beep <= '1';
+              else
+                total_int <= total_int - 6;
+                dispensa_refresco <= '1';
+              end if;
+            when DATA_selec_agua =>
+              if (total_int < 7) then
+                beep <= '1';
+              else
+                total_int <= total_int - 7;
+                dispensa_agua <= '1';
+              end if;
+            when DATA_devolucion =>
+              total_int <= (others => '0');
+              devuelve_cambio <= '1';
+            when others =>
+              assert false report "Caso idenfinido.";
+          end case;
+        when "10" =>
+          ack <= '1';
+          if(req = '1') then
+            estado <= "10";
+          end if;
+        when others =>
+          ack <= '0';
+          beep <= '0';
+          devuelve_moneda <= '0';
+          dispensa_refresco <= '0';
+          dispensa_agua <= '0';
+          dispensa_cambio <= '0';
+      end case;
+    end if;
+  end process algoritmo;
+end architecture maquinaExpend;
+-- TODO
 
+#+end_src
+
+- En el *case* se aplican las [[id:3138112f-bc3c-469b-97bf-aad8115fac95][guardas when]].
+
+- Código del banco de pruebas.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use work.maqExpend_defs.all;
+
+entity bp_maquinaExpend is
+end entity bp_maquinaExpend;
+
+architecture bp_maquinaExpend of bp_maquinaExpend is
+
+  component maquinaExpend is
+    port(total : out unsigned(TOTAL_BITS-1 downto o);
+         ack   : out std_logic;
+         beep  : out std_logic;
+         devuelve_moneda : out std_logic;
+         dispensa_refresco : out std_logic;
+         dispensa_agua : out std_logic;
+         devuelve_cambio : out std_logic;
+         req : in std_logic;
+         data : in unsigned(DATA_BITS-1 downto 0);
+         reset_n : in std_logic;
+         clk : in std_logic);
+  end component maquinaExpend;
+
+  constant PERIODO time := 100ns; -- periodo señal de reloj
+
+  signal total             : unsigned(TOTAL_BITS-1 downto o);
+  signal ack               : std_logic;
+  signal beep              : std_logic;
+  signal devuelve_moneda   : std_logic;
+  signal dispensa_refresco : std_logic;
+  signal dispensa_agua     : std_logic;
+  signal devuelve_cambio   : std_logic;
+  signal req               : std_logic;
+  signal data              : unsigned(DATA_BITS-1 downto 0);
+  signal reset_n           : std_logic;
+  signal clk               : std_logic
+
+begin
+  uut : maquinaExpend port map (
+    total, ack, beep, devuelve_moneda, dispensa_refresco,
+    dispensa_agua, devuelve_cambio, req, data, reset_n, clk);
+
+  -- Crea un pulso de reset
+  reset_n <= '1',
+             '0' after (PERIODO*3/4),
+             '1' after (2*PERIODO);
+
+  -- Señal de reloj
+  clock : process is
+  begin
+    clk <= '0'; wait for (PERIODO/2);
+    clk <= '1'; wait for (PERIODO/2);
+  end process clock;
+
+  generar_vectores : process is
+  begin
+    req <= '0'; data <= (others => '0');
+    wait for (PERIODO*3); wait for (PERIODO/4);
+
+    req <= '1'; data <= DATA_m50;  -- Introduce moneda 50 cent.
+    wait for (PERIODO*5);
+    req <= '0'; wait for (PERIODO*2);
+
+    req <= '1'; data <= DATA_m20;       -- Introduce moneda de 20 cent.
+    wait for (PERIODO*3);
+    req <= '0'; wait for (PERIODO*2);
+
+    req <= '1'; data <= DATA_select_agua; -- Selecciona agua
+    wait for (PERIODO*3);
+    req <= '0'; wait for (PERIODO*2);
+    
+    req <= '1'; data <= DATA_m50;  -- Introduce moneda 50 cent.
+    wait for (PERIODO*5);
+    req <= '0'; wait for (PERIODO*2);
+
+    req <= '1'; data <= DATA_m10;      -- Introduce moneda de 10 cent.
+    wait for (PERIODO*3);
+    req <= '0'; wait for (PERIODO*2);
+    
+    req <= '1'; data <= DATA_select_refresco; -- Selecciona refresco
+    wait for (PERIODO*3);
+    req <= '0'; wait for (PERIODO*2);
+
+    req <= '1'; data <= DATA_m20;
+    wait for (PERIODO*3);
+    req <= '0'; wait for (PERIODO*2);
+
+    req <= '1'; data <= DATA_selec_refresco;
+    wait for (PERIODO*3);
+    req <= '0'; wait for (PERIODO*2);
+
+    req <= '1'; data <= DATA_devolucion;
+    wait for (PERIODO*3);
+    req <= '0'; wait for (PERIODO*2);
+
+    report "Final de la simulación";
+    wait;
+  end process generar_vectores;
+end architecture bp_maquinaExpend;
 #+end_src
 
 * Glosario
