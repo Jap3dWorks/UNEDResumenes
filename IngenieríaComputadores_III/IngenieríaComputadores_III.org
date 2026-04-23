@@ -3436,6 +3436,350 @@ begin
 end architecture maquinaMooreSimple;
 #+end_src
 
+* Metodología de Transferencia entre registros
+** Introducción
+- [id:DACircDig] pag 517
+- *RT* : Registrer transfer, *metodología de transferencia entre registros*.
+      - Partes:
+            - *Camino de los datos* : componentes secuenciales o combinacionales que manipulan los datos.
+                  - Sumadores, registros, multiplexores.
+            - *Lógica de control* : lógica para crear señales de control.
+                  - Puede ser un FSM (finite state machine).
+      - El *camino de los datos* envía señales de estado a la *lógica de control*.
+      - La *lógica de control* envía señales de control al *camino de los datos*.
+
+** Operaciones de Transferencia entre registros
+- [id:DACircDig] pag 518
+- Operaciones RT.
+
+*** Operación RT básica
+- Operación de transferencia entre registros.
+      - $r_{dest} \leftarrow f(r_{orig1}, \dots, f_{origN})$
+      - El resultado de $f$ se almacena en $r_{dest}$ el siguiente flanco de subida de la señal de reloj.
+- [id:DACircDig] pag 519, tabla con las correspondencias entre RT y vhdl.
+- $f$ debe poder ser sintetizada en un circuito combinacional.
+- Acciones que implica la operación RT:
+      - Se produce el flanco de subida de la señal de reloj. Tras un cierto retardo interno los datos de salida de los registros están disponibles.
+      - Los datos son operados por el circuito combinacional que realiza la función $f$.
+            1. El resultado es ruteado a la entrada de $r_{dest}$.
+            2. Se asume que el periodo de reloj permite acomodar las señales.
+            3. En el siguiente flanco subida el resultado es almacenado en $R_{dest}$.
+
+*** Programa RT
+- Programa RT : algoritmo descrito en notación RT.
+- Hay operaciones que pueden realizarse simultáneamente.
+      - Se describen en un mismo paso.
+      - Se traducen en sentencias concurrentes de VHDL.
+            - Incluso en sentencias *for* o *while* (un bus), si pueden ejecutarse concurrentemente.
+- Los pasos del algoritmo irán ejecutándose en el circuito secuencial en ciclos consecutivos.
+- el programa RT con menos pasos será el más eficiente.
+
+#+begin_example
+paso 0.    fact<15:0> <- 1;
+           fin <- 0;
+           num <- 2;
+paso 1.    if (num <= n) then begin
+               fact <- fact * num;
+               num <- num + 1;
+               go to Paso 1;
+           end /* if */
+paso 2.    fin <- 1;
+#+end_example
+
+- Si se asigna un valor a una variable y se usa esa variable, se estará usando el valor anterior.
+      - Operaciones concurrentes.
+
+** Máquinas de estado finito con camino de datos (FSMD)
+- [id:DACircDig] pag 522
+
+*** Múltiples operaciones RT y camino de datos
+- Un multiplexor permite enrutar el dato deseado que se almacenará en el registro.
+
+*** Lógica de control mediante FSM
+- [id:DACircDig] pag 523
+- *Lógica de control* o *camino de control*.
+      - Determina el orden de las operaciones RT.
+- Típicamente se implementa con una FSM.
+      - La transición de estados se produce en el flanco de subida.
+      - Las transiciones entre estados se produce siguiendo una secuencia definida.
+      - En función de las señales de entrada la FSM puede realizar unas o otras transiciones de estados.
+- FSMD especifica el estado y la operación RT que debe realizarse.
+
+*** Diagrama de bloques básico de la FSMD
+- [id:DACircDig] pag 524 hay un diagrama de bloques de una FSMD.
+- Camino de datos:
+      - Partes:
+            - Registro de datos : almacena resultados intermedios de los cálculos.
+            - Unidades funcionales : operaciones RT.
+            - Conexionado de enrutamiento :
+                  - [registros] -> [enrutamiento] -> [unidades funcional]
+                  - [unidades funcionales] -> [enrutamiento] -> [registros]
+                  - Se suele sintetizar con multiplexores.
+      - Señales Entrada Salida:
+            - Datos de entrada : Datos externos a procesar por la FSMD.
+            - Datos salida : Los resultados.
+            - Señal Control : Señal de la lógica de control, indica que operación debe ejecutarse.
+            - Señal Status Interna : Señal generada por el camino de datos, Informa a la lógica de control sobre ciertas condiciones.
+                  - La lógica de control usa esta señal para determinar las próximas acciones.
+- Lógica de control:
+      - Señales de Entrada Salida:
+            - Comandos externos : Señales externas que indican que deben realizarse determinadas acciones.
+            - Señal de estatus interna : Proviene del camino de datos.
+            - Señal de control : Controla la operación del camino de datos.
+            - Señal de estatus externa : Indica cual es el estado de la operación de la máquina.
+
+** Descripción del programa RT usando VHDL
+- [id:DACircDig] pag 525
+- Estructura recomendada para un RT
+
+#+begin_example
+Paso 0.    Inicializa variables.
+           while (true) do begin
+Paso 1.        Paso 1 del algoritmo;
+Paso 2.        Paso 2 del algoritmo;
+...
+Paso k.        for i<-0 to max-1 do begin ...
+...
+Paso m.        Llamada a la función FUNCION_1;
+...
+Paso n.        Paso n del algoritmo;
+            end /* end while */
+#+end_example
+
+- Traducción a VHDL
+
+#+begin_src vhdl
+package DEFS is
+  constant FUNCTION_1 : integer := z;
+  ...
+end package DEFS;
+
+architecture ...
+  signal state : integer; -- Contador que indica el paso del pseudocódico ejecutándose.
+  -- ...
+  seudocodigo : process(reser_n, clk) is
+  begin
+    if (reset_n = '0') then
+      -- ...       -- Paso 0 del pseudocódigo
+      state <= 1;  -- Inicializa state
+    elsif rising_edge(clk) then
+      state <= sate + 1;   -- incrementa state
+      case (state) is
+        when 1 =>
+          -- ... Operaciones paso 1.
+        when 2 =>
+          -- ... operaciones paso 2.
+        -- ...
+        when k + x =>
+          -- último paso dentro del bucle for
+          if (i < max) then
+            state <= k+1;
+          end if;
+          i <= i + 1;
+        -- ...
+        when m + x =>  -- FUNCION_1 es llamada aquí
+          ret_state <= m + x + 1;
+          state <= FUNCION_1;
+        when m + x + 1 =>
+          -- ...
+        -- ...
+        when FUNCION_1 =>
+          -- Operaciones del Paso 1 de la función FUNCION_1
+        when FUNCION_1 + 1 =>
+          -- Operaciones del Paso 2 de la función FUNCION_1
+        -- ...
+        when others => -- Paso n del pseudo
+          state <= 0;
+      end case;
+    end if;
+  end process seudocodigo;
+end architecture ...;
+#+end_src
+
+** Circuito detector de secuencia
+- [id:DACircDig] pag 528
+- Circuito para detectar la secuencia 0111 1110
+
+#+begin_example
+Paso 0.    prev_data <- 1111 1111;
+Paso 1.    while (true) do
+           data_in <- siguiente dato de entrada;
+           prev_data <- prev_data << 1;  /* desplazamiento izquierda */
+           prev_data[0] <- data_in;
+           if (prev_data == 0111 1110) then
+               detectado <- 1;
+           else
+               detectado <- 0;
+           end while
+#+end_example
+
+#+begin_src vhdl
+-- Circuito detector de secuencia 0111 11110
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity detector_sec is
+  port (detectado : out std_logic;
+        reset_n   : in std_logic;
+        clk       : in std_logic;
+        data_in   : in std_logic);
+end entity detector_sec;
+
+architecture detector_sec1 of detector_sec is
+begin
+  process (reset_n, clk) is
+    variable prev_data : unsigned(7 downto 0);
+  begin
+    if (reset_n = '0') then
+      prev_data := B"11111111";  -- reset
+    elsif rising_edge(clk) then
+      prev_data := prev_data sll 1;  -- shift left
+      prev_data(0) := data_in;       -- asignación inmediata
+      if (prev_data = B"01111110") then
+        detectado <= '1';
+      else
+        detectado <= '0';
+      end if;
+    end if;
+  end process;
+end architecture detector_sec1;
+
+architecture detector_sec2 of detector_sec is
+  signal prev_data : unsigned(7 downto 0);
+begin
+  process (reset_n, clk) is
+  begin
+    if (reset_n = '0') then
+      prev_data <= B"1111_1111";
+    elsif rising_edge(clk) then
+      prev_data <= (prev_data(6 downto 0) & data_in);
+      -- Si es señal prev_data aún no se ha actualizado.
+      if ((prev_data(6 downto 0) & data_in) = B"0111_1110") then
+        detectado <= '1';
+      else
+        detectado <= '0';
+      end if;
+    end if;
+  end process;
+end architecture detector_sec2;
+#+end_src
+
+** Control de una máquina expendedora
+- [id:DACircDig] pag 530 se plantea el diseño de una máquina de refrescos.
+
+*** Protocolo handshaking
+- de 4 fases
+- Permite sincronizar dos circuitos cominicados por un bus.
+- señales req y ack
+      - En A SI ack=0 ENTONCES
+            - pone en el bus el dato
+            - cambia la señal req a 1.
+      - B detecta req pasa de 0 a 1.
+            - Carga el dato y lo procesa.
+            - cambia el valor de ack de 0 a 1.
+                  - Indica a A que ha recibido los datos.
+      - A espera hasta que detecta ack=1.
+            - Entonces pone req=0.
+      - B ve que req=0 entonces pone ack=0.
+            - Queda preparado para el siguiente dato.
+      - A debe esperar hasta que ack=0 para enviar el siguiente dato.
+
+*** Descripción del algoritmo
+
+#+begin_example
+Paso 0.  total<4:0> <- 0;        ack <- 0;
+         beep <- 0;              devuelve_moneda <- 0;
+         dispensa_refresco <- 0; dispensa_agua <- 0;
+         devuelve_cambio <- 0;   MAX <- 31;
+
+         while (true) do begin
+Paso 1.      wait unitl (req=1);
+
+Paso 2.      case (data) is begin
+                 m10, m20 or m50:
+                     if (total + data > MAX) then
+                         devuelve_moneda <- 1;
+                     else
+                         total <- total + data;
+                     end if;
+                 selec_refresco:
+                     if (total < 6) then
+                         beep <- 1;
+                     else
+                         total <- total - 6;
+                         dispensa_refresco <- 1;
+                     end if;
+                 selec_agua:
+                     if (total < 7) then
+                         beep <- 1;
+                     else
+                         total <- total - 7;
+                         dispensa_agua <- 1;
+                     end if;
+                 devolucion:
+                     devuelve_cambio <- 1;
+                     total <- 0;
+             end /* de case (data) */
+
+Paso 3.      ack <- 1 unitl (req=0);
+
+Paso 4.      ack <- 0;             beep <- 0;
+             devuelve_moneda <- 0; dispensa_refresco <- 0;
+             dispensa_agua <- 0;   devuelve_cambio <- 0;
+         end; /* end del bucle while */
+#+end_example
+
+*** Diseño del circuito de control
+- [id:DACircDig] pag 534
+- Package con la definición de las constantes del circuito.
+
+#+begin_src vhdl
+-- Definición de las constantes
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+package maqExpend_defs is
+  constant TOTAL_BITS : integer := 5;  -- bits del registro total
+  constant MAX        : integer := 31; -- num max en el registro total
+  constant ESTADO_BITS : integer := 2; -- Bits de Estado de la máquina
+  constant DATA_BITS : integer := 3;  -- Bits de señal de entrada
+  constant DATA_m10 : unsigned(DATA_BITS-1 downto 0) := "001";
+  constant DATA_m20 : unsigned(DATA_BITS-1 downto 0) := "010";
+  constant DATA_m50 : unsigned(DATA_BITS-1 downto 0) := "101";
+  constant DATA_devolucion : unsigned(DATA_BITS-1 downto 0) := "100";
+  constant DATA_selec_agua : unsigned(DATA_BITS-1 downto 0) := "011";
+  constant DATA_selec_refresco : unsigned(DATA_BITS-1 downto 0) := "000";
+end package maqExpend_defs;
+#+end_src
+
+- Código de control de una máquina expendedora.
+
+#+begin_src vhdl
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use work.maqExpend_defs.all;
+
+entity maquinaExpend is
+  port(total : out unsigned(TOTAL_BITS-1 downto 0);
+       ack   : out std_logic;
+       beep  : out std_logic;
+       devuelve_moneda : out std_logic;
+       dispensa_refresco : out std_logic;
+       dispensa_agua : out std_logic;
+       devuelve_cambio : out std_logic;
+       req : in std_logic;
+       data : in unsigned(DATA_BITS-1 downto 0);
+       reset_n : in std_logic;
+       clk : in std_logic);
+end entity maquinaExpend;
+
+architecture maquinaExpend of maquinaExpend is
+
+#+end_src
+
 * Glosario
 - *flip-flop*, circuito biestable.
   # creo que era un Biestable-T (toggle)
