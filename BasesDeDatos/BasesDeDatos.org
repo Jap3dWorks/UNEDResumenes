@@ -2908,7 +2908,6 @@ DEV (R1,R2,...,Ri);
       - E también contiene el certificado del propio A otorgado por un nivel superior del árbol de certificación.
             - Valida la propia clave K.
 
-
 * Almacenamiento y estructura de archivos
 ** Visión general de los medios físicos de almacenamiento 
 - Tipos de almacenamiento habitual:
@@ -3076,6 +3075,164 @@ DEV (R1,R2,...,Ri);
 *** Aspectos del hardware
 - *RAID software* : implementado sin cambios de hardware.
 - *RAID hardware* : implementado a nivel hardware.
+
+*** Otras aplicaciones de RAID
+- Los conceptos RAID se aplican a cintas magnéticas y sistemas inalámbricos.
+
+** Almacenamiento terciario
+- [id:FBDatos] pag 205
+- Dispositivos ópticos y cintas magnéticas.
+
+*** Discos ópticos
+- [id:FBDatos] pag 205
+- CD
+      - 640 - 700 MB
+      - Baratos de producir
+      - tbúsqueda 100ms
+      - lectura 3-6 MBps
+- DVD
+      - 4.7 GB una capa (DVD-5) ; 8.5 GB dos capas (DVD-9).
+      - 9.4 - 17 GB en dos caras.
+      - tbúsqueda 100ms
+      - 8-20 MBps
+- Blue-ray
+      - 27 - 54 GB
+- *jukebox* (cambiadores de discos) : Dispositivos que guardan gran número de discos ópticos.
+      - Cargan los discos automáticamente sobre las unidades de lectura.
+
+*** Cintas magnéticas
+- Lentas aunque pueden almacenar muchos datos.
+- Relativamente permanentes.
+- Bastante fiables.
+- Acceso secuencial.
+- *Cambiadores de cintas* : Misma idea que el jukebox.
+      - Puede llegar a vario petabytes, $10^{15}$ bytes.
+
+** Organización de los archivos
+- [id:FBDatos] pag 206
+- Una base de datos se corresponde con una secuencia de archivos.
+- Los archivos se dividen en *bloques* (sistema operativo).
+      - Cada bloque puede contener varios registros.
+      - Los registros son del mismo tipo o de almenos la misma longitud.
+            - Permite iteraciones más rápidas.
+- Las bases de datos pueden definir el tamaño del bloque (8 - 4 kb).
+      - Se busca la localidad de los datos.
+
+*** Registros de longitud fija
+- [id:FBDatos] pag 206
+- alineamiento y borrado con estratégia de sparse set.
+- También se puede dejar los espacios borrados libres para la próxima inserción.
+- Se evita los desplazamientos de toda la estructura eso sí.
+
+*** Registros de longitud variable
+- [id:FBDatos] pag 207
+- Problemas
+      - Cómo representar un registro único de forma que se puedan extrar facilmente los atributos individuales.
+      - Cómo guardar registros de tamaño variable en una bloque de forma que sea fácil de extraer.
+- Suele constar de dos partes
+      - Parte con datos fijos
+            - Datos fijos (INT)
+            - Contiene desplazamiento/longitud de cada atributo variable.
+      - Mapa de Nulos
+            - Cada bit representa a un atributo, si es 1 el atributo es nulo.
+      - Parte con datos variables consecutivos.
+            - Datos variables consecutivos (VARCHAR).
+- Para almacenarlo en *bloques*:
+      - Estructura de página con ranuras.
+            - Cabecera principal en cada bloque:
+                  - Número de elementos del registro de la cabecera.
+                  - Final del espacio vacío del bloque.
+                  - Array cuyas entradas contienen la ubicación y el tamaño de cada registro.
+            - Los registros reales se almacenan de forma contigua empezando por el final.
+            - Al borrar un registro se debe compactar la estructura.
+      - Objetos de gran tamaño (mayor a un bloque) se guardan en archivos especiales.
+
+** Organización de los registros en archivos
+- [id:FBDatos] pag 208
+- *Organización de los archivos en mintículos* :
+      - El registro se coloca en cualquier parte del archivo que tenga sitio.
+      - Los registros no se ordenan.
+      - Generalmente solo hay un archivo para cada relación.
+- *Organización secuencial de los archivos* :
+      - Se guardan en orden secuencial según el valor de la clave de búsqueda.
+- *Organización asociativa (hash) de los archivos* :
+      - Hash sobre algún atributo del registro.
+      - El resultado especifica el bloque del archivo.
+      - Relacionado con la creación de índices.
+
+*** Organización de archivos secuenciales
+- [id:FBDatos] pag 208
+- Diseñados para el procesamiento eficiente de los registros.
+- Búsquedas rápidas.
+- El borrado y la inserción pueden resultar costosos.
+      - Se puede gestionar el borrado mediante cadenas de punteros.
+      - Inserción:
+            - Localizar el registro que precede al que se ve a insertar.
+            - SI hay espacio vacío en el bloque ENTONCES.
+                  - Se inserta en el espacio vacío dentro del bloque
+            - SINO Se inserta en un bloque de desbordamiento.
+            - Se ajustan los punteros.
+      - En algún momento será necesario *reorganizar* los datos.
+
+*** Organización de archivos en agrupaciones de varias tablas
+- [id:FBDatos] pag 209
+- Muchos sistemas de bases de datos de gran tamaño no utilizan el sistema de archivos del sistema operativo subyacente.
+      - Sino que se asigna un archivo de gran tamaño que la base de datos administra.
+            - La Base de datos guarda las relaciones.
+            - Siguen aprovechando los bloques de este gran archivo.
+- A veces puede ser ventajoso almacenar dos relaciones diferentes en un mismo bloque.
+      - Si son tablas que se suelen reunir por ejemplo.
+
+** Almacenamiento con diccionarios de datos
+- *Metadatos* : Datos sobre los datos.
+- *Diccionario de datos* : Almacena los metadatos.
+- Algunos datos que se almacenan:
+      - Nombre de las relaciones.
+      - Nombre de los atributos de cada relación.
+      - Dominio y longitud de los atributos.
+      - Nombre de las vistas definidas y la definición de las vistas.
+      - Restricciones de integridad.
+- También se almacenan los datos de usuario:
+      - Nombre de los usuarios autorizados.
+      - Autorización y la información sobre las cuentas de los usuarios.
+      - Contraseñas o autentificaciones.
+- También almacena información estadística :
+      - Tuplas de cada relación
+      - Método de almacenamiento para cada relación
+- Información sobre el almacenamiento :
+      - SI las relaciones se almacenan en archivos del sistema operativo ENTONCES
+            - el diccionario tiene en cuenta el nombre de cada archivo.
+      - SI todas las relaciones en un archivo ENTONCES
+            - el diccionario tiene en cuenta los bloques.
+- Para cada índice se almacena :
+      - Nombre del índice.
+      - Nombre de la relación.
+      - Atributos sobre los que se define.
+      - Tipo de índice.
+
+- Los metadatos se suelen almacenar como relaciones dentro del sistema de base de datos.
+
+** Memoria intermedia de la base de datos
+- [id:FBDatos] pag 211
+- Reducir el acceso a discos es eficiente.
+- *memoria intermedia* : Buffer para el almacenamiento de copias de bloques de disco en memoria principal.
+- *Gestor de memoria intermedia* : subsistema responsable de mantener la memoria intermedia.
+
+*** Gestor de la memoria intermedia
+- Los programas de las bases de datos realizan solicitudes al *gestor de memoria intermédia*.
+- Los solicitantes reciben la dirección del bloque en memoria principal.
+- Similar a la memoria virtual.
+- Técnicas:
+      - *Estratégia de sustitución* : Cuando no queda espacio libre hay que eliminar un bloque.
+            - LRU
+      - *Bloques clavados* : Para que se puede recuperar de las caídas ...
+            - ... hay que restringir las veces que se puede escribir el bloque en disco.
+            - un *bloque clavado* no se puede escribir en disco.
+      - *Salida forzada de los bloques* : Ocasiones en las que hay que volver a escribir los bloques en disco.
+
+*** Políticas para la sustitución de la memoria intermedia
+- [id:FBDatos] pag 212
+- LRU
 
 * Notes
 ** mysql Service
