@@ -731,6 +731,7 @@ dev S
 - El más sencillo (orden 0)
   
 *** Sintaxis y semántica
+- [id:IntArt] pag 36
 - Notación :
       - $(x,y,z,\dots)$ o $(x_1,y_3,z_2,\dots)$ : variables del dominio.
       - $(p,q,r,\dots)$ : variables proposicionales de orden-0.
@@ -782,6 +783,7 @@ dev S
       - Si se cierran todas las rammas la fórmula no es satisfacible.
 
 - Algoritmo basado en árboles semánticos
+
 #+begin_src pseudocode
 Entrada: phi_1 && ... && phi_n -> phi
 Transforma entrada en la fórmula phi_1 && ... && phi_n && !phi
@@ -803,6 +805,7 @@ fsi
 #+end_src
 
 **** El método de resolución
+- [id:IntArt] pag 42.
 - método basado en el reconocimiento de pares de (formula, negación).
 - $(\phi_1 \lor \dots \lor \phi_n)$ se denomina *cláusula*.
 - *forma normal conjuntiva* : fórmula expresada como conjunción de cláusulas.
@@ -1090,7 +1093,7 @@ dev SATISFACIBLE
 
 *** Lógicas temporales basadas en intérvalos
 - [id:IntArt] pag 68
-- Cuando las propiedades en las que espamos interesados tienen una duración.
+- Cuando las propiedades en las que estamos interesados tienen una duración.
       - Ya no es tan importante el punto preciso en el tiempo.
 - Las relaciones entre intérvalos son complicadas.
 - Relaciones entre intérvalos:
@@ -1100,7 +1103,7 @@ dev SATISFACIBLE
       - overlaps
       - meets
       - before
-- HS, lógica proposicional de las relaciones Allen.
+- *HS*, lógica proposicional de las relaciones Allen.
       - Sintaxis abstracta
             - $\phi ::= p | \lnot \phi | \phi \land \psi | \langle B \rangle \phi | \langle E \rangle\phi | \langle\bar{B}\rangle\phi | \langle\bar{E}\rangle\phi$
       - Viene determinada por un modelo $M$ y un mundo que se suele denotar como un par ordenado de puntos.
