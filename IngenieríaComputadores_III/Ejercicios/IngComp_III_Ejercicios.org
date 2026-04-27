@@ -1,8 +1,0 @@
-#+title: Ingeniería Computadores III Ejercicios
-#+startup: latexpreview content
-
-* Tema 4
-** Ej 1
-#+begin_src vhdl :results output
-
-#+end_src

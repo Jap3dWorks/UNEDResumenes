@@ -11,7 +11,7 @@
 
 ** HDL más usados
 - *Verilog* HDL, 
-- *VHDL*
+- *VHDL* : Departamento de defensa de EEUU.
 - SystemC, basado en C++
 
 ** Tecnologías de circuitos integrados
@@ -19,7 +19,6 @@
 - non-ASIC particularizadas en el campo (PLD)
 
 *** Clasificación  
-
 **** Full-custom ASIC
 - Todos los elementos del circuito diseñados para una determinada aplicación.
 - Se usa en pequeños dircuitos básicos (un sumador por ejemplo).
@@ -137,7 +136,7 @@ y2 <= transport x after 100 ns;  -- retardo de transporte
 - Causas comunes
       - *Abiertos*, conexiones que han quedado abiertas.
       - *Cortos*, conexiones establecidas que no deberían estar.
-      - *Acoplos*, Valores lógicos que inadvertidamente cambian el calor lógico de otra parte del circuito.
+      - *Acoplos*, Valores lógicos que inadvertidamente cambian el valor lógico de otra parte del circuito.
 - La forma de modelar un error es suponer que un aparte del circuito siempre da el valor 1 o 0 independientemente del valor de entrada.
       - Se diseñan tests para detectar este comportamiento (tests que predicen cual sería la salida si una parte del circuito siempre da 1 o 0).]
       - Si los tests predicen un error se dice que el error esta cubierto por el vector de test.
@@ -1390,7 +1389,7 @@ signal mem_data : matriz2D;
 ** Atributos
 - pag 166
 - Propiedades de los tipos de datos.
-      - No todos lo satributos son soportados para síntesis.
+      - No todos los atributos son soportados para síntesis.
 - Se puede definir atributos propios.
 
 #+begin_src vhdl
