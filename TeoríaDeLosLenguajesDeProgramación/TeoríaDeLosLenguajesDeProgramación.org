@@ -1281,6 +1281,21 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
     };
 \end{tikzpicture}
 
+
+- *Árbol de sintaxis abstracta* : Abstracción (simplificada) de un árbol sintáctico.
+
+\begin{tikzpicture}[
+  level distance=15mm,
+  every node/.style={draw, rectangle, rounded corners, align=center},
+  level 1/.style={sibling distance=45mm},
+  level 2/.style={sibling distance=30mm},
+  level 3/.style={sibling distance=25mm}
+]
+\node {+}
+child { node {1}}
+child { node{*} child { node {2}} child {node{2}}}
+\end{tikzpicture}
+
 *** Ambigüedad, sociatividad y precedencia
 - [[id:TeLenProg]] pag 173
 - *Ambigüedad* : Dos derivaciones diferentes llevan a árboles sintácticos diferentes para una misma palabra.
@@ -2066,6 +2081,8 @@ od
       - Cuando el subprograma finaliza devuelve el control de la ejecución al programa o subprograma que lo invocó.
 
 *** Semántica
+
+- [id:TeLenProg] pag 262.
 - El significado de los identificadores viene determinado por el ambiente (o entorno).
 - *Registro de activación* : Los subprogramas pueden contener identificadores locales.
       - Memoria donde se almacenan los identificadores locales de un subprograma.
