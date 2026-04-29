@@ -508,8 +508,8 @@ g^*(n) + h(n) < C^*
 f_w(n) = (1-w)g(w) + wh(n),\ w \in [0,1]
 \end{equation*}
 - Se encuentra el mejor valor de $w$ de forma experimental.
-      - Si $h$ es admisible el algoritmo es admisible en $0 \leq w \leq 1/2$
-      - Si $h$ es admisible en algoritmo puede perder la admisibilidad en $1/2 \leq w \leq 1$
+  - Si $h$ es admisible el algoritmo es admisible en $0 \leq w \leq 1/2$
+  - Si $h$ es admisible en algoritmo puede perder la admisibilidad en $1/2 \leq w \leq 1$
 
 **** Algoritmos E-admisibles
 - $\varepsilon -admisibles$
@@ -519,8 +519,8 @@ f_w(n) = (1-w)g(w) + wh(n),\ w \in [0,1]
 
 ***** Ponderación dinámica
 - Los pesos son dinámicos, cambian a lo largo del proceso.
-      - $h$ tiene un mayor peso al inicio de la búsqueda.
-      - Al final se reduce para asegurar una búsqueda en anchura.
+  - $h$ tiene un mayor peso al inicio de la búsqueda.
+  - Al final se reduce para asegurar una búsqueda en anchura.
 
 \begin{equation*}
 f(n) = g(n) + h(n) + \varepsilon (1-d(n)/N)h(n)
@@ -540,25 +540,25 @@ FOCAL = \{n \in ABIERTA\ |\ f(n) \leq (1+\varepsilon)min( \{ f(n') : \forall n' 
 \end{equation*}
 
 - Se desarrollan primero los nodos de la sublista FOCAL.
-      - Se usa el heurístico $h'$, que da una estimación del esfuerzo computacional para llegar a una solución.
-      - Puede darse el case que $h'=h$.
+  - Se usa el heurístico $h'$, que da una estimación del esfuerzo computacional para llegar a una solución.
+  - Puede darse el case que $h'=h$.
 
 - Si $h$ es admisible, $A_\varepsilon^*$ es $\varepsilon -admisible$.        
 
 *** Diseño sistemático de heurísticos
 - pag 360
 - *Método de relajación del problema*, Versiones simplificadas del problema con menos restricciones.
-      - Se enuncia el problema con todas sus restricciones.
-      - Se suponen versiones relajadas.
-            - Se relajan subconjuntos de restricciones.
-            - Hasta conseguir una versión suficientemente simple que pueda ser resuelto con un *algoritmo polinomial*.
+  - Se enuncia el problema con todas sus restricciones.
+  - Se suponen versiones relajadas.
+    - Se relajan subconjuntos de restricciones.
+    - Hasta conseguir una versión suficientemente simple que pueda ser resuelto con un *algoritmo polinomial*.
 - Todo heurístico $h$ obtenido por *relajación del problema* es monótono.              
 
 ** Búsqueda con memoria limitada  
 - Basado en búsqueda en profundidad
 
 *** Algoritmo IDA*
-- pag 362
+- [id:IntArt] pag 362.
 - Se establece una longitud límite para la búsqueda del problema igual a $f(inicial)$.
       - $f(inicial)$ es una cota inferior de la solución óptima.
       - Cada iteración descarta los nodos $n$ que $f(n)$ supere $f(inicial)$.
@@ -778,7 +778,7 @@ dev S
 *** Métodos deductivos semánticos y coste computacional
 **** Método del árbol semántico
 - [[id:IntArt]] pag 41 y apuntes de lógica [[file:~/.emacs.d/orgroam/20241018185521-uned_logica.org][Logica y Estructuras Discretas]].
-- Se usa el *tableau*. también conocido como árbol semántico o tablero semántico.
+- Se usa el *tableau*. también conocido como *árbol semántico* o tablero semántico.
       - Es un método no determinista. Se elige de forma casual entre varias posibilidades.
       - Si se cierran todas las rammas la fórmula no es satisfacible.
 
@@ -1204,6 +1204,8 @@ dev SATISFACIBLE
       - Funciones *conormas triangulares* o *t-conormas* : que satisfacen las propiedades de $S$.
       - De la ley de identidad y monotonía se deduce.
             - $T(0,x)=0$ y $S(1,x)=1$
+- Se cumple que $T(x,y)=n(S(n(x), n(y)))$.
+      - Como las leyes de De Morgan.
 - Propuestas para pares t-norma y t-conorma.
       - *Máxima y mínimo*
             - $T_Z(x,y) = \min(x,y)\ \ S_z(x,y) = \max(x,y)$
@@ -1236,6 +1238,7 @@ dev SATISFACIBLE
 
 *** Base de Conocimiento (BC)
 - [id:IntArt] pag 85
+- Contiene las reglas.
 - Regla:
       - Condición o antecedente -> acción o consecuente.
       - Condición : lista de cláusulas a verificar.
@@ -1555,21 +1558,23 @@ FIN-SI
 - [id:IntArt] pag 136
 - Toda proposición contenida en una sentencia tiene una estructura formada por un verbo.
       - Y una o más frases nominales.
-      - Cada frase nominal se relaciona con el verbo mediante un conjunto de *casos*:
-            - Agente
-            - Contra-agente
-            - Objeto
-            - Resultado
-            - Instrumento
-            - Origen
-            - Propósito
-            - Lugar
-            - Tiempo
-            - Sujeto
-      - *modalidad* : Características del *verbo*
-            - Tiempo : presente pasado o futuro.
-            - voz : Activa o pasiva.
-- diagrama en [id:IntArt] pag 138
+      - Cada frase nominal se relaciona con el verbo mediante un conjunto de *Casos*:
+            - *Agente* : Persona que realiza el evento.
+            - *Contra-agente* : Fuerza o resistencia contra la que se ejecuta la acción.
+            - *Objeto* : Entidad que es movida o cambiada.
+            - *Resultado* : Entidad que aparece como consecuencia de la acción.
+            - *Instrumento* : Estímulo o causa física de un evento.
+            - *Origen* : Lugar del que procede el evento.
+            - *Propósito* : Motivo por el que se ejecuta la acción.
+            - *Lugar* : Sitio en el que se desarrolla la acción.
+            - *Tiempo* : Momento en el que tiene lugar la acción.
+            - *Sujeto* : Entidad que recibe el efecto de la acción.
+      - *modalidad* : Características del *Verbo*
+            - *Tiempo* : presente pasado o futuro.
+            - *voz* : Activa o pasiva.
+- *Nodos situación* : Permiten representar afirmaciones que se refieren a acciones y eventos.
+      - Cada nodo situación tiene como atributos un conjunto de *casos* y de atributos *modalidad*
+      - diagrama en [id:IntArt] pag 138
 
 *** Representación de conocimiento disjunto
 - Se usa la etiqueta *disjunto* [id:IntArt] pag 138 F4.5.
@@ -1644,7 +1649,7 @@ FIN-SI
       - *No disjunto*
       - *Ad-hoc* o "a medida"
 - *Relaciones estándar* : independientes del dominio (subclase-de o instancia).
-      - Permiten construir jerarquías de conocimientos estáticosdel dominio que se quiere modelar.
+      - Permiten construir jerarquías de conocimientos estáticos del dominio que se quiere modelar.
 - *Relaciones no estándar* : Representan dependencias entre conceptos (fraternal, disjunto y no-disjunto).
       - *fraternal* : Marcos origen y destino son marcos clase, unidos mediante subclase-de a un mismo nodo padre.
       - *disjunto* :
