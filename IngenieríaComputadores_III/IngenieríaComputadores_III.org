@@ -609,7 +609,7 @@ begin
 end generate etiqueta;
 #+end_src
 
-*** Bloque process
+** Bloque process
 #+begin_src vhdl
 -- la etiqueta es opcional pero recomendable
 etiqueta : process(lista_de_sensibilidad)          -- Se ejecuta cada vez que cambia el valor
@@ -689,7 +689,7 @@ begin
     if reset_n = '0' then
       q <= '0';
       q_n <= '1';
-    elsif rising_edge(clk) then   -- flanco de subida?
+    elsif rising_edge(clk) then   -- flanco de subida
       q <= d;
       q_n <= not d;
     end if
@@ -1677,6 +1677,7 @@ end architecture conv_int1;
       5. Si cambia una *configuration* es preciso recompilar dicha configuration.
 
 ** Drivers
+- [id:DACircDig] pag 208
 - Empleado por el simulador VHDL a fin de realizar la simulación.
 - Se crean automáticamente en la fase de *elaboración*.
 - Cada señal tiene uno o varios drivers asociados.
@@ -1684,7 +1685,7 @@ end architecture conv_int1;
       - Si solo tiene un driver entonces el valor de la señal y del driver coinciden en todo momento.
 - Reglas de asociación:
       - Un driver para la señal por cada asignación concurrente.
-      - Si dentro de un bloque process se asigna un valor a la señal, entonces se asocia un driver al bloque process.
+      - Si dentro de un bloque process se asigna un valor a la señal, entonces se asocia un driver a la señal en todo el bloque process.
             - Si hay varias asignaciones a la señal se sigue asociando un único driver.
             - Un driver por cada bloque process diferente.
 - El *driver* contiene una cola donde almacena las transacciones futuras.
