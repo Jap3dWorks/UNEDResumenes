@@ -1,3 +1,5 @@
+# -*- eval: (read-only-mode 1); -*-
+
 #+title: Teoría de los lenguajes de Programación
 #+author: Jordi Amposta Pérez
 #+LATEX_HEADER: \usepackage{tikz}
@@ -149,9 +151,11 @@ Busca el valor de X que hace cierta la siguiente pregunta.
 - *La uniformidad*, Consistencia entre la apariencia y el comportamiento de los constructores.
 
 *** Principios Adicionales
+- [id:TeLenProg] pag 24
+  
 **** Simplicidad
 - Que cada concepto del lenguaje se presente de forma única y legible.
-- Estructuras con reglas de combinación sencillas.
+- Semánticamente Estructuras con reglas de combinación sencillas.
 
 **** Expresividad
 - Facilidad con la que un lenguaje de programación permite expresas procesos y estructuras complejas.
@@ -1307,6 +1311,7 @@ child { node{*} child { node {2}} child {node{2}}}
       - Además de las reglas se puede ajustar la gramática para eliminar las ambigüedades.
 
 *** Diagramas sintácticos
+- [id:TeLenProg] pag 175
 - *EBNF* es una ampliación de la [[id:ec41e456-bcc4-497e-b93c-8cb549c25a31][Notación BNF]].
       - Se añaden más metasímbolos.
       - No añade expresividad.
@@ -2095,7 +2100,7 @@ od
 - Idealmente los pasos por valor no se modifican dentro del subprograma.
 
 **** Paso por referencia
-- Requirere que los parámetros sean variables con un adirección dentro de la memoria.
+- Requirere que los parámetros sean variables con una dirección dentro de la memoria.
 - Las modificaciones sobre el parámetro se propagan.
 - Puede provocar efectos colaterales.
 
@@ -2104,7 +2109,7 @@ od
 - Requiere que los parámetros sean variables.
 - El valor del parámetro es copiado en el parámetro, puede ser modificado en el cuerpo, y al acabar vuelve a ser copiado de vuelta en la dirección original de la variable.
 - Muy útil en entornos distribuidos.
-      - Multiprocesador también.
+      - Multiprocesador también (concurrentes).
 
 **** Paso por nombre
 - [id:TeLenProg] pag 268
@@ -2128,11 +2133,11 @@ od
       - Cada registro de activación tiene los datos estáticos de la llamada.
             - *Enlace de control* : También la dirección del registro llamante.
             - La dirección de cada subprograma está en la tabla de símbolos en tiempo de compilación.
-      - *Puntero de ambiente* : Almacena donde comienza el registro de ejecución del ambiente actual.
+      - *Puntero de ambiente, EP (environment pointer)* : Almacena donde comienza el registro de ejecución del ambiente actual.
 
 **** Ambientes basados en pilas II : lenguajes con recursión y anidamiento
 - Lenguajes que además permiten definir subprogramas anidados.
-- *Enlace de acceso* : Un subprograma debe almacenar informaciónde cuál es su ambiente de definición.
+- *Enlace de acceso* : Un subprograma debe almacenar información de cuál es su ambiente de definición.
       - Para resolver el valor de variables no locales.
 - *Encadenamiento de accesos* : Proceso de resolver el valor de una variable no local dentro del anidamiento de funciones.
       - *Profundidad de anidamiento* : número de accesos que se debe seguir hasta encontrar el valor de una variable.
@@ -2171,3 +2176,9 @@ ghci       # Open the haskell interpreter
 ** Webs de interés
 http://aprendehaskell.es/main.html
 https://learnyouahaskell.github.io/introduction.html
+
+
+* File settings
+
+# Local Variables:
+# End:
