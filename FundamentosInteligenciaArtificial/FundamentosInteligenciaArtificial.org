@@ -609,6 +609,7 @@ dev "No encontrado", NuevaLongitudLimite
 - Cuando necesita expandir un nodo y no tiene espacio en TABLA_A, elimina un nodo de esta tabla y de ABIERTA.
       - Son llamados *nodos olvidados*, y son los menos prometedores (mayor valor de $f$ en ABIERTA).
 - El algoritmo recuerda en cada nodo el mejor $f$ de los hijos de ese nodo que han sido olvidados.
+      - Solo recuerda el hijo más prometedor.
       - Para no volver a explorar subárboles que han sido eliminados.
 - SMA* mantiene en los nodos ancestros información acerca de la calidad del mejor camino en cada subárbol descartado.
 - Cuando se descartan todos los sucesores de un nodo $n$, el algoritmo recuerda la estimación del mejor camino a través de $n$.
