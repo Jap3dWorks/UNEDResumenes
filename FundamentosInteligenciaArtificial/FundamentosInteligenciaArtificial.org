@@ -340,6 +340,7 @@ ffun
 #+end_src
 
 **** Búsqueda bidireccional
+- [id:IntArt] pag 325
 - Buscar simultáneamente en dos direcciones.
       - De inicio a los objetivos.
       - De los objetivos a inicio.
@@ -565,7 +566,7 @@ FOCAL = \{n \in ABIERTA\ |\ f(n) \leq (1+\varepsilon)min( \{ f(n') : \forall n' 
       - $f(inicial)$ es una cota inferior de la solución óptima.
       - Cada iteración descarta los nodos $n$ que $f(n)$ supere $f(inicial)$.
 - Si en una iteración no se encuentra solución se realiza una nueva iteración.
-      - Con una nueva longitud límite $f(inicio)$
+      - Con una nueva longitud límite $f(n)$
             - El valor de $f(n)$ menor de los nodos descartados en la iteración anterior.
 
 #+begin_src pseudocode
@@ -769,7 +770,7 @@ dev S
       - $M \models \lnot \psi$ si y solo si no es verdad que $M \models \psi$.
       - $M \models \psi \land \varphi$ si y sólo si $M \models \psi$ y $M \models \varphi$.
 - $\phi$ y $\psi$ son equivalentes si tienen la misma tabla de verdad.
-- *Tautología* : o fórmula válida, es una fórmula que intemendientemente del modelo siempre es verdadera.
+- *Tautología* : o *fórmula válida*, es una fórmula que indemendientemente del modelo siempre es verdadera.
 - *contradicción* : siempre falso.
 - La negación de una *tautología* es una *contradicción*.
 - *Razonamiento* : Conjunto de fórmulas $\Gamma = \{\phi_1, \dots, \phi_n\}$ del cual se puede sacar una *conclusión* $\phi$.
@@ -1125,7 +1126,7 @@ dev SATISFACIBLE
 - predicados precisos: impar o par
 - predicados vagos: alto o bajo
       - Protagonizan el lenguaje natural y constituyen un elemento fundamenta de la capacidad de abstracción.
-- Teoría de conjuntos borrosos,herramientas formales para el análisis de predicados vagos.
+- Teoría de conjuntos borrosos, herramientas formales para el análisis de predicados vagos.
       - Ciencia del razonamiento aproximado.
 
 ** Conjuntos borrosos
@@ -1144,7 +1145,7 @@ dev SATISFACIBLE
 
 - Algunos elementos son ciertos en un determinado grado $0 < \mu_V(u) < 1$.
 - La función de pertenencia $\mu_V$ proporciona una ordenación del conjunto de individuos.
-      - Nos permite decir si $u$ es más o menos alto qe $w$.
+      - Nos permite decir si $u$ es más o menos alto que $w$.
 - La elección de la función de pertenencia es una cuestión de diseño.
 - Conjuntos asociados a $\mu_V$
       - *Soporte* : $\{u \in U : \mu_V(u) > 0\}$
@@ -1191,11 +1192,11 @@ dev SATISFACIBLE
       - $n:[0,1] \to [0,1]$ tal que $\mu_{\bar{A}}(u) = n(\mu_A(u))$
             - Debe satisfacer $n(1)=0$ y $n(0)=1$.
             - Debe satisfacer $\forall x,y \in [0,1],\ x \leq y \Rightarrow n(x) \geq n(y)$
-            - Se denomina función /negación/.
             - $n(x) = 1-x$ es común y además verifica que $n(n(x))=x$
+                  - Se denomina función /negación/.
       - $T:[0,1]^2 \to [0,1]$ tal que $\mu_{A \cap_T B}(u) = T(\mu_a(u), \mu_b(u))$
       - $S:[0,1]^2 \to [0,1]$ tal que $\mu_{A \cup_S B}(u) = S(\mu_A(u), \mu_b(u))$
-      - Propiedades de $T$ y $S$.
+      - Propiedades que podemos pedir para $T$ y $S$.
             1. Ley de identidad: $\forall x \in [0,1]$
                    - $T(x,1) = x\ \ (A \cap U = A)$
                    - $S(x,0) = x\ \ (A \cup \emptyset = A)$
@@ -1222,6 +1223,14 @@ dev SATISFACIBLE
       - *t-norma y t-conorma de Lukasiewicz*
             - $T_L(x,y) = \max(x+y-1,0)\ \ S_L(x,y)=\min(x+y,i)$
       - Se pueden escoger según sus propiedades.
+- Definición de conjunto Borroso:
+      - Tupla $([0,1]^U,T,S,n)$.
+            - $[0,1]^U = \{\mu | \mu : U \to [0,1]\}$ conjunto de funciones.
+            - $T$ es una t-norma
+            - $S$ es un t-conorma
+            - $n$ es una negación fuerte.
+      - La estructura algebráica originada es una álgebra de Boole en el subconjunto $\{0,1\}^U$
+      - Existen múltiples teorías, según las propiedades deseables..
 
 * Sistemas basados en Reglas (SBR)
 - [id:IntArt] pag 83
@@ -1264,7 +1273,7 @@ dev SATISFACIBLE
 - Examina el BH y decide qué reglas se disparan.
 - Algoritmo independiente del BC.
 - Motor de inferencias genérico
-      - *Búsqueda informada* : Sin ningún conocimiento
+      - *Búsqueda desinformada* : Sin ningún conocimiento
             - coste computacional más bajo.
             - Pero mayor coste de aplicación de reglas (peor filtro).
       - *Búsqueda informada* : Con algún conocimiento acerca del problema
@@ -1282,7 +1291,7 @@ FIN-MIENTRAS
 
 ** Inferencia
 - [id:IntArt] pag 88
-- Red de inferencia : red de notos.
+- Red de inferencia : red de nodos.
       - antecedente -> (nodo) -> consecuente
       - Se encadenan varios nodos : antecedente -> (nodo) -> consec/ante -> (nodo) -> consecuente2.
       - *Punto de partida* : Antecedente que no es consecuente de otras reglas.
@@ -1327,8 +1336,8 @@ FIN-SI
 
 *** Encadenamiento hacia atrás
 - [id:IntArt] pag 97
-- Se trata de determinar si el objetivo se verifica o no.
-- Teniendo en cuenta el contenido del BH.
+- Se especifica una meta objetivo, se trata de determinar si ese objetivo se verifica o no.
+- Se tiene en cuenta el contenido del BH.
 - Tranta de encontrar reglas cuyo consecuente contenga el objetivo a verificar.
 
 #+begin_src pseudocode
@@ -1482,7 +1491,7 @@ FIN-SI
 ** Ventajas e inconvenientes
 - [id:IntArt] pag 116
 - Las reglas del BC deben ser independientes entre sí.
-- SBR con un BC muy grande incluir nuevas reglas puede provocar efector colaterales.
+- SBR con un BC muy grande incluir nuevas reglas puede provocar efectos colaterales.
 - Representación declarativa del concocimiento.
 - Un SBR puede seguir el rastro facilmente del conjunto de reglas que aplicó.
       - Proporciona poder de autoexplicación.
@@ -1683,6 +1692,7 @@ FIN-SI
       - Un marco instancia puede rellenar o no todas las propiedades de instancia definidas en el marco clase.
 
 **** Representación de facetas de propiedades        
+- [id:IntArt] pag 151
 - *facetas* : Permiten modelar características de las propiedades y relaciones en los marcos clase.
       - Declarativamente se especifica un puntero o un tipo de datos.
       - Procedimentalmente se define utilizando un procedimiento o una regla.
@@ -1693,7 +1703,9 @@ FIN-SI
             - Cardinalidad mínima
             - Cardinalidad máxima
             - Multivaluada
-      - Facetas que definen propiedades de clase y relaciones.
+      - Facetas que afectan a propiedades de clase y a relaciones.
+            - Propiedad general: almacena los valores que toma una propiedad de clase o una relación.
+                  - Las propiedades de clase definidas como marcos y las relaciones rellenan esta faceta con un puntero a un marco de clase.
       - Facetas que definen propiedades de instancia.
             - valores permitidos
             - Valores por omisión

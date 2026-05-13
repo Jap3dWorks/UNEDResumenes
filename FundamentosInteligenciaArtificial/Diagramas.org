@@ -25,7 +25,7 @@
 #+RESULTS:
 [[file:./images/paradigmas.png]]
 
-#+begin_src plantuml :file ./images/paradigmasimbolico.png
+#+begin_src plantuml :file ./images/paradigma_simbolico.png
 @startmindmap
 + simbólico
 ++ Representación de conocimiento
@@ -40,7 +40,7 @@
 #+end_src
 
 #+RESULTS:
-[[file:./images/paradigmasimbolico.png]]
+[[file:./images/paradigma_simbolico.png]]
 
 * Algoritmos
 
