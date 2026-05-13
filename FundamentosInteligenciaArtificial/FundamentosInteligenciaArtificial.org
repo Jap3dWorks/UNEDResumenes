@@ -1,3 +1,5 @@
+# -*- eval: (read-only-mode t); -*-
+
 #+title: Fundamentos de inteligencia artificial
 #+startup: latexpreview
 #+author: Jordi Amposta Perez
@@ -121,8 +123,6 @@
       - Descomponer en subtareas e inferencias primitivas.
       - Operacionalización efectiva del esquema inferencial, con módulos simbólicos y neuronales.
 
-* Lógica y representación del conocimiento
-# Creo que son lecturas opcionales
 
 * Introducción a las técnicas de búsqueda
 - Tema 8 pag 310
@@ -230,9 +230,11 @@ dev "No encontrado"
 #+end_src        
 
 **** Coste uniforme
-- pag 320
+- [id:IntArt] pag 320
 - En vez de usar una pila o una cola pueden insertarse los nodos en una estructura ordenada.
       - Se ordenan por coste el desde el nodo inicial.
+- Es similar a la búsqueda en anchura.
+      - Si el coste de todas las reglas es el mismo las estratégias son equivalentes.
 - Es un *algoritmo admisible*.
 
 ****   Búsquedas en profundidad y en anchura iterativas
@@ -684,6 +686,8 @@ dev S
 - *Multiarranque* Contra los estancamientos se puede reiniciar el algoritmo desde otro punto inicial.
 
 *** Temple Simulado
+- [id:IntArt] pag 372
+- Método de búsqueda local.
 - Se admite con una cierta probabilidad que $S_1$ sea peor a $S$.
 - Se realiza una selección aleatoria entre los vecinos.
       - Si el vecino mejora la solución se acepta.
@@ -726,6 +730,9 @@ dev S
 
 * Lógica y representación del conocimiento
 - [[id:IntArt]] pag 33, capítulo 2
+
+- *autoepistémica, lógica* : Extensión de la lógica clásica basada en la hipótesis del mundo cerrado.
+- *hipótesis del mundo cerrado* : Hipótesis asumida en la lógica Autoepistémica o la Circunscripción de predicados, consistente en suponer como falso todo aquello que no esté explícitamente afirmado.
 
 ** Lógica proposicional (LP)
 - El más sencillo (orden 0)
@@ -1002,7 +1009,7 @@ fsi
       - $\phi ::= p | \lnot \phi | \phi \land \psi | \lozenge \psi$
       - $\Diamond$ : cuantificador existencial $\exists$ que permite desplazarse entre los mundos.
             - $\Diamond \phi$ se lee como $\phi$ es posible.
-      - $\square$ expresa que una propiedad es cierta en todos los mundos alcanzables.
+      - $\square$ expresa que una propiedad es cierta en todos los mundos *alcanzables*.
             - $\square = \lnot \Diamond \lnot$
             - $\square \phi$ se lee como $\phi$ es necesaria.
 - un modelo de lenguaje modal es una terna $M=(W,R,V)$
@@ -1018,6 +1025,7 @@ fsi
             - $M,w_i \Vdash \phi$
       - $\phi$ válida en un modelo $M$ : $M$ se satisface en todos los mundos $w_i$.
       - $\phi$ válida : si y solo si es válida en todos los modelos modales posibles.
+- Lógica modal K : lógica sin restricciones en $R$.
 
 *** Métodos deductivos y coste computacional de la Lógica Modal
 **** Árboles semánticos para K
@@ -1110,7 +1118,7 @@ dev SATISFACIBLE
             - $M,[d_0,d_1] \Vdash \langle B \rangle \phi$ si $M,[d_0, d_2] \Vdash \phi$ para algún $d_2$ tal que $d_0 \leq d_2 <d_1$;
             - $M,[d_0,d_1] \Vdash \langle E \rangle \phi$ si $M,[d_2, d_1] \Vdash \phi$ para algún $d_2$ tal que $d_0 < d_2 \leq d_1$;
             - $M,[d_0,d_1] \Vdash \langle \bar{B} \rangle \phi$ si $M,[d_0, d_2] \Vdash \phi$ para algún $d_2$ tal que $d_1 < d_2$;
-            - $M,[d_0,d_1] \Vdash \langle B \rangle \phi$ si $M,[d_2, d_1] \Vdash \phi$ para algún $d_2$ tal que $d_2 < d_0$;
+            - $M,[d_0,d_1] \Vdash \langle \bar{E} \rangle \phi$ si $M,[d_2, d_1] \Vdash \phi$ para algún $d_2$ tal que $d_2 < d_0$;
 
 * Conjuntos Borrosos
 - [id:IntArt] pag 264
@@ -1589,8 +1597,8 @@ FIN-SI
 *** Equiparación
 - Una consulta, apunte o fragmento de red se quipara con una red, si el apunte se puede asociar con un fragmento de la red semántica.
 - Pasos del proceso de equiparación:
-      1. Se construye un apunte que responda a la pregunta
-             - Apunto formado por un conjunto de :
+      1. Se construye un apunte que represente la consulta.
+             - Apunte formado por un conjunto de :
                    - Nodos constantes : Nodos conocidos en la pregunta.
                    - Nodos variables : Los valores que se requieren.
                    - Arcos etiquetados : Unen nodos constantes y variables.
@@ -1790,3 +1798,4 @@ FIN-SI
 :ID: IntArt
 :EDITORIAL: Mc Graw Hill
 :END:
+

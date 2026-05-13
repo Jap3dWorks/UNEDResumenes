@@ -1,0 +1,101 @@
+# -*- eval: (unless (f-exists? "images") (mkdir "images")); -*-
+
+#+title: FIA Diagrams
+
+
+
+* Paradigmas
+
+#+begin_src plantuml :file ./images/paradigmas.png
+@startmindmap
++ Paradigmas 
+++ simbólico
++++[#lightblue] Representación de conocimiento
++++[#lightblue] Inferencia/Razonamiento
++++[#lightblue] Resolución de problemas
+++ situado
++++[#lightblue] retroalimenta con el medio
+++++[#lightblue] Robótica
+++ conexionista
++++[#lightblue] aprendizaje
+++ Híbrido
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/paradigmas.png]]
+
+#+begin_src plantuml :file ./images/paradigmasimbolico.png
+@startmindmap
++ simbólico
+++ Representación de conocimiento
++++[#lightblue] Lógicas
++++[#lightblue] Conjuntos borrosos
++++[#lightblue] Redes semánticas y marcos
+++ Inferencia/Razonamiento
++++[#lightblue] Basado en reglas
+++ Resolución de problemas
++++[#lightblue] Algoritmos de búsqueda
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/paradigmasimbolico.png]]
+
+* Algoritmos
+
+** Algoritmos de búsqueda local
+
+#+begin_src plantuml :file ./images/algrt_busqud_local.png
+@startmindmap
+top to bottom direction
+-[#lightgreen] importancia en el resultado no en el camino
++ Alg búsqueda local
+++ Algoritmo de escalada o máximo gradiente
+++ Algoritmo de temple simulado
++++[#lightblue] Elección aleatoria de un vecino
+++++[#lightblue] Si la solución es peor se acepta de forma aleatoria con probabilidad T
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/algrt_busqud_local.png]]
+
+
+* Lógicas
+
+#+begin_src plantuml :file ./images/lógicas.png
+skinparam roundcorner 15
+rectangle Lógicas as lgic
+rectangle "Lógica primer orden (LPO)" as lpo
+rectangle "Lógica Proposicional (LP)" as lp
+rectangle "Clásicas" as clsc  #aliceblue;line.dotted
+rectangle "Lógicas modales (LM)" as lm
+rectangle "Lógicas temporales" as ltm
+rectangle "Basadas en puntos" as bpnt
+rectangle "Basadas en intérvalos" as intrv
+rectangle "LTL[F,P]" as ltlfp
+rectangle "LTL" as ltl
+rectangle "CTL*" as ctld
+rectangle "CTL" as ctl
+rectangle "LP de las relaciones Allen (HS)" as allen
+
+clsc -[#blue,dotted]- lpo
+clsc -[#blue,dotted]- lp
+
+lgic -- lpo
+lgic -- lp
+lgic -- lm
+lm -- ltm
+ltm -- bpnt
+bpnt -- ltlfp
+bpnt -- ltl
+bpnt -- ctld
+bpnt -- ctl
+
+ltm -- intrv
+intrv -- allen
+#+end_src
+
+#+RESULTS:
+[[file:./images/lógicas.png]]
