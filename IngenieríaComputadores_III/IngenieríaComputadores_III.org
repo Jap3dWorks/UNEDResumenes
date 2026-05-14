@@ -1,3 +1,5 @@
+# -*- eval: (read-only-mode t) -*-
+
 #+title: Ingeniería Computadores III
 #+startup: latexpreview content
 
