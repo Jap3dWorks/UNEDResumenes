@@ -1,0 +1,16 @@
+#+title: Teoría Lenguajes Programación Diagramas
+
+* Características de diseño
+
+#+begin_src plantuml :file ./images/caract_diseno.png :mkdirp yes
+@startmindmap
+
++ Características Lenguajes
+++ La Eficiencia
++++ Eficiencia de traducción
+
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/caract_diseno.png]]
