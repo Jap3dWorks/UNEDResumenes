@@ -4,11 +4,36 @@
 
 #+begin_src plantuml :file ./images/caract_diseno.png :mkdirp yes
 @startmindmap
-
 + Características Lenguajes
-++ La Eficiencia
-+++ Eficiencia de traducción
-
+++[#lightblue] La Eficiencia
++++[#lightgreen] Eficiencia de traducción
++++[#lightgreen] Eficiencia de programación
++++[#lightgreen] Eficiencia de implementación
+++[#lightblue] La Regularidad
++++[#lightgreen] Generalidad
+,****[#lightyellow]:Disponibilidad y uso de los constructores
+no está sujeto a caso especiales;
++++[#lightgreen] Ortogonalidad
++++[#lightgreen] Uniformidad
+,****[#lightyellow]:Similar se ve similar,
+diferente se ve diferente;
+++[#lightblue] Simplicidad
+++[#lightblue] Expresividad
+***[#lightyellow]:Facilidad para expresar comportamientos
+y estructuras complejas;
+++[#lightblue] Extensibilidad
+++[#lightblue] Capacidad de restricción
+++[#lightblue] Consitencia entre la notación y las convenciones
+++[#lightblue] Precisión
+++[#lightblue] Portabilidad
+++[#lightblue] Seguridad
+++[#lightblue] Interoperabilidad
++++[#lightgreen] Interoperabilidad semántica
+****[#lightyellow] Paso de mensajes e interpretación.
++++[#lightgreen] Interoperabilidad sintáctica
+****[#lightyellow] xml
++++[#lightgreen] Interoperabilidad estructural
+****[#lightyellow] Comunicación en ambientes heterogéneos
 @endmindmap
 #+end_src
 
