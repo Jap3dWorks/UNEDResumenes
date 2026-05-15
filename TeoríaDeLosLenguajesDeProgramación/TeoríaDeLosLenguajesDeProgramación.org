@@ -1389,6 +1389,10 @@ x=2;  // También es un vínculo,
       - El *estado del computo* asigna localizaciones de almacenamiento a valores.
 - En un *intérprete* se procesan tanto los atributos estáticos como los dinámicos.
       - Se combina la *tabla de símbolos* y el *ambiente*.
+- *Funciones semánticas* en un compilador:
+      - Tabla de símbolos : almacena la asignación de identificadores a atributos estáticos.
+      - El ambiente : asigna identificadores a localizaciones de memoria.
+      - El estado de cómputo : asigna localizaciones de almacenamiento a valores.
 
 *** Declaraciones, bloques y alcance
 - Las *declaraciones* pueden establecer vínculos de forma implícita o explícita.
