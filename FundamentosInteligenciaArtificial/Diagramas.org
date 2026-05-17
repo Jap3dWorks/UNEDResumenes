@@ -2,8 +2,6 @@
 
 #+title: FIA Diagrams
 
-
-
 * Paradigmas
 
 #+begin_src plantuml :file ./images/paradigmas.png
@@ -42,7 +40,40 @@
 #+RESULTS:
 [[file:./images/paradigma_simbolico.png]]
 
-* Algoritmos
+* Técnicas de búsqueda
+
+** Componentes de un sistema de búsqueda
+
+#+begin_src plantuml :file ./images/componentes_sbúsqueda.png :noweb yes
+@startmindmap
+<<MindmapStyle>>
++ Sistema Búsqueda
+++_ Espacio de búsqueda
++++ Estados
++++ Operadores
+++++_ Permiten cambiar de estado
+++ Estrategias de control
++++[#lightblue] Búsqueda a ciegas
++++[#lightblue] Búsqueda inteligente
+++++_ Heurística
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/componentes_sbúsqueda.png]]
+
+** Los Sistemas de Búsqueda pueden ser
+
+#+begin_src plantuml :file ./images/tipos_algoritmo_búsqueda.png
+@startmindmap
++ Algoritmo búsqueda
+++ Completo : Siempre encuentra solución (si existe).
+++ Admisible o exacto : Siempre encuentra la solución óptima.
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/tipos_algoritmo_búsqueda.png]]
 
 ** Algoritmos de búsqueda local
 
@@ -60,7 +91,6 @@ top to bottom direction
 
 #+RESULTS:
 [[file:./images/algrt_busqud_local.png]]
-
 
 * Lógicas
 
@@ -99,3 +129,38 @@ intrv -- allen
 
 #+RESULTS:
 [[file:./images/lógicas.png]]
+
+
+
+* Marcos y Redes semánticas
+** Modelo computable
+#+begin_src plantuml :file ./images/modelo_computable.png :noweb yes
+@startmindmap
+<<MindmapStyle>>
+
++ Modelo computable
+++ Base de conocimientos
+++ Motor de inferencias
+++ Estrategias de control
+
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/modelo_computable.png]]
+
+* Tools
+
+#+NAME: MindmapStyle
+#+begin_src text
+<style>
+mindmapDiagram {
+RootNode {
+   BackgroundColor yellow
+}
+  boxless {
+    FontColor darkgreen
+  }
+}
+</style>
+#+end_src

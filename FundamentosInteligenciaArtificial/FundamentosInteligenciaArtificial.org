@@ -151,7 +151,7 @@
             - Implica la elección de el modelo de representación.
       - *Reglas u operadores*, modelan las acciones elementales que es capaz de realizar el agente.
             - La interpretación del coste de cada operador debe hacerse a partir de la función objetivo.
-      - *La estratégia de control*, Decide el orden en que se van explorando los estados.
+      - *La estrategia de control*, Decide el orden en que se van explorando los estados.
             - La *búsqueda a ciegas* implica visitar más estados.
             - *La búsqueda inteligente* debe implicar visitar menos estados.
 - *Estados* y *operadores* definen en *espacio de búsqueda*.
@@ -1730,6 +1730,8 @@ FIN-SI
 - No se pueden usar propiedades no definidas en marcos clase.
 
 ** Inferencia de conocimiento en SBM
+[id:IntArt] pag 157
+
 *** Equiparación
 1. Selección de marcos candidatos :
        - Si el tipo de la nueva entidad es conocido se puede seleccionar el marco clase del tipo.
@@ -1751,16 +1753,17 @@ FIN-SI
       - Dificultad en determinar el orden de las clases a explorar.
       - Existen conflictos si los padres tienen propiedades con los mismos nombres.
       - Algoritmos que recorren el grafo de herencia.
-            - Profundidad:
-                  - Un procedimiento de ordenación topológica cumple:
+            - *Profundidad*:
+                  - Un *procedimiento de ordenación topológica* cumple:
                         - Criterios de orden como de izquierda a derecha.
                         - Evitar búsqueda reiterada.
-                        - Criterio de espificidad, En una propiedad unas clases tienen preferencia sobre otras.
-            - Anchura:
+                        - Criterio de espificidad, Antes de buscar en una clase hay que haber explorado las subclases de esta (que estén en el recorrido).
+            - *Anchura*:
                   - Longitud del camino
                         - Recorre el grafo por niveles.
-            - Distancia Inferencial:
-                  - Condición necesaria y suficiente para que la clase1 esté más cercana a la clas2 que a la clase3.
+            - *Distancia Inferencial*:
+                  - Condición necesaria y suficiente para que la clase1 esté más cercana a la clase2 que a la clase3.
+                        - que clase1 tenga un camino de inferencia a través de clase2 hacia clase3.
 
 *** Valores activos
 - [id:IntArt] pag 161
