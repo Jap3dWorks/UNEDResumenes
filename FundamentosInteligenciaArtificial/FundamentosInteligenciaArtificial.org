@@ -503,10 +503,10 @@ g^*(n) + h(n) < C^*
 
 *** Relajación de las condiciones de optimalidad
 - pag 357
-- Se plantea que $A^*$ sea más aficiente aunque pierda admisibilidad.
+- Se plantea que $A^*$ sea más eficiente aunque pierda admisibilidad.
 
 **** Ajuste de los pesos de g y h
-- Ponderación estática.
+- *Ponderación estática*.
 \begin{equation*}
 f_w(n) = (1-w)g(w) + wh(n),\ w \in [0,1]
 \end{equation*}
@@ -519,6 +519,7 @@ f_w(n) = (1-w)g(w) + wh(n),\ w \in [0,1]
 - Sacrifica la obtención de una solución óptima frente a mejoras del rendimiento.
 - $\varepsilon$ controla el deterioro de la solución obtenida.
 - Un algoritmo es $\varepsilon - admisible$ si siempre encuentra una solución con un coste menor de $(1 + \varepsilon)C^*$.
+      - $C_{\varepsilon} \leq (1 + \varepsilon)C^*$
 
 ***** Ponderación dinámica
 - Los pesos son dinámicos, cambian a lo largo del proceso.
@@ -531,25 +532,29 @@ f(n) = g(n) + h(n) + \varepsilon (1-d(n)/N)h(n)
 
 - $d(n)$ es la profundidad del nodo $n$.
 - $N$ es una cota superior de la profuncidad de la mejor solución.
+      - Predicción donde se cree que seguramente está la solución.
 - $\varepsilon>0$ indica la desviación que estamos dispuestos a admitir.
 - Su $h$ es admisible el algoritmo de ponderación dinámica es $\varepsilon -admisible$.
 
 ***** Algoritmo AE*
 - Algoritmo $A\varepsilon^*$
-- Dentro de ABIERTA se considera una sublista llamada FOCAL formada por nodos cuyo valor de $f$ no se separa más de un factor $(1+\varepsilon)$ del valor mínimo de $f$ en ABIERTA
+- Dentro de ABIERTA se considera una sublista llamada FOCAL formada por nodos cuyo valor de $f$ no se separa más de un factor $(1+\varepsilon)$ del valor mínimo de $f$ en ABIERTA (el nodo más prometedor).
 
 \begin{equation*}
 FOCAL = \{n \in ABIERTA\ |\ f(n) \leq (1+\varepsilon)min( \{ f(n') : \forall n' \in ABIERTA \}) \}
 \end{equation*}
 
 - Se desarrollan primero los nodos de la sublista FOCAL.
-  - Se usa el heurístico $h'$, que da una estimación del esfuerzo computacional para llegar a una solución.
-  - Puede darse el case que $h'=h$.
+      - Los nodos de FOCAL tienen la misma probabilidad de ser expandidos.
+      - Se usa un segundo heurístico $h'$, que da una estimación del esfuerzo computacional para llegar a una solución.
+            - $h'$ Representa un conocimiendo adicional no representable en $f$.
+            - $h'$ no puede contribuir de forma negativa a la $\varepsilon$ -admisibilidad.
+      - Puede darse el case que $h'=h$.
 
 - Si $h$ es admisible, $A_\varepsilon^*$ es $\varepsilon -admisible$.        
 
 *** Diseño sistemático de heurísticos
-- pag 360
+- [id:IntArt] pag 360
 - *Método de relajación del problema*, Versiones simplificadas del problema con menos restricciones.
   - Se enuncia el problema con todas sus restricciones.
   - Se suponen versiones relajadas.
