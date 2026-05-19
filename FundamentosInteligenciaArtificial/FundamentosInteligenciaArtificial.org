@@ -1514,9 +1514,9 @@ FIN-SI
 
 ** Introducción
 - Representación del conocimiento:
-      - Modelo conceptual : Representación del conocimiento de un dominio. Estructuras no computables modelizan el problema y la solución de un dominio concreto.
-      - Modelo formal : Representación semicomputable.
-      - Modelo computable : modelo formal totalmente operativo. formado por:
+      - *Modelo conceptual* : Representación del conocimiento de un dominio. Estructuras no computables modelizan el problema y la solución de un dominio concreto.
+      - *Modelo formal* : Representación semicomputable.
+      - *Modelo computable* : modelo formal totalmente operativo. formado por:
             - Base de conocimientos.
             - Motor de inferencias.
             - Estrategias de control.
@@ -1604,7 +1604,7 @@ FIN-SI
 - También existen unos arcos especiales para representar este tipo de conocimiento (Hendrix).
   Las etiquetas que usan estos arcos son:
       - S : Subconjunto
-      - SD : Subconjunto
+      - SD : Subconjunto disjunto
       - E : Elemento
       - ED : Elemento disjunto
 
