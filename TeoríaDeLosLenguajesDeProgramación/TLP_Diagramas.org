@@ -1,6 +1,8 @@
+# -*- eval: (unless (f-exists? "images") (mkdir "images")); -*-
 #+title: Teoría Lenguajes Programación Diagramas
 
-* Características de diseño
+* Paradigmas de computación
+** Características de diseño
 
 #+begin_src plantuml :file ./images/caract_diseno.png :mkdirp yes
 @startmindmap
@@ -19,7 +21,7 @@ no está sujeto a caso especiales;
 diferente se ve diferente;
 ++[#lightblue] Simplicidad
 ++[#lightblue] Expresividad
-***[#lightyellow]:Facilidad para expresar comportamientos
+,***[#lightyellow]:Facilidad para expresar comportamientos
 y estructuras complejas;
 ++[#lightblue] Extensibilidad
 ++[#lightblue] Capacidad de restricción
@@ -29,13 +31,42 @@ y estructuras complejas;
 ++[#lightblue] Seguridad
 ++[#lightblue] Interoperabilidad
 +++[#lightgreen] Interoperabilidad semántica
-****[#lightyellow] Paso de mensajes e interpretación.
+,****[#lightyellow] Paso de mensajes e interpretación.
 +++[#lightgreen] Interoperabilidad sintáctica
-****[#lightyellow] xml
+,****[#lightyellow] xml
 +++[#lightgreen] Interoperabilidad estructural
-****[#lightyellow] Comunicación en ambientes heterogéneos
+,****[#lightyellow] Comunicación en ambientes heterogéneos
 @endmindmap
 #+end_src
 
 #+RESULTS:
 [[file:./images/caract_diseno.png]]
+
+** Abstracción en los lenguajes de programación
+
+#+begin_src plantuml :file ./images/abstraccion_len_prog.png
+@startmindmap
++ Abstracción de Datos
+++ Abs. de datos básicas
+++ Abs. de datos estructuradas
+++ Abs. de datos Unitarias
++++[#lightyellow] Clases
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/abstraccion_len_prog.png]]
+
+#+begin_src plantuml :file ./images/abstraccion_control.png
+@startmindmap
++ Abstracción de Control
+++ Abs. de datos básicas
++++[#lightyellow] goto y saltos
+++ Abs. de control estructuradas
+++ Abs. de control tupo unitario
++++[#lightyellow] módulos y subprogramas independientes del programa.
+@endmindmap
+#+end_src
+
+#+RESULTS:
+[[file:./images/abstraccion_control.png]]

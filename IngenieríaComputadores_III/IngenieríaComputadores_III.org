@@ -1352,7 +1352,7 @@ type miPalabraMem is range 0 to 1024
 
 **** Tipos enumerados
 #+begin_src vhdl
-typo opcode_type is (SUMA, RESTA, SALTO, PARAR);
+type opcode_type is (SUMA, RESTA, SALTO, PARAR);
 #+end_src
 
 - El problema es que no se define el código binario de cada opción.
