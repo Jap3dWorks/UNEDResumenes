@@ -1754,12 +1754,17 @@ FIN-SI
 [[#IntArt]] pag 157
 
 *** Equiparación
-1. Selección de marcos candidatos :
+1. Se crea el marco pregunta.
+2. Selección de marcos candidatos :
        - Si el tipo de la nueva entidad es conocido se puede seleccionar el marco clase del tipo.
              - Y todos los marcos clase especializados.
        - Si el tipo de la nueva entidad es desconocido se selecciona arbitrariamente la selección del marco clase o que almenos contenga algúna propiedad conocida en el marco pregunta.
-2. Calcular el valor de equiparación (VE) en cada una de las clases seleccionadas.
-3. Calculados los VE se decide con qué marcos clase se equiparará la nueva entidad.
+3. Calcular el valor de equiparación (VE) en cada una de las clases seleccionadas.
+       - El IC diseña la fórmula del VE.
+4. Decicisón : Calculados los VE se decide con qué marcos clase se equiparará la nueva entidad.
+       - El marco pregunta pasa a ser un marco instancia de las clases seleccionadas.
+       - Si el VE no es determinante en ningún marco, se siguen técnicas de búsqueda para encontrar el marco más idóneo.
+             - Seguir la jerarquía, relaciones fraternales, relaciones disjunto, etc.
 
 *** Herencia de propiedades
 - Permite compartir valores y definiciones de propiedades entre marcos de una BC.
