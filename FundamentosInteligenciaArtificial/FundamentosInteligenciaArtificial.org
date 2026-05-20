@@ -157,7 +157,7 @@
 - *Estados* y *operadores* definen en *espacio de búsqueda*.
       - Algunos *nodos* (representación de grafo) del espacio de búsqueda representan las soluciones.
 - Un *algoritmo de búsqueda es completo* si siempre encuentra solución, en el caso que exista alguna.
-- Un *algoritmo de búsqueda es admisible* o exacto si siempre encuentra una solución óptima.
+- Un *algoritmo de búsqueda es admisible* o *exacto* si siempre encuentra una solución óptima.
 
 ** Métodos de búsqueda sin información
 - Búsquedas de forma sistemática sin tener en cuenta nungún tipo de información sobre el dominio del problema.
@@ -230,9 +230,9 @@ dev "No encontrado"
 #+end_src        
 
 **** Coste uniforme
-- [id:IntArt] pag 320
+- [[#IntArt]] pag 320
 - En vez de usar una pila o una cola pueden insertarse los nodos en una estructura ordenada.
-      - Se ordenan por coste el desde el nodo inicial.
+      - Se ordenan por coste desde el nodo inicial.
 - Es similar a la búsqueda en anchura.
       - Si el coste de todas las reglas es el mismo las estratégias son equivalentes.
 - Es un *algoritmo admisible*.
@@ -340,7 +340,7 @@ ffun
 #+end_src
 
 **** Búsqueda bidireccional
-- [id:IntArt] pag 325
+- [[#IntArt]] pag 325
 - Buscar simultáneamente en dos direcciones.
       - De inicio a los objetivos.
       - De los objetivos a inicio.
@@ -369,7 +369,7 @@ ffun
 - A $f(x)$ se le denomina *función heurística de evaluación*.
 
 ** El algoritmo A*
-- [[id:IntArt]] pag 344
+- [[[#IntArt]]] pag 344
 - Especialización de *BF*.
 - Sea $n$ un nodo cualquiera del espacio de búsqueda.
       - $g^*(n)$ : Es el *coste del camino de menor coste* desde el nodo inicial hasta $n$.
@@ -445,7 +445,7 @@ ffun
 - $\Gamma$ conjunto nodos objetivo.
 - $\Gamma^* \subseteq \Gamma$  conjunto de objetivos óptimos.
 - $P_{n-n'}$ denota un camino simple desde el nodo $n$ al nodo $n'$.
-- $P_{n-n'}$ camino óptimo desde $n$ a $n'$.
+- $P^*_{n-n'}$ camino óptimo desde $n$ a $n'$.
 - *Nodos encontrados* : Aquellos que ya tienen entrada en *TABLA_A*.
 - *Nodos expandidos* : Ya tienen registrados sus sucesores en el campo correspondiente de *TABLA_A*.
 - $NodosEnAbierta\ \cup \ NodosExpandidos = NodosEncontrados$
@@ -545,8 +545,7 @@ FOCAL = \{n \in ABIERTA\ |\ f(n) \leq (1+\varepsilon)min( \{ f(n') : \forall n' 
 \end{equation*}
 
 - Se desarrollan primero los nodos de la sublista FOCAL.
-      - Los nodos de FOCAL tienen la misma probabilidad de ser expandidos.
-      - Se usa un segundo heurístico $h'$, que da una estimación del esfuerzo computacional para llegar a una solución.
+      - Se desarrollan los nodos de FOCAL según un segundo heurístico $h'$, que da una estimación del esfuerzo computacional para llegar a una solución.
             - $h'$ Representa un conocimiendo adicional no representable en $f$.
             - $h'$ no puede contribuir de forma negativa a la $\varepsilon$ -admisibilidad.
       - Puede darse el case que $h'=h$.
@@ -554,7 +553,7 @@ FOCAL = \{n \in ABIERTA\ |\ f(n) \leq (1+\varepsilon)min( \{ f(n') : \forall n' 
 - Si $h$ es admisible, $A_\varepsilon^*$ es $\varepsilon -admisible$.        
 
 *** Diseño sistemático de heurísticos
-- [id:IntArt] pag 360
+- [[#IntArt]] pag 360
 - *Método de relajación del problema*, Versiones simplificadas del problema con menos restricciones.
   - Se enuncia el problema con todas sus restricciones.
   - Se suponen versiones relajadas.
@@ -566,13 +565,14 @@ FOCAL = \{n \in ABIERTA\ |\ f(n) \leq (1+\varepsilon)min( \{ f(n') : \forall n' 
 - Basado en búsqueda en profundidad
 
 *** Algoritmo IDA*
-- [id:IntArt] pag 362.
+- [[#IntArt]] pag 362.
 - Se establece una longitud límite para la búsqueda del problema igual a $f(inicial)$.
-      - $f(inicial)$ es una cota inferior de la solución óptima.
+      - $f(inicial)$ es una estimación optimista de la solución óptima.
       - Cada iteración descarta los nodos $n$ que $f(n)$ supere $f(inicial)$.
 - Si en una iteración no se encuentra solución se realiza una nueva iteración.
       - Con una nueva longitud límite $f(n)$
-            - El valor de $f(n)$ menor de los nodos descartados en la iteración anterior.
+            - El valor de $f(n)$ de menor coste de los nodos descartados en la iteración anterior.
+- El tiempo de búsqueda es exponencial en la profunidad.
 
 #+begin_src pseudocode
 LongitudLimite <- f(inicial)
@@ -592,32 +592,44 @@ mientras NoVacia(ABIERTA) hacer
     si EsObjetivo(n) entonces
         dev Camino(inicial, n)
     fsi
+
     S <- {}
+
     si f(n) < LongitudLimite entonces
-        LimpiarTABLA_A(n)
+        S <- Sucesores(n);
+    sino
+        Actualiza NuevaLongitudLimite con f(n);
     fsi
+
+    si (Vacía(S)) entonces
+        LimpiarTABLA_A(n) // ahorrar memoria?
+    fsi
+
     para cada q de S hacer
         pone q en la TABLA_A con
             Anterior(q) <- n,
             g(q)        <- Coste(inicial,n) + Coste(n,q),
             h(q)        <- Heurístico(q)
     fpara
-    Ordena S según los valores de f de menor a mayor
-    ABIERTA <- Concatenar(S, ABIERTA)
+
+    Ordena S según los valores de f de menor a mayor;
+    ABIERTA <- Concatenar(S, ABIERTA);  // concaternar según f(n).
 fmientras
+
 dev "No encontrado", NuevaLongitudLimite
 #+end_src
 
 *** Algoritmo SMA*
-- [[id:IntArt]] pag 364
+- [[[#IntArt]]] pag 364
 - IDA* tiene el problema de que se vuelven a expandir muchos nodos.
-- Cuando necesita expandir un nodo y no tiene espacio en TABLA_A, elimina un nodo de esta tabla y de ABIERTA.
+- SMA* Cuando necesita expandir un nodo y no tiene espacio en TABLA_A, elimina un nodo de esta tabla y de ABIERTA.
       - Son llamados *nodos olvidados*, y son los menos prometedores (mayor valor de $f$ en ABIERTA).
 - El algoritmo recuerda en cada nodo el mejor $f$ de los hijos de ese nodo que han sido olvidados.
       - Solo recuerda el hijo más prometedor.
       - Para no volver a explorar subárboles que han sido eliminados.
 - SMA* mantiene en los nodos ancestros información acerca de la calidad del mejor camino en cada subárbol descartado.
 - Cuando se descartan todos los sucesores de un nodo $n$, el algoritmo recuerda la estimación del mejor camino a través de $n$.
+- *límite* número máximo de nodos que se pueden almacenar en TABLA_A.
 
 #+begin_src pseudocode
 Inserta el inicial en ABIERTA y en la TABLA_A
@@ -626,7 +638,8 @@ mientras NoVacia(ABIERTA) hacer
     si EsObjetivo(n) entonces
         dev Camino(inicial,n)
     fsi
-    s <- SiguienteSucesor(n)
+    s <- SiguienteSucesor(n)  // Un sucesor diferente en cada llamada
+                              //  o si fué un nodo olvidado el que corresponda.
     si (NoEsObjetivo(s) && Profundidad(s) = Limite) entonces
         f(s) <- infty
     sino
@@ -693,7 +706,7 @@ dev S
 - *Multiarranque* Contra los estancamientos se puede reiniciar el algoritmo desde otro punto inicial.
 
 *** Temple Simulado
-- [id:IntArt] pag 372
+- [[#IntArt]] pag 372
 - Método de búsqueda local.
 - Se admite con una cierta probabilidad que $S_1$ sea peor a $S$.
 - Se realiza una selección aleatoria entre los vecinos.
@@ -716,7 +729,7 @@ mientras ! CriterioDeTerminación hacer
     si \DeltaE < 0 entonces
         S = S_1
     sino
-        S <- S_1 con probabilidad e^(- \DeltaE/T)
+        S <- S_1 con probabilidad e^(- \DeltaE / T)
     fsi
     t <- t + 1
     T <- \alpha(t,T)
@@ -729,6 +742,8 @@ dev S
 - Dispone de un mecanismo de memoria.
 - Evita la generación de algunos vecinos dependiendo de la historia reciente.
       - Se registra información de cada movimiento.
+- *Estructura H* : Es una estructura que registra las transformaciones que dieron lugar a las últimas soluciones.
+      - Estas transformaciones no se consideran a la hora de generar nuevos vecinos de la solución actual.
 - Pueden hacerse excepciones, *criterio de aspiración*,  si un movimiento tabú resulta que mejora la solución actual.
 - Resulta complicado establecer los parámetros.
       - Criterio de aspiración.
@@ -745,7 +760,7 @@ dev S
 - El más sencillo (orden 0)
   
 *** Sintaxis y semántica
-- [id:IntArt] pag 36
+- [[#IntArt]] pag 36
 - Notación :
       - $(x,y,z,\dots)$ o $(x_1,y_3,z_2,\dots)$ : variables del dominio.
       - $(p,q,r,\dots)$ : variables proposicionales de orden-0.
@@ -791,7 +806,7 @@ dev S
 
 *** Métodos deductivos semánticos y coste computacional
 **** Método del árbol semántico
-- [[id:IntArt]] pag 41 y apuntes de lógica [[file:~/.emacs.d/orgroam/20241018185521-uned_logica.org][Logica y Estructuras Discretas]].
+- [[[#IntArt]]] pag 41 y apuntes de lógica [[file:~/.emacs.d/orgroam/20241018185521-uned_logica.org][Logica y Estructuras Discretas]].
 - Se usa el *tableau*. también conocido como *árbol semántico* o tablero semántico.
       - Es un método no determinista. Se elige de forma casual entre varias posibilidades.
       - Si se cierran todas las rammas la fórmula no es satisfacible.
@@ -819,7 +834,7 @@ fsi
 #+end_src
 
 **** El método de resolución
-- [id:IntArt] pag 42.
+- [[#IntArt]] pag 42.
 - método basado en el reconocimiento de pares de (formula, negación).
 - $(\phi_1 \lor \dots \lor \phi_n)$ se denomina *cláusula*.
 - *forma normal conjuntiva* : fórmula expresada como conjunción de cláusulas.
@@ -876,7 +891,7 @@ fsi
 
 ** Lógica de primer orden (LPO)
 - Lógica de predicados.
-- [[id:IntArt]] pag 46
+- [[[#IntArt]]] pag 46
 
 *** Sintaxis y semántica
 - Se introducen *variables* *cuantificadores* y *predicados* (como propiedades hombre(socrates)).
@@ -897,7 +912,7 @@ fsi
       - $M \models \exists x \psi(x)$ si y solo si existe un elemento $d \in D$ tal que $M \models \psi [x/d]$
             - $\psi [x/d]$ : todas las ocurrencias libres de $x$ se han sustituido por $d$.
 - El dominio $D$ puede ser infinito.
-- [[id:IntArt]] pag 48, ejemplo con dimensión temporal.
+- [[[#IntArt]]] pag 48, ejemplo con dimensión temporal.
 
 *** Poder expresivo y límites de la lógica de primer orden
 - La complejidad de las fórmulas es un problema.
@@ -905,7 +920,7 @@ fsi
 
 *** Métodos deductivos y coste computacional
 **** Método del árbol semántico
-- [[id:IntArt]] pag 50, ejemplo de un árbol semántico infinito.
+- [[[#IntArt]]] pag 50, ejemplo de un árbol semántico infinito.
 - El problema de satisfactibilidad es indecidible en LPO.
       - No existe ningún algoritmo que cumpla las condiciones:
             1. *Es correcto* : nunca devuelve respuestas equivocadas.
@@ -995,7 +1010,7 @@ fsi
 - *lógica no recursivamente enumerable* : las lógicas superiores al 1er orden son tan complejas que en casos no existen algoritmos para averiguar si una fórmula es válida (tautología) o es satisfacible.
 
 *** Fragmentos de LPO
-- [[id:IntArt]] pag 56
+- [[[#IntArt]]] pag 56
 - $L$ es un subconjunto (fragmento) de $L'$, permite mejorar la computabilidad.
       - Lógicas con un número limitado de variables.
       - Fragmentos con guardia.
@@ -1005,12 +1020,12 @@ fsi
 - lógicas modales están entre LP y LPO.
 
 *** Lógicas no monotónicas, razonamiento del sentido común y otras consideraciones
-- [[id:IntArt]] pag 58. diferencias lógica monótona (clásica) y no monótona.
+- [[[#IntArt]]] pag 58. diferencias lógica monótona (clásica) y no monótona.
       - Interesante que en la lógica clásica una nueva verdad no puede eliminar una verdad anterior.
 - *lógica difusa o borrosa* : lógica multievaludada, donde las proposiciones tienen un grado de verdad.
 
 *** Lógicas modales (LM) y mundos posibles
-- [[id:IntArt]] pag 59
+- [[[#IntArt]]] pag 59
 - Lógica con características del cuantificador de existencia $\exists$.
 - Gramática forma extendida de la LP.
       - $\phi ::= p | \lnot \phi | \phi \land \psi | \lozenge \psi$
@@ -1024,7 +1039,7 @@ fsi
       - $R$ : relación binaria $R \subseteq W \times W$
       - $V$ : función de evaluación por cada uno de los mundos, nos dice que símbolos proposicionales se satisfacen.
       - Piénsalo como una máquina de estados.
-- Ejemplos de lenguajes modales en el [[id:IntArt]] pag 60.
+- Ejemplos de lenguajes modales en el [[[#IntArt]]] pag 60.
 - La satisfacibilidad depende de:
       - Las propiedades de $R$.
       - El mundo en el que evaluamos la fórmula.
@@ -1065,7 +1080,7 @@ dev SATISFACIBLE
 #+end_src
 
 ** Aplicaciones: el ejemplo de las lógicas temporales
-- [id:IntArt] pag 64
+- [[#IntArt]] pag 64
 - lógicas temporales son una variante peculiar de la lógica $k$.
 
 *** Tipos de lógicas temporales
@@ -1107,7 +1122,7 @@ dev SATISFACIBLE
       - *model checking* permite automatizar la tarea de verificación de los requisitos de un proyecto.
 
 *** Lógicas temporales basadas en intérvalos
-- [id:IntArt] pag 68
+- [[#IntArt]] pag 68
 - Cuando las propiedades en las que estamos interesados tienen una duración.
       - Ya no es tan importante el punto preciso en el tiempo.
 - Las relaciones entre intérvalos son complicadas.
@@ -1128,7 +1143,8 @@ dev SATISFACIBLE
             - $M,[d_0,d_1] \Vdash \langle \bar{E} \rangle \phi$ si $M,[d_2, d_1] \Vdash \phi$ para algún $d_2$ tal que $d_2 < d_0$;
 
 * Conjuntos Borrosos
-- [id:IntArt] pag 264
+
+- [[#IntArt]] pag 264
 - predicados precisos: impar o par
 - predicados vagos: alto o bajo
       - Protagonizan el lenguaje natural y constituyen un elemento fundamenta de la capacidad de abstracción.
@@ -1136,7 +1152,7 @@ dev SATISFACIBLE
       - Ciencia del razonamiento aproximado.
 
 ** Conjuntos borrosos
-- [id:IntArt] pag 264
+- [[#IntArt]] pag 264
 - En un predicado preciso $P$ sobre un conjunto $U$ podemos escribir la siguiente función $\mu_P(u)$
 
 \begin{equation*}
@@ -1164,7 +1180,7 @@ dev SATISFACIBLE
 - $A$ está embebido en $B$ ($A \subseteq B$) si $\forall u \in U$ sucede que $\mu_A(u) \leq \mu_B(u)$.
 
 ** Semántica de los conjuntos Borrosos
-- [id:IntArt] pag 266
+- [[#IntArt]] pag 266
 - Semánticas:
       - *Similitud* : Sea $V$ un conjunto borroso.
             - $\mu_V(u)$ es el grado de proximidad a los /prototipos/ de $V$
@@ -1182,7 +1198,7 @@ dev SATISFACIBLE
 - Las semánticas no son excluyentes.
 
 ** Teoría de conjuntos borrosos
-- [id:IntArt] pag 268
+- [[#IntArt]] pag 268
 - Se quiere dar una representación del significado de sentencias que aparecen en el lenguaje natural.
 - Con predicado precisos resulta muy sencillo realizar operaciones sobre conjuntos.
       - unión, intersección, negación
@@ -1239,7 +1255,7 @@ dev SATISFACIBLE
       - Existen múltiples teorías, según las propiedades deseables..
 
 * Sistemas basados en Reglas (SBR)
-- [id:IntArt] pag 83
+- [[#IntArt]] pag 83
 - *SBR* : son sistemas de deducción en lógica proposicional restringitos a clausulas de Horn.
       - Permiten capturar la experiencia humana en la resolución de problemas, con el fin de alcanzar decisiones consistentes y repetibles.
 - Estructuras de representación declarativas.
@@ -1254,13 +1270,13 @@ dev SATISFACIBLE
       - Pueden ser sensores por ejemplo.
 
 *** Base de Hechos (BH)
-- [id:IntArt] pag 84
+- [[#IntArt]] pag 84
 - Contiene la información actual del problema.
       - Metas a alzanzar e hipótesis.
       - Estado actual del problema en curso de solución.
 
 *** Base de Conocimiento (BC)
-- [id:IntArt] pag 85
+- [[#IntArt]] pag 85
 - Contiene las reglas.
 - Regla:
       - Condición o antecedente -> acción o consecuente.
@@ -1274,7 +1290,7 @@ dev SATISFACIBLE
       - Conjunto de metas que debe alzanzarse e hipótesis avanzadas durante el transcurso de una solución si el encadenamiento es hacia atrás (check de la verificación de las cláusulas).
 
 *** Motor de inferencias (MI)
-- [id:IntArt] pag 87
+- [[#IntArt]] pag 87
 - También estategia de control o intérprete de reglas.
 - Examina el BH y decide qué reglas se disparan.
 - Algoritmo independiente del BC.
@@ -1296,7 +1312,7 @@ FIN-MIENTRAS
 #+end_src
 
 ** Inferencia
-- [id:IntArt] pag 88
+- [[#IntArt]] pag 88
 - Red de inferencia : red de nodos.
       - antecedente -> (nodo) -> consecuente
       - Se encadenan varios nodos : antecedente -> (nodo) -> consec/ante -> (nodo) -> consecuente2.
@@ -1331,7 +1347,7 @@ FIN-SI
 
 - *Principio de refracción* : Solo se permite aplicar una regla una sola vez.
 
-- Ejemplo en [id:IntArt] pag 90.
+- Ejemplo en [[#IntArt]] pag 90.
 
 **** Ciclo de reconocimiento-acción
 - Proceso iterativo de aplicación del encadenamiento hacia delante.
@@ -1341,7 +1357,7 @@ FIN-SI
       - Se necesitar cargar todas las afirmaciones que se poseen en la BH.
 
 *** Encadenamiento hacia atrás
-- [id:IntArt] pag 97
+- [[#IntArt]] pag 97
 - Se especifica una meta objetivo, se trata de determinar si ese objetivo se verifica o no.
 - Se tiene en cuenta el contenido del BH.
 - Tranta de encontrar reglas cuyo consecuente contenga el objetivo a verificar.
@@ -1381,7 +1397,7 @@ SINO
 FIN-SI
 #+end_src
 
-- Ejemplo en [id:IntArt] pag 98
+- Ejemplo en [[#IntArt]] pag 98
 
 **** Ciclo de encadenamiento hacia atrás
 - Ciclo de inferencias
@@ -1419,7 +1435,7 @@ FIN-SI
             - Hay que diseñar el sistema cuidadosamente.
 
 ** Técnicas de equiparación
-- [id:IntArt] pag 104
+- [[#IntArt]] pag 104
 
 *** Equiparación con variables
 - El antecedente de la regla contiene variables.
@@ -1440,7 +1456,7 @@ FIN-SI
             - Paciente menor de 10 años con manchas rojas y fiebre $\to$ Paciente con varicela
 
 ***** Equiparación de reglas utilizando variables con los contenidos de la BH
-- [id:IntArt] pag 106
+- [[#IntArt]] pag 106
 - Un ejemplo de regla para que se entienda, es muy prolog
       - SI (caballo ?x) $\land$ (rápido ?x) ENTONCES (candidato-competición ?x)
 - Variables distintas pueden tener el mismo valor.
@@ -1453,7 +1469,7 @@ FIN-SI
             - Añade nuevos hechos al BH.
 
 **** El algoritmo RETE
-- [id:IntArt] pag 109
+- [[#IntArt]] pag 109
 - Evita examinar todas las reglas del BC con los datos del BH.
 - Aprovecha dos propiedades
       - Agrupa las reglas según los patrones en sus condiciones.
@@ -1469,7 +1485,7 @@ FIN-SI
                   - Para cada dato que se borra de la BH se eliminan las instanciaciones almacenadas a las que dio lugar ese dato.
 
 ** Técnicas de resolución de conflictos
-- [id:IntArt] pag 111
+- [[#IntArt]] pag 111
 - Selecciona a partir del conjunto de conflictos la instanciación a aplicar.
 - Principales técnicas:
       1. Seleccionar la primera regla que se equipara con los condenidos de la BH.
@@ -1495,7 +1511,7 @@ FIN-SI
             - Ambas evaluadas sobre el mismo conjunto.
 
 ** Ventajas e inconvenientes
-- [id:IntArt] pag 116
+- [[#IntArt]] pag 116
 - Las reglas del BC deben ser independientes entre sí.
 - SBR con un BC muy grande incluir nuevas reglas puede provocar efectos colaterales.
 - Representación declarativa del concocimiento.
@@ -1504,13 +1520,13 @@ FIN-SI
 - Un SBR puro no posee estructuras de control.
 
 ** Dominios de aplicación
-- [id:IntArt] pag 118
+- [[#IntArt]] pag 118
 - Dos clases de problemas:
       - Los que se pueden modelar como un conjunto de múltiples estados.
       - Los que vienen descritos por medio de una teoría concisa y unificada.
 
 * Redes Semánticas y Marcos
-- [id:IntArt] pag 132
+- [[#IntArt]] pag 132
 
 ** Introducción
 - Representación del conocimiento:
@@ -1543,7 +1559,7 @@ FIN-SI
       - Hay herencia.
 
 ** Redes semánticas
-- [id:IntArt] pag 133
+- [[#IntArt]] pag 133
 - Paradigma basaso en relaciones.
 - Grafo orientado:
       - Nodos etiquetados son conceptos.
@@ -1573,12 +1589,12 @@ FIN-SI
       - predicados n-arios (superior a 2) no pueden ser representados en estas redes.
 
 *** Representación de predicados no binarios
-- [id:IntArt] pag 136
+- [[#IntArt]] pag 136
 - Un nuevo objeto representa al predicado con de aridad mayor que dos.
       - Nuevos predicados binarios representan las relaciones binarias entre los atributos y los valores del nuevo objeto.
 
 *** Representación de acciones
-- [id:IntArt] pag 136
+- [[#IntArt]] pag 136
 - Toda proposición contenida en una sentencia tiene una estructura formada por un verbo.
       - Y una o más frases nominales.
       - Cada frase nominal se relaciona con el verbo mediante un conjunto de *Casos*:
@@ -1597,10 +1613,10 @@ FIN-SI
             - *voz* : Activa o pasiva.
 - *Nodos situación* : Permiten representar afirmaciones que se refieren a acciones y eventos.
       - Cada nodo situación tiene como atributos un conjunto de *casos* y de atributos *modalidad*
-      - diagrama en [id:IntArt] pag 138
+      - diagrama en [[#IntArt]] pag 138
 
 *** Representación de conocimiento disjunto
-- Se usa la etiqueta *disjunto* [id:IntArt] pag 138 F4.5.
+- Se usa la etiqueta *disjunto* [[#IntArt]] pag 138 F4.5.
 - También existen unos arcos especiales para representar este tipo de conocimiento (Hendrix).
   Las etiquetas que usan estos arcos son:
       - S : Subconjunto
@@ -1622,7 +1638,7 @@ FIN-SI
       4. La respuesta a la consulta es el fragmento de red semántica con los valores con los que se rellenan los nodos variables.
 
 *** Herencia de propiedades
-- [id:IntArt] pag 140
+- [[#IntArt]] pag 140
 - Arcos *instancia* y *Subclase-de*.
 - Se puede usar en sistemas que razonan dirigidos por la meta o por los datos.
 - Pasos de consulta de propiedades
@@ -1698,7 +1714,7 @@ FIN-SI
       - Un marco instancia puede rellenar o no todas las propiedades de instancia definidas en el marco clase.
 
 **** Representación de facetas de propiedades        
-- [id:IntArt] pag 151
+- [[#IntArt]] pag 151
 - *facetas* : Permiten modelar características de las propiedades y relaciones en los marcos clase.
       - Declarativamente se especifica un puntero o un tipo de datos.
       - Procedimentalmente se define utilizando un procedimiento o una regla.
@@ -1735,7 +1751,7 @@ FIN-SI
 - No se pueden usar propiedades no definidas en marcos clase.
 
 ** Inferencia de conocimiento en SBM
-[id:IntArt] pag 157
+[[#IntArt]] pag 157
 
 *** Equiparación
 1. Selección de marcos candidatos :
@@ -1771,7 +1787,7 @@ FIN-SI
                         - que clase1 tenga un camino de inferencia a través de clase2 hacia clase3.
 
 *** Valores activos
-- [id:IntArt] pag 161
+- [[#IntArt]] pag 161
 - Aspecto dinámico o procedimental.
 - demonios, valores activos o disparadores : Procedimientos que recuperan almacenan y borran información en los SBN.
 - Se definen en las facetas *Si Necesito*, *Si Añado*, *Si modifico* y *Si borro*.
@@ -1816,7 +1832,7 @@ FIN-SI
 :TYPE: book
 :TITLE: Inteligencia Artificial, técnicas métodos y aplicaciones
 :AUTHOR: José T.Palma Méndez, Roque Marín Morales
-:ID: IntArt
 :EDITORIAL: Mc Graw Hill
+:CUSTOM_ID: IntArt
 :END:
 
