@@ -143,6 +143,7 @@ Busca el valor de X que hace cierta la siguiente pregunta.
       - Capacidad expresiva.
       - *Sintactic sugar*, estructuras que facilitan la escritura de un programa.
             - Por ejemplo las diferentes versiones de bucles.
+- *Eficiencia de la ejecución*, eficacia en velocidad y uso de recursos para en la ejecución de programas escritos en el lenguaje.
 
 *** La regularidad
 - Comportamiento de las características del lenguaje.
@@ -1176,7 +1177,7 @@ initfib :- assert(lfib(0,1)), assert(lfib(l,1)).
 *** Gramáticas libres de contexto
 - Formada por:
       - *V_NT* : símbolos no terminales.
-      - *VY* : símbolos terminales o tokens.
+      - *VT* : símbolos terminales o tokens.
       - *S* : *Símbolo Inicial* no terminal.
       - Un conjunto de *reglas*.
             - <símbolo no termibal> -> <símbolos terminales y no terminales>
@@ -2095,7 +2096,18 @@ od
 - El significado de los identificadores viene determinado por el ambiente (o entorno).
 - *Registro de activación* : Los subprogramas pueden contener identificadores locales.
       - Memoria donde se almacenan los identificadores locales de un subprograma.
+- *Ambiente de definición* : Ambiente donde se encuentra la definición de un subprograma.
+      - Es posible determinarlo en tiempo de compilación.
+      - Referencias no locales se refieren al ambiente de definición.
+- *Ambiente de invocación* : Ambiente desde donde se ejecuta un subpograma.
+      - Es posible determinarlo en tiempo de ejecución.
+      - Se comunica con el ambiente de invocación mediante el uso de pase de parámetros.
+- *Parámetros formales* : Parámetros cuando son desconocidos.
+      - Presentes en la declaración y definición (más bien en la definición) de un subprograma.
+- *Parámetros actuales* : Cuando a un parámetro se le dota de valor.
+      - Presentes en las invocaciones a subprogramas.
 - *forma cerrada* : subprogramas sin referencias no locales.
+      - Se comunica con el uso de parámetros exclusivamente.
 
 *** Paso de parámetros
 **** Paso por valor
