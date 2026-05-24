@@ -575,7 +575,7 @@ end architecture codPrior4a2_selec;
 - Una sentencia de selección concurrente es /sensible/ a todas las señales que intervienen en el nuevo valor y las condiciones booleanas.
 
 ** Sentencia Generate
-Facilita la ejecución iterativa o condicional de una porción de código concurrente.
+Facilita la ejecución iterativa o condicional de una porción de código concurrente. Dentro de el bloque begin del architecture.
 
 *** Sentencia generate iterativa
 Sintaxis
@@ -1045,7 +1045,7 @@ architecture paridad of paridad is
   end component xor2;
 
 begin
-  parity <= temp(6); -- no lo entiendo
+  parity <= temp(6);
   gen_array : for I in 0 to 6 generate
     inicial : if I=0 generate
       xor_0 : xor2
@@ -1181,7 +1181,7 @@ constant nombre_constante : tipo_dato := expresión;
 
 #+begin_src vhdl
 signal a : std_logic_vector(7 downto 0);  -- a7,...,a0
-signal b : std_logic_vectir (o to 7);     -- a0,...,a7, puede dar errores con número binarios
+signal b : std_logic_vector (o to 7);     -- a0,...,a7, puede dar errores con número binarios
 #+end_src
 
 **** Operadores
