@@ -897,9 +897,13 @@ fsi
 - Se introducen *variables* *cuantificadores* y *predicados* (como propiedades hombre(socrates)).
 - Gramática abstracta
       - $t::= a | x | f(t_1, \dots , t_k)$,
+            - $f(t)$ : símbolo funcional.
+            - representa un valor claro.
+            - $D \times \dots \times D \to D$
       - $\phi ::= p(t_1, \dots, t_n) | \lnot \phi | \phi \land \psi | \exists x \phi (x)$
       - el predicado $p$ es de aridad $n$.
       - $\phi(x_1, \dots , x_n)$ denota una fórmula de $n$ variables libres.
+            - No está en el ámbito de un cuantificador.
       - $\forall$ es quivalente a $\lnot \exists \lnot$
 - Todas las conectivas del LP forman parte del LPO.
 - Se interpreta a partir de un dominio $D$, que son los posibles valores de las variables $x$ $y$.
@@ -1421,7 +1425,7 @@ FIN-SI
             - Apropiado para tareas reactivas.
       - Si los objetivos y subojetivos están bien definidos pero no así las estructuras de los datos mejor encadenamiento hacia atrás.
             - *Razonamiento conducido por objetivos*.
-            - Apropiado para tareas anaíticas.
+            - Apropiado para tareas analíticas.
       - Los SBR que deban justificar su razonamiento deben adaptar la dirección que mejor se adapte a la forma de pensar del usuario del sistema.
 - *Búsqueda bidireccional* : Seguir ambas direcciones hasta que los dos caminos de búsqueda se encuentran.
       - Requiere:

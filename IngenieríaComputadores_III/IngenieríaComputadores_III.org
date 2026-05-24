@@ -1628,7 +1628,7 @@ use IEEE.std_logic_1164.all;
 use work.pack1.all;
 
 entity conv_int1 is
-  port (y : out integer range 0 to 15;
+  port (y : out integer range 0 to 15; -- no da la vuelta cuidado
         a : in std_logic_vector(3 downto 0));
 end entity conv_int1;
 
@@ -2982,7 +2982,7 @@ end architecture tb_bus;
 - Usan flip-flop D (delay)
 
 ** Síntesis de lógica secuencial
-- *latches* : Circuitos cuyo estado cambia cuando su estrada enable está a un determinado nivel ('0' o '1').
+- *latches* : Circuitos cuyo estado cambia cuando su entrada enable está a un determinado nivel ('0' o '1').
 - Ejemplo de una parte del architecture de un latche.
 
 #+begin_src vhdl

@@ -120,7 +120,7 @@ Busca el valor de X que hace cierta la siguiente pregunta.
 *** Traducción de los programas para su ejecución
 - *Intérprete*, Un programa que acepta entradas del lenguaje y los ejecuta.
 - *Compilador*, Programa que traduce el languaje a código máquina.
-- El traductos (intérprete o compilador) debe seguír fielmente la definición del lenguaje.
+- *El traductor* (intérprete o compilador) debe seguír fielmente la definición del lenguaje.
 - Pasos de un intérprete o compilador.
       - *Analizador léxico*
       - *Analizador sintáctico*
