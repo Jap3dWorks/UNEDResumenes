@@ -123,7 +123,6 @@
       - Descomponer en subtareas e inferencias primitivas.
       - Operacionalización efectiva del esquema inferencial, con módulos simbólicos y neuronales.
 
-
 * Introducción a las técnicas de búsqueda
 - Tema 8 pag 310
   
@@ -598,7 +597,7 @@ mientras NoVacia(ABIERTA) hacer
     si f(n) < LongitudLimite entonces
         S <- Sucesores(n);
     sino
-        Actualiza NuevaLongitudLimite con f(n);
+        Actualiza NuevaLongitudLimite con f(n); // la menor de los descartados
     fsi
 
     si (Vacía(S)) entonces
@@ -606,6 +605,7 @@ mientras NoVacia(ABIERTA) hacer
     fsi
 
     para cada q de S hacer
+        // Sobreescribe si ya existe (porque visita en profunidad).
         pone q en la TABLA_A con
             Anterior(q) <- n,
             g(q)        <- Coste(inicial,n) + Coste(n,q),
@@ -613,7 +613,8 @@ mientras NoVacia(ABIERTA) hacer
     fpara
 
     Ordena S según los valores de f de menor a mayor;
-    ABIERTA <- Concatenar(S, ABIERTA);  // concaternar según f(n).
+    ABIERTA <- Concatenar(S, ABIERTA);  // concaternar según f(n)
+                                        //  para que sea en profundidad.
 fmientras
 
 dev "No encontrado", NuevaLongitudLimite
@@ -639,7 +640,7 @@ mientras NoVacia(ABIERTA) hacer
         dev Camino(inicial,n)
     fsi
     s <- SiguienteSucesor(n)  // Un sucesor diferente en cada llamada
-                              //  o si fué un nodo olvidado el que corresponda.
+                              //  o si fue un nodo olvidado el que corresponda.
     si (NoEsObjetivo(s) && Profundidad(s) = Limite) entonces
         f(s) <- infty
     sino
@@ -725,11 +726,11 @@ t <- 0
 T <- T_0
 mientras ! CriterioDeTerminación hacer
     S_1 <- SelecciónAleatoria(SolucionesVecinas(S))
-    \DeltaE <- Coste(S_1) - Coste(S);
-    si \DeltaE < 0 entonces
+    DeltaE <- Coste(S_1) - Coste(S);
+    si DeltaE < 0 entonces
         S = S_1
     sino
-        S <- S_1 con probabilidad e^(- \DeltaE / T)
+        S <- S_1 con probabilidad e^(- DeltaE / T)
     fsi
     t <- t + 1
     T <- \alpha(t,T)
@@ -1800,11 +1801,22 @@ FIN-SI
 - Aspecto dinámico o procedimental.
 - demonios, valores activos o disparadores : Procedimientos que recuperan almacenan y borran información en los SBN.
 - Se definen en las facetas *Si Necesito*, *Si Añado*, *Si modifico* y *Si borro*.
+      - Facetas de las propiedades instancia. Se definen en los marcos Clase.
+- Funciones de los valores activos:
+      - Almacenar, recuperar o borrar valores de propiedades de marcos instancia.
+      - Mantener la consistencia semántica del sistema de marcos.
+      - Propagación de los valores de una propiedad cuando sea necesario.
+            - Propiedades dependientes.
+      - Calcular dinámicamente valores requeridos.
+            - Valores que se obtienen en función de otras propiedades diferentes.
+      - Gestionar errores y validaciones.
 - Características de la ejecución:
       - Procedimientos se definen en el marco clase y permanecen latentes.
       - Se despiertan al recibir una solicitud de ejecución.
       - Los procedimientos pueden simular encadenamiento hacia delante y encadenamiento hacia detrás.
-      - Los procedimientos se ejecutan en stack.
+            - *Dirigido por eventos* : encadenamiento hacia delante, asociado a Si Añado, Si Modifico, Si Borro.
+            - *Dirigido por metas*: Encadenamiento hacia atrás, asociado a Si Necesito.
+      - El orden de llamada a demonios va pasando de unas propiedades a otras a medida que se van ejecutando los procedimientos (tipo callstack).
 
 * Glosario
 - *Inferencia*, Razonamiento, proceso mediante el cual partiendo de unos hechos se deducen otros hechos.
