@@ -1248,7 +1248,7 @@ dev SATISFACIBLE
       - *producto y suma*
             - $T_G(x,y)=xy \ \ S_G(x,y)= x+y-xy$
       - *t-norma y t-conorma de Lukasiewicz*
-            - $T_L(x,y) = \max(x+y-1,0)\ \ S_L(x,y)=\min(x+y,i)$
+            - $T_L(x,y) = \max(x+y-1,0)\ \ S_L(x,y)=\min(x+y,1)$
       - Se pueden escoger según sus propiedades.
 - Definición de conjunto Borroso:
       - Tupla $([0,1]^U,T,S,n)$.
@@ -1270,7 +1270,7 @@ dev SATISFACIBLE
 
 ** Componentes básicos de los SBR
 - *BC* : base de conocimiento.
-- *MI* : mecanismo de inferencia.
+- *MI* : Motor de inferencia.
 - *BH* : Base de hechos, como memoria de hechos establecidos.
       - Pueden ser sensores por ejemplo.
 
@@ -1330,6 +1330,9 @@ FIN-MIENTRAS
       - Se recorre la red de inferencia hacia delante (izquierda - derecha).
 - *Encadenamiento hacia atrás* : Parte de un conjunto de hipótesis que intenta verificar usando datos de la BH.
       - Se recorre la red de inferencia hacia detrás (derecha - izquierda).
+      - Se puede representar en forma de árbol.
+            - Se relaizan sustituciones por los antecedentes de una regla.
+            - Si aparecen antecedentes atómicos que se verifican, puede verificarse la rama del árbol.
 
 *** Encadenamiento hacia delante
 #+begin_src pseudocode
