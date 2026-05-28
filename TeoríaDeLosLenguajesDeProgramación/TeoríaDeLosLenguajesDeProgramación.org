@@ -1330,7 +1330,7 @@ child { node{*} child { node {2}} child {node{2}}}
       - {}  Los elementos que se incluyen se pueden repetir 0 o más veces.
       - []  opción (pueden usarse o no)
       - ()  Agrupación
-- No permite la recursión.
+- No permite la recursión directa.
 - *diagrama sintáctico* : forma estándar de representar las notaciones EBNF.
       - Terminales círculos.
       - No Terminales cuadrados.
@@ -1783,7 +1783,7 @@ public class ArrayEnteros {
 
 **** Booleanos
 - Java se denomina Boolean
-- Haskell se denomina bool
+- Haskell se denomina Bool
 - Operaciones comunes en el *Álgebra de Boole*.
 
 **** Tipos Enunerados
@@ -1844,6 +1844,7 @@ data IntOrChar = Entero Int | Caracter Char
 - *Equivalencia de tipos* : Responsable de decir si dos tipos son iguales o no (o compatibles).
 - *Equivalencia estructural* : Representan el mismo conjunto de valores.
       - Se puede comprobar sustituyendo el nombre del tipo por su definición.
+            - Normalmente deben tener mismos nombres de variables.
       - Problemático con tipos recursivos.
       - Problemático con tipos anónimos.
 - *Equivalencia en nombre* : Dos tipos son equivalentes si tienen el mismo nombre.
@@ -1884,7 +1885,7 @@ Integer i = Integer.parseInt("34"); // 34
 - [id:TeLenProg] pag 241
 
 ** Evaluación de expresiones
-- *Expresión* : estructura que representa un valor concreto de uno de los tipos de datos del lengueje.
+- *Expresión* : estructura que representa un valor concreto de uno de los tipos de datos del lenguaje.
 - Expresiones básicas:
       - *constantes*
       - *identificadores*
@@ -2069,6 +2070,7 @@ od
 *** Definición de excepciones
 - *Excepciones comprobadas* : Error del cual el programa puede recuperarse.
       - Clase Excepción y subclases.
+      - Deben ser capturadas.
 - *Excepciones no comprobadas* : Errores de programación.
       - Clase Error y subclases.
 - Se pueden crear nuevas clases de excepciones heredando de *Exception* (comprobada por el compilador).
@@ -2150,6 +2152,13 @@ od
 - fortran77 no permite definiciones de subprogramas anidadas ni recursión.
       - Referencias no locales son siempre variables globales.
 
+- Estructura regist de activación
+  
+| Variables locales                          |
+| Parámetros del subprograma                 |
+| Dirección retorno                          |
+| espacio temporal para evaluar la expresión |
+
 **** Ambientes basados en pilas I : lenguajes con recursión sin anidamiento
 - Si hay recursión no es posible asignar memoria estática para los registros de activación.
       - Se almacenande forma dinámica.
@@ -2159,6 +2168,14 @@ od
             - La dirección de cada subprograma está en la tabla de símbolos en tiempo de compilación.
       - *Puntero de ambiente, EP (environment pointer)* : Almacena donde comienza el registro de ejecución del ambiente actual.
 
+- Estructura del registro de activación
+
+| enlace de control                  |
+| dirección de retorno               |
+| parámetros                         |
+| desplazamiento a variables locales |
+| memoria temporal opcional          |
+
 **** Ambientes basados en pilas II : lenguajes con recursión y anidamiento
 - Lenguajes que además permiten definir subprogramas anidados.
 - *Enlace de acceso* : Un subprograma debe almacenar información de cuál es su ambiente de definición.
@@ -2167,6 +2184,15 @@ od
       - *Profundidad de anidamiento* : número de accesos que se debe seguir hasta encontrar el valor de una variable.
 - La *pila de registros de activación* es similar a la anterior.
       - Se añade el enlade de acceso.
+
+- Estructura del registro de activación
+
+| enlace de control                  |
+| enlace de acceso                   |
+| dirección de retorno               |
+| parámetros                         |
+| desplazamiento a variables locales |
+| memoria temporal opcional          |
 
 **** Ambientes totalmente dinámicos
 - Un subprograma puede ser capaz de devolver otro subprograma.
