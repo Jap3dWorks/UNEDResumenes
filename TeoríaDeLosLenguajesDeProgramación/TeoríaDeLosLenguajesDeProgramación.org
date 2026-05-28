@@ -25,7 +25,7 @@
 |--------------+-----------------------------+-----------------------------------|
 | *Básica*       | Tipos atómicos de variables | goto                              |
 | *Estructurada* | tipos estructurados         | bucles condicionales subprogramas |
-| *Unitaria*     | módulos paquetes            | módulos paquetes                  |
+| *Unitaria*     | Clases                      | módulos paquetes                  |
 
 *** Abstracción de Datos
 - Abstracciones de datos básicas
@@ -126,7 +126,7 @@ Busca el valor de X que hace cierta la siguiente pregunta.
       - *Analizador sintáctico*
       - *Analizador semántico*
 - Tipos de errores
-      - *Errores léxicos*, Suele estar kimitado al uso de carácteres ilegibles.
+      - *Errores léxicos*, Suele estar limitado al uso de carácteres ilegibles.
       - *Errores sintácticos*, Tokens que faltan o expresiones malformadas.
       - *Errores semánticos*, Estáticos (uso de tipos incompatibles) o dinámicos (división por 0).
       - *Errores lógicos*, Comportamiento no deseado.
@@ -185,7 +185,11 @@ Busca el valor de X que hace cierta la siguiente pregunta.
 
 **** Interoperabilidad
 - La posibilidad de que un código escrito en un lenguaje interactue con el código escrito en otro lenguaje.
-
+      - *Interoperabilidad semántica* : sistemas intercambian mensajes interpretando el significado y contexto de los datos.
+            - Sockets, datos en binario, ...
+      - *Interoperabilidad sintáctica* : Uso de metalenguajes como XML.
+      - *Interoperabilidad estructural* : Sistemas pueden comunicarse e interactuar en ambientes heterogéneos.
+ 
 * Programación Funcional (Haskell)
 - Diferente a la programación imperativa.
       - No tan cercano al hardware.
@@ -237,7 +241,7 @@ funCuadrado suma3 5
 - pag 38
 - Se evalua el valor de un parámetro solo cuando se usa.
 - función *no estricta*, no necesita conocer el valor de todos sus parámetros para devolver un resultado.
-- *memoización*, permite guardar el valor de un parámetro la primera vez que se evaluó.
+- *memoización*, permite guardar el valor de un parámetro/expresión que se ha retrasado su evaluación la primera vez que se evaluó.
 
 Ejemplo con listas de haskell.
 
@@ -294,7 +298,7 @@ fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
             - Se pueden usar de forma *prefija* con el uso de ().
                   - (+) 3 4
 - *precedencia* y *asociatividad*
-      - Se asigna un valor de *precedencia* a cada función (más alto mejor).
+      - Se asigna un valor de *precedencia* a cada función (0-9, más alto se aplica primero).
       - funciones definidas con *identificador* tiene más precedencia que las definidas por *operador*.
             - f x + 1 sería (f x) + 1
 
@@ -310,6 +314,10 @@ asociatividad precedencia lista_de_operadores
 
 infixl 6 +,-      -- e.g 3 - 5 - 2 = (3 - 5) - 2
 #+end_src              
+
+- Asocia derecha : x # y # z = x # (y # z)
+- Asocia izquierda : x # y # z = (x # y) # z
+- No asocia : no admite x # y # z
 
 **** Definición ecuacional y encaje de patrones
 #+begin_example
