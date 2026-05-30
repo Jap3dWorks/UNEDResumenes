@@ -2465,7 +2465,6 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - También la interactuación con otras bases de datos puede ser un problema.
       - El diseño debe facilitar la traducción de los datos.
 
-
 * Diseño de bases de datos relacionales
 ** Características de los buenos diseños relacionales
 *** Alternativa de diseño : esquemas grandes
@@ -3234,6 +3233,145 @@ DEV (R1,R2,...,Ri);
 - [id:FBDatos] pag 212
 - LRU
 
+* Indexación y asociación
+
+** Conceptos básicos
+- *Índice* : Estructura que facilita la búsqueda.
+      - Listas ordenadas de los ID puede no funcionar eficientemente.
+- *Tipos de índices* :
+      - *Índices ordenados* : Disposición ordenada de valores
+      - *Índices asociativos* : Distribución ordenada a través de cajones (buclets).
+            - El valor de cada cajón es un hash.
+- *Criterios para elegir la técnica* de indexación:
+      - *Tipos de acceso* :
+      - *Tiempo de acceso* :
+      - *Tiempo de inserción* :
+      - *Tiempo de borrado* :
+      - *Espacio adicional requerido* : 
+
+- Se puede tener más de un índice por archivo.
+
+** Índices ordenados
+- Cada estructura de índice se asocia con una clave de búsqueda concreta.
+      - Se asocian a cada clave los registros asociados.
+      - Los registros a su vez pueden seguir un orden.
+- *Índice con agrupación* : los índices siguen un orden.
+      - También se conocen como *índices primarios*.
+      - *Archivos secuenciales de agrupación* : Los archivos con los índices ordenados secuencialmente.
+- *Índices sin agrupación* : Índices que cuyo orden secuencial es diferente al orden del archivo.
+
+*** Índices densos y dispersos
+- [[[#FBDatos]]] pag 218
+- *Registro índice* : Un Valor de la clave de búsqueda y punteros a uno o más registros con ese valor.
+- El puntero a un registro consiste en un identificador del bloque de disco y un desplazamiento.
+- *Índice denso* :
+      - Un registro índice por cada valor de la clave de búsqueda.
+            - En un índice denso con agrupación contiene el valor de la clave y ...
+                  - ... y un puntero al primer registro con el mismo valor de clave de búsqueda
+            - En un índice denso sin agrupación los índices almacenan una lista de punteros hacia registros con el mismo valor.
+- *Índice disperso* :
+      - Solo aparece un registro índice par algunos de los valores de búsqueda.
+      - Válido para índices de agrupamiento.
+            - Relaciones ordenadas según clave de búsqueda.
+      - Necesitan menos espacio adicional.
+
+*** Índices multinivel
+- [[[#FBDatos]]] pag 219
+- Los archivos de índices continuos pueden ser enormemente grandes.
+      - Problemas para cargarlos enteros en memoria principal.
+- Búsquedas binarias puede no ser viable.
+      - Bloques de desbordamiento obligarían a una búsqueda secuencial.
+- La solución es contruir un *índice externo* hacia el índice original.
+      - El índice se trata como un archivo secuencial.
+            - *índice interno*
+      - Entradas a los índices siempre ordenadas.
+            - Indice externo es disperso.
+      - El índice externo apunta al bloque que contiene el archivo del índice interno.
+      - En el índice interno
+            - Se busca el mayor índice con un valor igual o menor a la clave buscada.
+            - Este índice interno apunta al bloque que contiene el archivo con el registro buscado.
+- Si el índice externo crece hasta no caber en memoria principal, se puede repetir el mismo proceso de íncides multinivel.
+
+*** Actualización del índice
+- Los índices se deben actualizar cuando se insertan o eliminan registros.
+- Hay actualizaciones que también afectan a los índices, cambiando el valor de un atributo que era clave de un índice.
+      - Hay que mantener la coherencia.
+      - Esta operación se puede modelar como un borrado de índice más una inserción de índice.
+- Algoritmos para actualizar índices de 1 nivel.
+      - *Inserción*
+            - Se busca el índice en el fichero
+            - *En índices densos*:
+                  - Si no existe se inserta un registro con el índice.
+                  - Si ya existe y almacena una lista de punteros a tuplas, se añade el nuevo puntero.
+                  - SINO el registro índice solo almacena un puntero a la primer tupla  con el valor de búsqueda.
+            - *Índices dispersos*:
+                  - Si el sistema crea un bloque nuevo inserta el primer valor de la clave de búsqueda.
+      - *Borrado*
+            - *Índices densos*:
+                  - SI era el único registro con entrada en los índices, se borra el índice.
+                  - SINO
+                        - SI el registro índice almacena una lista de punteros.
+                              - Se borra el puntero de la lista.
+                        - SINO SI el registro borrado era el registro en el registro índice
+                              - El registro índice apunta al siguiente registro.
+            - *Índices dispersos*:
+                  - SI el índice no contiene un registro índice con el valor del registro borrado.
+                        - No se hace nada.
+                  - SINO
+                        - SI el registro borrado era el único registro con la clave de búsqueda.
+                              - Se reemplaza el registro con el siguiente registro índice.
+                        - SINO SI el registro índice apunta al valor a borrar
+                              - Se actualiza con el siguiente registro.
+
+*** Índices secundarios
+- [[[#FBDatos]]] pag 221
+- índices secundarios deben ser densos.
+- Se puede usar un nivel adicional de indirección para implementar los índices secundarios.
+      - Sobre claves de búsqueda que no sean claves candidatas.
+
+*** Índices con múltiples claves
+- *Clave de búsqueda compuesta* : claves con más de un atributo.
+- La clave de búsqueda es una lista de atributos.
+- Orden lexicográfico
+      - SI $(a_1 < b_1) \lor (a_1=b_1 \land a_2 < b_2)$ ENTONCES $(a_1,a_2) < (b_1, b_2)$ 
+
+** Archivos de índices de árboles B+
+- [[[#FBDatos]]] pag 222
+- índice de árbol $B^+$ es un índice multinivel con una estructura especial.
+- Estructura nodos Hoja
+      - Para $i=1 \dots n-1$ hay $k_{n-1}$ claves de búsqueda y $n$ punteros ($p_n$).
+      - $P_i$ apunta a un registro con valor clave $K_i$.
+      - $P_n$ es especial.
+            - Se usa para encadenar juntos los nodos hojas
+                  - Como una marca o puntero a la siguiente hoja.
+            - Procesamiento secuencial eficiente.
+      - Cada nodo hoja debe contener desde $(n-1)/2$ hasta $n-1$ valores.
+- Estructura de un nodo es
+      - [P1 | K1 | ... | Pn-1 | Kn-1 | Pn]
+- Los nodos internos forman una estructura multinivel.
+      - Fíjate que lo nodos internos el puntero apuntan hacia donde están los valores estrictamente menores.
+        
+- Ejemplo árbol $B^+$ [[[#FBDatos]]] pag 223.
+
+- Deben ser árboles equilibrados.
+
+*** Consultas en árboles B+
+- [[[#FBDatos]]] pag 224
+
+*** Actualizaciones en árboles B+
+- Se deben respetar los tamaños máximos y mínimos de los nodos.
+- El árbol debe mantenerse equilibrado.
+
+**** Inserción
+- Pseudocódigo en [[[#FBDatos]]] pag 227
+
+**** Borrado
+- Pseudocódigo en [[[#FBDatos]]] pag 229
+
+** Extensiones de los árboles B+
+
+
+
 * Notes
 ** mysql Service
 - Done using podman, documented in ORG ROAM.
@@ -3251,8 +3389,9 @@ podman pull docker.io/library/mysql:8.0
 :PROPERTIES:
 :ID: FBDatos
 :EDITION: 6a
-:TITLE: Fundamentos de bases de datos
+:TITLE: Fundamentos de bases de datso
 :EDITORIAL: Mc Graw Hill education
 :AUTHOR: Silberschatz, Korth, Sudarshan
+:CUSTOM_ID: FBDatos
 :END:
 
