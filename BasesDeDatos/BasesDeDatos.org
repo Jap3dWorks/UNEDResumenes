@@ -3370,6 +3370,53 @@ DEV (R1,R2,...,Ri);
 
 ** Extensiones de los árboles B+
 
+** Asociación estática
+*** Funciones de asociación
+*** Gestión de desbordamientos de cajones
+*** Indices asociativos
+- Índice asociativo es con Hash.
+      - En una estructura asociativa.
+- La función hash indica en que cajónse almacena el valor y el puntero.
+- En cada cajón se pueden almacenar varios elementos.
+
+** Asociación dinámica
+- Problemas de la asociación estática
+      - Elegir una función de asociación de acuerdo con el tamaño actual del archivo.
+      - Elegir una función de asociación de acuerdo con el tamaño previsto del archivo.
+      - Reorganizar periódicamente la estructura asociativa.
+            - Supone elegir una nueva función hash.
+
+*** Estructura de datos
+- Asociación extensible hace frente a los cambio de tamaño dividiendo y fusionando cajones.
+      - Se elige una función $h$ con las propiedades deseadas.
+            - Genera valores de un rango amplio como 32 bits ($b=32$)
+      - Se crean los cajones bajo demanda.
+
+*** Consultas y actualizaciones
+- *Inserción*
+      - Se busca el cajón apropiado para el valor clave.
+      - SI cabe el nuevo valos se inserta
+      - SI NO cabe hay que dividir el cajón
+            - Puede ser que necesitemos incrementar el número de bits de los valores hash.
+
+
+** Comparación entre la indexación ordenada y la asociación
+- La mayoría dan soporte a árboles $B^+$ y a alguna forma de asociación.
+
+** Índices de mapa de bits
+*** Estructura de los índices de mapas de bits
+- Son un array de bits.
+- cada bit está asociado al número de registro.
+- Se tiene un mapa de bits por cada posible valor de un atributo.
+      - mapa de bits de una relación con 4 elementos sobre el atributo chico o chica sería tal que:
+            - chico: 1010
+            - chica: 0101
+- Útil en selecciones sobre varias claves.
+- Para la reestructuración tras el borrado de entradas se usa un mapa de bits de existencia.
+
+*** Implementación eficiente de las operaciones de mapas de bits
+
+*** Mapas de bits y árboles B+
 
 
 * Notes
