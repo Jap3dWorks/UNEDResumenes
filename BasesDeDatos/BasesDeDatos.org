@@ -2210,7 +2210,7 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 \end{align*}
 
 *** Seguridad de las expresiones
-- [[id:FBDatos]] pag 110
+- [[[#FBDatos]]] pag 110
 - $\{<i,n,d,s> | \lnot(<i,n,d,s> \in profesor)\}$ : permite valores del resultado que no está en el dominio.
 - Restricciones.
       1. Todos los valores que aparecen en las tuplas de expresión son de $dom(P)$.
@@ -2218,7 +2218,7 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
       3. $\forall x (P(x))$ es verdadera si y solo sí se cumple para todos los valores de $x$ de $dom(P)$.
 
 * Diseño de las bases de datos y el modelo E-R
-- [id:FBDatos] pag 117
+- [[[#FBDatos]]] pag 117
 
 ** Visión general del proceso de diseño
 - Es una tarea compleja que involucra varias fases.
@@ -2253,8 +2253,10 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 *** Conjunto de entidades
 - *entidad* : cosa y objeto distinguible de los demás.
       - El conjunto de sus propiedades hace que se le pueda identificar de forma unívoca.
+      - Cada persona de la universidad.
 - *conjunto de entidades* : Agrupa entidades del mismo tipo que comparte propiedades o atributos.
       - No tienen porque se conjuntos disjuntos.
+      - Conjunto de todos los profesores de una universidad.
 - *extensión* de un conjunto de entidades se refiere a la colección real de entidades.
 
 *** Conjuntos de relaciones
@@ -2269,9 +2271,9 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
       - Tiene grado 2.
 
 *** Atributos
-- [id:FBDatos] pag 120
+- [[[#FBDatos]]] pag 120
 - *Dominio* o *conjunto de valores* : Valores permitidos.
-- Una entidad puede estribirse como un conjunto de pares atributo-valor.
+- Una entidad puede escribirse como un conjunto de pares atributo-valor.
 - Tipos de atributo.
       - *Atributos Simples* : No se dividen en subpartes.
       - *Atributos Compuestos* : Se dividen en subpartes.
@@ -2312,6 +2314,19 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - [id:FBDatos] pag 124
 - En el libro aparece numerosas imágenes de ejemplo.
 
+*** Estructura básica
+- *Rectángulo dividido en dos partes* : Conjuntos de entidades.
+      1. parte nombre del conjunto de entidades
+      2. parte atributos de cada entidad del conjunto de entidades.
+             - Clave primaria subrallada.
+- *Rombos* : Conjunto de relaciones.
+- *Rectángulo sin dividir* : atributos de un conjunto de relaciones.
+      - atributos de clave primaria subrallados.
+- *Líneas* : Unen conjuntos de entidades con conjuntos de relaciones.
+- *Líneas discontinuas* : Unen atributos de conjunto de relaciones con conjunto de relaciones.
+- *Líneas dobles* : Participación total de un conjunto de entidades en un conjunto de relaciones.
+- *Rombos dobles* : Conjunto de relaciones identificadas que se unen a conjuntos de entidades débiles.
+
 *** Correspondencia de cardinalidades
 - [id:FBDatos] pag 124
 - Con la dirección de la flecha indica las relaciones uno a uno, uno a varios y varios a varios.
@@ -2320,8 +2335,8 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - *Varios a varios* : Línea sin dirección, A-<R>-B
 - Notación con números. l..h
       - A -0..1--<R>--l..h- B
-            - A participa de 0 a 1 vez en la relación (A se relaciona con 0 o 1 elementos de B).
-            - al contrario que en UML y en Ing De Software.
+            - A participa de 0 a 1 veces en la relación (A se relaciona con 0 o 1 elementos de B).
+            - al contrario que en UML y que en Ing De Software.
 
 *** Atributos compuestos
 - [id:FBDatos] pag 125
@@ -2335,12 +2350,16 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - Tan solo se permite una flecha en este tipo de relaciones.
       - Para evitar confusiones.
 
-*** Conjnto de entidades débiles
+*** Conjunto de entidades débiles
 - [id:FBDatos] pag 126
+- *Conjunto de entidades fuertes* : Conjunto de entidades con la relevancia suficiente para formae una clave primaria.
 - *Conjunto de entidades débiles* : Conjunto de entidades que no tienen suficientes atributos para formar una clave primaria.
       - Debe estar asociado a otro conjunto de entidades (*entidades identificatorias*).
-      - Se usa un *discriminador* para identificar las entidades de forma unívoca.
-            - un id vamos, una clave
+      - La relación de entidades identificadoras es varios a uno con el conjunto de entidades débiles.
+      - Se usa un *discriminador* para identificar las entidades débiles de una entidad identificadora de forma unívoca.
+            - discriminador es un conjunto de atributos.
+            - Se subrallan con línea discontinua.
+      - La clave primaria del conjunto de entidades débiles se forma con la clave primaria de la entidad identificadora más el conjunto discriminador de la entidad débil.
 - *Conjunto de entidades fuertes* : Sí que pueden formar una clave primaria.
 - Hay ciertos cambios en la notación de entidades débiles.
       - El discriminador se subraya con línea discontinua.
@@ -2426,7 +2445,7 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 
 *** Herencia de los atributos
 - [id:FBDatos] pag 134
-- una vez más hablas de la herencia de atributos.
+- una vez más habla de la herencia de atributos.
 - La *herencia múltiple* se conoce como retículo.
 - Hay un diagrama en el libro, Puede verse la ramificación en clases especializadas.
       - Cada especialización amplia los atributos del conjunto.
