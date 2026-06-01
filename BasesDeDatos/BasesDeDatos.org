@@ -1125,7 +1125,7 @@ group by nombre_dept;
 - Pueden añadirse con :
       - *alter table <nombre-tabla> add <nombre-restricción>*.
 - Si el sistema cumple la restricción declarada esta se añade a la base de datos.
-      - Si el sistema ni puede cumplir la restricción esta se rechaza.
+      - Si el sistema no puede cumplir la restricción esta se rechaza.
 
 *** Restricción not null
 - No permite valores null.
@@ -1337,7 +1337,8 @@ grant select on departamento to Amit, Satoshi;
       - Puede ceñirse a una lista de atriburos
   
 #+begin_src sql
-grant update (presupuesto) on departamento  -- Permite actualizar el atributo presupuesto de la relación departamento
+grant update (presupuesto) on departamento  -- Permite actualizar el atributo presupuesto
+                                            --  de la relación departamento
     to Amit,Satoshi;
 #+end_src
 
@@ -1578,7 +1579,7 @@ void ODBCejemplo()
 }
 #+end_src 
  
-*** SQL incorporado
+*** SQL incorporado (embebido)
 - [[id:FBDatos]] pag 76
 - La norma sql define la incorporación en varios lenguajes como c++.
       - *Lenguaje anfitrion* : Lenguaje que incorpora las consultas SQL.
@@ -1705,7 +1706,7 @@ end
 #+end_src
 
 - Se invocan los procedimientos con la sentencia *call*.
-      - Desde otro procedimiento de SQL o desde SQL incorporado.
+      - Desde otro procedimiento de SQL o desde SQL incorporado (embebido).
 
 #+begin_src sql
 declare cuenta_de integer;
@@ -1719,7 +1720,7 @@ call cuenta_dept_proc('Física', cuenta_de);
 - *declare* : declara variables.
 - *set* : asigna valores a variables.
 - *begin... end* : sentencias compuestas, contienen varias sentencias.
-- *begin atomic...end* : Sentencia compuesta como una sola transacción.
+- *begin atomic...end* : Sentencia compuesta como una sola transacción (no en mysql).
 - *while <expression> do ... end while* : sentencia while.
 - *repeat ... until <expression> end repeat* : sentencia repeat.
 - *bucle for* :
@@ -1761,7 +1762,7 @@ end
 #+begin_src sql
 create procedure cuenta_dept_proc(in nombre_dept varchar(20), out count integer)
 language C
-external name '/usr/avi/bin/cuenta_dept_proc'
+external name '/usr/avi/bin/cuenta_dept_proc'         -- Debe ser la librería que almacena el procedimiento
 create function cuenta_dept(nombre_dept varchar(20))
 returns integer
 language C
@@ -1817,7 +1818,7 @@ begin
 end;
 #+end_src
 
-- más ejemplos en [[id:FBDatos]] pag 82
+- más ejemplos en [[[#FBDatos]]] pag 82
 
 *** Cuando no emplear disparadores
 - Es mejor usar los procedimientos ya definidos en el lenguaje SQL como el *on delte cascade*.
@@ -1860,7 +1861,7 @@ begin
     delete from nueva_a_prereq;
     insert into nueva_a_prereq select * from temp;
     delete from temp;
-  until not exists (select * from nueva_a_prerreq)
+  until not exists (select * from nueva_a_prerreq)  -- nueva-a-prerreq sin elementos
   end repeat;
   return table a_prerreq;
 end  
@@ -1898,7 +1899,7 @@ select * from a_prerreq;
 ** Características de agregación avanzadas **
 
 *** Clasificación
-- [[id:FBDatos]] pag 86
+- [[[#FBDatos]]] pag 86
 - por ejemplo numerar de 1 hasta $n$, $n$ tuplas según un valor.
       - Hay que tener el conjunto en cuenta.
 
@@ -1969,7 +1970,7 @@ from total_créditos_dept;
       - renombramiento
 - Operaciones No fundamentales:
       - Intersección de conjuntos
-      - reunicón natural
+      - reunión natural
       - asignación
 
 *** Operaciones fundamentales
@@ -2037,7 +2038,7 @@ from total_créditos_dept;
 \end{align*}
 
 *** Definición formal del álgebra relacional
-- [[id:FBDatos]] pag 102
+- [[[#FBDatos]]] pag 102
 - Una relación constante se escriben las tuplas entre {...}
       - {(2222, Einstein, Física, 95000),...}
 - $E_i$ es una expresión formada de operaciones.
@@ -2057,7 +2058,7 @@ from total_créditos_dept;
 \end{align*}
 
 **** Operación reunión natural
-- [[id:FBDatos]] pag 103
+- [[[#FBDatos]]] pag 103
 - Simplifica ciertas consultas que exijan un producto cartesiano.
 - $\Join$ denota reunión natural.
 - La reunión natural es un producto cartesiano y una selección de aquellas tuplas que tienen el mismo valor para los atributos nombrados igual.
@@ -2067,7 +2068,7 @@ from total_créditos_dept;
 \Pi_{nombre,asignatura\_id}(profesor \Join ensena)
 \end{align*}
 
-- $r \Join s = \Pi_{R \cup S}(\sigma_{r.A1=s.A1 \land \dots \land r.An=s.An}(r \times s))
+- $r \Join s = \Pi_{R \cup S}(\sigma_{r.A1=s.A1 \land \dots \land r.An=s.An}(r \times s))$
       - $R$ atributos de r
       - $S$ atributos de s
       - $R \cap S = {A_1, \dots, A_n}$
@@ -2083,12 +2084,12 @@ var \leftarrow R \times S
 \end{align*}
 
 **** Reunión externa
-- [[id:FBDatos]] pag 104
+- [[[#FBDatos]]] pag 104
 - Extensión de la operación reunión para trabajar con información ausente.
 - Se usa para casos en el que una de la tuplas de una relación no tiene presencia en la otra relación.
       - Con una reunión natural ese profesor no aparecería nunca.
 - *reunión externa por la izquierda* : toma las tuplas de la relación de la izquierda sin coincidencias con ningua de la derecha, y las añade al resultado natural con valores null.
-- *reunión externa por la derecha* : Simétroca a la reunión por la izquierda.
+- *reunión externa por la derecha* : Simétrica a la reunión por la izquierda.
 - *reunión externa compelta* : Rellena con valores null tanto las tuplas de la izquierda que no coinciden como las de la derecha que no coinciden.
 
 *** Operaciones del álgebra relacional extendida
@@ -2104,7 +2105,7 @@ var \leftarrow R \times S
 - operaciones : + - * /
 
 **** Agregación
-- [[id:FBDatos]] pag 105.
+- [[[#FBDatos]]] pag 105.
 - $\mathcal{G}$ denota agregación.
 - Toman una colección de valores y devuelven como resultado un único valor.
 - Operaciones comunes.
@@ -2140,7 +2141,7 @@ _{G_1,\dots,G_n}\mathcal{G}_{F_1(A_1), \dots, F_m(A_m)}(E)
 Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 
 ** Cálculo relacional de tuplas
-- [[id:FBDatos]] pag 107, hay ejemplos.
+- [[[#FBDatos]]] pag 107, hay ejemplos.
 - Lenguaje de consultas no procedimental.
       - Describe la información deseada, pero no como obternerla.
 
@@ -2152,7 +2153,7 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - Las fórmulas se construyen con átomos.
       - $s \in r$ : $s$ es una tupla y $r$ una relación.
             - No se permite $\notin$
-      - $s[x] \Theta u[y]$ : $s$ y $us$ son tuplas, $x$ e $y$ son atributos.
+      - $s[x] \Theta u[y]$ : $s$ y $u$ son tuplas, $x$ e $y$ son atributos.
             - $\Theta$ es una operación de comparación.
       - $s[x] \Theta c$ donde $c$ es una constante en el dominio del atributo $x$.
       - Las fórmulas se construyen a partir de átomos.
@@ -2190,7 +2191,23 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
             - $\Diamond$ puede ser $\land \lor \to$
       - Si $P(x)$ es una fórmula y $x$ una variable libre del dominio.
             - $\exists x (P(x))$ y $\forall x (P(x))$ són fórmulas.
-- [[id:FBDatos]] pag 109 hay ejemplos de consultas.
+
+*** Ejemplos de Consultas
+- [[[#FBDatos]]] pag 109 hay ejemplos de consultas.
+- Encontrar el ID, nombre, nombre_dept y sueldo de los profesores
+  $\{<i,n,d,s> | <i,n,d,s> \in profesor \land s>80000 \}$
+
+- Todos los nombres de profesores de física junto con la asignatura_id
+  $\{ <n,c> | \exists i,a(<i,c,a,s,y> \in enseña\ \ \land\ \ \exists d,s(<i,n,d,s> \in profesor \land d="Física"))\}$
+
+- Encontrar todos los estudiantes que se han matriculado en asignaturas que ofrece el departamento Biología.
+\begin{align*}
+\{<i> | \ & \exists n,d,t (<i,n,d,t> \in estudiante) \ \land  \\
+        & \forall x,y,z,w (<x,y,z,w> \in asignatura \ \land \\
+        & z="Biología" \ \to                                \\
+        & \exists a,b (<a,x,b,r,p,q> \in matricula \ \land  \\
+        & <c,a> \in departamento))\}
+\end{align*}
 
 *** Seguridad de las expresiones
 - [[id:FBDatos]] pag 110
