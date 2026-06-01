@@ -1,3 +1,5 @@
+# -*- eval: (read-only-mode t); -*-
+
 #+title: Bases De Datos
 #+author: Jordi Amposta Pérez
 #+startup: latexpreview content
@@ -69,21 +71,21 @@
 - *Modelo de datos de red* y *modelo de datos jerárquico* casi no se usan.
 
 ** Lenguajes de bases de datos
-*** Lenguaje de manipulación de datos (LDM)
-- Permite acceder y manipular los datos.
+*** Lenguaje de manipulación de datos (LMD)
+- *Lenguaje de manipulación de datos* (LMD) : Permite acceder y manipular los datos.
 - Tipos de acceso
       - Recuperación de información almacenada.
       - Inserción de información nueva.
       - Borrado de información de la base de datos.
       - Modificación de la información almacenada.
-- Tipos de LDM
-      - *LDM procedimentales*, Necesita que el usuario especifique qué datos y como obtener los datos.
-      - *LDM declarativos*, El usuario especifica qué datos sin definir como obtenerlos.
+- Tipos de LMD
+      - *LMD procedimentales*, Necesita que el usuario especifique qué datos y como obtener los datos.
+      - *LMD declarativos*, El usuario especifica qué datos sin definir como obtenerlos.
 - *Consulta*, instrucción que solicita recuperar información.
-      - *Lenguaje de consultas*, parte del LDM para realizar consultas.
+      - *Lenguaje de consultas*, parte del LMD para realizar consultas.
 
 *** Lenguaje de definición de datos (LDD)
-- Define los esquemas de la base de datos.
+- *Lenguaje de definición de datos (LDD)* : Define los esquemas de la base de datos.
 - *Lenguaje de almacenamiento y definición de datos*, subconjunto del LDD.
       - Estas instrucciones define los detalles de implementación de los esquemas.
 - *Restricciones de consistencia*, Los valores almacenados deben satisfacer ciertas restricciones.
@@ -95,7 +97,7 @@
             - Autorización de inserción.
             - Autorización de actualización.
             - Autorización de eliminación.
-- El output del LDD suele almacenarse como metadatos en el *Diccionario de datos*.
+- El resultado del LDD suele almacenarse como metadatos en el *Diccionario de datos*.
       - Normamelte colo accesible por el propio sistema.
 
 ** Base de datos relacionales
@@ -109,7 +111,7 @@
 
 *** Ejemplos SQL
 
-Una consulta usando el LDM de SQL
+Una consulta usando el LMD de SQL
 
 #+begin_src sql
 select profesor.nombre from profesor where profesor.nombre_depth="Historia"
@@ -125,14 +127,15 @@ create table departamento (
 #+end_src
 
 *** Acceso a las bases de datos desde programas de aplicación
-- Operaciones complejas las efectuan los programas anfitrión (C/C++).
+- Operaciones complejas las efectuan los programas anfitrión (C/C++, java).
+      - Albergan consultas SQL.
 - Los programas de aplicación facilitan a los usuarios la interacción con la base de datos.
   
 ** Diseño de base de datos
 *** Proceso de diseño
 - Caracterizar completamente los requisitos de datos de los hipotéticos usuarios de la base de datos.
 - Diseño conceptual, definir los datos y sus relaciones.
-- Fase de diseño lógico, serelaciona el esquema conceptual con el modelo de implementación de datos.
+- Fase de diseño lógico, se relaciona el esquema conceptual con el modelo de implementación de datos.
 - Fase de diseño físico, se especifican las características físicas de la base de datos.
 
 *** El modelo entidad-relacion
@@ -217,6 +220,7 @@ create table departamento (
 - Funciones del ABD
       - *Definición del esquema*, Crea el esquema central mediante instrucciones LDD.
       - *Definición de la estructura y del método de acceso*.
+      - *Modificación del esquema y de la organización física*.
       - *Concesión de autorización para el acceso a los datos*.
       - *Mantenimiento rutinario*, Importante que el rendimiento no se degrade.
             - Copia de seguridad periodica.
@@ -239,6 +243,7 @@ create table departamento (
 ** Esquema de la base de datos
 - *Esquema de la base de datos*, es el diseño lógico.
       - *Esquema de la relación*, corresponde al concepto de definición de tipo.
+            - Lista de atributos y dominios correspondientes.
 - *Ejemplar de la base de datos*, instantánea de los datos de la base de datos en un momento dado.
 
 ** Claves
@@ -249,7 +254,7 @@ create table departamento (
       - *Claves candidatas*, superclaves mínimas.
       - *Clave primaria*, *clave candidata* elegida por el diseñador como media principal para identificar las tuplas de una relación.
             - Sus valores no deberían cambiarse nunca.
-            - En un esquema de relación aparecen los primeros y subrallados.
+            - En un esquema de relación (E-R?) aparecen los primeros y subrallados.
 - *Clave externa*, una *relación* puede incluir la *clave primaria* de otra *relación*.
       - *relación referenciante*, que incluye la clave primaria de otra relación.
       - *relación referenciada*, su clave primaria ha sido usada como *clave externa*
@@ -282,14 +287,34 @@ create table departamento (
             - *producto cartesiano*, La relación resultante contiene todos los pares de tuplas posibles entre dos relaciones.
             - Las relaciones son conjuntos, por eso se puede aplicar *union*, *intersección* y *diferencia*.
 
+*** Álgebra Relacional Introducción
+- $\sigma$ Selección.
+      - Devuelve las filas de la relación de entrada que satisfacen el predicado
+      - $\sigma_{sueldo \geq 85000}(profesor)$
+- $\Pi$ Proyección.
+      - Genera los atributos indicados de las filas de la relación de entrada.
+        Elimina tuplas duplicadas.
+      - $\Pi_{ID, sueldo}(profesor)$
+- $\Join$ Reunión natural.
+      - Genera pares de filas de las dos relaciones de entrada que tienen los mismos valores en todos los atributos con el mismo nombre.
+      - $profesor \Join departamento$
+- $\times$ producto cartesiano
+      - Genera todos los pares de filas de las dos relaciones de entrada.
+        Independiente de que tengan o no los mismos valores en atributos comunes.
+      - $profesor \times departamento$.
+- $\cup$ unión
+      - Genera la unión de las tuplas de las dos relaciones de entrada.
+      - $\Pi_{nombre}(profesor) \cup \Pi_{nombre}(estudiante)$
+
 * Introducción a SQL
 ** Componentes de SQL
+- Creo que se considera declarativo
 - *LDD*, lenguaje de definición de datos.
 - *LMD*, lenguaje interactivo de manipulación de datos.
 - *Integridad*, el LDD puede especificar las restricciones de integridad. Las actualizaciones que violan la integridad se rechazan.
 - *Definición de vistas*
 - *Control de transacciones*, Se puede especificar el inicio y final de una transacción.
-      - Creo que es que la transacción sea atómica.
+      - Una transacción es una operación atómica.
 - *SQL incorporado* y *SQL dinámico*, definen cómo se pueden incorporar instrucciones SQL en lenguajes de programación.
 - *Autorización*
 - Pueden haber diferencias entre distintas implementaciones del lenguaje SQL (MySql, PostgrSQL).
@@ -493,6 +518,7 @@ order by nombre;                -- alfabetico
 #+end_src
 
 - Se puede especificar *asc* o *desc*.
+      - *asc* por defecto.
   
 #+begin_src sql
 slect *
@@ -736,7 +762,7 @@ where semestre = 'Otoño' and año=2000 and
 *** Comprobación de la ausencia de tuplas duplicadas
 - pag 42
 - *unique* -> booleano : true si la subconsulta no contiene tuplas duplicadas.
-      - la consulta es flase si contiene algunas tuplas $t_1$ y $t_2$ tal que $t_1 = t_2$.
+      - la consulta es false si contiene algunas tuplas $t_1$ y $t_2$ tal que $t_1 = t_2$.
       - *not unique* : el contrario
 
 #+begin_src sql
@@ -768,8 +794,7 @@ where med_sueldo > 42000;                           -- Promedios superiores a 42
 select nombre_dept, sueldo_medio
 from (select nombre_dept, avg(sueldo)
       from profesor
-      group by nombre_dept)
-      as dept_medio(nombre_dept, sueldo_medio)
+      group by nombre_dept) as dept_medio(nombre_dept, sueldo_medio)
 where sueldo_medio > 42000
 #+end_src  
 
@@ -778,8 +803,7 @@ where sueldo_medio > 42000
 select max(tot_sueldo)
 from (select nombre_dept,sum(sueldo)
       from profesor
-      group by nombre_dept)
-        as dept_total(nombre_dept,tot_sueldo)
+      group by nombre_dept) as dept_total(nombre_dept,tot_sueldo)
 #+end_src
 
 - Por defecto desde la subconsulta anidada en *from* no se puede acceder a variables de correlació externas. 
@@ -943,7 +967,7 @@ update estudiante S set tot_créditos = (
   select sum(créditos)
   from matricula natural join asignatura
   where S.ID = matricula.ID and
-               matricula.nota <> 'F' and
+               matricula.nota <> 'F' and  -- <> not equal
                matricula.nota is not null
 );
 #+end_src
@@ -982,7 +1006,7 @@ from estudiante join matricula on estudiante.ID = matricula.ID;  -- reune si est
 #+end_src
 
 *** Reunión externa (outer join)
-- [id:FBDatos] pag 52
+- [[[#FBDatos]]] pag 52
 - Permite valores null en la reunión, y por tanto conserva más tuplas.
       - Por ejemplo que la tabla from no contenga una equivalencia con la tabla join.
 - Cuano no se conservan tuplas que no tienen coincidencias se llama *reunión interna*.
@@ -992,7 +1016,7 @@ from estudiante join matricula on estudiante.ID = matricula.ID;  -- reune si est
       - *right outer join* : reunión externa derecha.
       - *full outer join* : reunión externa completa.
             - Efectua ambas reuniones.
-            - Creo que no está soportado por mysql.
+            - full outer join no está soportado por mysql.
 - Funcionamiento de la reunión externa, (reunión externa derecha y completa funcionan de forma análoga).
       - Para cada tupla de la parte izquierda $t$ que no casa con ninguna tupla de la parte derecha en una reunión interna.
       - Se añade una tupla $r$ que se construye de la siguiente forma.
@@ -1012,7 +1036,7 @@ from estudiante left outer join matricula on estudiante.ID = matricula.ID;
 #+end_src
 
 ** Vistas
-- pag 55
+- [[[#FBDatos]]] pag 55
 - Relación virtual que no forma parte del modelo lógico.
       - Permite mostrar (y ocultar) cierta información a grupos de usuarios.
       - Las vistas no se precalculan, se crean bajo demanda.
