@@ -1,3 +1,4 @@
+# -*- eval: (read-only-mode t); -*-
 #+title: Introducción a la ingenería del software
 #+author: Jordi Amposta Perez
 
@@ -9,7 +10,7 @@
       - Dan soporte a otros programas.
 - *Software de aplicación*, Resolver problemas específicos de los negocios.
 - *Software de ingeniería y ciencias*, Elaboración de algoritmos matemáticos para modelar y simular complejos sistemas o procesos.
-- *Software incristado*, Reside en el interior de un producto o sistema.
+- *Software incrustado*, Reside en el interior de un producto o sistema.
 - *Software de linea de producto*, da una determinada funcionalidad al consumidor.
 - *Aplicaciones Web*, webapps
 - *Software de inteligencia artificial*, aplicaciones robóticas, visión artificial, etc.
@@ -35,7 +36,7 @@
       - La ausencia de errores en las pruebas no implica que el software esté libre de estos.
       - El número de errores tiende a dispararse siempre que se introducen cambios en el software.
 
-** Fábrida de software
+** Fábrica de software
 - Empresa de la industria del software cuya misión es el desarrollo de software para sus clientes.
       - También proporciona a los clientes personal para el desarrollo o mantenimiento de aplicaciones software.
 
@@ -121,7 +122,7 @@
 - Puede considerarse como un refinamiento del modelo evolutivo general.
 - Introduce la actividad de análisis de riesgo como elemento fundamental para guiar la evolución del proceso de desarrollo.
 - Cada ciclo en espiral realiza una parte del desarrollo total.
-- Ejes cartesianos
+- Cuadrantes cartesianos
       - PLANIFICACIÓN
       - ANÁLISIS DE RIESGO
       - INGENIERÍA
@@ -135,7 +136,7 @@
       - SENCILLEZ, Se programa solo aquello que se ha pedido.
             - Se asume que se recodificará de forma continua.
       - COMUNICACIÓN, se potencia el trabajo en equipo.
-            - Tanso con el grupo de desarrollo como con el cliente.
+            - Tanto con el grupo de desarrollo como con el cliente.
       - RETROALIMENTACIÓN, En muy poco tiempo se evalua el diseño y se cambia si es necesario.
             - Se preparan pruebas unitarias e integración continua.
       - VALENTÍA (XDD), Los programadores afrontan recodificación continua, modificaciones, peticiones del cliente, etc.
@@ -268,7 +269,7 @@
       - Facilitar la comprensión delproblema a resolver.
       - Establecer un marco para la discusión.
       - Fijar las bases para realizar el diseño.
-      - FAcilitar la verificación del cumplimiento de los objetivos del sistema.
+      - Facilitar la verificación del cumplimiento de los objetivos del sistema.
 
 *** Técnicas de modelado
 **** Descomposición. Modelo jerarquizado
@@ -471,7 +472,7 @@ FIN-PARA
 - pag 84
 - Detallar la estructura interna de los datos que maneja el sistema.
 - *Diccionario de datos* : notación adoptada en el análisis estructurado.
-- Los formatos de descripción de datos deben porder describir la siguiente información.
+- Los formatos de descripción de datos deben poder describir la siguiente información.
 
 **** Nombre o nombres
 - denominación que se utilizará para un dato en el resto de la especificación.
@@ -667,7 +668,7 @@ FIN-PARA
 - Está ligado a los lenguajes orientados a objetos.
 
 *** Concurrencia
-- Cuando se trata de diseñar un sistema con restricciones de diemtpo se tiene en cuenta:
+- Cuando se trata de diseñar un sistema con restricciones de tiempo se tiene en cuenta:
       - *Tareas concurrentes* : Tareas ejecutadas en paralelo.
             - Especial atención a tareas con tiempo de respuesta más críticos y aquellas que se ejecutan con mayor frecuencia.
       - *Sincronización de tareas* : Determinar los puntos de sincronización.
@@ -680,7 +681,7 @@ FIN-PARA
 - Se usa cuando no hay una solución secuencial sencilla.
 
 ** Notaciones para el diseño
-*** Notaciones Extructurales
+*** Notaciones Estructurales
 - Cubrir un primer nivel del diseño arquitectónico.
       - Estructurar y desglosar el sistema en sus partes fundamentales.
 - Notaciones informales.
@@ -691,11 +692,11 @@ FIN-PARA
 
 **** Diagramas de estructura
 - pag 143
-- Describir la estructura como una jerarquía de subrpogramaso módulos en general.
+- Describir la estructura como una jerarquía de subprogramas módulos en general.
 - No representa ninguna secuencia concreta.
 - Símbolos:
       - *Rectángulo* : Módulo o subprograma, el nombre en el interior.
-      - *Línea* : Une dos rectángulos, el rectángulo superior llama al rectángulo inferior. Puede acabar con una flecha hacie el módulo inferior.
+      - *Línea* : Une dos rectángulos, el rectángulo superior llama al rectángulo inferior. Puede acabar con una flecha hacia el módulo inferior.
       - *Rombo* : Se situa sobre la línea, indica que esa llamada es opcional.
       - *Arco* : Se situa sobre una línea, indica que esa llamada es repetitiva.
       - *Círculo con flecha* : En paralelo a una línea, representa envío de datos.
@@ -731,7 +732,7 @@ FIN-PARA
 :ID:       d44bd9b5-f7aa-4417-be93-da78aa1a036f
 :END:
 - pag 147
-- Diseño a partir de las estructuras de sis datos de entrada y salida.
+- Diseño a partir de las estructuras de sus datos de entrada y salida.
       - Dentro del diseño dirigido por los datos DDD.
             - *Nota*: ECS Entity Component System.
 - Se lleva a cabo en 3 pasos:
@@ -831,7 +832,7 @@ FIN-PARA
       - *Clasificación, especialización o herencia* : Permite diseñar aplicando el concepto de herencia.
             - Un triángulo indica que los objetos inferiores hereda del objeto superior.
       - *Composición* : Describir un objeto mediante los elementos que lo forman.
-            - Un Rombo con una línea indica esta relación.
+            - Un Rombo vacío con una línea indica esta relación.
             - Se indica la *cardinalidad*.
                   - (0, $\pitchfork$) : de 0 a varios.
                   - (1,1) : uno y solo uno
@@ -1138,7 +1139,7 @@ FIN-PARA
             - *centro de transacción* : punto a partir del cual se ramifican los flujos, hay que identificar este punto.
                   - Cada flujo separado sería un módulo que a su vez se puede refinar.
 
-** Técnicas de diseño basao en abstracciones
+** Técnicas de diseño basado en abstracciones
 - Surgen cuando se identifican con precisión los conceptos de abstracción de datos de ocultación.
 - Los módulos se corresponden bien con funciones o bien con tipos de datos abstractos.
 
@@ -1278,7 +1279,7 @@ FIN-PARA
 
 * UML, Lenguaje Unificado de Modelado
 - [[id:AprIngSft]] pag 243
-- Unified modeling language, lenguaje de modelado de software más conocido y extendido.
+- Unified modelling language, lenguaje de modelado de software más conocido y extendido.
 - No se considera programación.
 
 ** Objetivos de UML
@@ -1341,6 +1342,7 @@ FIN-PARA
                    - Línea con punta de flecha vacía.
              - *Realización* : Relación semántica entre clases. Una clase garantiza un contrato que otra clase cumplirá.
                    - Línea discontinua con flecha vacía.
+                   - Interfaces
              - *Agregación* : Similar a la *asociación*. La multiplicidad es de *uno a muchos*.
                    - Flecha con un rombo blanco en la base.
              - *Composición* : Similar a la *agregación*. Relación de vida.
@@ -1431,6 +1433,7 @@ FIN-PARA
       - Transición entre estados : línea terminada con punta de flecha abierta.
       - Estado : Rectángulo con los vértices redondeados.
       - Punto de decisión : Círculo no relleno.
+            - Normalmente se usa el rombo.
       - Puntos de terminación : Círculo con otro relleno en su interior.
 
 *** Diagrama de actividad
@@ -1681,6 +1684,7 @@ FIN-PARA
 
 * Pruebas de Software
 ** Tipos de pruebas
+- pag 296
 - *Verificación* : Comprueba que el producto se ha construido correctamente.
 - *Validación* : Comprueba que el producto se ha construido de acuerdo a los reequerimentos del cliente.
 
@@ -1844,11 +1848,11 @@ FIN-PARA
 
 ** Pruebas del sistema
 - Comprobar que el software se ha integrado correctamente en su entorno.
-- *Pruebas de recuperación* : 
+- *Pruebas de recuperación* : Capacidad del sistema para recuperarse ante fallos.
 - *Pruebas de seguridad* : Comprobar la seguridad contra acceso o manipulación no autorizada.
 - *Pruebas de resistencia* : Comprobar el comportamiento del sistema ante situaciones excepcionales.
 - *Pruebas de sensibilidad* : Comprobar el tratamiento que da el sistema a cierta singularidades, normalmente relacionadas con algoritmos matemáticos.
-- *Pruebas de rensimiento* : 
+- *Pruebas de rendimiento* : 
 - *Pruebas de despliegue o de configuración* : Comprobar el funcionamiento del software en diferentes sistemas operativos.
 
 
