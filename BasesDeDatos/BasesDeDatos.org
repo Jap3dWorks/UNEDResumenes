@@ -758,6 +758,7 @@ where semestre = 'Otoño' and año=2000 and
 #+end_src
 
 - *Subconsulta correlación*, subconsulta que usa un nombre de correlación de una consulta externa.
+      - Se evalua una vez por cada fila externa.
 
 *** Comprobación de la ausencia de tuplas duplicadas
 - pag 42
@@ -2536,19 +2537,22 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - [id:FBDatos] pag 148
 - *Dependencia funcional* : La clave primaria determina limita la multiplicidad de valores.
       - Establece una regla, si aparece A en un esquema, A debe ser primaria.
+      - $\alpha \to \beta$, conocer $\alpha$ permite conocer $\beta$.
+            - Si dos filas tienen el mismo valor de $\alpha$ también tienen el mismo valor de $\beta$.
 - La descomposición correcta de esquemas es complicada. Por ello se establecen reglas como la *dependencia funcional*.
-- *Descomposición con pérdidas* : Cuidado con no descomponer en exceso, Puede crear inconsistencias en las reuniones naturales.
+- *Descomposición con pérdidas* : Cuidado con descomponer en exceso, Puede crear inconsistencias en las reuniones naturales.
 - *Descomposición sin pérdidas* : Cuando no hay pérdidas.
 
 ** Dominios atómicos y la primera forma normal
 - *Dominio atómico* : Los elementos del dominio son indivisibles.
 - *Primera forma normal* : Los dominios de todos los atributos de un esquema son atómicos.
+      - Atributos indivisibles.
 
 ** Descomposición mediante dependencias funcionales
 *** Claves y dependencias funcionales
 - *Ejemplar legal* : Un ejemplar que satisface todas las restricciones.
 - *superclave* : sea r(R) un esquema de relación, $K$ es una superclave de r(R).
-      - para cualquier ejemplar legal de r(R), para todo par de tuplas $t_1 \neq n_t$$
+      - para cualquier ejemplar legal de r(R), para todo par de tuplas $t_1 \neq t_2$
       - $t_1[k] \neq t_2[k]$
 - ID, nombre_depth $\to$ nombre, sueldo, edificio, presupuesto
       - ID, nombre_dept son las superclaves.
@@ -2556,7 +2560,9 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
       - Probar las relaciones y ver si satisfacen un conjunto F de dependencias funcionales.
       - Especificar las restricciones del conjunto de relaciones legales.
             - F se cumple en r(R).
-- *Dependencia funcional trivial* : las satisfacen todas las relaciones.
+- *Dependencia funcional trivial* :
+      - $\alpha \to \alpha$, (alumno, asignatura) $\to$ alumno.
+      - Conocer un conjunto de atributos implica conocer cualquier subconjunto suyo.
 - $F^+$ : cierre del conjunto $F$, contiene todas las dependencias funcionales de F.
 
 *** Forma normal de Boyce-Codd
@@ -2565,6 +2571,7 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - R está en FNBC si:
       - para todas las dependencias funcionales $F^+$ de la forma $\alpha \to \beta$ se cumple alguna de las siguientes condiciones:
             - $\alpha \to \beta$ es una dependencia funcional trivial.
+                  - $\beta \in \alpha$
             - $\alpha$ es superclave del esquema $R$.
 - El diseño de la base de datos está en FNBC si cada miembro del conjunto de esquemas de relación que constituye el diseño está en FNBC.
 
@@ -2575,10 +2582,11 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 *** Tercera forma normal
 - Permite dependencias funcionales no triviales cuya parte izquierda no sea superclave.
       - Superclaves mínimas.
+- Elimina dependencias transitivas de atributos no clave.
 - R está en 3FN si para todas las dependencias funcionales de $F^+$ cumple almenos una:
       - $\alpha \to \beta$ es una dependencia funcional trivial.
       - $\alpha$ es suplerclave de R
-      - Cada atributo A de $\beta - \alpha$está contenido en alguna clave candidata de R.
+      - Cada atributo A de $\beta - \alpha$ está contenido en alguna clave candidata de R.
 
 *** Formas normales superiores
 
@@ -2592,7 +2600,7 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - *Axiomas de Armstrong*:
       - Axiomas:
             - *Regla de reflexividad* : Si $\alpha$ es un conjunto de atributos y $\beta \subseteq \alpha$, entonces $\alpha \to \beta$.
-            - *Regla de la aumentatividad* : Si $\alpha \to \beta$ y $\gamma$es un conjunto de atributos, entonces se cumple que $\gamma \alpha \to \gamma \beta$.
+            - *Regla de la aumentatividad* : Si $\alpha \to \beta$ y $\gamma$ es un conjunto de atributos, entonces se cumple que $\gamma \alpha \to \gamma \beta$.
             - *Regla de la transitividad* : Si se cumple que $\alpha \to \beta$ y que $\beta \to \gamma$ entonces $\alpha \to \gamma$
       - Son *Correctos* no generan dependencias funcionales incorrectas.
       - Son *completos*, permiten generar todo $F^+$.
@@ -2817,6 +2825,7 @@ DEV (R1,R2,...,Ri);
 - Permite que las páginas web sean *activas* usando java, java-script.
 - Ojo con la seguridad.
 - En java se denominan applets
+      - Está obsoleto.
 - Java-script es muy muy usado, el que más para cliente.
 
 ** Arquitecturas de aplicación
@@ -2922,7 +2931,7 @@ DEV (R1,R2,...,Ri);
 - Las aplicaciones que acceden a datos privados deben cumplir las leyes de los países.
 
 ** Cifrado y sus aplicaciones
-- Transformar datospara que no sean legibles.
+- Transformar datos para que no sean legibles.
       - el descifrado es el proceso inverso.
 - La información sensible se guarda cifrada en la base de datos.
       - Sino se considera robo de datos
@@ -3022,7 +3031,7 @@ DEV (R1,R2,...,Ri);
 
 *** Optimización del acceso a los bloques de disco
 - [id:FBDatos] pag 198
-- *Bloque* : número dijo de sectores continuos.
+- *Bloque* : número fijo de sectores continuos.
 - Las solicitudes al disco se expresan en bloques.
 - Cada bloque tiene una dirección.
 - Patrón Accesos:
@@ -3058,7 +3067,7 @@ DEV (R1,R2,...,Ri);
       - Pero más rápidas que los discos magnéticos.
 - Las páginas se escriben rápidas.
       - Pero para sobreescribir hay que borrar y reescribir.
-- *Bloque de borrao* : Operación de borrar varias páginas.
+- *Bloque de borrado* : Operación de borrar varias páginas.
 - Existe un límite de borrados, unos 1000000 borrados.
       - Si se supera pueden empezar a aparecer errores.
 - Diferencia entre página lógica y página física.
@@ -3100,9 +3109,12 @@ DEV (R1,R2,...,Ri);
 - [id:FBDatos] pag 202
 - *Nivel 0 de RAID* : Distribución a nivel de bloques, sin redundancia
 - *Nivel 1 de RAID* : Creación de imágenes de disco con distribución a nivel bloques.
+      - Los discos están clonados.
 - *Nivel 2 de RAID* : Conocido como organización de códigos de corrección de errores tipo memoria.
       - Emplea bits de paridad para corregir y detectar errores.
       - Cada byte tiene asociado un bit de paridad.
+            - Hay discos dedicados a almacenar los bits de paridad.
+              Más de uno porque se puede guardar una copia de la paridad.
       - Se puede usar en discos con distribución de bits.
 - *Nivel 3 de RAID* : Organización de paridad con bits entrelazados.
       - En un controlador de disco se puede saber si el sector se ha leído correctamente.
@@ -3118,7 +3130,7 @@ DEV (R1,R2,...,Ri);
       - Mejora respecto al nivel 4.
       - Divide los datos y la paridad entre los $n+1$ discos.
       - Todos los discos pueden atender a las solicitudes de lectura.
-      - En cada conjunto de $n$ bloques lógicos uno de los discos guarda la paridad y el resto de $n$ discos los bloques.
+      - En cada conjunto de $n+1$ bloques lógicos uno de los discos guarda la paridad y el resto de $n$ discos los bloques.
 - *Nivel 6 de RAID* : Llamado esquema de redundancia P+Q.
       - Similar a nivel 5 pero guarda información redundante adicional.
       - Utiliza los códigos Reed-Solomon para la corrección de errores.
@@ -3292,6 +3304,8 @@ DEV (R1,R2,...,Ri);
 *** Políticas para la sustitución de la memoria intermedia
 - [id:FBDatos] pag 212
 - LRU
+- *Extracción inmediata*: Estratégia basada en marcar como borrable los bloques en memoria intermedia que ya no son necesarios en la consulta.
+- MRU : Estratégia de borrado de los datos usados más recientes.
 
 * Indexación y asociación
 

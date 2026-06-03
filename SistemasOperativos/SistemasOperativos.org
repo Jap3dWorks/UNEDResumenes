@@ -1,3 +1,4 @@
+# -*- eval: (read-only-mode t); -*-
 #+title: Sistemas Operativos
 #+author: Jordi Amposta Pérez
 #+startup: latexpreview overview
