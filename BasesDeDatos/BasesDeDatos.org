@@ -2333,7 +2333,7 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
       - atributos de clave primaria subrallados.
 - *Líneas* : Unen conjuntos de entidades con conjuntos de relaciones.
 - *Líneas discontinuas* : Unen atributos de conjunto de relaciones con conjunto de relaciones.
-- *Líneas dobles* : Participación total de un conjunto de entidades en un conjunto de relaciones.
+- *Líneas dobles* : *Participación total* de un conjunto de entidades en un conjunto de relaciones.
 - *Rombos dobles* : Conjunto de relaciones identificadas que se unen a conjuntos de entidades débiles.
 
 *** Correspondencia de cardinalidades
@@ -2365,8 +2365,9 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - *Conjunto de entidades débiles* : Conjunto de entidades que no tienen suficientes atributos para formar una clave primaria.
       - Debe estar asociado a otro conjunto de entidades (*entidades identificatorias*).
       - La relación de entidades identificadoras es varios a uno con el conjunto de entidades débiles.
-      - Se usa un *discriminador* para identificar las entidades débiles de una entidad identificadora de forma unívoca.
-            - discriminador es un conjunto de atributos.
+        [f]<-<R>-[d]
+      - Se usa un *discriminador* para identificar las entidades débiles de forma unívoca.
+            - discriminador es un conjunto de atributos que describen la unicidad de una entidad débil (un ejemplar).
             - Se subrallan con línea discontinua.
       - La clave primaria del conjunto de entidades débiles se forma con la clave primaria de la entidad identificadora más el conjunto discriminador de la entidad débil.
 - *Conjunto de entidades fuertes* : Sí que pueden formar una clave primaria.
@@ -2574,6 +2575,7 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - $F^+$ : cierre del conjunto $F$, contiene todas las dependencias funcionales de F.
 
 *** Forma normal de Boyce-Codd
+- [[[#FBDatos]]] pag151
 - De las formas normales más deseables.
 - Elimina todas las redundancias que se pueden descubrir a partir de las dependencias funcionales.
 - R está en FNBC si:
@@ -3114,8 +3116,8 @@ DEV (R1,R2,...,Ri);
       - Es la forma de distribución más usada.
 
 *** Niveles de RAID
-- [id:FBDatos] pag 202
-- *Nivel 0 de RAID* : Distribución a nivel de bloques, sin redundancia
+- [[[#FBDatos]]] pag 202
+- *Nivel 0 de RAID* : Distribución a nivel de bloques, sin redundancia.
 - *Nivel 1 de RAID* : Creación de imágenes de disco con distribución a nivel bloques.
       - Los discos están clonados.
 - *Nivel 2 de RAID* : Conocido como organización de códigos de corrección de errores tipo memoria.
