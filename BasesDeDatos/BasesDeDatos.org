@@ -683,6 +683,12 @@ having count(ID) >= 2;
 *** Agregación con valores nulos y valores booleanos
 - todas excepto *count* ignoran los null.
 
+- En el siguiente caso COUNT ignora los valores null, porque SUM hace de filtro.
+    
+#+begin_src sql
+SELECT SUM(sueldo)/COUNT(sueldo) FROM empleados;
+#+end_src
+
 ** Subconsultas anidadas
 *** Pertenencia a conjuntos
 - *in* : pertenencia a un conjunto.
@@ -1988,8 +1994,10 @@ from total_créditos_dept;
 
 **** Operaciones proyección
 - Devuelve su relación de atributos excluyendo los no declarados.
+- Al ser conjuntos *se eliminan las tuplas duplicadas*.
 - $\Pi$ denota proyección
       - $\Pi_{ID, nombre, sueldo}(profesor)$
+      - Tan solo los atributos ID, nombre y suelto.
 
 **** Composición de operaciones relacionales
 - El resultado de una operación relacional es una relación.
