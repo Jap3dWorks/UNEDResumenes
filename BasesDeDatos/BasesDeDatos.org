@@ -3502,7 +3502,6 @@ DEV (R1,R2,...,Ri);
 
 *** Mapas de bits y árboles B+
 
-
 * Notes
 ** mysql Service
 - Done using podman, documented in ORG ROAM.
