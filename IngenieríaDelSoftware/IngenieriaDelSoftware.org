@@ -314,7 +314,7 @@
 - Si el cliente no existe por diferentes motivos, hay que buscarlo mediante documentación exhaustiva sobre el tema.
 
 *** Objetivos del análisis
-- Obtener las especificaciones que debe cumplir el sistema a desarrollar.
+- Obtener las *especificaciones* que debe cumplir el sistema a desarrollar.
 - Se descartan la exigencias inalcanzables (por ser imposibles o por los recursos de los que se dispone).
 - Propiedades de un modelo global del sistema.
       - Completo y sin omisiones.

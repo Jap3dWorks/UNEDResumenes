@@ -2180,7 +2180,22 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 *** Potencia expresiva de los lenguajes
 - Equivalente al algebra relacional básica.
 
-** El cálcula relacional de dominios
+*** Ejemplo de consultas
+- $\{t | t \in profesor \land t[sueldo] > 80000 \}$
+- $\{t | \exists s \in profesor(t[ID] = s[ID] \land s[sueldo] > 80000)\}$
+      - Devuelve todos los posibles $t$ que cumplen el predicado.
+      - La forma $\exists a \in x(Q(a))$ ...
+      - ... existe una tupla $a$ perteneciente a $x$ tal que cumple el predicado $Q$.
+
+- $\\\{t| \exists s \in profesor(t[nombre] = s[nombre] \land \\
+      \exists u \in departamento (u[nombre\_dept] = s[nombre\_dept] \land u[edificio] = "Watson"))\}$
+
+- $\\\{t | \exists s \in seccion (t[asignatura\_id] = s[asignatura\_id]) \land \\
+  s[semestre] = "Otoño" \land s[ano] = 2009 \lor \\
+  \exists u \in seccion(u[asignatura\_id] = t[asignatura\_id] \land \\
+  u[semestre] = "Primavera" \land u[ano] = 2010)\}$
+
+** El cálculo relacional de dominios
 - Usa variables de dominio.
       - Toma los valores del dominio de un atributo.
 - Es la base del lenguaje *QBE*.
@@ -2766,6 +2781,23 @@ DEV (R1,R2,...,Ri);
 - [id:FBDatos] pag 160
 - clave $\to \to$ atributo
 
+- A ->> B : un valor de A determina un conjunto de valores de B (y el conjunto es independiente de otros atributos).  
+
+- En una relación con atributos A, B, C (A clave parcial o total):
+      - Si para un valor de A existe un conjunto de valores de B y un conjunto de valores de C (independientes entre sí), entonces:
+      - A ->> B y A ->> C
+      - Y la relación contiene el producto cartesiano de los valores de B y C para cada A.
+
+- Se eliminan en la 4FN.
+
+- Formalmente $\alpha \to \to \beta$ si
+      - Para todo par de tuplas de $R$ $t_1$ y $t_2$ tales que $t_1[\alpha] = t_2[\alpha]$ existen $t_3$ y $t_4$ tal que:
+      - $t_1[\alpha] = t_2[\alpha] = t_3[\alpha] = t_4[\alpha]$
+      - $t_3[\beta] = t_1[\beta]$
+      - $t_3[R - \beta] = t_2[R - \beta]$
+      - $t_4[\beta] = t_2[\beta]$
+      - $t_4[R - \beta] = t_1[R - \beta]$
+
 ** Proceso de diseño de la base de datos
 
 ** Modelado de datos temporales
@@ -3340,6 +3372,7 @@ DEV (R1,R2,...,Ri);
       - Se asocian a cada clave los registros asociados.
       - Los registros a su vez pueden seguir un orden.
 - *Índice con agrupación* : los índices siguen un orden.
+      - Mismo orden que el archivo que contiene los registros de datos.
       - También se conocen como *índices primarios*.
       - *Archivos secuenciales de agrupación* : Los archivos con los índices ordenados secuencialmente.
 - *Índices sin agrupación* : Índices que cuyo orden secuencial es diferente al orden del archivo.
