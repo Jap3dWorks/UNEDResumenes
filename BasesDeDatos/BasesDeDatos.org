@@ -2386,9 +2386,9 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
             - Se subrallan con línea discontinua.
       - La clave primaria del conjunto de entidades débiles se forma con la clave primaria de la entidad identificadora más el conjunto discriminador de la entidad débil.
 - *Conjunto de entidades fuertes* : Sí que pueden formar una clave primaria.
-- Hay ciertos cambios en la notación de entidades débiles.
+- Notación para entidades débiles.
       - El discriminador se subraya con línea discontinua.
-      - Se usa rombo doble para las relaciones que conectan a la *entidad débil* con su *entidad fuerte*.
+      - Se usa *rombo doble* para las relaciones que conectan a la *entidad débil* con su *entidad fuerte*.
 
 ** Reducción a esquemas relacionales
 - [id:FBDatos] pag 128
@@ -3462,7 +3462,9 @@ DEV (R1,R2,...,Ri);
             - Se usa para encadenar juntos los nodos hojas
                   - Como una marca o puntero a la siguiente hoja.
             - Procesamiento secuencial eficiente.
+      - Cada nodo interno tiene entre $n/2$ y $n$ hijos.
       - Cada nodo hoja debe contener desde $(n-1)/2$ hasta $n-1$ valores.
+            - Diría que más bien $ceil((n-1)/2)$.
 - Estructura de un nodo es
       - [P1 | K1 | ... | Pn-1 | Kn-1 | Pn]
 - Los nodos internos forman una estructura multinivel.
