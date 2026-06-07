@@ -3518,7 +3518,6 @@ DEV (R1,R2,...,Ri);
       - SI NO cabe hay que dividir el cajón
             - Puede ser que necesitemos incrementar el número de bits de los valores hash.
 
-
 ** Comparación entre la indexación ordenada y la asociación
 - La mayoría dan soporte a árboles $B^+$ y a alguna forma de asociación.
 
