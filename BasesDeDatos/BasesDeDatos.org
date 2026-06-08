@@ -682,6 +682,7 @@ having count(ID) >= 2;
 
 *** Agregación con valores nulos y valores booleanos
 - todas excepto *count* ignoran los null.
+      - Osea count cuanta las tuplas con valores NULL.
 
 - En el siguiente caso COUNT ignora los valores null, porque SUM hace de filtro.
     
@@ -763,7 +764,7 @@ where semestre = 'Otoño' and año=2000 and
                                                       --  misma asignatura
 #+end_src
 
-- *Subconsulta correlación*, subconsulta que usa un nombre de correlación de una consulta externa.
+- *Subconsulta correlación (correlacionada)*, subconsulta que usa un nombre de correlación de una consulta externa.
       - Se evalua una vez por cada fila externa.
 
 *** Comprobación de la ausencia de tuplas duplicadas
@@ -2278,10 +2279,13 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - *entidad* : cosa y objeto distinguible de los demás.
       - El conjunto de sus propiedades hace que se le pueda identificar de forma unívoca.
       - Cada persona de la universidad.
+      - sería la tupla en una relación (fila en tabla).
 - *conjunto de entidades* : Agrupa entidades del mismo tipo que comparte propiedades o atributos.
       - No tienen porque se conjuntos disjuntos.
       - Conjunto de todos los profesores de una universidad.
+      - La tabla (relación).
 - *extensión* de un conjunto de entidades se refiere a la colección real de entidades.
+      - La tabla rellena.
 
 *** Conjuntos de relaciones
 - *relación* : Asociación entre varias entidades.
@@ -3136,9 +3140,9 @@ DEV (R1,R2,...,Ri);
 
 *** Mejora del rendimiento mediante el paralelismo
 - Aumenta el número de accesos simultáneos a n si hay n discos.
-- *Distribución en bits*: $n$ discos, el disco $i$ almacena el bit $i$ de una palabra de $n$ bits.
+- *Distribución en bits (entrelazamiento)*: $n$ discos, el disco $i$ almacena el bit $i$ de una palabra de $n$ bits.
       - Aumenta el tamaño de los sectores por $n$ y el acceso es $n$ veces más rápido.
-- *Distribución nivel de bloques* : $n$ discos, el disco $i$ almacena el bloque $i$.
+- *Distribución nivel de bloques (entrelazamiento)*: $n$ discos, el disco $i$ almacena el bloque $i$.
       - $d = i\ mod\ n$
             - $d$ es el número de disco
             - $i$ es el número de bloque
@@ -3206,7 +3210,7 @@ DEV (R1,R2,...,Ri);
 - DVD
       - 4.7 GB una capa (DVD-5) ; 8.5 GB dos capas (DVD-9).
       - 9.4 - 17 GB en dos caras.
-      - tbúsqueda 100ms
+      - t.búsqueda 100ms
       - 8-20 MBps
 - Blue-ray
       - 27 - 54 GB
@@ -3288,7 +3292,7 @@ DEV (R1,R2,...,Ri);
       - En algún momento será necesario *reorganizar* los datos.
 
 *** Organización de archivos en agrupaciones de varias tablas
-- [id:FBDatos] pag 209
+- [[[#FBDatos]]] pag 209
 - Muchos sistemas de bases de datos de gran tamaño no utilizan el sistema de archivos del sistema operativo subyacente.
       - Sino que se asigna un archivo de gran tamaño que la base de datos administra.
             - La Base de datos guarda las relaciones.
@@ -3341,11 +3345,12 @@ DEV (R1,R2,...,Ri);
       - *Bloques clavados* : Para que se puede recuperar de las caídas ...
             - ... hay que restringir las veces que se puede escribir el bloque en disco.
             - un *bloque clavado* no se puede escribir en disco.
+            - El objetivo es no corromper los datos en momentos delicados.
       - *Salida forzada de los bloques* : Ocasiones en las que hay que volver a escribir los bloques en disco.
 
 *** Políticas para la sustitución de la memoria intermedia
 - [id:FBDatos] pag 212
-- LRU
+- LRU : Last recently used, Se refiere al bloque en memoria con más tiempo si ser usado.
 - *Extracción inmediata*: Estratégia basada en marcar como borrable los bloques en memoria intermedia que ya no son necesarios en la consulta.
 - MRU : Estratégia de borrado de los datos usados más recientes.
 
