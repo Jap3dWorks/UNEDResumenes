@@ -934,7 +934,7 @@ insert into profesor
 
 #+begin_src sql
 update profesor
-set sueldo = sueldo * 1.05;  -- aquí igual es asignación
+set sueldo = sueldo * 1.05;  -- con el SET = es asignación
 #+end_src  
 
 - Usando *where*.
@@ -962,7 +962,7 @@ where sueldo < (select avg(sueldo) from profesor);
 update profesor
 set sueldo = case
              when sueldo <= 100000 then sueldo * 1.05
-             when <pred2> then <resultado>             -- Ejemplo de la estructura
+             when <pred2> then <resultado>       -- Ejemplo de la estructura
              ...
              else sueldo * 1.03
              end
@@ -1202,7 +1202,7 @@ create table asignatura
 *** Condiciones de comprobación complejas y asertos
 - *aserto* : una condición que la base de datos debe satisfacer siempre.
 - Pueden introducer mucha sobrecarga.
-- Pocas implementaciones lo soportan.
+- *Pocas implementaciones lo soportan*.
 
 #+begin_src sql
 create assertion <nombre_aserto> check <predicado>;
@@ -3381,6 +3381,7 @@ DEV (R1,R2,...,Ri);
       - También se conocen como *índices primarios*.
       - *Archivos secuenciales de agrupación* : Los archivos con los índices ordenados secuencialmente.
 - *Índices sin agrupación* : Índices que cuyo orden secuencial es diferente al orden del archivo.
+      - también conocido como índice secundario.
 
 *** Índices densos y dispersos
 - [[[#FBDatos]]] pag 218
