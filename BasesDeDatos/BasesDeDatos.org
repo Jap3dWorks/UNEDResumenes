@@ -308,7 +308,7 @@ create table departamento (
 
 * Introducción a SQL
 ** Componentes de SQL
-- Creo que se considera declarativo
+- Se considera procedimental.
 - *LDD*, lenguaje de definición de datos.
 - *LMD*, lenguaje interactivo de manipulación de datos.
 - *Integridad*, el LDD puede especificar las restricciones de integridad. Las actualizaciones que violan la integridad se rechazan.
