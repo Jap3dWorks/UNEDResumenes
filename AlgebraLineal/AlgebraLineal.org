@@ -102,7 +102,6 @@ J = \left(\begin{array}{cc|cc}
 \end{array} \right)
 \end{equation*}
 
-
 - Un autovalor $\lambda_i$ tiene tantos bloques Jordan como su multiplicidad geométrica $g_i$.
       - Se debe igualar la multiplicidad algebraica en la diagonal de la matriz Jordan.
 - Un subespacio $U$ de $V$ es *invariante* por un endomorfismo $f$ de $V$, o $f-invariante$, si se cumple $f(U) \subseteq U$.
@@ -117,9 +116,20 @@ J = \left(\begin{array}{cc|cc}
       - El subespacio propio generalizado $K^1(\lambda) = V_{\lambda}$
       - $M(\lambda)$ es el subespacio $K^i(\lambda)$ máximo.
             - $dim M(\lambda) = a_{\lambda}$.
-- Propiedades de *Subespacio propio generalizaods* ([[id:AlgbLin]] pag 218)
-      - Los subespacios propios generalizados son f-invariantes.
-      - ...
+
+- Propiedades de *Subespacio propio generalizados* ([[id:AlgbLin]] pag 218)
+      1. Los subespacios propios generalizados son f-invariantes.
+      2. $K^i(\lambda) \subseteq K^{i+1} (\lambda)$
+      3. $v \in K^i(k)$ si y solo si $(f - \lambda Id)(v) \in k^{i-1}(\lambda)$
+      4. Existe un $k > 0$ tal que se tiene la cadena ascendente de subespacios hasta alcanzar uno de dimensión máxima.
+             - $V_{\lambda} = K^1(\lambda) \subsetneq K^2(\lambda) \subsetneq \cdots \subsetneq K^k(\lambda) = \cdots = k^j(\lambda)$, para $j > k$
+             - Se denomina *subespacio máximo* asociado a $\lambda$ al subespacio
+               $M(\lambda) = k^k(\lamdba) = Ker(f-\lambda Id)^k$
+      5. La diferencia entre subsespacios generalizados es decreciente.
+             - $d_i = dim K^i(\lambda)$, para $i = 1,2,\cdots$
+             - $r_i = d_i - d_{i-1}$, para $i=2,3,\cdots$
+             - $r_2 \geq r_3 \geq \cdots \geq r_k$
+
 - *Base asociada a un bloque de Jordan* de orden n: ([[id:AlgbLin]] pag 215)
       - $B=\{v_1, (f-\lambda Id)(v_1), \dots, (f-\lambda Id)^{n-1}(v_1)\}$
             - $v_1 \in Ker(f-\lambda Id)^n - Ker(f - \lambda Id)^{n-1}$
@@ -127,6 +137,8 @@ J = \left(\begin{array}{cc|cc}
                   - generalizando, siendo $v_i$ un vector del subpespacio $k^r$ no presente en $k^{r-1}$.
                   - $v_i$ forma parte de la base asociada a un blque Jordan.
                   - El conjunto de bases forman la matriz $P$ tal que $P^{-1}AP=J$.
+
+- La *dimensión* del subespacio máximo $M(\lambda)$ coincide con la multiplicidad algebraica de $\lambda$.
 
 - Construcción de la base $P$ tal que $P^{-1}AP = J$
   | dim | dim k^1             |         | ... |         | dim k^n = a_{\lambda}     |   | dimensión de cada subespacio k^i(\lambda)                        |
@@ -145,18 +157,108 @@ J = \left(\begin{array}{cc|cc}
       - Entonces si $B' = \{v_n, \dots, v_1\}$ $\mathfrak{M}_{B'}(f) = B_n(\lambda)^t$
       - $\left(\begin{array}{cc} 0 & 1 \\ 1 & 0 \end{array}\right) \left(\begin{array}{cc} \lambda & 0 \\ 1 & \lambda \end{array}\right) \left(\begin{array}{cc}0 & 1 \\ 1 & 0\end{array}\right) = \left(\begin{array}{cc}\lambda & 1 \\ 0 & \lambda \end{array}\right)$
 
+- *Teorema de existencia* :
+  Sea $f$ un endomorfismo de un espacio vectorial $V$ de *dimensión* $n$.
+  Existe una base $\mathcal{B}$ de $V$ tal que la matriz $\mathfrak{M}_B(f)$ es una matriz de *Jordan* si y solo si
+  $f$ tiene $n$ autovalores contados con su multiplicidad algebraica.
+
+- *Forma canónica de Jordan* :
+  Si existe una base $\mathcal{B}$ de $V$ tal que la matriz de $f$ respecto a dicha
+  base es una matriz de Jordan $J$.
+  Es única salvo permutación de los bloques.
+
+- *Teorema de Jordan* :
+  Sean $f$ y $g$ dos endomorfismos de un espacio vectorial $V$ con $r$ autovalores $\lambda$ distintos que
+  admiten forma canónica de Jordan y sus polinomios característicos coinciden.
+  Entonces son *linealmente equivalentes* (semejantes, $F = P^{-1}GP$ ) si y solo si
+  $\displaystyle dim K_f^i(\lambda_j) = dim K_g^i(\lambda_j)$ para todo $j=1,\cdots,r$; $i=1,2,\cdots$
+
 ** Forma Real de Jordan
+
 [[id:AlgbLin]] pag 231
-- Si $\lambda=a+bi$ es una raiz compleja de $p_f(\lambda)$ el conjugado también lo es.
+- Si $\lambda=a+bi$ es una raiz compleja de $p_f(\lambda)$ el *conjugado también lo es*.
       - $\lambda-a+bi$ el conjugado es $\bar{\lambda}=a-bi$
+
+- Cada vez que tengamos raíces complejas conjugadas en la matriz canónica real aparecerán bloques 2x2 tal que
+  $\displaystyle \left( \begin{array}{cc} a & b \\ -b & a \end{array}\right)$
+  
 - $\hat{V}$ es la *extensión compleja* de $V$.
       - $\hat{V}$ es un espacio vectorial complejo de la misma dimensión que $V$.
       - $\hat{V} = \{u + wi\ :\ u,w \in V\}$
       - $V \subset \hat{V}$
 - Si $B$ es una base de $V$ también es una base de $\hat{V}$
 
+- *Extensión compleja* de $f$ es $\hat{f}$ de $\hat{V}$.
+      - $\displaystyle \hat{f}(u + wi) = f(u) + f(w)i$
+      - $p_f(\lambda) = p_{\hat{f}}(\lambda) = det(A - \lambda Id)$
 
+- Si $\mathcal{B} = \{v_1, \dots ,v_r\}$ es una base de Jordan de $M(\lambda)$,
+  entonces $\bar{\mathcal{B}} = \{\bar{v_1}, \dots, \bar{v_r}\}$ es una base de Jordan $M(\bar{\lambda})$.
+      - $\lambda$ y $\bar{\lambda}$ Generan bloques jordan $B(\lambda)$ y $B(\bar{\lambda})$ con la misma estructura.
 
+- *Forma de Jordan Real* $J_{\mathbb{R}}(f)$ :
+      - Se forma a partir de la forma compleja $\hat{J}$.
+      - Cambiamos bloques complejos $B_j(\lambda)$ $B_j(\bar{\lambda})$ por un bloque $C_{2j}(\lambda)$.
+
+      - $$
+        C_{2j}(\lambda) = \left( \begin{array}{cccc}
+        C(\lambda) & 0 & 0 & 0 \\
+        I_2 & C(\lambda) & 0 & 0 \\
+        0 & \ddots & \ddots & 0 \\
+        0 & 0 & I_2 & C(\lambda)
+        \end{array}
+        \right)
+        $$
+
+      - con $C(\lambda) = \left(\begin{array}{cc} a & b \\ -b & a \end{array} \right)$
+      - $I_2 = \left( \begin{array}{cc} 1 & 0 \\ 0 & 1 \end{array} \right)$
+      - Sustituyendo en $B_j(\lambda)$ cada 1 por $I_2$ y cada $\lambda$ por $C(\lambda)$
+
+- $B' = \{v_1, v_2, u_1, u_2\}$ forman una base tal que $\mathfrak{M}_{B'}(f) = J_{\mathbb{R}}(f)$.
+      - $f$ ya está en forma compleja de Jordan.
+        Primero necesitamos $B$ como la base de la forma canónica compleja de Jordan.
+      - $v$ y $u$ son los vectores complejos de la base de la forma compleja de Jordan.
+            - $u$ el propio autovector.
+      - $v = v_1 + v_2i$ y $u = u_1 + u_2i$
+      - Se generaliza a todos lo bloques Jordan de la matriz.
+
+* Subespacios invariantes
+
+** Polinomio mínimo
+- $p(t)$ es *polinomio anulador* de $f$ si $p(f)$ es un endomorfismo nulo.
+      - $p(f)=0$ o $p(A)=0$
+
+- *Teorema de Cayler-Hamilton*
+  El *polinomio característico* de un endomorfismo es un polinomio anulador de $f$.
+        
+- Sea $p(t) \in \mathbb{K}[t]$ un polinomio anulador de un endomorfismo de $f$ de $V$.
+  Si $p=p_1 . p_2$ siendo $p_1$ y $p_2$ de grado igual o mayor a 1, tales que su máximo común divisor es una *constante*, entonces
+
+  $V = Ker(p_1(f)) \oplus ker(p_2(f))$
+
+- Todo autovalor de un endomorfismo es raiz de cualquier polinomio anulador de $f$.
+
+- *Polinomio mónimo* : el coeficiente principal es $a_k=1$.
+- *Polinomio mínimo anulador* :
+  Polinomio mónico $mf(t)$ de $\mathbb{K}[t]$ de grado mínimo que anula a $f$.
+
+- Todo polinomio anulador de un endomorfismo es múltiplo del *polinomio mínimo*.
+- El polinomio mínimo es divisor del polinomio caracterísitco, y tiene sus mismas raizes.
+  Pero no la misma multiplicidad.
+
+- Sea un endomorfismo $f$ de un $\mathbb{K}$-espacio vectorial de dimensión $n$ cuyo polinomio característico es de la forma
+  $p_f(t) = (-1)^n(t-\lambda_1)^{\alpha_1}\cdots (t-\lambda_k)^{\alpha_k}$,    $\alpha_1 + \cdots + \alpha_k = n$ 
+  El subespacio máximo asociado a $\lambda_i$ es $M(\lambda_i) = Ker(f - \lambda_i Id)^{l_i}$,
+  El polinomio mínimo anulador de $f$ es:
+  $$
+  m_f(t) = (t-\lambda_1)^{l_1} \cdots (t-\lambda_k)^{l_k}
+  $$
+
+- $f$ es diagonalizable si y solo si su polinomio mínimo no tiene raíces múltiples.
+
+- Si $A \in \mathfrak{M}_n(\mathbb{K})$ es una matriz cuyo polinomio mínimo es de grado $m$,
+  entonces $m$ es el menor entero positivo tal que las matrizes
+  $A^m, A^{m-1}, \dots , A, A^0=I$ son linealmente dependientes.
 
 * Bibliografía
 ** Algebra Lineal y Geometría Vectorial
