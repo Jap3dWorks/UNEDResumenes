@@ -260,6 +260,21 @@ J = \left(\begin{array}{cc|cc}
   entonces $m$ es el menor entero positivo tal que las matrizes
   $A^m, A^{m-1}, \dots , A, A^0=I$ son linealmente dependientes.
 
+* Isometrías vectoriales
+** Definición y caracterizaciónes
+
+- Sean $(V, <,>)$ y $(V',<,>')$ dos espacios vectoriales euclídeos. Una aplicación lineal $f: V \to V'$ es una *isometría vectorial* o *transformación ortogonal* si cumple.
+  $<u,v> = <f(u), f(v)>'$ para todo $u,v \in V$
+
+- *Propiedades de las isometrías*
+      1) Conserva la norma: $||u|| = ||f(u)||'$ para todo $u \in V$
+      2) Conserva los ángulos: $\angle(u,v) = \angle(f(u), f(v))$ para todo $u,v \in V$
+      3) Es inyectiva
+      4) Si $\dim V = \dim V'$, entonces es un isomorfismo.
+      5) Transforma una base ortonormal de $V$ en una base orotonormal de $V'$
+         
+
+
 * Bibliografía
 ** Algebra Lineal y Geometría Vectorial
 :PROPERTIES:
