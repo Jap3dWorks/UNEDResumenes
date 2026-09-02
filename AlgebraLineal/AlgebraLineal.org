@@ -12,6 +12,18 @@
       - $B = P^{-1}AP$
       - además $rg(A) = rg(AP) = rg(P^{-1}AP) = rg(B)$
 
+** Determinante de una matriz cuadrada
+
+*** Menor Principal
+:PROPERTIES:
+:CUSTOM_ID: menor-principal
+:END:
+
+- *un menor de orden* $k$ de una matriz $A$ es el *determinant* de una submatriz de $A$ de orden $k$.
+- Si $A$ es cuadrada y de orden $n$, un *Menor Principal* $\Delta$ de $A$ de orden $k$, para $k=1, \dots, n$ es:
+  
+      - $\displaystyle \Delta_k (A) = det \left( \begin{array}{ccc} a_{11} & \dots & a_{1k} \\ \vdots & \ddots & \vdots \\ a_{k1} & \dots & a_{kk} \end{array} \right)$
+
 * Espacios Vectoriales
 - Cálculo de *ecuaciones implícitas* de un espacio vectorial [[id:AlgbLin]] pag 136
 
@@ -225,12 +237,13 @@ J = \left(\begin{array}{cc|cc}
 * Subespacios invariantes
 
 ** Polinomio mínimo
+
 - $p(t)$ es *polinomio anulador* de $f$ si $p(f)$ es un endomorfismo nulo.
       - $p(f)=0$ o $p(A)=0$
 
-- *Teorema de Cayler-Hamilton*
+- *Teorema de Cayley-Hamilton*
   El *polinomio característico* de un endomorfismo es un polinomio anulador de $f$.
-        
+
 - Sea $p(t) \in \mathbb{K}[t]$ un polinomio anulador de un endomorfismo de $f$ de $V$.
   Si $p=p_1 . p_2$ siendo $p_1$ y $p_2$ de grado igual o mayor a 1, tales que su máximo común divisor es una *constante*, entonces
 
@@ -246,7 +259,7 @@ J = \left(\begin{array}{cc|cc}
 - El polinomio mínimo es divisor del polinomio caracterísitco, y tiene sus mismas raizes.
   Pero no la misma multiplicidad.
 
-- Sea un endomorfismo $f$ de un $\mathbb{K}$-espacio vectorial de dimensión $n$ cuyo polinomio característico es de la forma
+- Sea un endomorfismo $f$ de un $\mathbb{K}$ -espacio vectorial de dimensión $n$ cuyo polinomio característico es de la forma
   $p_f(t) = (-1)^n(t-\lambda_1)^{\alpha_1}\cdots (t-\lambda_k)^{\alpha_k}$,    $\alpha_1 + \cdots + \alpha_k = n$ 
   El subespacio máximo asociado a $\lambda_i$ es $M(\lambda_i) = Ker(f - \lambda_i Id)^{l_i}$,
   El polinomio mínimo anulador de $f$ es:
@@ -260,6 +273,143 @@ J = \left(\begin{array}{cc|cc}
   entonces $m$ es el menor entero positivo tal que las matrizes
   $A^m, A^{m-1}, \dots , A, A^0=I$ son linealmente dependientes.
 
+* Formas Bilineales o Cuadráticas
+
+** Diagonalización de formas Bilineales simétricas y formas cuadráticas
+
+- *Conjugado de un subconjunto* :
+  Sea $f : V \times V \to \mathbb{K}$ una forma bilineal simétrica, se llama conjugado de un subconjunto $S \subseteq V$ respecto a $f$,
+  se denota por $S^c$, al conjunto formado por todos los vectores que son conjugados de dotos los vectores de $S$:
+  $S^c = \{u \in V : f(u,v) = 0$ para todo $v\in S\}$
+
+  Nótese que es $S^c$ son autoconjugados.
+
+  $V^c = \ker(f)$ y $0^c = V$
+
+- *Propiedades de la conjugación* (demostraciones pag 473) :  
+  Sea $f$ una forma bilineal simétrica y $U$ y $W$ subespacios vectoriales de $V$.
+      1) Si $U \subseteq W$ entonces $W^c \subseteq U^c$
+      2) $U^c + W^c \subseteq (U \cap W)^c$
+      3) $U^c \cap W^c = (U + W)^c$
+      4) $U \subseteq (U^c)^c$
+
+** Clasificación
+
+- *Criterio Sylvester*
+  Sean $A$ una matriz de una forma bilineal *simétrica* real $f : V \times V \to \mathbb{R}$ y $\Delta_k$, $k=1,\dots, n$ los [[#menor-principal][menores principales]] de la matriz $A$. Entonces.
+      - $f$ es *definida positiva* si y sólo si $\Delta_k > 0$ para todo $k=1,\dots,k$
+      - $f$ es *definida negativa* si y sólo si $(-1)^k \Delta_k > 0$ para todo $k=1, \dots, n$. (- + - + ...)
+
+* Espacio Vectorial euclídeo
+** Producto Escalar
+
+** Producto vectorial
+
+- Válido en espacios de dimensión 3 (con el producto escalar canónico).
+
+- *Orientación de una base* : Sea una base $B=\{e_1, e_2, e_3\}$.
+      - Regla de la *mano derecha*.
+            - Se pone *la mano derecha* con los dedos de la palma de la mano alienados con $e_1$ y se doblan los dedos hacia $e_2$ (como queriendo rotar $e_1$ hacia $e_2$).
+      - Base *positivamente orientada* $e_3$ coincide con el pulgar, y tiene determinante positivo.
+      - Base *negativamente orientada* $e_3$ coincide con la dirección opuesta del pulgar, y tiene determinante negativo.
+
+- *Producto vectorial* : $u \wedge v$ , $u$ y $v$ linealmente independientes que pertenecen a un espacio euclídeo tridimensional.
+      - $u \wedge v$ es ortogonal a $u$ y $v$.
+      - $|| u \wedge v|| = ||u||\ ||v|| sen \angle(u,v)$
+      - La orientación de $\{u, v, u \wedge v\}$ es positiva.
+      - Si $u$ y $v$ son linealmente dependientes, entonces $u \wedge v = 0$.
+
+- Sea $B=(e_1, e_2, e_3)$ una base ortonormal positivamente orientada en $V$. Para $u=(u_1, u_2, u_3)_B$ y $v=(v_1, v_2, v_3)_B$ se cumple:
+      - $$\displaystyle u \wedge v = \left(
+        det \left( \begin{array}{cc} u_2 & u_3 \\ v_2 & v_3 \end{array} \right),
+        -det \left( \begin{array}{cc} u_1 & u_3 \\ v_1 & v_3\end{array} \right),
+        det \left( \begin{array}{cc} u_1 & u_2 \\ v_1 & v_2 \end{array} \right) \right)_B$$
+
+      - Otra forma de recordarlo es:
+        $$w = u \wedge v = w_1e_1 + w_2e_2 + w_3e_3 = det \left(\begin{array}{ccc} e_1 & e_2 & e_3 \\ u_1 & u_2 & u_3 \\ v_1 & v_2 & v_3 \end{array}\right)
+        = e_1 \left( \begin{array}{cc} u_2 & u_3 \\ v_2 & v_3 \end{array} \right) -
+         e_2 \left( \begin{array}{cc} u_1 & u_3 \\ v_1 & v_3 \end{array} \right) +
+         e_3 \left( \begin{array}{cc} u_1 & u_2 \\ v_1 & v_2 \end{array} \right)$$
+
+- La longitud $u \wedge v$ es igual al áreal del paralelogramo que determinan los vectores $u$ y $v$.
+
+- *Propiedades del producto vectorial*
+  Para cualquiera vectores $u$, $v$ y $w$ y para todo $\alpha \in \mathbb{R}$ se cumple.
+      - $u \wedge v=0$ si y solo si $u$ y $v$ son linealmente dependientes.
+      - $u \wedge v = - (v \wedge u)$
+      - $u \wedge (v + w) = u \wedge v + u \wedge w$
+      - $(\alpha u) \wedge v = u \wedge \alpha v = \alpha (u \wedge v)$
+
+- *Producto mixto*
+  Sea $B$ una base ortonormal positivamente orientada en $V$ y $u,v,w$ vectores en la base $B$.
+  Se define producto mixto como:
+  
+  $$
+  [u,v,w] = <u \wedge v, w> = det \left( \begin{array}{ccc} u_1 & u_2 & u_3 \\ v_1 & v_2 & v_3 \\ w_1 & w_2 & w_3 \end{array} \right)
+  $$
+
+- El Volumen del paralelepípedo determinado por los vectores $u,v,w$ linealmente independientes de $\mathbb{R}^3 es igual al valor absoluto del producto mixto.
+  $Vol_{paralelepipedo} = |[u,v,w]|$
+
+** Bases ortogonales y ortonormales
+
+*** Método de ortgonalización de Gramm-Schmidt
+
+- *Teorema de Grann-Schmidt*
+  Sean $(V,<,>)$ un espacio vectorial euclídeo y $\mathcal{B} = \{v_1, \dots, v_n\}$ una base de $V$.
+  Entonces los vectores $\{e_1, \dots, e_n\}$ forman una base ortogonal de $V$.
+
+\begin{array}{l}
+e_1  = v_1 \\
+e_2  = v_2 - \frac{<v_2, e_1>}{||e_1||^2}e_1 \\
+\cdots  \\
+e_i  = v_i - \frac{<v_2, e_1>}{||e_1||^2}e_1 - \cdots - \frac{<v_{i-1}, e_{i-1}>}{||e_{i-1}||^2} e_{i-1},\ \ i=2,\dots,n
+\end{array}
+
+y satisfacen:
+
+$L(e_1, \dots, e_i) = L(v_1, \dots, v_i)$ para todo $i=1,\dots,n$
+
+** Diagonalización por semejanza ortogonal
+
+- *Endomorfismo simétrico*
+  Sea $(V, <,>)$ un espacio vectorial euclídeo. Un endomorfismo $f:V \to V$ se dice que es *simétrico* si cumple $<u,f(u)>=<f(u),v>$ para todo $u,v \in V$
+
+- Sea $(V, <,>)$ un espacio vectorial euclídeo. Un endomorfismo $f:V \to V$ es *simétrico* sy y sólo si su *matriz respecto a cualquier base* $\mathcal{B}$ *ortonormal* de $V$ es simétrica.
+
+- Si $f$ es un *endomorfismo simétrico* de un espacio vectorial eucídeo, entonces.
+      1) Todos los autovalores de $f$ son reales.
+      2) Los subespacios propios asociados a autovalores distintos son ortogonales.
+  
+- *Teorema espectral*
+  Sea $f$ un endomorfismo simétrico de un espacio vectorial eucídeo $(V,<,>)$ de dimensión finita, $V \neq 0$. Entonces, existe una base ortonormal de $V$ formada por autovectores de $f$.
+
+  *En términos matriciales*
+  Toda matriz simétrica Real $A$ de orden $n$ es *ortogonalmente diagonalizable*, es decir, existe una matriz ortogonal $P$ y una matriz diagonal $D$ tal que $D=P^{-1}AP=P^tAP$
+
+  Es decir $A$ es *congruente* y *semejante* a la vez a una matriz diagonal $D$.
+
+** Diagonalización por semejanza ortogonal
+
+- Un endomorfismo $f : V \to V$ es *simétrico* si sumple
+  $<u,f(v)> = <f(u), v>$ para todo $u,v \in V$
+  
+- Sea $(V, <,>)$ un espacio vectorial eucídeo.
+  Un endomorfismo $f : V \to V$ es simétrico si y sólo si su matriz respecto a cualquier base $B$ *ortonormal* de $V$ es *simétrica*.
+
+- Si $f$ es un *endomorfismo simétrico* entonces.
+      1) Todos los autovalores de $f$ son reales.
+      2) Los subespacios propios sociados a autovalores distintos son *ortogonales*.
+         Además es diagonalizable.
+
+- *Teorema Espectral* :
+   Sea $f$ un *endomorfismo simétrico* de un espacio vectorial euclídeo $(V, <,>)$ de dimensión finita, $V \neq 0$.
+   Entonces, existe una *base ortonormal* de $V$ formada por autovectores de $f$.
+
+- Toda matriz simétrica $A$ de orden $n$ es *ortogonalmente diagonalizable*, es decir, existe una matriz ortogonal $P$ y una matriz diagonal $D$ tal que $D=P^{-1}AP=P^{t}AP$
+  - $A$ es congruente y semejante a una matriz diagonal $D$.
+    La matriz de los autovectores.
+  
 * Isometrías vectoriales
 ** Definición y caracterizaciónes
 
@@ -274,6 +424,15 @@ J = \left(\begin{array}{cc|cc}
       5) Transforma una base ortonormal de $V$ en una base orotonormal de $V'$
          
 
+** Teorema de Cartan-Dieudonné
+
+- *Teorema de Cartan-Dieudonné*
+  Toda isometría de $f$ de un espacio vectorial euclídeo $(V,<,>)$, de dimensión $n$, es de la forma
+
+  $f = \sigma_1 \circ \cdots \circ \sigma_k$, $k \leq n$
+
+  Siendo $\sigma_i$ simetrías ortogonales de hiperplano.
+  $f$ se puede descomponer a lo más en $n$ simetrías ortogonales de hiperplano.
 
 * Bibliografía
 ** Algebra Lineal y Geometría Vectorial
