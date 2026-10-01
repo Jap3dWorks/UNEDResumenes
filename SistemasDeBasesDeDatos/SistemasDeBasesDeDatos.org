@@ -1,0 +1,108 @@
+#+title: Sistemas De Bases De Datos
+
+#+startup: overview
+
+* Tema 1 : Procesamiento de consultas
+- Capitulo 12 [[#fundts]] pag249
+
+** Descripción General
+
+- Traducción de consultas en alto nivel a expresiones implementadas en el nivel físico.
+- *primitivas de evaluación* : primitivas de álgebra relacional anotadas con instrucciones sobre su evaluación.
+- *plan de evaluación de la consulta* : Secuencia de operaciones primitivas para evaluar una consulta.
+- *Optimización de consultas* : El sistema es el responsable de construir un plan de evaluación óptimo a partir de la consulta de un usuario.
+      - El optimizador estima el coste de cada operación.
+
+** Medidas del coste de una consulta
+
+- Solo tenemos en cuenta el coste de acceso en disco.
+- $T_T$ tiempo transferencia
+- $T_S$ tiempo búsqueda (search)
+- operación que transfiere $b$ bloques y realiza $S$ búsquedas es $bT_T + ST_S$
+- *Tiempo de respuesta* de ejecutar un plan es el tiempo de reloj que lleva ejecutar el plan.
+      - Muy dificil de estimar, la computadora realiza otras actividades.
+            - Depende del contenido en memoria.
+            - En sistemas de varios discos depende de como se distribuyan los datos.
+
+- El acceso a los recursos es un problema con sistemaas con muchas consultas concurrenes.
+- Por ello los optimizadores tratan sobretodo de minimizar el uso de recursos.
+
+** Operación Selección
+
+- *Explorador de archivos* : operador de más bajo nivel para acceder a los datos.
+
+*** Selecciones usando exploración de archivos e índices
+
+- *A1 (búsqueda lineal)* : Se comprueban cada bloque del archivo y todos los registros.
+      - Si los registros están almacenados de forma continua se evitan búsquedas adicionales.
+      - Es aplicable en todos los casos.
+
+- Las estructuras de índices se denominan *caminos de acceso*.
+
+*Exploración con índice* algoritmos que usan índices:
+- *A2 (índice primario, igualdad basada en la clave)*
+- *A3( índice primario, igualdad basada en atributo NO clave)* :
+  Puede ser necesario recuperar varios registros.
+- *A4(indice secundario, igualdad)* :
+  Selecciones con condición de igualdad.
+
+[[#fundts]]  pag 252 tabla con costes de los algoritmos.
+
+*** Selecciones con condiciones de comparación
+
+- *A5(índice primario, comparación)* :
+  índice ordenado primario. caso $A \geq v$, se busca el primer registro en el índice ($A=v$).
+  el esplorador recorre desde el registro que cumple $A=V$ hasta el final el archivo y devuelve las tuplas que cumplen la condición.
+- $A6(índice secundario, comparación)* :
+  índice secundario ordenado. Le penaliza mucho tener que estar accediando a bloques de disco para obtener los registros reales.
+      - en el índice secundario almacenamos los punteros en DISCO a los registros.
+
+*** Implementación de selecciones complejas
+
+- *Selección conjuntiva* : $\sigma_{\theta_1 \land \dots \land \theta_n}(r)$
+- *Selección disyuntiva* : $\sigma_{\theta_1 \lor \dots \lor \theta_n}(r)$ :
+  unión de todos lo registros que cmplen alguna condición
+- *Negación* : $\sigma_{\lnot \theta}(r)$ :
+  Complemento a todos los registros que cumplen $\theta$.
+
+
+- *A7(selección conjuntiva utilizando un índice)*
+  Se determina si para algún atributo hay algún camino de acceso para alguna de las condiciones simples.
+  Si lo hay se recuperan estos archivos con algoritmos A2-A6.
+  Se comprueban el resto de condiciones en memoria intermedia.
+- *A8(Selección conjuntiva utilizando un índice compuesto)*
+  indice compuesto por ejemplo igualdades entre atributos.
+- *A9(Selección conjuntiva mediante la intersección de identificadores)*
+  La intersección de todos los punteros recuperados.
+  Se recuperan con un índices de cada atributo involucrado.
+  Si todos los atributos involucrados tienen índice, no se recuperan registros innecesarios.
+- *A10(Selección disyuntiva mediante la unión de identificadores)*
+  Si se tienen caminos de acceso de todos los atributos involucrados en alguna de las condiciones, la unión de todos los punteros resultado es la disyunción.
+
+** Ordenación
+
+*** Algoritmo ordenación por mezcla externa
+
+
+* Tema 2 : Optimización de consultas
+
+* Tema 3 : Transacciones
+
+* Tema 4 : Control de concurrencia 
+
+* Tema 6 : Arquitecturas de sistemas de bases de datos
+
+* Tema 7 : Bases de datos distribuidas
+
+* Tema 8 : Modelos de bases de datos no relacionales
+- hay tipo *SQL* y tipo *NO SQL*
+
+* Bibliografía
+** Fundamentos de bases de datos
+:PROPERTIES:
+:CUSTOM_ID: fundts
+:AUTHOR: Silberschatz, Korth, Sudarshan
+:EDITORIAL: Mc Graw Hill Education
+:EDITION: 6
+:END:
+

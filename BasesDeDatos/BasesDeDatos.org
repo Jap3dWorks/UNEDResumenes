@@ -2582,8 +2582,9 @@ Cada grupo tiene valores iguales para $G_1,\dots,G_n$.
 - *superclave* : sea r(R) un esquema de relación, $K$ es una superclave de r(R).
       - para cualquier ejemplar legal de r(R), para todo par de tuplas $t_1 \neq t_2$
       - $t_1[k] \neq t_2[k]$
-- ID, nombre_depth $\to$ nombre, sueldo, edificio, presupuesto
-      - ID, nombre_dept son las superclaves.
+- Ejemplo:
+      - ID, nombre_depth $\to$ nombre, sueldo, edificio, presupuesto
+            - ID, nombre_dept son las superclaves.
 - Las dependencias funcionales se emplean de dos maneras:
       - Probar las relaciones y ver si satisfacen un conjunto F de dependencias funcionales.
       - Especificar las restricciones del conjunto de relaciones legales.

@@ -348,8 +348,11 @@ J = \left(\begin{array}{cc|cc}
   [u,v,w] = <u \wedge v, w> = det \left( \begin{array}{ccc} u_1 & u_2 & u_3 \\ v_1 & v_2 & v_3 \\ w_1 & w_2 & w_3 \end{array} \right)
   $$
 
-- El Volumen del paralelepípedo determinado por los vectores $u,v,w$ linealmente independientes de $\mathbb{R}^3 es igual al valor absoluto del producto mixto.
-  $Vol_{paralelepipedo} = |[u,v,w]|$
+- El Volumen del paralelepípedo determinado por los vectores $u,v,w$ linealmente independientes de $\mathbb{R}^3$ es igual al valor absoluto del producto mixto.
+  $\text{Vol}_{paralelepipedo} = |[u,v,w]|$
+
+- *Lagrange's Identity*
+  $\displaystyle <(u \land v), (w \land x)> = <u,w><v,x> - <v,w><u,x>$
 
 ** Bases ortogonales y ortonormales
 
