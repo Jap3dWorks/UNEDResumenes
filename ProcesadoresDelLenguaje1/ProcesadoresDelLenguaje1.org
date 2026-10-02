@@ -1,0 +1,24 @@
+#+title: Procesadores Del Lenguaje 1
+
+*Bookmark* : [[#comp]] pag 39
+
+* Introducción
+*compilador* : programa que lee un programa en un lenguaje fuente y lo traduce en otro lenguaje.
+Un compilador reporta errores durante el proceso de traducción.
+
+*intérprete* : da la apariencia de ejecutar directamente las operaciones especificadas en el programa origen.
+
+* Análisis Léxico
+** TODO Plan de trabajo
+apartados 3.1, 3.3, 3.6, 3.7, 3.9.1, 3.9.2, 3.9.3, 3.9.4, 3.9.5 y 3.9.6.
+uso de Lex/jLex, apartado 3.5 (sintaxis jLex).
+
+
+* Bibliografía
+** Compiladores principios, técnicas y herramientas
+:PROPERTIES:
+:CUSTOM_ID: comp
+:EDITORIAL: digital o pearson
+:END:
+[[file:/var/mnt/data/Devs/UNED/UNEDDocs/ProcesadoresDelLenguaje1/Compiladores Principios Tecnicas y Herramientas, Aho (2a Edicion).pdf][bool file]]
+

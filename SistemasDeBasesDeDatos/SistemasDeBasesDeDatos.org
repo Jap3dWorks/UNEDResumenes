@@ -82,7 +82,69 @@
 ** Ordenación
 
 *** Algoritmo ordenación por mezcla externa
+*ordenación externa* : ordenación de relaciones que no caben en memoria.
 
+*Algoritmo de ordenación por mezcla externa*: Sea $M$ el número de bloques en la memoria intermedia.
+1. Se crean varias *secuencias* ordenadas.
+   #+begin_src pseudocode
+   i <- 0
+   REPEAT
+     leer M bloqies, ordenar la parte de la relación que está en memoria;
+     escribir los datos ordenados para archivo de secuencias Ri;
+     i <- i+1
+   UNTIL final de la relación  
+   #+end_src
+2. Las secuencias se mezclan. El número total de secuencias $N$ es menor que $M$.
+   Se reserva un marco de página para cada secuencia.
+   
+   #+begin_src pseudocode
+   leer un bloque de cada uno de los N archivos de Ri en un bloqu de memoria intermedia;
+   REPEAT
+     elegit la primera tupla;
+     escribir la tupla y suplrimirla de la página de mem intermedia;
+     IF página de memoria intermedia de alguna secuencia Ri está vacia AND NOT fin-archivo(Ri)
+     THEN
+       leer siguiente bloque Ri en el bloque de la memoria intermedia;
+   UNTIL todas páginas de memoria intermedia estén vacías       
+   #+end_src
+
+*** Analisis del coste de la ordenación po rmezcla externa
+
+*** Operación reunión
+
+*equirreunión* : tipo $r \Join_{r.A=s.B} s$
+
+**** Reunión en bucle anidado
+
+$r \Join_{\theta} s$
+
+#+begin_src pseudocode
+FOR EACH tupla tr IN r DO BEGIN
+  FOR EACH tupla ts IN s DO BEGIN
+    comprobar si el par (tr.ts) satisface la condición \theta;
+    si la cumple añadir (tr.ts) al resultado
+  END
+END  
+#+end_src
+
+Es costoso.
+
+La relación más pequeña mejor en el bucle interno, mejor si cabe en memoria.
+
+**** Reunión en bucle anidado por bloques
+
+Ambas relaciones son más grandes que la memoria principal.
+
+Se busca procesar por bloques.
+
+#+begin_src pseudocode
+FOR EACH bloque Br OF r DO
+  FOR EACH bloque Bs of s DO
+    FOR EACH tupla tr in Br DO
+      FOR EACH tupla ts in Bs DO
+        comprobar si el par (tr.ts) satisface \theta;
+        si la cumple añadir (tr.ts);
+#+end_src
 
 * Tema 2 : Optimización de consultas
 
