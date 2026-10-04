@@ -146,6 +146,38 @@ FOR EACH bloque Br OF r DO
         si la cumple añadir (tr.ts);
 #+end_src
 
+*Costes*:
+- $b_r * b_s] + b_r$ transferencias.
+
+*Optimización*: si mem tiene $M$ bloques, leer $M-2$ bloques de $r$
+- $[b_r/(M-2)]*b_s + b_r$ transferencias de bloque
+- $[b_r/(M-2)]*b_s$ búsquedas (posicionamiento del cabezal de lectura de disco)
+
+**** Reunión por asociación
+pag 258
+
+$h$ es una función hash, se usa sobre el atributo de la reunión.
+asigna valores de $\{0,\dots, n_h\}$
+
+$r_0, \dots, r_i$ particiones de la relación $r$, $i$ es el valor de $h(t_s[\text{attrib reunión}])$ para cada $t_s \in s$.
+análogo para $s_i$.
+
+Solo se compara las tuplas de $r_i$ con las de $s_i$.
+e.g con una reunión por bucle anidado indexada.
+
+*División recursiva*
+# TODO
+
+*Costes*:
+Sin división recursiva.
+- $3(b_r + b_s) + 4n_h$ transferencias de bloques.
+- $2*([b_r/b_b] + [b_s/b_b]) + 2n_h$ búsquedas.
+
+Require división recursiva.
+- $2(b_r + b_s) [log_{M-1}(b_s) - 1] + b_r + b_s$ transferencias de bloques.
+- $2([b_r/b_s] + [b_s/b_r])[log_{M_1}(b_s) - 1]$ búsquedas.
+
+
 * Tema 2 : Optimización de consultas
 
 * Tema 3 : Transacciones
