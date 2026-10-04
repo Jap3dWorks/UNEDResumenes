@@ -110,11 +110,11 @@
 
 *** Analisis del coste de la ordenación po rmezcla externa
 
-*** Operación reunión
+** Operación reunión
 
 *equirreunión* : tipo $r \Join_{r.A=s.B} s$
 
-**** Reunión en bucle anidado
+*** Reunión en bucle anidado
 
 $r \Join_{\theta} s$
 
@@ -131,7 +131,7 @@ Es costoso.
 
 La relación más pequeña mejor en el bucle interno, mejor si cabe en memoria.
 
-**** Reunión en bucle anidado por bloques
+*** Reunión en bucle anidado por bloques
 
 Ambas relaciones son más grandes que la memoria principal.
 
@@ -153,7 +153,7 @@ FOR EACH bloque Br OF r DO
 - $[b_r/(M-2)]*b_s + b_r$ transferencias de bloque
 - $[b_r/(M-2)]*b_s$ búsquedas (posicionamiento del cabezal de lectura de disco)
 
-**** Reunión por asociación
+*** Reunión por asociación
 pag 258
 
 $h$ es una función hash, se usa sobre el atributo de la reunión.
@@ -165,10 +165,47 @@ análogo para $s_i$.
 Solo se compara las tuplas de $r_i$ con las de $s_i$.
 e.g con una reunión por bucle anidado indexada.
 
-*División recursiva*
-# TODO
+Para cada $s_i$ se puede crear un 'indice asociativo (con una funci'on hash $g(\text{atributo})$ diferente a $h$), $s_i$ es la *entrada de construcci'on* y $r_i$ la *entrada de prueba*.
+Gracias a este paso ya se cumple la reuni'on tal que $t_i[\text{attr}]=t_j[\test{attr}]$.
+El 'indice asociatov de $s_i$ se crea en memoria.
 
-*Costes*:
+#+begin_src pseudocode
+// division de s
+FOR-EACH tupla ts IN s DO
+    i <- h(ts[Attr]);
+    Hsi <- Hsi UNION {ts};
+END-FOR
+
+// divisi'on de r
+FOR-EACH tupla tr IN r DO
+    i <- h(tr[Attr]);
+    Hri <- Hri UNION {tr};
+END-FOR
+
+FOR i <- 0 TO n_h DO
+    leer Hsi y construir un indice asociativo en mem;
+    FOR-EACH tupla tr IN Hri DO
+        explorar indice asociativo de Hsi para encontrar las tuplas
+        tal que ts[attr]=tr[attr];
+        FOR-EACH tupla que cumpla la condici'on DO
+            add ts REUNION tr al resultado
+        END-FOR
+    END-FOR
+END-FOR
+#+end_src
+
+**** División recursiva
+
+SI $n_h \geq$ num bloques de memoria ENTONCES es necesario dividir las relaciones en *secuencias* (cada secuencia es un archivo).
+
+Se usan funciones $h_i$ para crear las secuencias, donde $i$ es la iteraci'on de cada partici'on. Por tanto $h_i \neq h_{0,\dots,i-1} \neq h_{i+1,\dots}$
+
+Este proceso se conoce como *divisi'on recursiva*
+
+Una relaci'on NO necesita divisi'on recursiva si $M > n_h + 1$ o equivalentemente $M > (b_s/M) + 1$.
+Se simplifica en $M>\sqrt{b_s}$.
+
+**** Costes:
 Sin división recursiva.
 - $3(b_r + b_s) + 4n_h$ transferencias de bloques.
 - $2*([b_r/b_b] + [b_s/b_b]) + 2n_h$ búsquedas.
@@ -176,7 +213,6 @@ Sin división recursiva.
 Require división recursiva.
 - $2(b_r + b_s) [log_{M-1}(b_s) - 1] + b_r + b_s$ transferencias de bloques.
 - $2([b_r/b_s] + [b_s/b_r])[log_{M_1}(b_s) - 1]$ búsquedas.
-
 
 * Tema 2 : Optimización de consultas
 
