@@ -1,0 +1,201 @@
+#+title: Diseño Y Administración de Sistemas Operativos
+
+*Bookmark* : [[#fsou]] pag 57
+
+* Páginas de interés
+*abreviaturas* : pag 21
+
+
+* 1 Diseño del sistema Operativo UNIX
+[[#fosu]] pag 23
+
+El OS es un programa (denominado núcleo), que controla el hardware.
+
+Nombres típicos del núcleo (varía según distribución)
+- /vmmunix
+- /unix
+- /vmlinuz
+
+El núcleo permanece en memoria principal y solo puede cargarse uno a la vez.
+
+** Servicios Realizados Por el núcleo
+[[#fosu]] pag 35
+
+- *Control de la ejecución de los procesos*
+- *Planificación de los procesos para su ejecución en la CPU*
+- *Asignación de la memoria principal*
+- *Protección del espacio de direcciones de un proceso en ejecución*
+- *Asignación de memoria secundaria para almacenamiento y recuperación eficiente de los datos de usuario*
+- *Regulación del acceso de los procesos a los dispositivos periféricos*
+- *Administración de archivos y dispositivos*
+- *Tratamiento de las interrupciones y excepciones*
+
+** Modos de ejecución
+*** Modo usuario y modo núcleo
+Núcleo permanece siempre en memoria principal
+
+*Proceso actual* : proceso en ejecución
+
+El compilador genera las direcciones en memoria para las variables en una máquina virtual (considerando que no hay otros procesos).
+El núcleo se coordina con el hardware para traducir las direcciones virtuales en direcciones físicas.
+
+Un proceso en *modo usuario* solo puede acceder a una partes de su espacio de direcciones.
+
+Un proceso en *modo núcleo* puede acceder a su espacio de direcciones completo y al espacio de direcciones del núcleo.
+No puede acceder al espacio de direcciones de otros procesos.
+Aclarar que siempre es el propio núcleo quien realiza las acciones en modo núcleo.
+
+Principales casos para pasar de modo usuario a modo núcleo:
+- llamadas a sistema
+- interrupciones (hardware o software)
+- excepciones
+
+*** Tipos de procesos
+Cada proceso hereda el *usuario* y el *grupo* de su progenitor.
+
+Tipos de proceso:
+- de usuario.
+- Demonios.
+  No están asociados a ningún usuario (pertenecen a root).
+  Hijos del proceso *init*.
+- de núcleo o del sistema.
+  pertenecen a root. ejecución en modo núcleo.
+  Su código es parte del núcleo. Tienen un mayor control sobre sus prioridades de planificación.
+
+*** Interrupciones y Excepciones
+Interrumpir a la CPU mediante el reloj del sistema, los periféricos E/S o a los terminales.
+
+las *interrupciones hardware* con eventos asíncronos que ocurren entre la ejecución de dos instrucciones.
+
+*interrrupciones software o traps*, son tratadas de forma síncrona. Se producen al ejecutar ciertas instrucciones especiales.
+
+*Excepciones* eventos síncronos inesperados (normalmente errores). Se producen durante el transcurso de la ejecución de una instrucción.
+
+Las tres son tratadas en modo núcleo por determinadas rutinas del núcleo.
+
+*npi* nivel prioridad de interrupción, permite enmascarar interrupciones.
+*npi* se almacena en un registro de estado del procesador.
+
+el *npi* ayuda al núcleo a centrarse en actividades críticas enmascarando las interrupciones de baja o igual prioridad al *npi*.
+
+el menor *npi* susle ser 0 (nada enmascarado).
+
+** Estructura del sistema operativo UNIX
+*** Nivel usuario
+[[#fsou]] pag 41
+
+Se encuentran los programas *usuario* y *demonio*.
+Interaccionan con el núcleo mediante *llamadas al sistema*.
+
+Formas de llamar al sistema
+- Mediante librerías
+- Forma directa, usando ensamblador.
+
+Al invocar una llamada a sistema se ejecuta una instrucción especial tipo *interrupción software o trap*.
+Provoca una conmutación a modo supervisor.
+
+*** Nivel núcleo
+
+Se encuentran el *subsitema de ficheros* y *subsistema de control de procesos*.
+
+**** Sistema de archivos
+
+Se encuentra la interfaz *nodo-v/sfv* que permite a UNIX soportar diferentes tipos de sistemas de ficheros (Ext4, Btrfs, NTFS, etc)
+
+tipos de fichero:
+- Ficheros ordinarios
+- directorios
+- enlaces simbólicos
+- tuberías : mecanismo que permite la transmisión de un flujo de datos no estructurados de tamaño fijo.
+- Ficheros de dispositivos : Permiten a los procesos comunicarse con periféricos.
+      - Dispositivos modo bloque
+        El dispositivo contiene una array de bloques fijo.
+        La transferencia se realiza mediante la caché de buffers de bloques.
+            - e.g discos y unidades de cinta.
+      - Dispositivos modo carácter
+        No utilizan buffers de almacenamiento.
+            - e.g una impresora.
+
+*manejadores o drivers* : gestionan comunicación con los dispositivos.
+
+**** Subsistema de control de procesos
+
+Se encarga de:
+- sincronización de procesos.
+- comunicación entre procesos.
+- administración de la mem principal.
+- planificación de procesos.
+
+3 módulos en un subsistema de control de procesos
+- *módulo de administración de memoria*.
+  Controla el swapping
+- *módulo de planificación*
+- *módulo de comunicación entre procesos*
+
+**** Módulo de control del hardware
+
+Responsable del manejo de las interrupciones y de la comunicación con el hardware de la máquina.
+
+** Interfaz de usuario para el sistema de ficheros
+
+Un *fichero* permite tanto el acceso secuencial como aleatorio.
+
+El núcleo posibilita el acceso a los contenidos del fichero mediante flujo de bytes (stream).
+
+*directorios* UNIX
+- / : directorio raiz
+      - bin
+      - etc
+      - dev
+      - usr
+
+*** Atributos de un fichero
+
+Se almacenan en los i-nodes.
+
+*** Modo de un fichero
+
+UNIX implementa un modelo de seguridad denominado DAC
+cafa fichero unix tiene una máscara de 16 bits, máscad de modo.
+
+[15-12] tipo de fichero
+[11-9] S_ISUID, S_ISGID, S_ISVTX
+[8-0] : permisos propietario, permisos grupo, permisos otros
+
+modificables por el usuario [11-0].
+
+*** Descriptores de ficheros
+pag 51
+
+Cada proceso posee su propia tabla de descriptores de ficheros.
+
+Un descriptor es un número entero, un índice en la tabla.
+
+Ficheros que ocupan las primeras entradas de la tabla de descriptores.
+- 0, stdin
+- 1, stdout
+- 2, stderr
+
+Por defecto los archivos son accedidos secuencialmente.
+Cada descriptor tiene su propio puntero de lectura/escritura.
+
+*** Operaciones de entrada/salida sobre un fichero
+**** Apertura y cierre de un fichero
+
+
+Los ficheros abiertos son cerrados automáticamente cuando un proceso termina. También se puece usar *close*.
+
+**** Máscara de modo de un usuario umask
+Cada usuario tiene un umask.
+Se combina con el modo de un archivo.
+
+modo_efectivo = ~umask & modo
+
+* Bibliografía
+** Fundamentos del sistema operativo UNIX
+:PROPERTIES:
+:CUSTOM_ID: fsou
+:EDITION: Segunda
+:EDITORIAL: UNED
+:AUTHOR: José Manuél Díaz Martínez, Rocío Muñoz Mansilla, Dictino Chaos García
+:END:
