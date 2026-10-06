@@ -1,3 +1,163 @@
 #+title: Sistemas Distribuidos
 
+#+startup: content
+
+* Bloques de Estudio
+Bloque 1
+- Tema 1
+- Tema 2
+- Tema 3
+- Tema 4
+
+Bloque 2
+
+Bloque 3
+
+Bloque 4
+
+
+* Tema 1 Caracterización de los sitemas distribuidos
+
+** Introducción
+
+** Recursos compartidos y WEB
+
+*Servicio* parte diferente de un sistema de computadores que gestiona una colección de recursos relacionados.
+
+*Servicio* Proceso en un computador en red que acepta pecitiones de otros programas.
+
+*Cliente* : Proceso solicitante de los servicios del servidor.
+- Los clientes *invocan operaciónes* sobre el servidor.
+  
+Un proceso pede ser cliente y servidor.
+
+En lenguaje colocial un servidor es un coputador que ejecuta *servidores*.
+
+** El World Wide Web
+
+Sistema para publicar y acceder a recursos (pueden ser documentos) en red.
+Se necesita un explorador.
+
+El Web es un sistema *abierto*, puede ser apliado y modificado sin cambiar el existente.
+1. Su operación está basada en estándares.
+2. Abierto hacia los tipos de recurso que pueden ser compartidos y accedidos.
+
+Tecnologías básicas del web
+- HTML, Lenguaje de etiquetado de hipertexto.
+  Se almacena en un fichero en el servidor o se crea dinámicamente en el servidor.
+      - El navegador lo formatea en texto o imágenes formateado.
+- URL, Localizadores Uniformes de Recursos.
+      - Forma general, /esquema: localización-específica-del-esquema/
+      - url de http, /http://nombreservidor[:puerto][/pathdelservidor][?k=v[&k1=v2[&...]]]/
+            - Anclas: En algunos casos al final de una URL se puede encontrar /#nombre-ancla/.
+              Indica un punto dentro del documento.
+      - Publicar recursos en la Web suele requerir de intervención humana.
+- Arquitectura cliente-servidor con protocolo HTTP (HyperText Transfer Protocol).
+      - Interacciones petición respuesta.
+      - Tipos de contenido, El servidor incluye el tipo de contenido en el mensaje respuesta (tipos MIME) para que el explorador sepa como reproducirlo.
+      - Un recurso por solicitud
+      - Control de acceso simple, Por defecto los recursos son públicos.
+
+*Características avanzadas*
+La URL representa un programa en el servidor, que puede construir el recurso (e.g html) dinámicamente.
+Si el usuario envía pocos datos pueden contenerse en la URL depués de /?/ (ejemplo google/search).
+Un programa en un servidor que crea algún recurso dinámicamente para sus clientes se suele llamar 
+*CGI* (Interfaz de pasarela común, Common Gateway Interface).
+
+*Código descargado* se ejecuta en el navegador (e.g javascript), Se sirve desde el servidor.
+
+** Desafíos
+*** Heterogeneidad
+
+Elementos heterogéneos
+- Redes
+- Hardware de computadores
+- Sistemas Operativos
+- Lenguajes Prog
+- Implementaciones de desarroladores
+
+Los protocolos y sus implementaciones específicas permiten la interconexión.  
+Las interfaces de programación no tienen por que ser iguales. e.g Sockets en Unix y Windows presentan interfaces de programación diferentes.
+
+*Middleware* estrato de software que provee una abstracción que enmastara la heterogeneidad subyacente en las redes. E.g CORBA.
+
+*Código móvil* código que se manda de un computador a otro y se ejecuta en el receptor.
+Suele hacer uso de intérpretes y máquinas virtuales (e.g java).
+
+*** Extensibilidad
+
+Característica que determina si el sistema puede ser extendido y reimplementado en diversos aspectos.
+
+En sistemas distribuidos se determina la extensibilidad en la capacidad de añadir nuevos servicios de compartición y ponerlos a disposición de clientes.
+
+Interfaces software deben estár publicadas y accesibles.
+
+Sistemas distribuidos con muchos componentes de personas diferentes es dificil de diseñar.
+
+*Sistemas distribuidos abiertos*, sistemas en red diseñados para la extensibilidad.
+- Los sistemas abiertos se caracterizan porque sus interfaces están publicadas.
+- Se basan en la providencia de un mecanismo de comunación uniforme e interface públicas.
+- Pueden construirse con Hardware y Software heterogéneo.
+
+*** Seguridad
+
+Proteger información sensible.
+
+Desafíos:
+- Ataque de denegación de servicio
+- Seguridad del código móvil
+
+*** Escalabilidad
+
+Se dice que un sistema es escalable si conserva su efectividad ante un incremento significativo en el número de usuario y de recursos.
+
+Retos:
+- Control del coste de los recursos físicos.
+- Control de las pérdidas de prestaciones.
+- Prevención de desbordamiento de recursos software.
+- Evitación de cuellos de botella de prestaciones.
+
+*** Tratamiento de fallos
+
+Fallos parciales, algunos componentes fallan mientras otros siguen funcionando.
+
+Técnicas
+- Detección de fallos, e.g checksums
+- Enmascaramiento de fallos, e.g retransmitir un mensaje
+- Tolerancia de fallos, Los clientes se diseñan para tolerar algunos errores.
+  e.g mensaje de inténtelo más tarde en el navegador.
+- Recuperación frente a fallos, rollback y transacciones.
+- Redundancia, base de datos duplicada.
+  Implica retos en la sincronización.
+
+Los sistemas distribuidos presentan alto grado de disponibilidad frente a fallos hardware.
+
+*** Concurrencia
+
+El servidor usa concurrencia para atender a diversos clientes a la vez.
+Empleo de técnicas como los semáforos.
+
+*** Transparencia
+
+Ocultación de la separación de los componentes de un sistema distribuido.
+
+Tipos:
+- Transparencia de acceso:
+- De ubicación
+- De Concurrencia
+- De replicación, múltiples ejemplares de cada recurso.
+- Frente a fallos
+- De movilidad, reubicación de recursos y clientes.
+- De Prestaciones
+- Al escalado
+  
+  
+
+* Bibliografía
+** Sistemas Distribuidos Conceptos y Diseño
+:PROPERTIES:
+:CUSTOM_ID: sdcd
+:EDITORIAL: Pearson
+:AUTHOR: George Coulouris, Jean Dollimore, Tim Kindberg
+:END:
 
