@@ -1,0 +1,36 @@
+#+title: Diseño Del Software
+
+#+startup: overview
+
+- TEMA 1
+  Capitulos 1,2,3 [[#umlp]]
+- TEMA 2
+- TEMA 3
+- TEMA 4
+
+* Capitulo 1
+
+Importante la habilidad de asignar responsabilidades a objetos.
+
+Patrones GRASP
+
+* TASKS
+
+** TODO Instalar Astah-UML
+** TODO acabar TEMA 1
+
+* Bibliografía
+** UML y Patrones una introducción al análisis y diseño orientado a objetos y al proceso unificado
+:PROPERTIES:
+:CUSTOM_ID: umlp
+:AUTHOR: Craig Larman
+:EDITORIAL: Pearson
+:EDITION: 2
+:END:
+
+** UML-DIAGRAMS
+:PROPERTIES:
+:CUSTOM_ID: umld
+:END:
+
+[[https://www.uml-diagrams.org/]]

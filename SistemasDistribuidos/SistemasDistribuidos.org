@@ -150,8 +150,6 @@ Tipos:
 - De movilidad, reubicación de recursos y clientes.
 - De Prestaciones
 - Al escalado
-  
-  
 
 * Bibliografía
 ** Sistemas Distribuidos Conceptos y Diseño
