@@ -216,6 +216,7 @@ Require división recursiva.
 
 * Tema 2 : Optimización de consultas
 
+
 * Tema 3 : Transacciones
 
 * Tema 4 : Control de concurrencia 

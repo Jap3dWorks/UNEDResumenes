@@ -151,6 +151,49 @@ Tipos:
 - De Prestaciones
 - Al escalado
 
+
+* Tema 2 
+
+*Middelware* enmascara heterogeneidad
+      - e.g OS
+      - API común
+      - RPC, CORBA, RMI
+
+*Modelos arquitectónicos*
+- cliente-servidor
+      - encadenable
+      - Se permite diferentes servidores en computadores separados.
+            - DNS
+- Cache : almacén de objetos utilizados recientemente.
+      - más próximo que los objetos en sí.
+- Servidor Proxy : incrementa disponibilidad.
+      - Cercano al cliente.
+      - Puede estar configurado para pasar a través de cortafuegos. Pero los clientes no tienen estos privilegios.
+- Peer-to-peer :
+      - Parejas de igual a igual.
+      - Retardo menor en la conexión de pares.
+
+*Código móvil*
+El servidor sirve código ejecutable en el servidor.
+peligro por el acceso a recursos locales.
+
+*Agentes móviles*.
+
+*Computadores de red* : ceden los recursos al cliente.
+
+*Clientes ligeros* : Solo las imágenes, se ejecuta en un ordenador remoto.
+- Se ejecuta en el servidor
+- Latencias
+- Jugar en streamming, vídeos, etc.
+- X11, ahora wayland esto ya no vale para nada.
+- VNC o RDP
+
+*Dispositivos mócules y enlace espontáneo a red*
+- Enlaces sin cable.
+- Problemas de seguridad y privacidad.
+
+
+
 * Bibliografía
 ** Sistemas Distribuidos Conceptos y Diseño
 :PROPERTIES:
