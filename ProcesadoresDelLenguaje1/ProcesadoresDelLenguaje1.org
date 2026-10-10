@@ -1,28 +1,41 @@
 #+title: Procesadores Del Lenguaje 1
 
-*Bookmark* : [[#comp]] pag 153
+*Bookmark* : [[#comp]] pag 184
 
 * Introducción
+
 *compilador* : programa que lee un programa en un lenguaje fuente y lo traduce en otro lenguaje.
 Un compilador reporta errores durante el proceso de traducción.
 
 *intérprete* : da la apariencia de ejecutar directamente las operaciones especificadas en el programa origen.
 
-* Análisis Léxico
+* TEMA 2 Análisis Léxico
 
-- Definición de las expresiones regulares.
+Definición de las expresiones regulares.
+
+Autómatas finitons deterministas (AFD) y no deterministas (AFN)
+
+sintaxis de Lex.
+  
+Algoritmos de conversión de AFD a AFN.
+
+Algoritmos de simplificación de un AFD.
 
 ** Plan de Trabajo
-*** TODO Lectura Atenta [2/5]
+*** DONE Lectura Atenta [5/5]
+CLOSED: [2026-10-10 Sat 11:51]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2026-10-10 Sat 11:51]
+:END:
 - [X] apartados 3.1, 3.3,
 - [X] 3.6
-- [ ] 3.7
-- [ ] 3.9.1, 3.9.2, 3.9.3, 3.9.4, 3.9.5 y 3.9.6.
-- [ ] uso de Lex/jLex, apartado 3.5 (sintaxis jLex).
+- [X] 3.7, automatas deterministas y no deterministas.
+- [X] 3.9.1, 3.9.2, 3.9.3, 3.9.4, 3.9.5 y 3.9.6.
+- [X] uso de Lex/jLex, apartado 3.5 (sintaxis jLex).
 
 *** TODO Ejercicios [/]
 
-- [ ] Ejercicios de 3.3
+- [ ] 3.3
 - [ ] 3.6
 
 * Bibliografía
@@ -31,5 +44,5 @@ Un compilador reporta errores durante el proceso de traducción.
 :CUSTOM_ID: comp
 :EDITORIAL: digital o pearson
 :END:
-[[file:/var/mnt/data/Devs/UNED/UNEDDocs/ProcesadoresDelLenguaje1/Compiladores Principios Tecnicas y Herramientas, Aho (2a Edicion).pdf][bool file]]
-
+[[file:/var/mnt/data/Devs/UNED/UNEDDocs/ProcesadoresDelLenguaje1/Compiladores Principios Tecnicas y Herramientas, Aho (2a Edicion).pdf][pdf file]]
+[[file:/var/mnt/data/Devs/UNED/UNEDDocs/ProcesadoresDelLenguaje1/][pdf directory]]
