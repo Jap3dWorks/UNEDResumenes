@@ -5,7 +5,6 @@
 * Páginas de interés
 *abreviaturas* : pag 21
 
-
 * 1 Diseño del sistema Operativo UNIX
 [[#fosu]] pag 23
 
@@ -199,3 +198,4 @@ modo_efectivo = ~umask & modo
 :EDITORIAL: UNED
 :AUTHOR: José Manuél Díaz Martínez, Rocío Muñoz Mansilla, Dictino Chaos García
 :END:
+
