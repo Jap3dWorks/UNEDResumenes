@@ -2,6 +2,9 @@
 
 #+startup: overview
 
+* TASKS
+** TODO Autoevaluación tema2
+
 * Tema 1 : Procesamiento de consultas
 - Capitulo 12 [[#fundts]] pag249
 
@@ -215,9 +218,10 @@ Require división recursiva.
 - $2([b_r/b_s] + [b_s/b_r])[log_{M_1}(b_s) - 1]$ búsquedas.
 
 * Tema 2 : Optimización de consultas
-
-
 * Tema 3 : Transacciones
+Cap 14 [[#fundts]] pag. 293
+
+
 
 * Tema 4 : Control de concurrencia 
 
