@@ -222,7 +222,6 @@ Require división recursiva.
 Cap 14 [[#fundts]] pag. 293
 
 
-
 * Tema 4 : Control de concurrencia 
 
 * Tema 6 : Arquitecturas de sistemas de bases de datos
