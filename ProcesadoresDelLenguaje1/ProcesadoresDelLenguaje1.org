@@ -1,6 +1,8 @@
 #+title: Procesadores Del Lenguaje 1
 
-*Bookmark* : [[#comp]] pag 184
+#+startup: overview
+
+*Bookmark* : [[#comp]] pag 197
 
 * Introducción
 
@@ -37,6 +39,21 @@ CLOSED: [2026-10-10 Sat 11:51]
 
 - [ ] 3.3
 - [ ] 3.6
+
+* TEMA 3 Análisis Sintáctico
+** Plan de Trabajo
+*** Lectura Atenta [3/5]
+
+- [X] 4.1
+- [X] 4.2
+- [X] 4.3
+- [ ] 4.8 (excepto apartado 4.8.3) del libro
+- [ ] Uso de Yacc/Cup para la generación automática de analizadores sintácticos
+      - apartado 4.9 del libro y manual de Cup. Esto va orientado sobre todo a la práctica. La información del libro sirve como apoyo, ya que la sintaxis a usar debe ser la de Cup)
+
+*** Ejercicios [0/0]
+- [ ] 4.2
+- [ ] 4.3
 
 * Bibliografía
 ** Compiladores principios, técnicas y herramientas

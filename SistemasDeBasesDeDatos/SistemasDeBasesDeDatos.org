@@ -5,6 +5,8 @@
 * TASKS
 ** TODO Autoevaluación tema2
 
+** TODO Acababar Tema 3
+
 * Tema 1 : Procesamiento de consultas
 - Capitulo 12 [[#fundts]] pag249
 
@@ -219,8 +221,8 @@ Require división recursiva.
 
 * Tema 2 : Optimización de consultas
 * Tema 3 : Transacciones
-Cap 14 [[#fundts]] pag. 293
 
+- Cap 14 [[#fundts]] pag. 293
 
 * Tema 4 : Control de concurrencia 
 
