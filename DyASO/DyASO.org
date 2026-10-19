@@ -1,6 +1,9 @@
+
 #+title: Diseño Y Administración de Sistemas Operativos
 
-*Bookmark* : [[#fsou]] pag 57
+#+startup: overview
+
+*Bookmark* : [[#fsou]] pag 182
 
 * Páginas de interés
 *abreviaturas* : pag 21
@@ -190,6 +193,10 @@ Se combina con el modo de un archivo.
 
 modo_efectivo = ~umask & modo
 
+* 3 Estructuras de datos de control de procesos en UNIX
+** Tasks
+*** TODO lectura atenta Tema 3
+
 * Bibliografía
 ** Fundamentos del sistema operativo UNIX
 :PROPERTIES:
@@ -199,3 +206,4 @@ modo_efectivo = ~umask & modo
 :AUTHOR: José Manuél Díaz Martínez, Rocío Muñoz Mansilla, Dictino Chaos García
 :END:
 
+[[/var/mnt/data/Devs/UNED/UNEDDocs/DyASO/]]
