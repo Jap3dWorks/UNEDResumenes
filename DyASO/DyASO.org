@@ -193,9 +193,12 @@ Se combina con el modo de un archivo.
 
 modo_efectivo = ~umask & modo
 
+* 2 Bash
 * 3 Estructuras de datos de control de procesos en UNIX
 ** Tasks
-*** TODO lectura atenta Tema 3
+*** TODO Lectura atenta Tema 3
+*** TODO Ejercicios Tema 3
+
 
 * Bibliografía
 ** Fundamentos del sistema operativo UNIX

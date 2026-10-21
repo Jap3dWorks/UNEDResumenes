@@ -10,17 +10,24 @@ Bloque 1
 - Tema 4
 
 Bloque 2
+- Tema 5
+- Tema 6
+- Tema 7
+- Tema 8
+
 
 Bloque 3
 
 Bloque 4
 
 
-* Tema 1 Caracterización de los sitemas distribuidos
 
-** Introducción
+* Módulo 1
+** Tema 1 Caracterización de los sitemas distribuidos
 
-** Recursos compartidos y WEB
+*** Introducción
+
+*** Recursos compartidos y WEB
 
 *Servicio* parte diferente de un sistema de computadores que gestiona una colección de recursos relacionados.
 
@@ -33,7 +40,7 @@ Un proceso pede ser cliente y servidor.
 
 En lenguaje colocial un servidor es un coputador que ejecuta *servidores*.
 
-** El World Wide Web
+*** El World Wide Web
 
 Sistema para publicar y acceder a recursos (pueden ser documentos) en red.
 Se necesita un explorador.
@@ -66,8 +73,8 @@ Un programa en un servidor que crea algún recurso dinámicamente para sus clien
 
 *Código descargado* se ejecuta en el navegador (e.g javascript), Se sirve desde el servidor.
 
-** Desafíos
-*** Heterogeneidad
+*** Desafíos
+**** Heterogeneidad
 
 Elementos heterogéneos
 - Redes
@@ -84,7 +91,7 @@ Las interfaces de programación no tienen por que ser iguales. e.g Sockets en Un
 *Código móvil* código que se manda de un computador a otro y se ejecuta en el receptor.
 Suele hacer uso de intérpretes y máquinas virtuales (e.g java).
 
-*** Extensibilidad
+**** Extensibilidad
 
 Característica que determina si el sistema puede ser extendido y reimplementado en diversos aspectos.
 
@@ -99,7 +106,7 @@ Sistemas distribuidos con muchos componentes de personas diferentes es dificil d
 - Se basan en la providencia de un mecanismo de comunación uniforme e interface públicas.
 - Pueden construirse con Hardware y Software heterogéneo.
 
-*** Seguridad
+**** Seguridad
 
 Proteger información sensible.
 
@@ -107,7 +114,7 @@ Desafíos:
 - Ataque de denegación de servicio
 - Seguridad del código móvil
 
-*** Escalabilidad
+**** Escalabilidad
 
 Se dice que un sistema es escalable si conserva su efectividad ante un incremento significativo en el número de usuario y de recursos.
 
@@ -117,7 +124,7 @@ Retos:
 - Prevención de desbordamiento de recursos software.
 - Evitación de cuellos de botella de prestaciones.
 
-*** Tratamiento de fallos
+**** Tratamiento de fallos
 
 Fallos parciales, algunos componentes fallan mientras otros siguen funcionando.
 
@@ -132,12 +139,12 @@ Técnicas
 
 Los sistemas distribuidos presentan alto grado de disponibilidad frente a fallos hardware.
 
-*** Concurrencia
+**** Concurrencia
 
 El servidor usa concurrencia para atender a diversos clientes a la vez.
 Empleo de técnicas como los semáforos.
 
-*** Transparencia
+**** Transparencia
 
 Ocultación de la separación de los componentes de un sistema distribuido.
 
@@ -151,8 +158,7 @@ Tipos:
 - De Prestaciones
 - Al escalado
 
-
-* Tema 2 
+** Tema 2 
 
 *Middelware* enmascara heterogeneidad
       - e.g OS
@@ -192,9 +198,32 @@ peligro por el acceso a recursos locales.
 - Enlaces sin cable.
 - Problemas de seguridad y privacidad.
 
-* Tema 3
+** Tema 3
 pag 27 libro
 
+** Tema 4
+- [X] pag 44 - 59
+
+** Tema 5
+- [X] pag 61-64, 117-121
+
+** Tasks [0/1]
+- [ ] Ejercicios de autocomprensión en el aula virtual
+
+* Módulo 2
+- RPC :  remote procedure call
+- RMI
+
+** Tema 6 Comunicación Cliente Servidor
+- [X] pag 135-147
+
+** Tema 7 Comunicación entre procesos
+- [X] pag 121-135 
+- [X] pág 172-175
+
+** Tema 8: Comunicación entre objetos distribuidos: RMI y CORBA.
+- [ ] pag 155-190
+- [ ] pag 637-661
 
 * Bibliografía
 ** Sistemas Distribuidos Conceptos y Diseño
