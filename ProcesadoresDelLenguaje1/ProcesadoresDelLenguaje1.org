@@ -23,6 +23,11 @@ Algoritmos de conversión de AFD a AFN.
 
 Algoritmos de simplificación de un AFD.
 
+*Recursiva por la izquierda*
+Se dice que el no terminal A y su producción son recursivas por la izquierda, ya que la
+producción A → Aα tiene a la misma A como el símbolo de más a la izquierda en el lado de-
+recho.
+
 ** Plan de Trabajo
 *** DONE Lectura Atenta [5/5]
 CLOSED: [2026-10-10 Sat 11:51]
@@ -56,6 +61,20 @@ CLOSED: [2026-10-10 Sat 11:51]
 - [ ] 4.2
 - [ ] 4.3
 - [ ] 4.8.4
+
+* Tema 4 Análisis sintáctico Descendente
+** Plan de Trabajo
+
+*** Lectura Atenta [3/3]
+
+- [X] 4.4.1
+- [X] 4.4.2
+- [ ] 4.4.3
+- [X] 4.4.5
+
+*** Ejercicios [0/0]  
+- Hacer ejercicios Tema 3
+
 
 * Bibliografía
 ** Compiladores principios, técnicas y herramientas

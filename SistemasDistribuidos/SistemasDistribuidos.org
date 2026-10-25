@@ -21,7 +21,6 @@ Bloque 3
 Bloque 4
 
 
-
 * Módulo 1
 ** Tema 1 Caracterización de los sitemas distribuidos
 

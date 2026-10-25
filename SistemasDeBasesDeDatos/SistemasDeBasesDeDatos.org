@@ -2,11 +2,6 @@
 
 #+startup: overview
 
-* TASKS
-** TODO Autoevaluación tema2
-
-** TODO Acababar Tema 3
-
 * Tema 1 : Procesamiento de consultas
 - Capitulo 12 [[#fundts]] pag249
 
@@ -220,11 +215,25 @@ Require división recursiva.
 - $2([b_r/b_s] + [b_s/b_r])[log_{M_1}(b_s) - 1]$ búsquedas.
 
 * Tema 2 : Optimización de consultas
+** TASKS
+*** TODO Autoevaluación tema2
+
 * Tema 3 : Transacciones
 
 - Cap 14 [[#fundts]] pag. 293
 
+** Tasks 
+*** DONE Lectura Atenta Tema 3
+CLOSED: [2026-10-22 Thu 15:42]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2026-10-22 Thu 15:42]
+:END:
+
 * Tema 4 : Control de concurrencia 
+- Cap 15 [[#fundts]] pag. 310
+
+** Tasks
+*** TODO Lectura atenta Tema 4
 
 * Tema 6 : Arquitecturas de sistemas de bases de datos
 
