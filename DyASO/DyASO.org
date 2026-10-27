@@ -195,10 +195,28 @@ modo_efectivo = ~umask & modo
 
 * 2 Bash
 * 3 Estructuras de datos de control de procesos en UNIX
-** Tasks
-*** TODO Lectura atenta Tema 3
+** Plan de trabajo
+*** DONE Lectura atenta Tema 3
+CLOSED: [2026-10-26 Mon 16:18]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2026-10-26 Mon 16:18]
+:END:
 *** TODO Ejercicios Tema 3
 
+* 4 Algoritmos de control de procesos
+** Plan de trabajo
+*** TODO Lectura atenta Tema 4
+- [X] 4.1
+- [X] 4.2
+- [X] 4.3
+- [X] 4.4
+- [ ] 4.5
+- [ ] 4.6
+- [ ] 4.7
+- [ ] 4.8
+- [ ] 4.9
+  
+*** TODO Ejercicios Tema 4
 
 * Bibliografía
 ** Fundamentos del sistema operativo UNIX

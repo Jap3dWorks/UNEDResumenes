@@ -2,6 +2,10 @@
 
 #+startup: content
 
+
+* NOTAS
+** TODO Leer y entender la PEC
+
 * Bloques de Estudio
 Bloque 1
 - Tema 1
@@ -19,7 +23,6 @@ Bloque 2
 Bloque 3
 
 Bloque 4
-
 
 * Módulo 1
 ** Tema 1 Caracterización de los sitemas distribuidos
@@ -221,7 +224,7 @@ pag 27 libro
 - [X] pág 172-175
 
 ** Tema 8: Comunicación entre objetos distribuidos: RMI y CORBA.
-- [ ] pag 155-190
+- [ ] pag 155-190 (170)
 - [ ] pag 637-661
 
 * Bibliografía
