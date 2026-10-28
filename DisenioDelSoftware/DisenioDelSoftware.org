@@ -8,16 +8,35 @@
 - TEMA 3
 - TEMA 4
 
-* Capitulo 1
+* Tema 1
+** Capitulo 1
 
 Importante la habilidad de asignar responsabilidades a objetos.
 
 Patrones GRASP
 
-* TASKS
+* Tema 2
+** Capitulo 9
+** Capitulo 10
+** Capitulo 11
+** Capitulo 12
+** Capitulo 13
+** Capitulo 14
+** Capitulo 15
+** Capitulo 16
+** Capitulo 17
+** Capitulo 18
+** Capitulo 19
+** Capitulo 20
 
-** TODO Instalar Astah-UML
+* TASKS
+** DONE Instalar Astah-UML
+CLOSED: [2026-10-28 Wed 18:55]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2026-10-28 Wed 18:55]
+:END:
 ** TODO acabar TEMA 1
+
 
 * Bibliografía
 ** UML y Patrones una introducción al análisis y diseño orientado a objetos y al proceso unificado
