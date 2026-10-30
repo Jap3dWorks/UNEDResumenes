@@ -4,6 +4,9 @@
 
 *Bookmark* : [[#comp]] pag 287
 
+* Plan Trabajo General
+** TODO Lectura atenta de la práctica
+
 * Introducción
 
 *compilador* : programa que lee un programa en un lenguaje fuente y lo traduce en otro lenguaje.
@@ -62,19 +65,29 @@ CLOSED: [2026-10-10 Sat 11:51]
 - [ ] 4.3
 - [ ] 4.8.4
 
-* Tema 4 Análisis sintáctico Descendente
+* TEMA 4 Análisis sintáctico Descendente
 ** Plan de Trabajo
 
-*** Lectura Atenta [3/3]
+*** Lectura Atenta [4/4]
 
 - [X] 4.4.1
 - [X] 4.4.2
-- [ ] 4.4.3
+- [X] 4.4.3
 - [X] 4.4.5
 
 *** Ejercicios [0/0]  
 - Hacer ejercicios Tema 3
 
+* TEMA 5 Análisis Ascendente
+** Plan de trabajo
+*** Lectura Atenta
+- [X] 4.5
+- [X] 4.6
+- [ ] 4.7
+- [ ] 4.8.3
+
+*** Ejercicios
+- [ ] 4.5.5
 
 * Bibliografía
 ** Compiladores principios, técnicas y herramientas
