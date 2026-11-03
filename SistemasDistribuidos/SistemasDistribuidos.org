@@ -224,7 +224,7 @@ pag 27 libro
 - [X] pág 172-175
 
 ** Tema 8: Comunicación entre objetos distribuidos: RMI y CORBA.
-- [ ] pag 155-190 (170)
+- [X] pag 155-190 (170)
 - [ ] pag 637-661
 
 * Bibliografía
