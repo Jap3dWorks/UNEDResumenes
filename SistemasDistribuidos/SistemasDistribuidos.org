@@ -227,6 +227,18 @@ pag 27 libro
 - [X] pag 155-190 (170)
 - [ ] pag 637-661
 
+** Lectura Anexo restful
+
+* Módulo 3
+** Tema 9: Introducción a los sistemas de archivos distribuidos
+- [ ] Lectura del libro (pág. 292 - 300)
+
+** Tema 10: Arquitectura del servicio de archivos
+- [ ] Lectura del libro (pág. 300 - 305)
+
+** Tema 11: Sistema de archivos en red de Sun (NFS)
+- [ ] Lectura del libro (pág. 305 - 316)
+
 * Bibliografía
 ** Sistemas Distribuidos Conceptos y Diseño
 :PROPERTIES:

@@ -17,17 +17,41 @@ Patrones GRASP
 
 * Tema 2
 ** Capitulo 9
+- [X] Lectura atenta
+  
 ** Capitulo 10
+- [X] Lectura atenta
+
 ** Capitulo 11
+- [ ] Lectura atenta
+
 ** Capitulo 12
+- [ ] Lectura atenta
+
 ** Capitulo 13
+- [ ] Lectura atenta
+
 ** Capitulo 14
+- [ ] Lectura atenta
+
 ** Capitulo 15
+- [ ] Lectura atenta
+
 ** Capitulo 16
+- [ ] Lectura atenta
+
 ** Capitulo 17
+- [ ] Lectura atenta
+
 ** Capitulo 18
+- [ ] Lectura atenta
+
 ** Capitulo 19
+- [ ] Lectura atenta
+
 ** Capitulo 20
+
+- [ ] Lectura atenta
 
 * TASKS
 ** DONE Instalar Astah-UML

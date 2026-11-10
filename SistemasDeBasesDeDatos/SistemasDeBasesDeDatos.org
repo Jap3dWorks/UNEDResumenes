@@ -223,7 +223,7 @@ Require división recursiva.
 - Cap 14 [[#fundts]] pag. 293
 
 ** Tasks 
-*** DONE Lectura Atenta Tema 3
+*** DONE Lectura Atenta Cap 14
 CLOSED: [2026-10-22 Thu 15:42]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2026-10-22 Thu 15:42]
@@ -233,7 +233,19 @@ CLOSED: [2026-10-22 Thu 15:42]
 - Cap 15 [[#fundts]] pag. 310
 
 ** Tasks
-*** TODO Lectura atenta Tema 4
+*** DONE Lectura atenta Cap 15
+CLOSED: [2026-11-05 Thu 08:37]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2026-11-05 Thu 08:37]
+:END:
+
+* Tema 5 : Recuperación de la información
+- Cap 21 [[#fundts]]
+
+** Tasks
+*** TODO Lectura atenta Cap 21
+
+
 
 * Tema 6 : Arquitecturas de sistemas de bases de datos
 
