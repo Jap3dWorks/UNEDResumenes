@@ -206,15 +206,15 @@ pag 27 libro
 ** Tema 4
 - [X] pag 44 - 59
 
-** Tema 5
-- [X] pag 61-64, 117-121
-
 ** Tasks [0/1]
 - [ ] Ejercicios de autocomprensión en el aula virtual
 
 * Módulo 2
 - RPC :  remote procedure call
 - RMI
+
+** Tema 5
+- [X] pag 61-64, 117-121
 
 ** Tema 6 Comunicación Cliente Servidor
 - [X] pag 135-147
@@ -225,16 +225,20 @@ pag 27 libro
 
 ** Tema 8: Comunicación entre objetos distribuidos: RMI y CORBA.
 - [X] pag 155-190 (170)
-- [ ] pag 637-661
+- [X] pag 637-661 : Corba
 
 ** Lectura Anexo restful
+- [ ] anexo en agora
+
+** Plan Trabajo
+- [ ] Preparar PEC 2
 
 * Módulo 3
 ** Tema 9: Introducción a los sistemas de archivos distribuidos
-- [ ] Lectura del libro (pág. 292 - 300)
+- [X] Lectura del libro (pág. 292 - 300)
 
 ** Tema 10: Arquitectura del servicio de archivos
-- [ ] Lectura del libro (pág. 300 - 305)
+- [X] Lectura del libro (pág. 300 - 305)
 
 ** Tema 11: Sistema de archivos en red de Sun (NFS)
 - [ ] Lectura del libro (pág. 305 - 316)

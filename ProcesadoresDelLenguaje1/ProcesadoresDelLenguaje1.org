@@ -4,9 +4,6 @@
 
 *Bookmark* : [[#comp]] pag 287
 
-* Plan Trabajo General
-** TODO Lectura atenta de la práctica
-
 * Introducción
 
 *compilador* : programa que lee un programa en un lenguaje fuente y lo traduce en otro lenguaje.
@@ -88,6 +85,10 @@ CLOSED: [2026-10-10 Sat 11:51]
 
 *** Ejercicios
 - [ ] 4.5.5
+
+
+* Practica
+
 
 * Bibliografía
 ** Compiladores principios, técnicas y herramientas
