@@ -5,66 +5,67 @@
 * Tema 1 : Procesamiento de consultas
 - Capitulo 12 [[#fundts]] pag249
 
-** Descripción General
+$t_s$ : Search time.
+$t_T$ : Transfer time.
+$b_r$ : Bloques en el archivo $r$.
+$h_i$ : Altura de un índice de árbol $B^+$.
+$M$ : Bloques en memoria intermedia.
 
-- Traducción de consultas en alto nivel a expresiones implementadas en el nivel físico.
+** descripción general
+
+- traducción de consultas en alto nivel a expresiones implementadas en el nivel físico.
 - *primitivas de evaluación* : primitivas de álgebra relacional anotadas con instrucciones sobre su evaluación.
-- *plan de evaluación de la consulta* : Secuencia de operaciones primitivas para evaluar una consulta.
-- *Optimización de consultas* : El sistema es el responsable de construir un plan de evaluación óptimo a partir de la consulta de un usuario.
-      - El optimizador estima el coste de cada operación.
+- *plan de evaluación de la consulta* : secuencia de operaciones primitivas para evaluar una consulta.
+- *optimización de consultas* : el sistema es el responsable de construir un plan de evaluación óptimo a partir de la consulta de un usuario.
+      - el optimizador estima el coste de cada operación.
 
-** Medidas del coste de una consulta
+** medidas del coste de una consulta
 
-- Solo tenemos en cuenta el coste de acceso en disco.
-- $T_T$ tiempo transferencia
-- $T_S$ tiempo búsqueda (search)
-- operación que transfiere $b$ bloques y realiza $S$ búsquedas es $bT_T + ST_S$
-- *Tiempo de respuesta* de ejecutar un plan es el tiempo de reloj que lleva ejecutar el plan.
-      - Muy dificil de estimar, la computadora realiza otras actividades.
-            - Depende del contenido en memoria.
-            - En sistemas de varios discos depende de como se distribuyan los datos.
+- optimizadores tratan sobretodo de minimizar el uso de recursos.
 
-- El acceso a los recursos es un problema con sistemaas con muchas consultas concurrenes.
-- Por ello los optimizadores tratan sobretodo de minimizar el uso de recursos.
+** operación selección
 
-** Operación Selección
+- *explorador de archivos* : operador de más bajo nivel para acceder a los datos.
 
-- *Explorador de archivos* : operador de más bajo nivel para acceder a los datos.
+*** selecciones usando exploración de archivos e índices
 
-*** Selecciones usando exploración de archivos e índices
+- *a1 (búsqueda lineal)* : se comprueban cada bloque del archivo y todos los registros.
+      - si los registros están almacenados de forma continua se evitan búsquedas adicionales.
+      - es aplicable en todos los casos.
+      - coste : $t_s - b_r * t_t$
 
-- *A1 (búsqueda lineal)* : Se comprueban cada bloque del archivo y todos los registros.
-      - Si los registros están almacenados de forma continua se evitan búsquedas adicionales.
-      - Es aplicable en todos los casos.
+- las estructuras de índices se denominan *caminos de acceso*.
 
-- Las estructuras de índices se denominan *caminos de acceso*.
-
-*Exploración con índice* algoritmos que usan índices:
-- *A2 (índice primario, igualdad basada en la clave)*
-- *A3( índice primario, igualdad basada en atributo NO clave)* :
-  Puede ser necesario recuperar varios registros.
-- *A4(indice secundario, igualdad)* :
-  Selecciones con condición de igualdad.
+*exploración con índice* algoritmos que usan índices:
+- índices basados en árbol $b^+$
+- *a2 (índice primario, igualdad basada en la clave)*
+      - coste : $(h_i + 1) * (t_t+t_s)$
+- *a3(índice primario, igualdad basada en atributo no clave)* :
+      - puede ser necesario recuperar varios registros.
+      - coste : $h_i * (t_t + t_s) + b * t_t$
+- *a4(indice secundario, igualdad)* :
+      - coste : $(h_i + n) * (t_t + t_s)$
+            - $n$ : número de registros recuperados. importa porque cada si cada registro está en un bloque diferente implica muchas búsquedas.
 
 [[#fundts]]  pag 252 tabla con costes de los algoritmos.
 
-*** Selecciones con condiciones de comparación
+*** selecciones con condiciones de comparación
 
-- *A5(índice primario, comparación)* :
-  índice ordenado primario. caso $A \geq v$, se busca el primer registro en el índice ($A=v$).
-  el esplorador recorre desde el registro que cumple $A=V$ hasta el final el archivo y devuelve las tuplas que cumplen la condición.
-- $A6(índice secundario, comparación)* :
-  índice secundario ordenado. Le penaliza mucho tener que estar accediando a bloques de disco para obtener los registros reales.
-      - en el índice secundario almacenamos los punteros en DISCO a los registros.
+- *a5(índice primario, comparación)* :
+  se busca el primer registro en el índice ($a=v$).
+  el esplorador recorre desde el registro que cumple $a=v$ hasta el final el archivo y devuelve las tuplas que cumplen la condición.
+      - coste : $h_i * (t_t + t_s) + b* t_t$, como a3
+- *a6(índice secundario, comparación)* :
+  índice secundario ordenado. le penaliza mucho tener que estar accediando a bloques de disco para obtener los registros reales.
+      - en el índice secundario almacenamos los punteros en disco a los registros.
+      - coste : $(h_i + n) * (t_t + t_s)$
 
-*** Implementación de selecciones complejas
+*** implementación de selecciones complejas
 
-- *Selección conjuntiva* : $\sigma_{\theta_1 \land \dots \land \theta_n}(r)$
-- *Selección disyuntiva* : $\sigma_{\theta_1 \lor \dots \lor \theta_n}(r)$ :
-  unión de todos lo registros que cmplen alguna condición
+- *selección conjuntiva* : $\sigma_{\theta_1 \land \dots \land \theta_n}(r)$
+- *selección disyuntiva* : $\sigma_{\theta_1 \lor \dots \lor \theta_n}(r)$
 - *Negación* : $\sigma_{\lnot \theta}(r)$ :
   Complemento a todos los registros que cumplen $\theta$.
-
 
 - *A7(selección conjuntiva utilizando un índice)*
   Se determina si para algún atributo hay algún camino de acceso para alguna de las condiciones simples.
@@ -78,6 +79,8 @@
   Si todos los atributos involucrados tienen índice, no se recuperan registros innecesarios.
 - *A10(Selección disyuntiva mediante la unión de identificadores)*
   Si se tienen caminos de acceso de todos los atributos involucrados en alguna de las condiciones, la unión de todos los punteros resultado es la disyunción.
+      - Es conveniente ordenar los punteros para ahorrar búsquedas de bloques.
+      - Si una sola condición no tiene índice de acceso hay que efectuar la búsqueda lineal.
 
 ** Ordenación
 
@@ -89,7 +92,7 @@
    #+begin_src pseudocode
    i <- 0
    REPEAT
-     leer M bloqies, ordenar la parte de la relación que está en memoria;
+     leer M bloques, ordenar la parte de la relación que está en memoria;
      escribir los datos ordenados para archivo de secuencias Ri;
      i <- i+1
    UNTIL final de la relación  
@@ -108,7 +111,13 @@
    UNTIL todas páginas de memoria intermedia estén vacías       
    #+end_src
 
-*** Analisis del coste de la ordenación po rmezcla externa
+*** Analisis del coste de la ordenación po mezcla externa
+
+- Número de transferencias de bloques :
+  $b_r(2\lceil \log_{M-1}(b_r/M)\rceil + 1)$
+- Número total de búsquedas :
+  $2\lceil b_r/M \rceil + \lceil b_r / b_b \rceil (2 \lceil \log_{M-1}(b_r/M) \rceil - 1)$
+      - $b_b$ bloques que se asignan en memoria intermedia a cada secuencia.
 
 ** Operación reunión
 
@@ -138,10 +147,10 @@ Ambas relaciones son más grandes que la memoria principal.
 Se busca procesar por bloques.
 
 #+begin_src pseudocode
-FOR EACH bloque Br OF r DO
-  FOR EACH bloque Bs of s DO
-    FOR EACH tupla tr in Br DO
-      FOR EACH tupla ts in Bs DO
+FOR-EACH bloque Br OF r DO
+  FOR-EACH bloque Bs of s DO
+    FOR-EACH tupla tr in Br DO
+      FOR-EACH tupla ts in Bs DO
         comprobar si el par (tr.ts) satisface \theta;
         si la cumple añadir (tr.ts);
 #+end_src
@@ -150,8 +159,22 @@ FOR EACH bloque Br OF r DO
 - $b_r * b_s] + b_r$ transferencias.
 
 *Optimización*: si mem tiene $M$ bloques, leer $M-2$ bloques de $r$
-- $[b_r/(M-2)]*b_s + b_r$ transferencias de bloque
-- $[b_r/(M-2)]*b_s$ búsquedas (posicionamiento del cabezal de lectura de disco)
+- $[b_r/(M-2)]*b_s + b_r$ , transferencias de bloque.
+- $[b_r/(M-2)]*b_s$ , búsquedas (posicionamiento del cabezal de lectura de disco).
+
+*** Reunión en bucle anidado indexado
+Usando un índice en la relación interna.
+- Coste Temporal : $b_r (t_T+ t_s) + n_r * c$
+      - $n_r$ : número de registros en $r$.
+      - $c$ : conste para una única selección en $s$ ($s$ es la relación interna).
+
+- Si hay si hay índices en $r$ y $s$, más eficiente usar la relación menor como relación externa.
+
+*** Reunión por mezcla
+$r(R)$ $s(S)$ son relaciones, ambas ordenadas por los atributos $R \cap S$.
+
+- Un puntero en cada relación.
+- Necesita que cada conjunto de atributos $S_s$ quepa en memoria principal.
 
 *** Reunión por asociación
 pag 258
@@ -267,3 +290,6 @@ CLOSED: [2026-11-12 Thu 10:48]
 :EDITION: 6
 :END:
 
+* Glosario
+- *índice primario* : índice cuyo orden lógico coincide con el orden físico de registros.
+- *índice secundario* : índice cuyo orden lógico NO coincide con el orden físico de registros.
