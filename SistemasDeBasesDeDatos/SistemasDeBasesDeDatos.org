@@ -257,6 +257,197 @@ CLOSED: [2026-10-22 Thu 15:42]
 * Tema 4 : Control de concurrencia 
 - Cap 15 [[#fundts]] pag. 310
 
+** Protocolos basados en el bloqueo
+
+*** Bloqueos
+
+Tabla de compatibilidad de bloqueos
+|                    | Compartido | Exclusivo |
+| Compartido (C o S) | True       | Falso     |
+| Exlcusivo (X)      | Falso      | Falso     |
+
+- *interbloqueo* : Ciclo de esperas de recursos bloqueados entre transacciones
+Para desacer un interbloqueo alguna transacción debe retroceder.
+- *inanición* : una transacción que nunca consigue completar sus operaciones por esperar la liberación de recursos bloqueados.
+
+
+** Protocolo de bloqueo de dos fases
+
+Asegura secuenciabilidad en cuanto a conflictos.
+
+*Fase 1* : Crecimiento
+- Transacciones consiguen bloqueos (C o X).
+- No los pueden liberar.
+
+*Fase 2* : Decrecimiento
+- Transacciones liberan bloqueos.
+- No pueden conseguirse nuevos bloqueos.
+
+NO asegura la ausencia de interbloqueos.
+
+*Variaciones*
+- *Protocolo de bloqueo estricto de dos fases*
+      - Evita retrocesos en cascada.
+      - Una transacción debe mantener todos lo bloqueos *exclusivos* hasta que se complete o se aborte.
+- *Protocolo de bloqueo riguroso de dos fases*
+      - Todos los bloqueos se mantienen hasta que se complete o aborte.
+
+Las transacciones válidas son un subconjunto de las transacciones secuenciables en cuanto a conflictos.
+
+*Conversiones de bloqueo*
+- Primera fase:
+  Se puede obtener bloquear-S, bloquear-X y convertir de S a X (subir).
+- Segunda fase:
+  Se puede liberar-S, liberar-x y convertir de X a S (bajar)
+- Asegura la secuencialidad, Recae sobre el programador insertar las instrucciones de bloqueo.
+
+** Protocolo basado en grafos
+
+Grafo acíclico dirigido denominado *Grafo de la base de datos*
+- $d_i \to d_j$ acceder a $d_j$ implica acceder antes a $d_i$.
+  
+
+*Protocolo de árbol*
+- Solo se permite bloqueos-X
+- Primer bloqueo de $T_i$ sobre cualquier elemento.
+- $T_i$ puede bloquar a $Q$ solo si está bloqueando al padre de $Q$.
+- No puede repetir bloqueos.
+- Desbloqueo en cualquier momento.
+- Ventajas
+      - Asegura secuencialidad en cuanto a conflictos y ausencia de interbloqueos.
+- Desventajas
+      - No garantiza recuperabilidad.
+      - Puede bloquear elementos a los que no accede.
+
+** Protocolos en marcas temporales
+
+- A $T_i$ se le asigna una marta temportal $MT(T_i)$ al entrar en el sistema.
+- Cada elemento $Q$ mantiene valores de marca temporal.
+      - m-temp-E(Q) : mayor marca temporal de todas las *tansacciones* que ejecutan con éxtito escribir (Q).
+      - m-temp-L(Q) : lo mismo con leer.
+- Si $MT(T_i) <$ m-temp-E(Q) entonces T_i necesita leer un valor de Q que ya se ha sobreescrito.
+      - Se rechaza y retrocede $T_i$.
+
+Si $T_i$ ejecuta escribir
+- MT(T) < marca-temporal-L(Q): Ti retrocede
+- MT(T) < marca-temporal-E(Q): Ti retrocede
+- Otro caso se completa escribir y se actualize marca-temporal-E(Q)
+
+*Corrección*
+- Garantiza secuencialidad.
+- Ausencia de interbloqueos, no se espera, se retrocede.
+- Puede que una planificación no sea recuperable.
+      - Soluciones 1: Escrituras al final de la transacción
+            - Las escrituras como unidad atómica.
+            - T que aborta inicia con una nueva Mtemporal.
+      - Soluciones 2: Lecturas se posponen hasta que se actualize el elemento comprometido.
+      - Soluciones 3: Dependencias de compromiso
+
+*Regla de escritura de Thomas*
+- Si MT(T) < marca-temporal-E(Q), Ti puede tal vez ignorar la operación escribir(Q), está obsoleto el valor. Sin necesidad de retroceder.
+- Permite mayor concurrencia.
+- Permite planificaciones secuenciables en cuanto a vistas.
+
+** Protocolos basados en validación
+$T_i$ se ejecuta en 3 fases.
+- *Fase de lectura* : Solo escribe en variables locales temporales.
+- *Fase de validación* : Se comprueba que las variables locales son válidas para la BD.
+- *Fase de escritura* : Se aplican los cambios o se retrocede.
+
+Simplificando Validación y escritura se ejecuran de forma atómica a la vez.
+
+*Control concurrencia optimista* : La transacción se ejecuta completamente con la esperanza de que irá bien la validación.
+
+$T_i$ tiene 3 marcas temporales.
+- *Inicio(T)* : Comienta ejecución T
+- *Validación(T)* : Comienza fase validación
+- *Fin(T)* : Termina la escritura
+
+Las marcas temporales determinan el orden de secuencialidad.
+- MT(T) se le da el valor de Validación(T)
+
+Proporciona alto grado de concurrencia.
+
+*La validación*
+- SI $MT(T_i) < MT(T_j)$ entonces una de las dos condiciones debe cumplirse:
+      - fin($T_i$) < inicio($T_j$)
+      - inicio($T_j$) < fin ($T_i$) < validación($T_j$) y los elementos escritor por $T_i$ no tiene intersección con los elementos leídos por $T_j$.
+
+** Granularidad múltiple
+Define una jerarquía. Similar a un árbol. sin confundir con protocolo de bloq de árbol.
+- Si una transacción bloquea un nodo explícitamente, implicitamente bloquea todos los nodos descendientes, con el mismo tipo de bloqueo.
+- Granularidad fina son niveles inferiores del árbol.
+- Granularidad gruesa son niveles superiores del árbol.
+
+*modos de bloqueo*
+- C y X
+- *intencional-compartido(IC)* : bloqueos compartidos en niveles inferiores
+- *intencional-exclusivo(IX)* : bloqueos explícitos en niveles inferiores
+- *intencional-exclusivo y compartido (IXC)*: subárbol cuya raiz bloqueada en compartido con un subnodo bloqueada en exclusivo.
+
+Bloqueos intencionales permiten que se bloquee un nodo superior en C o X sin tener que comprobar los nodos descendientes (para el rendimiento).
+
+*Compatibilidad*
+|     | IC | IX | C | CIX | X |
+| IC  | t  | t  | t | t   | - |
+| IX  | t  | t  | - | -   | - |
+| C   | t  | -  | t | -   | - |
+| CIX | t  | -  | - | -   | - |
+| X   | -  | -  | - | -   | - |
+
+*Reglas de bloqueo*
+- Bloquear la raiz del árbol en cualquier modo.
+- Puede bloquear Q en C o IC solo si está bloqueando el padre de Q en IX o IC.
+- Q en X IXC o IX solo si bloquea el padre en modo IX o IXC.
+- Puede bloquear si no ha desbloqueado ningún nodo.
+- T Puede desbloquear a Q solo si T no bloquea ningún hijo de Q.
+
+** Esquemas multiversion
+Se mantienen versiones anteriores de los datos.
+- Marcas temporales multiversión
+- Bloqueo dos fases multiversión
+- Escribir(Q) Crea una nueva versión
+- Leer(Q) selecciona la versión apropiada basada en marcas temporales de la transacción.
+      - No esperan nunca.
+
+*** Marcas temporales multiversion
+*Ordenación*
+- Cada elemento Q tiene una secuencia de versiones.
+- campos de cada versión $Q_k$
+      - Contenido
+      - marca-temp-E(Q) : MC(T) de la T creadora de la versión.
+      - marca-temp-L(Q) : MC(T) más alta de las T que han leído a $Q_k$
+- $Q_k$ es la versión con mayor *m-temp-E* que es menor o igual a MT($T_i$).
+- leer(Q) devuelve el contenido de $Q_k$
+- si $T_i$ ejecuta escribir(Q) y :
+      - SI MT($T_i$) < marca-temp-L($Q_K$) : Entonces $T_i$ retrocede.
+        ya se ha leído.
+      - Si MT($T_i$) = marca-temp-E($Q_k$) : Sobreescribe el contenido $Q_k$
+        es la misma transacción.
+      - Otro caso se crea una nueva versión de $Q$.
+
+Asegura la secuencialidad.        
+
+*** Bloqueo dos fases multiversion
+Diferencia entre transacciones solo lectura y de actualización.
+- Transacciones actualización siguen un bloqueo 2 fases riguroso.
+      - Cada escribir Q crea una nueva versión
+      - Marca temporal es un contador.
+- T solo lectura se les asigna el valor contador al inicio de la transacción.
+  protocolo marcas temporales multiversión para las lecturas.
+
+*T de actualización*  
+- Quiere leer un elemento
+      - Obtiene un bloqueo-C, lee la última versión
+- Escribir un elemnto
+      - obtiene bloq-X, crea una nueva versión y fila la marca temp a $\infty$
+- Cuando se completa T se pocesa el compromiso
+      - T marca la marca temporal de las versiones que ha creado a contador-mt + 1
+      - Incremente el contador-mt en 1
+- Transacciones que comiencen después que T ven el nuevo valor actualizado.
+- Las anteriores el valor anterior.
+
+
 ** Tasks
 *** DONE Lectura atenta Cap 15
 CLOSED: [2026-11-05 Thu 08:37]
