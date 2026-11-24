@@ -447,6 +447,97 @@ Diferencia entre transacciones solo lectura y de actualización.
 - Transacciones que comiencen después que T ven el nuevo valor actualizado.
 - Las anteriores el valor anterior.
 
+** Tratamiento de Interbloqueos
+
+Conjunto de transacciones donde cada una de ellas está esperando a otra transacción del mismo conjunto.
+
+Estratégias de *Prevención de interbloqueos*.
+- Cada transacción bloquee todos los recursos antes de iniciar la ejecución.
+- Imponer un orden parcial en los elementos de datos.
+  Una transacción debe bloquear solamente ne el orden especificado.
+
+Prevención con marcas temporales.
+- Esquema esperar-morir.
+      - Sin expropiación
+      - transacción más antigua espera a las más nuevas.
+      - Transacciones nuevas no esperan, sino que retroceden.
+- Esquema herir-esperar.
+      - Con expropiación
+      - La T más antigua hiere a las más nueva (fuerza el retroceso).
+        Las T nuevas esperan por las T antiguas.
+      - menos retrocesos que el esquema esperar-morir.
+- En ambos esquemas las transacciones se reinician con su marca temporal original.
+  Las más antiguas tienen precedencia sobre las nuevas.
+
+Esquema basado en límite de tiempo.
+- T espera durante un período de tiempo. Después la espera expira y se retrocede T.
+- Evita interbloqueos.
+- posibilidad de inanición.
+
+*Detección*
+- Se describen mediante un grafo de espera. G=(V,A)
+- Existe interbloqueo si el grafo de espera contiene ciclos.
+
+*Recuperación*
+- retroceder la transacción que incurre en un coste mínimo.
+- tipo de retroceso
+      - Total : Se aborta la transacción, se vuelve a comenzar.
+      - Parcial : solo las operaciones que provocan el interbloqueo.
+- Inanición si siempre se elige la misma víctima.
+  En el factor cose se puede incluir la cuenta de retrocesos.
+
+** Operaciones insertar y borrar
+En bloqueo en dos fases.
+- Borrar necesita un bloqueo-X.
+- Insertar proporciona un bloqueo-X sobre dicha tupla.
+
+Fenomeno fantasma
+- problemas al rastrear una relación mientras concurrentemente se insertan y borran tuplas.
+- Solución
+      - Asociar un elemento de datos a la relación
+      - Se adquiere bloqueo sobre el elemento de datos de la relación
+- Protocolos de bloqueo de índice proporcionan una concurrencia superior y evitan el fenomeno fantasma.
+
+*Protocolo de bloqueo de índices*
+- Almenos 1 índice por relación.
+- $T_i$ lleva a cabo una consulta debe bloquear *todos* los índices de la relación en modo C.
+- $T_i$ no puede insertar tuplas sin actualizar los índices de $r$.
+      - implica obtener bloqueos-X en los índices (todos los nodos hoja afectados) que modifica.
+- Cumplir las reglas del protocolo de bloqueo en dos fases.
+
+** Niveles débiles de consistencia
+
+*Consistencia de grado dos* : Bloqueo en dos fases pero...
+- bloqueo-c pueden liberarse en cualquier momento.
+- bloqueo-x se conservan hasta el fin de la transacción.
+- Secuencialidad no Garantizada para evitar retrocesos en cascada.
+
+*Estabilidad de cursor*
+- Lecturas, cada tupla está bloqueada-C, leer y el bloqueo se libera inmediatamente.
+- bloqueos-X hasta el final de la transacción, hasta el compromiso.
+- Es un caso especial de consistencia de grado dos.
+      - Para programas que iteran sobre tuplas con cursores.
+      - No requiere bloqueo en dos fases.
+
+*SQL permite ejecuciones no secuenciables*, niveles:
+- Secuenciable
+- Lectura Repetible : solamente se leen registros comprometidos.
+  Repetir lecturas devuelve el mismo valor.
+- Con compromiso de lectura : Se implementa como estabilidad de cursor 
+- Sin compromiso de lectura : Permite que datos sin comprometer sean leídos.
+
+
+** Concurrencia en las estructuras de índices
+Aceptable tener acceso concurrente no secuenciable en un índice.
+- Los valores exactos de nodos internos del arbol B+ es irrelevante si se accede al nodo hoja correcto.
+
+Protocolo del *cangrejo*
+- bloquea la raiz en modo compartido
+- Después de bloquear los hijos necesarios de un nodo, puede liberar al propio nodo.
+- Inserción/Borrado se eleva el bloquea a exclusivo.
+- División o combinación requiera cambios en un padre, este padre se bloquea en modo exclusivo.
+
+Hay protocolos de cangrejo menos bloqueantes.  
 
 ** Tasks
 *** DONE Lectura atenta Cap 15
